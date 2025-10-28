@@ -1,47 +1,136 @@
-import React, { useMemo } from 'react';
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../../hooks/useQuestionnaire';
-import { QuestionnaireTemplate } from '../templates';
-import { QuestionnaireQuestion } from '../organisms';
-import { AppButton, AppText } from '../atoms';
+import type { SelectedAnswerOption } from '../../types/questionnaire';
 import { COLOR_PALETTE, SPACING } from '../../theme';
+import { AppButton, AppText } from '../atoms';
+import { QuestionnaireQuestion, QuestionnaireReview } from '../organisms';
+import { QuestionnaireTemplate } from '../templates';
 
-const PLACEHOLDER_PRIMARY_ACTION_LABEL = 'Continue Placeholder';
+const DEFAULT_HEADER_TITLE = 'Questionnaire';
+const REVIEW_TITLE = 'Review your answers';
+const REVIEW_SUBTITLE =
+  'Ensure these responses reflect your preferences before finishing.';
 
 export const QuestionnaireFirstQuestionPage = () => {
-  const { isLoading, error, refresh, title, subtitle, questions } =
-    useQuestionnaire();
+  const [selection, setSelection] = useState<SelectedAnswerOption[]>([]);
+  const [isSelectionValid, setIsSelectionValid] = useState(false);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
-  const firstQuestion = useMemo(
-    () => (questions.length > 0 ? questions[0] : null),
-    [questions],
-  );
+  const {
+    isLoading,
+    isSubmitting,
+    error,
+    refresh,
+    question,
+    prompt,
+    explanation,
+    submitAnswers,
+    isReviewing,
+    history,
+    restart,
+  } = useQuestionnaire();
+
+  useEffect(() => {
+    setHasAttemptedSubmit(false);
+  }, [question?.id, isReviewing]);
+
+  const headerTitle = isReviewing
+    ? REVIEW_TITLE
+    : prompt || DEFAULT_HEADER_TITLE;
+  const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
+
+  const primaryActionLabel = useMemo(() => {
+    if (isReviewing) {
+      return 'Restart questionnaire';
+    }
+
+    switch (question?.answerType) {
+      case 'multiple_choice':
+        return question.answerHandling === 'all'
+          ? 'Save selection'
+          : 'Continue';
+      case 'numeric':
+        return 'Submit range';
+      case 'time':
+        return 'Save times';
+      case 'date':
+        return 'Confirm date';
+      default:
+        return 'Continue';
+    }
+  }, [isReviewing, question]);
+
+  const primaryActionDisabled =
+    isLoading ||
+    isSubmitting ||
+    (!isReviewing && (!isSelectionValid || !selection.length));
+
+  const showValidationError =
+    hasAttemptedSubmit && !isReviewing && (!isSelectionValid || !selection.length);
+
+  const shouldShowPrimaryAction =
+    isReviewing || (!!question && !isLoading && !error);
+
+  const handlePrimaryAction = async () => {
+    if (isReviewing) {
+      restart();
+      return;
+    }
+
+    setHasAttemptedSubmit(true);
+
+    if (!isSelectionValid || !selection.length) {
+      return;
+    }
+
+    await submitAnswers(selection);
+  };
+
+  const renderBody = () => {
+    if (error) {
+      return (
+        <View style={styles.errorState}>
+          <AppText variant="heading" tone="secondary">
+            We could not load the questionnaire.
+          </AppText>
+          <AppButton label="Try again" onPress={refresh} tone="secondary" />
+        </View>
+      );
+    }
+
+    if (isReviewing) {
+      return <QuestionnaireReview responses={history} />;
+    }
+
+    return (
+      <>
+        <QuestionnaireQuestion
+          question={question}
+          onSelectionChange={setSelection}
+          onValidityChange={setIsSelectionValid}
+        />
+        {showValidationError ? (
+          <AppText tone="secondary" style={styles.validation}>
+            Please provide an answer before continuing.
+          </AppText>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <QuestionnaireTemplate
-        title={title}
-        subtitle={subtitle}
+        title={headerTitle}
+        subtitle={headerSubtitle}
         isLoading={isLoading}
-        primaryActionLabel={PLACEHOLDER_PRIMARY_ACTION_LABEL}
-        onPrimaryActionPress={() => {
-          // Hook up navigation to the next screen when defined.
-        }}>
-        {error ? (
-          <View style={styles.errorState}>
-            <AppText variant="heading" tone="secondary">
-              There was a problem loading the first question placeholder.
-            </AppText>
-            <AppButton
-              label="Tap to retry placeholder"
-              onPress={refresh}
-              tone="secondary"
-            />
-          </View>
-        ) : (
-          <QuestionnaireQuestion question={firstQuestion} />
-        )}
+        primaryActionLabel={shouldShowPrimaryAction ? primaryActionLabel : undefined}
+        primaryActionDisabled={primaryActionDisabled}
+        onPrimaryActionPress={handlePrimaryAction}>
+        {renderBody()}
       </QuestionnaireTemplate>
     </SafeAreaView>
   );
@@ -55,5 +144,8 @@ const styles = StyleSheet.create({
   errorState: {
     alignItems: 'center',
     gap: SPACING.md,
+  },
+  validation: {
+    marginTop: SPACING.sm,
   },
 });

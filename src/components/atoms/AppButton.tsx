@@ -37,6 +37,7 @@ export const AppButton = ({
   ...pressableProps
 }: AppButtonProps) => {
   const toneStyles = toneToStyles[tone] ?? toneToStyles.primary;
+  const isDisabled = pressableProps.disabled ?? false;
 
   return (
     <Pressable
@@ -44,7 +45,8 @@ export const AppButton = ({
       style={({ pressed }) => [
         styles.base,
         toneStyles.container,
-        pressed && styles.pressed,
+        pressed && !isDisabled && styles.pressed,
+        isDisabled && styles.disabled,
         containerStyle,
       ]}
       {...pressableProps}>
@@ -65,5 +67,8 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.92,
     transform: [{ scale: 0.995 }],
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });

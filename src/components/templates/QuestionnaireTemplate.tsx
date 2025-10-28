@@ -9,6 +9,7 @@ type QuestionnaireTemplateProps = PropsWithChildren<{
   subtitle?: string;
   isLoading?: boolean;
   primaryActionLabel?: string;
+  primaryActionDisabled?: boolean;
   onPrimaryActionPress?: () => void;
   footerSlot?: React.ReactNode;
 }>;
@@ -18,6 +19,7 @@ export const QuestionnaireTemplate = ({
   subtitle,
   isLoading = false,
   primaryActionLabel,
+  primaryActionDisabled = false,
   onPrimaryActionPress,
   footerSlot,
   children,
@@ -40,7 +42,7 @@ export const QuestionnaireTemplate = ({
           <View style={styles.loading}>
             <ActivityIndicator size="large" color={COLOR_PALETTE.accentPrimary} />
             <AppText tone="secondary" style={styles.loadingLabel}>
-              Loading the first question placeholder...
+              Loading your next question...
             </AppText>
           </View>
         ) : (
@@ -53,6 +55,7 @@ export const QuestionnaireTemplate = ({
         <AppButton
           label={primaryActionLabel}
           onPress={onPrimaryActionPress}
+          disabled={primaryActionDisabled}
           containerStyle={styles.primaryAction}
         />
       ) : null}
