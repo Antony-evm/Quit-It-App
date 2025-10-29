@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE, SPACING } from '../../theme';
-import { AppText } from './AppText';
+import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
+import { AppText } from '../../../../shared/components/ui';
 
 type AnswerTabProps = {
   label: string;

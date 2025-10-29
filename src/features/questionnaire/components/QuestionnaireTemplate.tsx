@@ -1,8 +1,8 @@
 import React, { PropsWithChildren } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
-import { AppButton, AppSurface, AppText } from '../atoms';
-import { COLOR_PALETTE, SPACING } from '../../theme';
+import { AppButton, AppSurface, AppText } from '../../../shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;

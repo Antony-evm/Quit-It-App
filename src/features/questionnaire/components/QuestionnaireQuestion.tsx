@@ -1,18 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type {
-  Question,
-  SelectedAnswerOption,
-} from '../../types/questionnaire';
-import { AppText } from '../atoms';
-import {
-  AnswerTabs,
-  DatePickerField,
-  NumericRangeField,
-  TimeSlotSelector,
-} from '../molecules';
-import { SPACING } from '../../theme';
+import type { Question, SelectedAnswerOption } from '../types';
+import { AppText } from '../../../shared/components/ui';
+import { AnswerTabs } from './controls/AnswerTabs';
+import { DatePickerField } from './fields/DatePickerField';
+import { NumericRangeField } from './fields/NumericRangeField';
+import { TimeSlotSelector } from './fields/TimeSlotSelector';
+import { SPACING } from '../../../shared/theme';
 
 type QuestionnaireQuestionProps = {
   question: Question | null;

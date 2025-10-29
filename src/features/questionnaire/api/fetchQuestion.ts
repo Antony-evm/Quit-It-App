@@ -1,49 +1,16 @@
-import { Platform } from 'react-native';
-
 import type {
   AnswerHandling,
   AnswerOption,
   AnswerType,
   Question,
   QuestionResponse,
-  QuestionnaireAnswerPayload,
-} from '../types/questionnaire';
+} from '../types';
+import {
+  QUESTIONNAIRE_DEFAULT_PARAMS,
+  QUESTIONNAIRE_ENDPOINT,
+} from './endpoints';
 
-type MaybeEnv = {
-  process?: {
-    env?: Record<string, string | undefined>;
-  };
-};
-
-const getEnvValue = (key: string): string | undefined =>
-  ((globalThis as MaybeEnv | undefined)?.process?.env ?? {})[key];
-
-const NORMALIZE_URL_TRAILING_SLASH = /\/$/;
-const resolveBaseUrl = () => {
-  const envUrl =
-    getEnvValue('QUESTIONNAIRE_API_BASE_URL') ?? getEnvValue('API_BASE_URL');
-
-  if (envUrl) {
-    return envUrl.replace(NORMALIZE_URL_TRAILING_SLASH, '');
-  }
-
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000';
-  }
-
-  return 'http://localhost:8000';
-};
-
-const QUESTIONNAIRE_BASE_URL = resolveBaseUrl();
-const QUESTIONNAIRE_ENDPOINT = `${QUESTIONNAIRE_BASE_URL}/api/v1/questionnaire`;
-const QUESTIONNAIRE_ANSWER_ENDPOINT = `${QUESTIONNAIRE_ENDPOINT}/answer`;
-
-const DEFAULT_QUERY_PARAMS = {
-  orderId: 0,
-  variationId: 0,
-};
-
-type QuestionnaireRequestOptions = {
+export type QuestionnaireRequestOptions = {
   orderId?: number;
   variationId?: number;
 };
@@ -100,8 +67,8 @@ export const fetchQuestion = async (
   options: QuestionnaireRequestOptions = {},
 ): Promise<Question | null> => {
   const {
-    orderId = DEFAULT_QUERY_PARAMS.orderId,
-    variationId = DEFAULT_QUERY_PARAMS.variationId,
+    orderId = QUESTIONNAIRE_DEFAULT_PARAMS.orderId,
+    variationId = QUESTIONNAIRE_DEFAULT_PARAMS.variationId,
   } = options;
 
   const requestUrl = `${QUESTIONNAIRE_ENDPOINT}?${createQueryString(
@@ -125,33 +92,4 @@ export const fetchQuestion = async (
 
   const resolved = 'data' in payload ? payload.data : payload;
   return mapQuestionResponse(resolved);
-};
-
-export const submitQuestionAnswer = async (
-  payload: QuestionnaireAnswerPayload,
-): Promise<void> => {
-  const response = await fetch(QUESTIONNAIRE_ANSWER_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to submit questionnaire answer');
-  }
-};
-
-export const QUESTIONNAIRE_PLACEHOLDERS = {
-  orderId: DEFAULT_QUERY_PARAMS.orderId,
-  variationId: DEFAULT_QUERY_PARAMS.variationId,
-  endpoint: QUESTIONNAIRE_ENDPOINT,
-};
-
-export type { QuestionnaireRequestOptions };
-export {
-  QUESTIONNAIRE_BASE_URL,
-  QUESTIONNAIRE_ENDPOINT,
-  QUESTIONNAIRE_ANSWER_ENDPOINT,
 };

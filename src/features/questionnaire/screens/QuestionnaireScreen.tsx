@@ -2,19 +2,20 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useQuestionnaire } from '../../hooks/useQuestionnaire';
-import type { SelectedAnswerOption } from '../../types/questionnaire';
-import { COLOR_PALETTE, SPACING } from '../../theme';
-import { AppButton, AppText } from '../atoms';
-import { QuestionnaireQuestion, QuestionnaireReview } from '../organisms';
-import { QuestionnaireTemplate } from '../templates';
+import { useQuestionnaire } from '../hooks/useQuestionnaire';
+import type { SelectedAnswerOption } from '../types';
+import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
+import { AppButton, AppText } from '../../../shared/components/ui';
+import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
+import { QuestionnaireReview } from '../components/QuestionnaireReview';
+import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
 const REVIEW_TITLE = 'Review your answers';
 const REVIEW_SUBTITLE =
   'Ensure these responses reflect your preferences before finishing.';
 
-export const QuestionnaireFirstQuestionPage = () => {
+export const QuestionnaireScreen = () => {
   const [selection, setSelection] = useState<SelectedAnswerOption[]>([]);
   const [isSelectionValid, setIsSelectionValid] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);

@@ -2,9 +2,9 @@ import type {
   AnswerHandling,
   AnswerType,
   QuestionnaireResponseRecord,
-} from '../types/questionnaire';
-import { database, QUESTIONNAIRE_RESPONSES_TABLE } from '../database';
-import { QuestionnaireResponseModel } from '../database/models/QuestionnaireResponse';
+} from '../types';
+import { database, QUESTIONNAIRE_RESPONSES_TABLE } from '../../../database';
+import { QuestionnaireResponseModel } from '../../../database/models/QuestionnaireResponse';
 
 const responsesCollection =
   database.collections.get<QuestionnaireResponseModel>(

@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
-import { AppButton, AppText, AppTextInput } from '../atoms';
-import { SPACING } from '../../theme';
+import { AppButton, AppText, AppTextInput } from '../../../../shared/components/ui';
+import { SPACING } from '../../../../shared/theme';
 
 type DatePickerFieldProps = {
   value: Date | null;

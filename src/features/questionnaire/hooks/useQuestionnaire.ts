@@ -4,14 +4,14 @@ import type {
   Question,
   QuestionnaireResponseRecord,
   SelectedAnswerOption,
-} from '../types/questionnaire';
+} from '../types';
 import {
   fetchQuestion,
-  QUESTIONNAIRE_PLACEHOLDERS,
-  submitQuestionAnswer,
   type QuestionnaireRequestOptions,
-} from '../services/questionnaireService';
-import { questionnaireStorage } from '../services/questionnaireStorage';
+} from '../api/fetchQuestion';
+import { submitQuestionAnswer } from '../api/submitAnswer';
+import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
+import { questionnaireStorage } from '../data/questionnaireStorage';
 
 type UseQuestionnaireOptions = {
   userId?: number;

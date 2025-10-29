@@ -2,8 +2,8 @@ import React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { COLOR_PALETTE } from './src/theme';
-import { QuestionnaireFirstQuestionPage } from './src/components/pages';
+import { COLOR_PALETTE } from './src/shared/theme';
+import { QuestionnaireScreen } from './src/features/questionnaire';
 
 function App(): React.ReactElement {
   const isDarkMode = useColorScheme() === 'dark';
@@ -15,7 +15,7 @@ function App(): React.ReactElement {
         barStyle={statusBarStyle}
         backgroundColor={COLOR_PALETTE.backgroundMuted}
       />
-      <QuestionnaireFirstQuestionPage />
+      <QuestionnaireScreen />
     </SafeAreaProvider>
   );
 }

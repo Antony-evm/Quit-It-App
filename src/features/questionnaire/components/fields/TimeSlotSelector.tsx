@@ -1,9 +1,9 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText } from '../atoms';
-import { AnswerTabs } from './AnswerTabs';
-import { SPACING } from '../../theme';
+import { AppText } from '../../../../shared/components/ui';
+import { AnswerTabs } from '../controls/AnswerTabs';
+import { SPACING } from '../../../../shared/theme';
 
 type TimeSlotSelectorProps = {
   range: string;

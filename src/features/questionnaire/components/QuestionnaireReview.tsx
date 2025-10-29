@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import type { QuestionnaireResponseRecord } from '../../types/questionnaire';
-import { AppSurface, AppText } from '../atoms';
-import { SPACING } from '../../theme';
+import type { QuestionnaireResponseRecord } from '../types';
+import { AppSurface, AppText } from '../../../shared/components/ui';
+import { SPACING } from '../../../shared/theme';
 
 type QuestionnaireReviewProps = {
   responses: QuestionnaireResponseRecord[];

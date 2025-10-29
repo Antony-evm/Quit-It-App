@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AnswerTab } from '../atoms';
-import { SPACING } from '../../theme';
+import { AnswerTab } from './AnswerTab';
+import { SPACING } from '../../../../shared/theme';
 
 type AnswerTabOption = {
   id: number;
