@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { Question, SelectedAnswerOption } from '../types';
@@ -11,6 +11,7 @@ import { SPACING } from '../../../shared/theme';
 
 type QuestionnaireQuestionProps = {
   question: Question | null;
+  initialSelection?: SelectedAnswerOption[];
   onSelectionChange: (selection: SelectedAnswerOption[]) => void;
   onValidityChange?: (isValid: boolean) => void;
 };
@@ -39,6 +40,12 @@ const formatDateForSubmission = (date: Date) => {
   return `${iso.replace('T', ' ')}+00:00`;
 };
 
+const parseSubmissionDateValue = (value: string) => {
+  const normalized = value.replace(' ', 'T');
+  const parsed = new Date(normalized);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
 const ensureSelectionValidity = (
   selection: SelectedAnswerOption[],
   onValidityChange?: (isValid: boolean) => void,
@@ -46,8 +53,24 @@ const ensureSelectionValidity = (
   onValidityChange?.(selection.length > 0);
 };
 
+const areSelectionsEqual = (
+  a: SelectedAnswerOption[],
+  b: SelectedAnswerOption[],
+) =>
+  a.length === b.length &&
+  a.every((item, index) => {
+    const other = b[index];
+    return (
+      other?.optionId === item.optionId &&
+      other.value === item.value &&
+      other.answerType === item.answerType &&
+      other.nextVariationId === item.nextVariationId
+    );
+  });
+
 export const QuestionnaireQuestion = ({
   question,
+  initialSelection,
   onSelectionChange,
   onValidityChange,
 }: QuestionnaireQuestionProps) => {
@@ -77,36 +100,71 @@ export const QuestionnaireQuestion = ({
     question?.answerType === 'date' && question?.answerHandling === 'max';
 
   const firstOption = question?.options[0];
+  const previousSelectionRef = useRef<SelectedAnswerOption[]>([]);
 
   useEffect(() => {
-    setSelectedChoiceIds([]);
-    setSelectedSlots([]);
-    setSelectedDate(null);
     const parsedRange =
       firstOption && isNumericRangeQuestion
         ? parseNumericRange(firstOption.value)
         : null;
     setNumericRange(parsedRange);
+    previousSelectionRef.current = initialSelection ? [...initialSelection] : [];
+
+    if (allowMultipleChoice || allowSingleChoice) {
+      setSelectedChoiceIds(
+        (initialSelection ?? []).map((option) => option.optionId),
+      );
+    } else {
+      setSelectedChoiceIds([]);
+    }
+
+    if (isTimeRangeQuestion) {
+      setSelectedSlots((initialSelection ?? []).map((option) => option.value));
+    } else {
+      setSelectedSlots([]);
+    }
+
+    if (isDateQuestion) {
+      const initialDateValue = initialSelection?.[0]?.value ?? '';
+      setSelectedDate(
+        initialDateValue ? parseSubmissionDateValue(initialDateValue) : null,
+      );
+    } else {
+      setSelectedDate(null);
+    }
+
     if (parsedRange) {
       const defaultValue =
         parsedRange.min + Math.floor((parsedRange.max - parsedRange.min) / 2);
-      setNumericSelection(defaultValue);
+      const numericInitial = initialSelection?.[0]?.value ?? '';
+      const parsedNumeric = Number(numericInitial);
+      if (!Number.isNaN(parsedNumeric)) {
+        setNumericSelection(parsedNumeric);
+      } else {
+        setNumericSelection(defaultValue);
+      }
     } else {
       setNumericSelection(null);
     }
-    onSelectionChange([]);
-    onValidityChange?.(false);
   }, [
     firstOption,
+    initialSelection,
+    allowMultipleChoice,
+    allowSingleChoice,
+    isDateQuestion,
     isNumericRangeQuestion,
-    onSelectionChange,
-    onValidityChange,
+    isTimeRangeQuestion,
   ]);
 
   useEffect(() => {
     if (!question) {
-      onSelectionChange([]);
-      onValidityChange?.(false);
+      const emptySelection: SelectedAnswerOption[] = [];
+
+      if (!areSelectionsEqual(previousSelectionRef.current, emptySelection)) {
+        previousSelectionRef.current = emptySelection;
+        onSelectionChange(emptySelection);
+      }
+      ensureSelectionValidity(emptySelection, onValidityChange);
       return;
     }
 
@@ -154,7 +212,11 @@ export const QuestionnaireQuestion = ({
       ];
     }
 
-    onSelectionChange(selection);
+    if (!areSelectionsEqual(previousSelectionRef.current, selection)) {
+      previousSelectionRef.current = selection;
+      onSelectionChange(selection);
+    }
+
     ensureSelectionValidity(selection, onValidityChange);
   }, [
     allowMultipleChoice,

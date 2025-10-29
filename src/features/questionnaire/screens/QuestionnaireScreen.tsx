@@ -16,7 +16,9 @@ const REVIEW_SUBTITLE =
   'Ensure these responses reflect your preferences before finishing.';
 
 export const QuestionnaireScreen = () => {
-  const [selection, setSelection] = useState<SelectedAnswerOption[]>([]);
+  const [activeSelection, setActiveSelection] = useState<
+    SelectedAnswerOption[]
+  >([]);
   const [isSelectionValid, setIsSelectionValid] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
@@ -32,11 +34,30 @@ export const QuestionnaireScreen = () => {
     isReviewing,
     history,
     restart,
+    goBack,
+    canGoBack,
+    selection,
   } = useQuestionnaire();
 
   useEffect(() => {
     setHasAttemptedSubmit(false);
   }, [question?.id, isReviewing]);
+
+  useEffect(() => {
+    if (!question) {
+      setActiveSelection([]);
+      setIsSelectionValid(false);
+      return;
+    }
+
+    if (selection && selection.length) {
+      setActiveSelection(selection);
+      setIsSelectionValid(true);
+    } else {
+      setActiveSelection([]);
+      setIsSelectionValid(false);
+    }
+  }, [question?.id, selection]);
 
   const headerTitle = isReviewing
     ? REVIEW_TITLE
@@ -67,10 +88,12 @@ export const QuestionnaireScreen = () => {
   const primaryActionDisabled =
     isLoading ||
     isSubmitting ||
-    (!isReviewing && (!isSelectionValid || !selection.length));
+    (!isReviewing && (!isSelectionValid || !activeSelection.length));
 
   const showValidationError =
-    hasAttemptedSubmit && !isReviewing && (!isSelectionValid || !selection.length);
+    hasAttemptedSubmit &&
+    !isReviewing &&
+    (!isSelectionValid || !activeSelection.length);
 
   const shouldShowPrimaryAction =
     isReviewing || (!!question && !isLoading && !error);
@@ -83,11 +106,11 @@ export const QuestionnaireScreen = () => {
 
     setHasAttemptedSubmit(true);
 
-    if (!isSelectionValid || !selection.length) {
+    if (!isSelectionValid || !activeSelection.length) {
       return;
     }
 
-    await submitAnswers(selection);
+    await submitAnswers(activeSelection);
   };
 
   const renderBody = () => {
@@ -110,7 +133,8 @@ export const QuestionnaireScreen = () => {
       <>
         <QuestionnaireQuestion
           question={question}
-          onSelectionChange={setSelection}
+          initialSelection={selection}
+          onSelectionChange={setActiveSelection}
           onValidityChange={setIsSelectionValid}
         />
         {showValidationError ? (
@@ -128,9 +152,25 @@ export const QuestionnaireScreen = () => {
         title={headerTitle}
         subtitle={headerSubtitle}
         isLoading={isLoading}
-        primaryActionLabel={shouldShowPrimaryAction ? primaryActionLabel : undefined}
+        primaryActionLabel={
+          shouldShowPrimaryAction ? primaryActionLabel : undefined
+        }
         primaryActionDisabled={primaryActionDisabled}
-        onPrimaryActionPress={handlePrimaryAction}>
+        onPrimaryActionPress={handlePrimaryAction}
+        footerSlot={
+          !isReviewing && canGoBack ? (
+            <AppButton
+              label="Go back"
+              tone="secondary"
+              disabled={isLoading || isSubmitting}
+              onPress={() => {
+                setHasAttemptedSubmit(false);
+                goBack();
+              }}
+            />
+          ) : undefined
+        }
+      >
         {renderBody()}
       </QuestionnaireTemplate>
     </SafeAreaView>

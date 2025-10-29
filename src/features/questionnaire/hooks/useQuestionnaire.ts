@@ -1,14 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type {
   Question,
   QuestionnaireResponseRecord,
   SelectedAnswerOption,
 } from '../types';
-import {
-  fetchQuestion,
-  type QuestionnaireRequestOptions,
-} from '../api/fetchQuestion';
+import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../data/questionnaireStorage';
@@ -19,29 +17,13 @@ type UseQuestionnaireOptions = {
   initialVariationId?: number;
 };
 
-type QuestionnaireState = {
-  isLoading: boolean;
-  isSubmitting: boolean;
-  error: Error | null;
-  question: Question | null;
+type NavigationEntry = {
   orderId: number;
   variationId: number;
-  isReviewing: boolean;
-  history: QuestionnaireResponseRecord[];
+  questionId: number;
 };
 
 const DEFAULT_USER_ID = 2;
-
-const createInitialState = (): QuestionnaireState => ({
-  isLoading: false,
-  isSubmitting: false,
-  error: null,
-  question: null,
-  orderId: QUESTIONNAIRE_PLACEHOLDERS.orderId,
-  variationId: QUESTIONNAIRE_PLACEHOLDERS.variationId,
-  isReviewing: false,
-  history: [],
-});
 
 const ensureVariationId = (candidates: number[], fallback: number) => {
   const normalized = candidates.filter(
@@ -66,80 +48,119 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
 
 export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const userId = options.userId ?? DEFAULT_USER_ID;
-  const [state, setState] = useState<QuestionnaireState>(createInitialState);
+  const initialOrderId =
+    options.initialOrderId ?? QUESTIONNAIRE_PLACEHOLDERS.orderId;
+  const initialVariationId =
+    options.initialVariationId ?? QUESTIONNAIRE_PLACEHOLDERS.variationId;
 
-  const loadQuestion = useCallback(
-    async (
-      requestOptions: QuestionnaireRequestOptions = {
-        orderId: state.orderId,
-        variationId: state.variationId,
-      },
-    ) => {
-      try {
-        setState((prev) => ({
-          ...prev,
-          isLoading: true,
-          error: null,
-          orderId: requestOptions.orderId ?? prev.orderId,
-          variationId: requestOptions.variationId ?? prev.variationId,
-        }));
-        const question = await fetchQuestion(requestOptions);
+  const initialOrderIdRef = useRef(initialOrderId);
+  const initialVariationIdRef = useRef(initialVariationId);
 
-        if (!question) {
-          const history = await questionnaireStorage.all();
-          setState((prev) => ({
-            ...prev,
-            isLoading: false,
-            question: null,
-            isReviewing: true,
-            history,
-          }));
-          return;
-        }
+  const queryClient = useQueryClient();
 
-        setState((prev) => ({
-          ...prev,
-          question,
-          isLoading: false,
-          isReviewing: false,
-        }));
-      } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: error as Error,
-        }));
-      }
-    },
-    [state.orderId, state.variationId],
-  );
+  const [orderId, setOrderId] = useState<number>(initialOrderId);
+  const [variationId, setVariationId] = useState<number>(initialVariationId);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<Error | null>(null);
+  const [isReviewing, setIsReviewing] = useState(false);
+  const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
+  const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
+  const [selections, setSelections] = useState<
+    Record<number, SelectedAnswerOption[]>
+  >({});
+
+  const {
+    data: fetchedQuestion,
+    error: queryError,
+    isLoading: isQueryLoading,
+    isFetching: isQueryFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ['questionnaire', orderId, variationId],
+    enabled: !isReviewing,
+    queryFn: () =>
+      fetchQuestion({
+        orderId,
+        variationId,
+      }),
+  });
+
+  const question: Question | null = fetchedQuestion ?? null;
+  const isLoading = (isQueryLoading || isQueryFetching) && !question && !isReviewing;
+  const loadError = (queryError as Error | null) ?? null;
+  const error = submitError ?? loadError;
 
   useEffect(() => {
-    const initialOrderId =
-      options.initialOrderId ?? QUESTIONNAIRE_PLACEHOLDERS.orderId;
-    const initialVariationId =
-      options.initialVariationId ?? QUESTIONNAIRE_PLACEHOLDERS.variationId;
+    if (isReviewing || !question || loadError) {
+      return;
+    }
 
-    loadQuestion({
-      orderId: initialOrderId,
-      variationId: initialVariationId,
+    setNavigationStack((prev) => {
+      const existingIndex = prev.findIndex(
+        (entry) => entry.questionId === question.id,
+      );
+
+      const base =
+        existingIndex >= 0 ? prev.slice(0, existingIndex + 1) : prev;
+      const alreadyCurrent =
+        base.length &&
+        base[base.length - 1]?.questionId === question.id &&
+        base[base.length - 1]?.orderId === question.orderId &&
+        base[base.length - 1]?.variationId === question.variationId;
+
+      if (alreadyCurrent) {
+        return base;
+      }
+
+      return [
+        ...base,
+        {
+          orderId: question.orderId,
+          variationId: question.variationId,
+          questionId: question.id,
+        },
+      ];
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [question, isReviewing, loadError]);
+
+  useEffect(() => {
+    if (isReviewing || isLoading || question || loadError) {
+      return;
+    }
+
+    let isMounted = true;
+    const loadHistory = async () => {
+      const records = await questionnaireStorage.all();
+      if (!isMounted) {
+        return;
+      }
+      setHistory(records);
+      setNavigationStack([]);
+      setSelections({});
+      setIsReviewing(true);
+    };
+
+    void loadHistory();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [question, isLoading, isReviewing, loadError]);
 
   const submitAnswers = useCallback(
     async (selectedOptions: SelectedAnswerOption[]) => {
-      if (!state.question) {
+      if (!question) {
         return;
       }
 
       try {
-        setState((prev) => ({ ...prev, isSubmitting: true, error: null }));
+        setIsSubmitting(true);
+        setSubmitError(null);
 
         const payload = {
           user_id: userId,
-          question_id: state.question.id,
-          question: state.question.prompt,
+          question_id: question.id,
+          question: question.prompt,
           answer_options: selectedOptions.map((option) => ({
             answer_option_id: option.optionId,
             answer_value: option.value,
@@ -150,84 +171,137 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         await submitQuestionAnswer(payload);
 
         const record: QuestionnaireResponseRecord = {
-          questionId: state.question.id,
-          question: state.question.prompt,
-          answerType: state.question.answerType,
-          answerHandling: state.question.answerHandling,
+          questionId: question.id,
+          question: question.prompt,
+          answerType: question.answerType,
+          answerHandling: question.answerHandling,
           answerOptions: payload.answer_options,
         };
 
-        await questionnaireStorage.append(record);
+        await questionnaireStorage.save(record);
+
+        setSelections((prev) => ({
+          ...prev,
+          [question.id]: selectedOptions,
+        }));
+
+        setHistory((prev) => {
+          const existingIndex = prev.findIndex(
+            (entry) => entry.questionId === record.questionId,
+          );
+
+          if (existingIndex >= 0) {
+            const next = [...prev];
+            next[existingIndex] = record;
+            return next;
+          }
+
+          return [...prev, record];
+        });
 
         const nextVariationId = ensureVariationId(
           selectedOptions.map((option) => option.nextVariationId),
-          state.question.variationId,
+          question.variationId,
         );
 
         if (nextVariationId === -1) {
           const history = await questionnaireStorage.all();
-          setState((prev) => ({
-            ...prev,
-            isSubmitting: false,
-            isReviewing: true,
-            question: null,
-            history,
-          }));
+          setHistory(history);
+          setNavigationStack([]);
+          setIsReviewing(true);
           return;
         }
 
-        const nextOrderId = state.question.orderId + 1;
-        await loadQuestion({
-          orderId: nextOrderId,
-          variationId: nextVariationId,
-        });
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          history: [...prev.history, record],
-          orderId: nextOrderId,
-          variationId: nextVariationId,
-        }));
+        const nextOrderId = question.orderId + 1;
+
+        setOrderId(nextOrderId);
+        setVariationId(nextVariationId);
+        setIsReviewing(false);
       } catch (error) {
-        setState((prev) => ({
-          ...prev,
-          isSubmitting: false,
-          error: error as Error,
-        }));
+        setSubmitError(error as Error);
+      } finally {
+        setIsSubmitting(false);
       }
     },
-    [loadQuestion, state.question, userId],
+    [question, userId],
   );
 
   const refresh = useCallback(() => {
-    return loadQuestion({
-      orderId: state.orderId,
-      variationId: state.variationId,
-    });
-  }, [loadQuestion, state.orderId, state.variationId]);
+    return refetch();
+  }, [refetch]);
 
   const restart = useCallback(async () => {
     await questionnaireStorage.clear();
-    setState(createInitialState());
-    await loadQuestion({
-      orderId: QUESTIONNAIRE_PLACEHOLDERS.orderId,
-      variationId: QUESTIONNAIRE_PLACEHOLDERS.variationId,
+    queryClient.removeQueries({ queryKey: ['questionnaire'] });
+    setHistory([]);
+    setSelections({});
+    setNavigationStack([]);
+    setIsReviewing(false);
+    setSubmitError(null);
+    setOrderId(initialOrderIdRef.current);
+    setVariationId(initialVariationIdRef.current);
+  }, [queryClient]);
+
+  const goBack = useCallback(() => {
+    setNavigationStack((prev) => {
+      if (prev.length <= 1) {
+        return prev;
+      }
+
+      const popped = prev[prev.length - 1];
+      const nextStack = prev.slice(0, -1);
+      const destination = nextStack[nextStack.length - 1];
+
+      setOrderId(destination.orderId);
+      setVariationId(destination.variationId);
+      setIsReviewing(false);
+      setSubmitError(null);
+
+      setHistory((existing) =>
+        existing.filter((record) => record.questionId !== popped.questionId),
+      );
+
+      setSelections((existing) => {
+        const copy = { ...existing };
+        delete copy[popped.questionId];
+        return copy;
+      });
+
+      void questionnaireStorage.removeByQuestionId(popped.questionId);
+
+      return nextStack;
     });
-  }, [loadQuestion]);
+  }, []);
 
   const derived = useMemo(
     () => ({
-      prompt: state.question?.prompt ?? '',
-      explanation: state.question?.explanation ?? '',
+      prompt: question?.prompt ?? '',
+      explanation: question?.explanation ?? '',
     }),
-    [state.question],
+    [question],
   );
 
+  const currentSelection = question ? selections[question.id] : undefined;
+  const canGoBack = navigationStack.length > 1;
+
+  const activeOrderId = question?.orderId ?? orderId;
+  const activeVariationId = question?.variationId ?? variationId;
+
   return {
-    ...state,
+    question,
+    orderId: activeOrderId,
+    variationId: activeVariationId,
+    isLoading,
+    isSubmitting,
+    error,
+    isReviewing,
+    history,
     ...derived,
     refresh,
     submitAnswers,
     restart,
+    goBack,
+    canGoBack,
+    selection: currentSelection,
   };
 };

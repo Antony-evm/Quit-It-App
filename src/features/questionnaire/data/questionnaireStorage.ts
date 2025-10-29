@@ -1,3 +1,5 @@
+import { Q } from '@nozbe/watermelondb';
+
 import type {
   AnswerHandling,
   AnswerType,
@@ -35,7 +37,26 @@ export const questionnaireStorage = {
     return sorted.map(mapModelToRecord);
   },
   append: async (record: QuestionnaireResponseRecord): Promise<void> => {
+    await questionnaireStorage.save(record);
+  },
+  save: async (record: QuestionnaireResponseRecord): Promise<void> => {
     await database.write(async () => {
+      const existing = await responsesCollection
+        .query(Q.where('question_id', record.questionId))
+        .fetch();
+
+      if (existing.length) {
+        await existing[0].update((entry) => {
+          entry.question = record.question;
+          entry.answerType = record.answerType;
+          entry.answerHandling = record.answerHandling;
+          entry.answerOptionsRaw = JSON.stringify(
+            record.answerOptions ?? [],
+          );
+        });
+        return;
+      }
+
       await responsesCollection.create((entry) => {
         entry.questionId = record.questionId;
         entry.question = record.question;
@@ -44,6 +65,21 @@ export const questionnaireStorage = {
         entry.answerOptionsRaw = JSON.stringify(record.answerOptions ?? []);
         entry.createdAt = Date.now();
       });
+    });
+  },
+  removeByQuestionId: async (questionId: number): Promise<void> => {
+    await database.write(async () => {
+      const existing = await responsesCollection
+        .query(Q.where('question_id', questionId))
+        .fetch();
+
+      if (!existing.length) {
+        return;
+      }
+
+      await database.batch(
+        ...existing.map((entry) => entry.prepareDestroyPermanently()),
+      );
     });
   },
   clear: async (): Promise<void> => {
