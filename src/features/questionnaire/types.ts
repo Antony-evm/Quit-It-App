@@ -10,6 +10,7 @@ export type AnswerHandling = 'single' | 'all' | 'range' | 'max' | 'unknown';
 export interface AnswerOptionRecord {
   value: string;
   next_question_variation_id: number;
+  default_value?: string | null;
 }
 
 export interface QuestionResponse {
@@ -20,6 +21,7 @@ export interface QuestionResponse {
   explanation: string;
   answer_type: string;
   answer_handling: string;
+  default_value?: string | null;
   options: Record<number, AnswerOptionRecord>;
 }
 
@@ -28,6 +30,7 @@ export interface AnswerOption {
   label: string;
   value: string;
   nextVariationId: number;
+  defaultValue: number | null;
 }
 
 export interface Question {
@@ -39,6 +42,7 @@ export interface Question {
   answerType: AnswerType;
   answerHandling: AnswerHandling;
   options: AnswerOption[];
+  defaultValue: number | null;
 }
 
 export interface QuestionnaireAnswerOptionPayload {

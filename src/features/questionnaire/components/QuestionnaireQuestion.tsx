@@ -29,6 +29,32 @@ const parseNumericRange = (value: string) => {
   return { min, max };
 };
 
+const resolveNumericDefault = (
+  range: { min: number; max: number } | null,
+  rawDefault: number | null,
+) => {
+  if (!range) {
+    return null;
+  }
+
+  const midpoint =
+    range.min + Math.floor((range.max - range.min) / 2);
+
+  if (rawDefault === null || Number.isNaN(rawDefault)) {
+    return midpoint;
+  }
+
+  const rounded = Math.round(rawDefault);
+  if (rounded < range.min) {
+    return range.min;
+  }
+  if (rounded > range.max) {
+    return range.max;
+  }
+
+  return rounded;
+};
+
 const parseDateWindowInDays = (value: string) => {
   const numeric = parseInt(value, 10);
   return Number.isNaN(numeric) ? 0 : numeric;
@@ -134,14 +160,19 @@ export const QuestionnaireQuestion = ({
     }
 
     if (parsedRange) {
-      const defaultValue =
-        parsedRange.min + Math.floor((parsedRange.max - parsedRange.min) / 2);
+      const defaultValue = resolveNumericDefault(
+        parsedRange,
+        question?.defaultValue ?? firstOption?.defaultValue ?? null,
+      );
       const numericInitial = initialSelection?.[0]?.value ?? '';
-      const parsedNumeric = Number(numericInitial);
+      const parsedNumeric =
+        numericInitial.trim() === '' ? Number.NaN : Number(numericInitial);
       if (!Number.isNaN(parsedNumeric)) {
         setNumericSelection(parsedNumeric);
-      } else {
+      } else if (defaultValue !== null) {
         setNumericSelection(defaultValue);
+      } else {
+        setNumericSelection(null);
       }
     } else {
       setNumericSelection(null);
@@ -230,6 +261,7 @@ export const QuestionnaireQuestion = ({
     onSelectionChange,
     onValidityChange,
     question,
+    question?.defaultValue,
     selectedChoiceIds,
     selectedDate,
     selectedSlots,
@@ -283,8 +315,11 @@ export const QuestionnaireQuestion = ({
           maximum={numericRange.max}
           value={
             numericSelection ??
-            numericRange.min +
-              Math.floor((numericRange.max - numericRange.min) / 2)
+            resolveNumericDefault(
+              numericRange,
+              question?.defaultValue ?? firstOption.defaultValue ?? null,
+            ) ??
+            numericRange.min
           }
           onValueChange={setNumericSelection}
         />

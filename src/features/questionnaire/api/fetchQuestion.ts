@@ -42,6 +42,15 @@ const parseAnswerHandling = (value: string): AnswerHandling => {
   }
 };
 
+const parseDefaultValue = (value: string | null | undefined): number | null => {
+  if (value === null || value === undefined || value === '') {
+    return null;
+  }
+
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
 const mapOptions = (
   record: QuestionResponse['options'] = {},
 ): AnswerOption[] =>
@@ -50,18 +59,40 @@ const mapOptions = (
     label: option.value,
     value: option.value,
     nextVariationId: option.next_question_variation_id,
+    defaultValue: parseDefaultValue(option.default_value),
   }));
 
-const mapQuestionResponse = (data: QuestionResponse): Question => ({
-  id: data.question_id,
-  orderId: data.order_id,
-  variationId: data.variation_id,
-  prompt: data.question,
-  explanation: data.explanation,
-  answerType: parseAnswerType(data.answer_type ?? ''),
-  answerHandling: parseAnswerHandling(data.answer_handling ?? ''),
-  options: mapOptions(data.options),
-});
+const extractQuestionDefaultValue = (
+  options: AnswerOption[],
+  fallback: number | null,
+): number | null => {
+  const candidate = options.find(
+    (option) => option.defaultValue !== null && option.defaultValue !== undefined,
+  );
+
+  if (candidate?.defaultValue !== null && candidate?.defaultValue !== undefined) {
+    return candidate.defaultValue;
+  }
+
+  return fallback ?? null;
+};
+
+const mapQuestionResponse = (data: QuestionResponse): Question => {
+  const options = mapOptions(data.options);
+  const questionDefault = parseDefaultValue(data.default_value);
+
+  return {
+    id: data.question_id,
+    orderId: data.order_id,
+    variationId: data.variation_id,
+    prompt: data.question,
+    explanation: data.explanation,
+    answerType: parseAnswerType(data.answer_type ?? ''),
+    answerHandling: parseAnswerHandling(data.answer_handling ?? ''),
+    options,
+    defaultValue: extractQuestionDefaultValue(options, questionDefault),
+  };
+};
 
 export const fetchQuestion = async (
   options: QuestionnaireRequestOptions = {},
