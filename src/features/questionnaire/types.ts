@@ -58,6 +58,11 @@ export interface QuestionnaireAnswerPayload {
   answer_options: QuestionnaireAnswerOptionPayload[];
 }
 
+export interface QuestionnaireBatchAnswerPayload {
+  user_id: number;
+  answers: QuestionnaireAnswerPayload[];
+}
+
 export interface QuestionnaireResponseRecord {
   questionId: number;
   question: string;

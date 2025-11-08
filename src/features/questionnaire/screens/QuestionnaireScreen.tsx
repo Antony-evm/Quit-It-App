@@ -15,7 +15,11 @@ const REVIEW_TITLE = 'Review your answers';
 const REVIEW_SUBTITLE =
   'Ensure these responses reflect your preferences before finishing.';
 
-export const QuestionnaireScreen = () => {
+type QuestionnaireScreenProps = {
+  onFinish?: () => void;
+};
+
+export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
   const [activeSelection, setActiveSelection] = useState<
     SelectedAnswerOption[]
   >([]);
@@ -37,6 +41,7 @@ export const QuestionnaireScreen = () => {
     goBack,
     canGoBack,
     selection,
+    submitQuestionnaire,
   } = useQuestionnaire();
 
   useEffect(() => {
@@ -66,7 +71,7 @@ export const QuestionnaireScreen = () => {
 
   const primaryActionLabel = useMemo(() => {
     if (isReviewing) {
-      return 'Restart questionnaire';
+      return 'Submit questionnaire';
     }
 
     switch (question?.answerType) {
@@ -85,10 +90,11 @@ export const QuestionnaireScreen = () => {
     }
   }, [isReviewing, question]);
 
-  const primaryActionDisabled =
-    isLoading ||
-    isSubmitting ||
-    (!isReviewing && (!isSelectionValid || !activeSelection.length));
+  const primaryActionDisabled = isReviewing
+    ? isLoading || isSubmitting || !history.length
+    : isLoading ||
+      isSubmitting ||
+      (!isSelectionValid || !activeSelection.length);
 
   const showValidationError =
     hasAttemptedSubmit &&
@@ -100,7 +106,12 @@ export const QuestionnaireScreen = () => {
 
   const handlePrimaryAction = async () => {
     if (isReviewing) {
-      restart();
+      try {
+        await submitQuestionnaire();
+        onFinish?.();
+      } catch {
+        // Handled via shared error state
+      }
       return;
     }
 
@@ -158,7 +169,17 @@ export const QuestionnaireScreen = () => {
         primaryActionDisabled={primaryActionDisabled}
         onPrimaryActionPress={handlePrimaryAction}
         footerSlot={
-          !isReviewing && canGoBack ? (
+          isReviewing ? (
+            <AppButton
+              label="Restart questionnaire"
+              tone="secondary"
+              disabled={isLoading || isSubmitting}
+              onPress={() => {
+                setHasAttemptedSubmit(false);
+                restart();
+              }}
+            />
+          ) : canGoBack ? (
             <AppButton
               label="Go back"
               tone="secondary"
