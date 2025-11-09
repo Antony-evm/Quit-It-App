@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { colorScheme } from 'nativewind';
 
 import { COLOR_PALETTE } from './src/shared/theme';
 import { QuestionnaireScreen } from './src/features/questionnaire';
@@ -19,10 +18,11 @@ const queryClient = new QueryClient({
   },
 });
 
-colorScheme.set('dark');
-
 function App(): React.ReactElement {
-  const [hasCompletedQuestionnaire, setHasCompletedQuestionnaire] = useState(false);
+  const [hasCompletedQuestionnaire, setHasCompletedQuestionnaire] =
+    useState(false);
+
+  // Removed colorScheme.set('dark') as it was causing the blank screen issue
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -35,7 +35,9 @@ function App(): React.ReactElement {
           edges={['top', 'left', 'right']}
           style={{ flex: 1, backgroundColor: COLOR_PALETTE.backgroundMuted }}
         >
-          <View className="flex-1 bg-surface-muted">
+          <View
+            style={{ flex: 1, backgroundColor: COLOR_PALETTE.backgroundMuted }}
+          >
             {hasCompletedQuestionnaire ? (
               <HomePlaceholderScreen
                 onStartOver={() => {

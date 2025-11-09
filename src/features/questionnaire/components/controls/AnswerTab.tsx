@@ -40,12 +40,16 @@ export const AnswerTab = ({
 const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.md,
-    borderRadius: 18,
+    paddingVertical: SPACING.xl,
+    borderRadius: 22,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    minWidth: 120,
+    flexBasis: '48%',
+    flexGrow: 1,
+    minHeight: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   tabSelected: {
     backgroundColor: COLOR_PALETTE.accentMuted,
@@ -61,5 +65,6 @@ const styles = StyleSheet.create({
   tabLabel: {
     textAlign: 'center',
     letterSpacing: 0.4,
+    fontSize: 16,
   },
 });

@@ -144,9 +144,13 @@ const styles = StyleSheet.create({
   body: {
     gap: SPACING.lg,
     padding: SPACING.xl,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    backgroundColor: BRAND_COLORS.inkDark,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
   },
   loading: {
     alignItems: 'center',
