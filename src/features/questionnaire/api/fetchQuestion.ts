@@ -9,7 +9,6 @@ import {
   QUESTIONNAIRE_DEFAULT_PARAMS,
   QUESTIONNAIRE_ENDPOINT,
 } from './endpoints';
-import { debugLogger } from '../../../shared/logging/debugLogger';
 
 export type QuestionnaireRequestOptions = {
   orderId?: number;
@@ -108,27 +107,13 @@ export const fetchQuestion = async (
     variationId,
   )}`;
 
-  debugLogger.debug('questionnaire/api', 'Requesting questionnaire question', {
-    orderId,
-    variationId,
-    url: requestUrl,
-  });
-
   const response = await fetch(requestUrl);
 
-  debugLogger.debug('questionnaire/api', 'Questionnaire question response received', {
-    status: response.status,
-  });
-
   if (response.status === 404 || response.status === 204) {
-    debugLogger.info('questionnaire/api', 'Questionnaire completed — no further questions available');
     return null;
   }
 
   if (!response.ok) {
-    debugLogger.error('questionnaire/api', 'Failed to load questionnaire data', {
-      status: response.status,
-    });
     throw new Error('Failed to load questionnaire data');
   }
 
@@ -137,9 +122,5 @@ export const fetchQuestion = async (
     | { data: QuestionResponse };
 
   const resolved = 'data' in payload ? payload.data : payload;
-  debugLogger.info('questionnaire/api', 'Resolved questionnaire question', {
-    questionId: resolved.question_id,
-    variationId: resolved.variation_id,
-  });
   return mapQuestionResponse(resolved);
 };

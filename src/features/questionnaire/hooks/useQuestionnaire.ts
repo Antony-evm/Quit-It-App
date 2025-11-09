@@ -152,7 +152,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setIsReviewing(true);
     };
 
-    void loadHistory();
+    loadHistory().catch((storageError) => {
+      console.error('Failed to load questionnaire history from storage', storageError);
+    });
 
     return () => {
       isMounted = false;
@@ -229,8 +231,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setOrderId(nextOrderId);
         setVariationId(nextVariationId);
         setIsReviewing(false);
-      } catch (error) {
-        setSubmitError(error as Error);
+      } catch (caughtError) {
+        setSubmitError(caughtError as Error);
       } finally {
         setIsSubmitting(false);
       }
@@ -252,9 +254,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         ),
       });
       await questionnaireStorage.clear();
-    } catch (error) {
-      setSubmitError(error as Error);
-      throw error;
+    } catch (caughtError) {
+      setSubmitError(caughtError as Error);
+      throw caughtError;
     } finally {
       setIsSubmitting(false);
     }
@@ -301,7 +303,14 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         return copy;
       });
 
-      void questionnaireStorage.removeByQuestionId(popped.questionId);
+      questionnaireStorage.removeByQuestionId(popped.questionId).catch(
+        (storageError) => {
+          console.error(
+            'Failed to remove questionnaire record from storage',
+            storageError,
+          );
+        },
+      );
 
       return nextStack;
     });

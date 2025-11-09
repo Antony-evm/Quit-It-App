@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
 import type { SelectedAnswerOption } from '../types';
-import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
+import { BRAND_COLORS, SPACING } from '../../../shared/theme';
 import { AppButton, AppText } from '../../../shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
@@ -62,12 +62,13 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
       setActiveSelection([]);
       setIsSelectionValid(false);
     }
-  }, [question?.id, selection]);
+  }, [question, selection]);
 
   const headerTitle = isReviewing
     ? REVIEW_TITLE
     : prompt || DEFAULT_HEADER_TITLE;
   const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
+  const headerEyebrow = isReviewing ? 'Final step' : 'Guided check-in';
 
   const primaryActionLabel = useMemo(() => {
     if (isReviewing) {
@@ -162,6 +163,7 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
       <QuestionnaireTemplate
         title={headerTitle}
         subtitle={headerSubtitle}
+        eyebrowLabel={headerEyebrow}
         isLoading={isLoading}
         primaryActionLabel={
           shouldShowPrimaryAction ? primaryActionLabel : undefined
@@ -201,7 +203,7 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BRAND_COLORS.inkDark,
   },
   errorState: {
     alignItems: 'center',

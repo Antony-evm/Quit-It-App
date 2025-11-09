@@ -185,6 +185,7 @@ export const QuestionnaireQuestion = ({
     isDateQuestion,
     isNumericRangeQuestion,
     isTimeRangeQuestion,
+    question?.defaultValue,
   ]);
 
   useEffect(() => {
@@ -274,18 +275,17 @@ export const QuestionnaireQuestion = ({
     return parseDateWindowInDays(firstOption.value);
   }, [firstOption, isDateQuestion]);
 
-  const minimumSelectableDate = useMemo(() => {
+  const dateBounds = useMemo(() => {
+    if (!isDateQuestion) {
+      return null;
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return today;
-  }, [question?.id]);
 
-  const maximumSelectableDate = useMemo(() => {
-    const limit = new Date();
-    limit.setHours(0, 0, 0, 0);
+    const limit = new Date(today);
     limit.setDate(limit.getDate() + dateWindowDays);
-    return limit;
-  }, [dateWindowDays, question?.id]);
+    return { min: today, max: limit };
+  }, [dateWindowDays, isDateQuestion]);
 
   if (!question) {
     return (
@@ -333,11 +333,11 @@ export const QuestionnaireQuestion = ({
         />
       ) : null}
 
-      {isDateQuestion && firstOption ? (
+      {isDateQuestion && firstOption && dateBounds ? (
         <DatePickerField
           value={selectedDate}
-          minimumDate={minimumSelectableDate}
-          maximumDate={maximumSelectableDate}
+          minimumDate={dateBounds.min}
+          maximumDate={dateBounds.max}
           onChange={setSelectedDate}
         />
       ) : null}

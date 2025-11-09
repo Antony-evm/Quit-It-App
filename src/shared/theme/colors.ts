@@ -1,13 +1,8 @@
-export const COLOR_PALETTE = {
-  backgroundPrimary: '#FFFFFF',
-  backgroundMuted: '#F8FAFC',
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',
-  accentPrimary: '#7C3AED',
-  accentMuted: '#DDD6FE',
-  borderDefault: '#E2E8F0',
-  systemError: '#DC2626',
-};
+import palette from './palette.json';
+
+export const BRAND_COLORS = Object.freeze(palette.brand);
+
+export const COLOR_PALETTE = Object.freeze(palette.tokens);
 
 export type ColorToken = keyof typeof COLOR_PALETTE;
 

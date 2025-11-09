@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '../../../../shared/components/ui';
 import { AnswerTabs } from '../controls/AnswerTabs';
-import { SPACING } from '../../../../shared/theme';
+import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
 
 type TimeSlotSelectorProps = {
   range: string;
@@ -49,9 +49,14 @@ export const TimeSlotSelector = ({
 
   return (
     <View style={styles.container}>
-      <AppText tone="secondary">
-        Choose one or more times that work for you.
-      </AppText>
+      <View style={styles.helper}>
+        <AppText variant="caption" tone="secondary">
+          Availability
+        </AppText>
+        <AppText tone="secondary">
+          Choose one or more times that work for you.
+        </AppText>
+      </View>
       {slots.length ? (
         <AnswerTabs
           options={slots.map((slot, index) => ({ id: index, label: slot }))}
@@ -76,5 +81,13 @@ export const TimeSlotSelector = ({
 const styles = StyleSheet.create({
   container: {
     gap: SPACING.md,
+  },
+  helper: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    padding: SPACING.lg,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    gap: SPACING.xs,
   },
 });

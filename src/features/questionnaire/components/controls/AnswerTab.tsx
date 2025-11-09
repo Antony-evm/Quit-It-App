@@ -20,14 +20,18 @@ export const AnswerTab = ({
   <Pressable
     accessibilityRole="tab"
     accessibilityState={{ selected: isSelected, disabled }}
-    style={[
+    style={({ pressed }) => [
       styles.tab,
       isSelected && styles.tabSelected,
       disabled && styles.tabDisabled,
+      pressed && !disabled && styles.tabPressed,
     ]}
     onPress={onPress}
     disabled={disabled}>
-    <AppText variant="body" tone={isSelected ? 'inverse' : 'primary'}>
+    <AppText
+      variant="body"
+      tone={isSelected ? 'primary' : 'secondary'}
+      style={styles.tabLabel}>
       {label}
     </AppText>
   </Pressable>
@@ -35,18 +39,27 @@ export const AnswerTab = ({
 
 const styles = StyleSheet.create({
   tab: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: 999,
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.md,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    minWidth: 120,
   },
   tabSelected: {
-    backgroundColor: COLOR_PALETTE.accentPrimary,
+    backgroundColor: COLOR_PALETTE.accentMuted,
     borderColor: COLOR_PALETTE.accentPrimary,
   },
   tabDisabled: {
     opacity: 0.5,
+  },
+  tabPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  tabLabel: {
+    textAlign: 'center',
+    letterSpacing: 0.4,
   },
 });

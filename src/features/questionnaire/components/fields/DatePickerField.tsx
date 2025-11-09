@@ -3,7 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 
 import { AppButton, AppText, AppTextInput } from '../../../../shared/components/ui';
-import { SPACING } from '../../../../shared/theme';
+import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
 
 type DatePickerFieldProps = {
   value: Date | null;
@@ -81,12 +81,21 @@ export const DatePickerField = ({
     }
   }, [commitDate, manualValue]);
 
+  const helper = (
+    <View style={styles.helper}>
+      <AppText variant="caption" tone="secondary" style={styles.helperEyebrow}>
+        Date window
+      </AppText>
+      <AppText tone="secondary">
+        Select any date between {formatIsoDate(min)} and {formatIsoDate(max)}.
+      </AppText>
+    </View>
+  );
+
   if (Platform.OS === 'android') {
     return (
       <View style={styles.container}>
-        <AppText tone="secondary">
-          Pick a date within the allowed range.
-        </AppText>
+        {helper}
         <AppButton label={formatDisplayDate(value)} onPress={handleAndroidPick} />
       </View>
     );
@@ -94,9 +103,7 @@ export const DatePickerField = ({
 
   return (
     <View style={styles.container}>
-      <AppText tone="secondary">
-        Enter a date within the allowed range (YYYY-MM-DD).
-      </AppText>
+      {helper}
       <AppTextInput
         value={manualValue}
         onChangeText={setManualValue}
@@ -112,5 +119,17 @@ export const DatePickerField = ({
 const styles = StyleSheet.create({
   container: {
     gap: SPACING.sm,
+  },
+  helper: {
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    padding: SPACING.lg,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    gap: SPACING.xs,
+  },
+  helperEyebrow: {
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
 });
