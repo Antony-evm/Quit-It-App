@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '../../../../shared/components/ui';
 import { AnswerTabs } from '../controls/AnswerTabs';
-import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
+import { SPACING } from '../../../../shared/theme';
 
 type TimeSlotSelectorProps = {
   range: string;
@@ -33,11 +33,15 @@ const generateSlotsFromRange = (range: string): string[] => {
 
   const inclusiveEndHour = endMinutes > 0 ? endHours : endHours;
   const hours: number[] = [];
-  for (let hour = startHours; hour <= inclusiveEndHour && hours.length < 24; hour += 1) {
+  for (
+    let hour = startHours;
+    hour <= inclusiveEndHour && hours.length < 24;
+    hour += 1
+  ) {
     hours.push(hour);
   }
 
-  return hours.map((hour) => `${padTime(hour)}:00`);
+  return hours.map(hour => `${padTime(hour)}:00`);
 };
 
 export const TimeSlotSelector = ({
@@ -49,24 +53,17 @@ export const TimeSlotSelector = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.helper}>
-        <AppText variant="caption" tone="secondary">
-          Availability
-        </AppText>
-        <AppText tone="secondary">
-          Choose one or more times that work for you.
-        </AppText>
-      </View>
       {slots.length ? (
         <AnswerTabs
           options={slots.map((slot, index) => ({ id: index, label: slot }))}
           selectedOptionIds={selectedSlots
-            .map((slot) => slots.indexOf(slot))
-            .filter((index) => index >= 0)}
+            .map(slot => slots.indexOf(slot))
+            .filter(index => index >= 0)}
           selectionMode="multiple"
-          onSelectionChange={(ids) => {
+          variant="timeslot"
+          onSelectionChange={ids => {
             const selected = ids
-              .map((id) => slots[id])
+              .map(id => slots[id])
               .filter((slot): slot is string => Boolean(slot));
             onSelectionChange(selected);
           }}
@@ -83,11 +80,9 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   helper: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    padding: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: 0,
+    borderWidth: 0,
+    paddingVertical: SPACING.xs,
     gap: SPACING.xs,
   },
 });

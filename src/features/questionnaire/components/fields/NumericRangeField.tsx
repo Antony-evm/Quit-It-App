@@ -8,7 +8,7 @@ import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../../../shared/theme';
 type NumericRangeFieldProps = {
   minimum: number;
   maximum: number;
-  value: number;
+  value: number | null;
   onValueChange: (value: number) => void;
 };
 
@@ -17,43 +17,43 @@ export const NumericRangeField = ({
   maximum,
   value,
   onValueChange,
-}: NumericRangeFieldProps) => (
-  <View style={styles.container}>
-    <View style={styles.header}>
-      <View style={styles.helperChip}>
-        <AppText variant="caption" tone="inverse">
-          RANGE
+}: NumericRangeFieldProps) => {
+  const handleValueChange = (newValue: number) => {
+    // If no value was set before, use the midpoint as initial value
+    const roundedValue = Math.round(newValue);
+    onValueChange(roundedValue);
+  };
+
+  const displayValue = value ?? Math.floor((minimum + maximum) / 2);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}></View>
+      <View style={styles.valuePill}>
+        <AppText variant="title">{displayValue}</AppText>
+      </View>
+      <Slider
+        style={styles.slider}
+        minimumValue={minimum}
+        maximumValue={maximum}
+        step={1}
+        minimumTrackTintColor={BRAND_COLORS.cream}
+        maximumTrackTintColor={COLOR_PALETTE.borderDefault}
+        thumbTintColor={BRAND_COLORS.cream}
+        value={displayValue}
+        onValueChange={handleValueChange}
+      />
+      <View style={styles.labels}>
+        <AppText variant="caption" style={styles.rangeLabel}>
+          {minimum}
+        </AppText>
+        <AppText variant="caption" style={styles.rangeLabel}>
+          {maximum}
         </AppText>
       </View>
-      <AppText tone="secondary" style={styles.helperText}>
-        Drag to select a value between {minimum} and {maximum}.
-      </AppText>
     </View>
-    <View style={styles.valuePill}>
-      <AppText tone="secondary">Selected value</AppText>
-      <AppText variant="title">{value}</AppText>
-    </View>
-    <Slider
-      style={styles.slider}
-      minimumValue={minimum}
-      maximumValue={maximum}
-      step={1}
-      minimumTrackTintColor={BRAND_COLORS.cream}
-      maximumTrackTintColor={COLOR_PALETTE.borderDefault}
-      thumbTintColor={BRAND_COLORS.cream}
-      value={value}
-      onValueChange={(next) => onValueChange(Math.round(next))}
-    />
-    <View style={styles.labels}>
-      <AppText variant="caption" style={styles.rangeLabel}>
-        {minimum}
-      </AppText>
-      <AppText variant="caption" style={styles.rangeLabel}>
-        {maximum}
-      </AppText>
-    </View>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -73,18 +73,17 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
   },
   valuePill: {
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderRadius: 0,
+    borderWidth: 0,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     alignItems: 'center',
     gap: SPACING.xs,
   },
   slider: {
     width: '100%',
-    height: 40,
+    height: 60,
   },
   labels: {
     flexDirection: 'row',

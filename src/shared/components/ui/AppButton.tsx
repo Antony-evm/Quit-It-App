@@ -1,42 +1,88 @@
 import React from 'react';
-import { Pressable, PressableProps, StyleSheet, ViewStyle } from 'react-native';
+import {
+  Pressable,
+  PressableProps,
+  StyleSheet,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 
 import { AppText } from './AppText';
-import { COLOR_PALETTE, SPACING } from '../../theme';
+import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../theme';
 
-type ButtonTone = 'primary' | 'secondary';
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 export type AppButtonProps = PressableProps & {
   label: string;
-  tone?: ButtonTone;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  fullWidth?: boolean;
   containerStyle?: ViewStyle;
+  textStyle?: TextStyle;
 };
 
-const toneToStyles: Record<
-  ButtonTone,
-  { container: ViewStyle; labelTone: 'primary' | 'inverse' }
+const variantToStyles: Record<
+  ButtonVariant,
+  { container: ViewStyle; textColor: string }
 > = {
   primary: {
     container: {
-      backgroundColor: COLOR_PALETTE.accentPrimary,
+      backgroundColor: '#F9F6F2', // CREAM
+      borderWidth: 0,
     },
-    labelTone: 'inverse',
+    textColor: '#022C22', // BRAND INK
   },
   secondary: {
     container: {
-      backgroundColor: COLOR_PALETTE.accentMuted,
+      backgroundColor: COLOR_PALETTE.backgroundMuted,
+      borderWidth: 0,
     },
-    labelTone: 'primary',
+    textColor: COLOR_PALETTE.textPrimary,
+  },
+  outline: {
+    container: {
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: BRAND_COLORS.cream,
+    },
+    textColor: COLOR_PALETTE.textPrimary,
+  },
+  ghost: {
+    container: {
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+    },
+    textColor: COLOR_PALETTE.textPrimary,
+  },
+};
+
+const sizeToStyles: Record<ButtonSize, ViewStyle> = {
+  sm: {
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+  },
+  md: {
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+  },
+  lg: {
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.xl,
   },
 };
 
 export const AppButton = ({
   label,
-  tone = 'primary',
+  variant = 'primary',
+  size = 'md',
+  fullWidth = false,
   containerStyle,
+  textStyle,
   ...pressableProps
 }: AppButtonProps) => {
-  const toneStyles = toneToStyles[tone] ?? toneToStyles.primary;
+  const variantStyles = variantToStyles[variant] ?? variantToStyles.primary;
+  const sizeStyles = sizeToStyles[size] ?? sizeToStyles.md;
   const isDisabled = pressableProps.disabled ?? false;
 
   return (
@@ -44,13 +90,26 @@ export const AppButton = ({
       accessibilityRole="button"
       style={({ pressed }) => [
         styles.base,
-        toneStyles.container,
-        pressed && !isDisabled && styles.pressed,
-        isDisabled && styles.disabled,
+        variantStyles.container,
+        sizeStyles,
+        fullWidth && styles.fullWidth,
+        {
+          opacity: isDisabled || pressed ? 0.7 : 1,
+        },
         containerStyle,
       ]}
-      {...pressableProps}>
-      <AppText variant="heading" tone={toneStyles.labelTone}>
+      {...pressableProps}
+    >
+      <AppText
+        variant="heading"
+        style={[
+          styles.text,
+          {
+            color: variantStyles.textColor,
+          },
+          textStyle,
+        ]}
+      >
         {label}
       </AppText>
     </Pressable>
@@ -60,15 +119,15 @@ export const AppButton = ({
 const styles = StyleSheet.create({
   base: {
     alignItems: 'center',
-    borderRadius: 12,
+    justifyContent: 'center',
+    borderRadius: 24,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
   },
-  pressed: {
-    opacity: 0.92,
-    transform: [{ scale: 0.995 }],
+  fullWidth: {
+    width: '100%',
   },
-  disabled: {
-    opacity: 0.6,
+  text: {
+    textAlign: 'center',
   },
 });

@@ -4,117 +4,126 @@ import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 import { AppButton, AppSurface, AppText } from '../../../shared/components/ui';
 import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../../shared/theme';
 import { useDeviceDimensions } from '../../../shared/hooks/useDeviceDimensions';
+import {
+  QUESTIONNAIRE_HORIZONTAL_PADDING,
+  QUESTIONNAIRE_MAX_CONTENT_WIDTH,
+} from '../../../shared/theme/layout';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;
   subtitle?: string;
-  eyebrowLabel?: string;
   isLoading?: boolean;
   primaryActionLabel?: string;
   primaryActionDisabled?: boolean;
   onPrimaryActionPress?: () => void;
   footerSlot?: React.ReactNode;
+  backButton?: React.ReactNode;
 }>;
 
 export const QuestionnaireTemplate = ({
   title,
   subtitle,
-  eyebrowLabel = 'Daily check-in',
   isLoading = false,
   primaryActionLabel,
   primaryActionDisabled = false,
   onPrimaryActionPress,
   footerSlot,
+  backButton,
   children,
 }: QuestionnaireTemplateProps) => {
   const { width } = useDeviceDimensions();
   const safeWidth = Math.max(width, 320);
-  const isCompactLayout = safeWidth < 400;
-  const horizontalPadding = isCompactLayout ? SPACING.lg : SPACING.xl;
-  const maxContentWidth = Math.min(safeWidth - horizontalPadding * 2, 760);
-  const heroAccentSize = Math.min(Math.max(safeWidth * 0.35, 140), 220);
+  const contentWidth = Math.min(
+    safeWidth - QUESTIONNAIRE_HORIZONTAL_PADDING * 2,
+    QUESTIONNAIRE_MAX_CONTENT_WIDTH,
+  );
 
   return (
-    <ScrollView
-      contentContainerStyle={[
-        styles.scrollContent,
-        { paddingHorizontal: horizontalPadding },
-      ]}
-      style={styles.scrollView}
-      testID="questionnaire-template">
-      <View style={[styles.container, { maxWidth: maxContentWidth }]}>
-        <View style={styles.hero}>
-          <View
-            style={[
-              styles.heroAccent,
-              { width: heroAccentSize, height: heroAccentSize },
-            ]}
-          />
-          <View style={styles.heroBadge}>
-            <AppText variant="caption" tone="inverse" style={styles.heroBadgeLabel}>
-              {eyebrowLabel.toUpperCase()}
-            </AppText>
-          </View>
-          <View style={styles.heroText}>
-            <AppText variant="title">{title}</AppText>
-            {subtitle ? (
-              <AppText tone="secondary" style={styles.subtitle}>
-                {subtitle}
-              </AppText>
-            ) : null}
-          </View>
-        </View>
-        <AppSurface style={styles.body}>
-          {isLoading ? (
-            <View style={styles.loading}>
-              <ActivityIndicator size="large" color={COLOR_PALETTE.accentPrimary} />
-              <AppText tone="secondary" style={styles.loadingLabel}>
-                Loading your next question...
-              </AppText>
+    <View style={styles.wrapper}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING },
+        ]}
+        style={styles.scrollView}
+        testID="questionnaire-template"
+      >
+        {backButton && (
+          <View style={styles.backButtonContainer}>{backButton}</View>
+        )}
+        <View style={[styles.container, { maxWidth: contentWidth }]}>
+          {!isLoading ? (
+            <View style={styles.hero}>
+              <View style={styles.heroText}>
+                <AppText variant="title">{title}</AppText>
+                {subtitle ? (
+                  <AppText tone="secondary" style={styles.subtitle}>
+                    {subtitle}
+                  </AppText>
+                ) : null}
+              </View>
             </View>
-          ) : (
-            children
-          )}
-        </AppSurface>
-      </View>
+          ) : null}
+          <AppSurface style={styles.body}>
+            {isLoading ? (
+              <View style={styles.loading}>
+                <ActivityIndicator
+                  size="large"
+                  color={COLOR_PALETTE.accentPrimary}
+                />
+                <AppText tone="secondary" style={styles.loadingLabel}>
+                  Loading your next question...
+                </AppText>
+              </View>
+            ) : (
+              children
+            )}
+          </AppSurface>
+        </View>
+      </ScrollView>
       <View style={styles.footer}>
         {primaryActionLabel ? (
           <AppButton
             label={primaryActionLabel}
+            variant="primary"
             onPress={onPrimaryActionPress}
             disabled={primaryActionDisabled}
             containerStyle={styles.primaryAction}
+            fullWidth
           />
         ) : null}
         {footerSlot}
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: BRAND_COLORS.inkDark,
+  },
   scrollView: {
     flex: 1,
     backgroundColor: BRAND_COLORS.inkDark,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingVertical: SPACING.xxl,
-    justifyContent: 'space-between',
-    gap: SPACING.xxl,
+    paddingTop: SPACING.xs, // Even smaller top padding
+    paddingBottom: SPACING.xxl,
+    gap: SPACING.xs, // Very small gap between sections
   },
   container: {
-    gap: SPACING.xl,
+    gap: SPACING.md, // Very small gap between container elements
     width: '100%',
     alignSelf: 'center',
   },
   hero: {
-    borderRadius: 28,
-    padding: SPACING.xl,
+    borderRadius: 0,
+    paddingVertical: SPACING.md,
     overflow: 'hidden',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderWidth: 0,
   },
   heroAccent: {
     position: 'absolute',
@@ -124,26 +133,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.accentMuted,
     opacity: 0.35,
   },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: 999,
-    backgroundColor: COLOR_PALETTE.accentPrimary,
-    marginBottom: SPACING.md,
-  },
-  heroBadgeLabel: {
-    letterSpacing: 1,
-  },
   heroText: {
-    gap: SPACING.xs,
+    gap: SPACING.lg,
   },
-  subtitle: {
-    marginTop: SPACING.xs,
-  },
+  subtitle: {},
   body: {
     gap: SPACING.lg,
-    padding: SPACING.xl,
+    padding: 0,
+    paddingHorizontal: 0, // Explicitly override AppSurface horizontal padding
+    paddingVertical: SPACING.xl,
     borderWidth: 0,
     borderColor: 'transparent',
     backgroundColor: BRAND_COLORS.inkDark,
@@ -161,11 +159,17 @@ const styles = StyleSheet.create({
   },
   footer: {
     gap: SPACING.md,
-    borderTopWidth: 1,
-    borderTopColor: COLOR_PALETTE.borderDefault,
     paddingTop: SPACING.lg,
-  },
-  primaryAction: {
+    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
+    paddingBottom: SPACING.lg,
     width: '100%',
+    backgroundColor: BRAND_COLORS.inkDark,
   },
+  backButtonContainer: {
+    position: 'relative',
+    height: 60, // Reduced height
+    width: '100%',
+    marginBottom: 0, // No margin at all
+  },
+  primaryAction: {},
 });

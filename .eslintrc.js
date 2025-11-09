@@ -25,11 +25,5 @@ module.exports = {
       },
     },
   ],
-  ignorePatterns: [
-    'babel.config.js',
-    'metro.config.js',
-    'jest.config.js',
-    'tailwind.config.js',
-    'global.css',
-  ],
+  ignorePatterns: ['babel.config.js', 'metro.config.js', 'jest.config.js'],
 };

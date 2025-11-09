@@ -29,7 +29,7 @@ export const HomeFooterNavigator = ({
   style,
 }: HomeFooterNavigatorProps) => (
   <View style={[styles.container, style]}>
-    {TABS.map((tab) => {
+    {TABS.map(tab => {
       const isActive = tab.key === activeTab;
 
       return (
@@ -45,7 +45,7 @@ export const HomeFooterNavigator = ({
         >
           <View style={[styles.iconStub, isActive && styles.iconStubActive]} />
           <AppText
-            variant='caption'
+            variant="caption"
             style={[styles.label, isActive && styles.labelActive]}
           >
             {tab.label}

@@ -221,7 +221,6 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         if (nextVariationId === -1) {
           const historyRecords = await questionnaireStorage.all();
           setHistory(historyRecords);
-          setNavigationStack([]);
           setIsReviewing(true);
           return;
         }
@@ -326,9 +325,27 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
   const currentSelection = question ? selections[question.id] : undefined;
   const canGoBack = navigationStack.length > 1;
+  const canResumeReview = navigationStack.length > 0;
 
   const activeOrderId = question?.orderId ?? orderId;
   const activeVariationId = question?.variationId ?? variationId;
+
+  const resumeFromReview = useCallback(() => {
+    setNavigationStack((prev) => {
+      if (!prev.length) {
+        return prev;
+      }
+
+      const lastEntry = prev[prev.length - 1];
+
+      setOrderId(lastEntry.orderId);
+      setVariationId(lastEntry.variationId);
+      setIsReviewing(false);
+      setSubmitError(null);
+
+      return prev;
+    });
+  }, [setOrderId, setVariationId, setIsReviewing, setSubmitError, setNavigationStack]);
 
   return {
     question,
@@ -347,5 +364,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     goBack,
     canGoBack,
     selection: currentSelection,
+    resumeFromReview,
+    canResumeReview,
   };
 };

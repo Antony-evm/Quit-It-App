@@ -22,10 +22,11 @@ export const QuestionOptionCard = ({
       style={[
         styles.surface,
         isSelected && { borderColor: COLOR_PALETTE.accentPrimary },
-      ]}>
+      ]}
+    >
       <AppText variant="heading">{label}</AppText>
       {description ? (
-        <AppText variant='body' tone='secondary' style={styles.description}>
+        <AppText variant="body" tone="secondary" style={styles.description}>
           {description}
         </AppText>
       ) : null}
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
   },
   surface: {
     gap: SPACING.xs,
+    paddingHorizontal: 0,
   },
   description: {
     marginTop: SPACING.xs,

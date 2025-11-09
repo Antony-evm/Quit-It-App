@@ -10,10 +10,17 @@ type AnswerTabOption = {
   disabled?: boolean;
 };
 
+type AnswerTabVariant =
+  | 'timeslot'
+  | 'multiple-many'
+  | 'multiple-few'
+  | 'default';
+
 type AnswerTabsProps = {
   options: AnswerTabOption[];
   selectedOptionIds: number[];
   selectionMode?: 'single' | 'multiple';
+  variant?: AnswerTabVariant;
   onSelectionChange: (nextSelected: number[]) => void;
 };
 
@@ -21,9 +28,13 @@ export const AnswerTabs = ({
   options,
   selectedOptionIds,
   selectionMode = 'single',
+  variant = 'default',
   onSelectionChange,
 }: AnswerTabsProps) => {
   const isMulti = selectionMode === 'multiple';
+
+  // Handle null/undefined variant
+  const safeVariant = variant || 'default';
 
   const handleToggle = useCallback(
     (optionId: number) => {
@@ -31,7 +42,7 @@ export const AnswerTabs = ({
 
       if (isMulti) {
         const nextSelected = alreadySelected
-          ? selectedOptionIds.filter((id) => id !== optionId)
+          ? selectedOptionIds.filter(id => id !== optionId)
           : [...selectedOptionIds, optionId];
         onSelectionChange(nextSelected);
         return;
@@ -47,14 +58,18 @@ export const AnswerTabs = ({
     [isMulti, onSelectionChange, selectedOptionIds],
   );
 
+  const containerStyle =
+    safeVariant === 'multiple-few' ? styles.stackedContainer : styles.container;
+
   return (
-    <View style={styles.container}>
-      {options.map((option) => (
+    <View style={containerStyle}>
+      {options.map(option => (
         <AnswerTab
           key={option.id}
           label={option.label}
           disabled={option.disabled}
           isSelected={selectedOptionIds.includes(option.id)}
+          variant={safeVariant}
           onPress={() => handleToggle(option.id)}
         />
       ))}
@@ -68,5 +83,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.md,
+  },
+  stackedContainer: {
+    width: '100%',
+    flexDirection: 'column',
+    flexWrap: 'nowrap',
+    gap: SPACING.sm,
   },
 });

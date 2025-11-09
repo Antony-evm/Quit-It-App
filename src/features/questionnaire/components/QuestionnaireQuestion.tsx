@@ -8,6 +8,10 @@ import { DatePickerField } from './fields/DatePickerField';
 import { NumericRangeField } from './fields/NumericRangeField';
 import { TimeSlotSelector } from './fields/TimeSlotSelector';
 import { SPACING } from '../../../shared/theme';
+import {
+  formatDateForSubmission,
+  parseSubmissionDateValue,
+} from '../utils/dateFormatting';
 
 type QuestionnaireQuestionProps = {
   question: Question | null;
@@ -17,7 +21,7 @@ type QuestionnaireQuestionProps = {
 };
 
 const parseNumericRange = (value: string) => {
-  const [minRaw, maxRaw] = value.split('-').map((part) => Number(part.trim()));
+  const [minRaw, maxRaw] = value.split('-').map(part => Number(part.trim()));
 
   if (Number.isNaN(minRaw) || Number.isNaN(maxRaw)) {
     return null;
@@ -37,8 +41,7 @@ const resolveNumericDefault = (
     return null;
   }
 
-  const midpoint =
-    range.min + Math.floor((range.max - range.min) / 2);
+  const midpoint = range.min + Math.floor((range.max - range.min) / 2);
 
   if (rawDefault === null || Number.isNaN(rawDefault)) {
     return midpoint;
@@ -58,18 +61,6 @@ const resolveNumericDefault = (
 const parseDateWindowInDays = (value: string) => {
   const numeric = parseInt(value, 10);
   return Number.isNaN(numeric) ? 0 : numeric;
-};
-
-const formatDateForSubmission = (date: Date) => {
-  const utc = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  const iso = utc.toISOString().split('.')[0];
-  return `${iso.replace('T', ' ')}+00:00`;
-};
-
-const parseSubmissionDateValue = (value: string) => {
-  const normalized = value.replace(' ', 'T');
-  const parsed = new Date(normalized);
-  return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
 const ensureSelectionValidity = (
@@ -101,9 +92,10 @@ export const QuestionnaireQuestion = ({
   onValidityChange,
 }: QuestionnaireQuestionProps) => {
   const [selectedChoiceIds, setSelectedChoiceIds] = useState<number[]>([]);
-  const [numericRange, setNumericRange] = useState<{ min: number; max: number } | null>(
-    null,
-  );
+  const [numericRange, setNumericRange] = useState<{
+    min: number;
+    max: number;
+  } | null>(null);
   const [numericSelection, setNumericSelection] = useState<number | null>(null);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -134,45 +126,76 @@ export const QuestionnaireQuestion = ({
         ? parseNumericRange(firstOption.value)
         : null;
     setNumericRange(parsedRange);
-    previousSelectionRef.current = initialSelection ? [...initialSelection] : [];
+    previousSelectionRef.current = initialSelection
+      ? [...initialSelection]
+      : [];
 
     if (allowMultipleChoice || allowSingleChoice) {
       setSelectedChoiceIds(
-        (initialSelection ?? []).map((option) => option.optionId),
+        (initialSelection ?? []).map(option => option.optionId),
       );
     } else {
       setSelectedChoiceIds([]);
     }
 
     if (isTimeRangeQuestion) {
-      setSelectedSlots((initialSelection ?? []).map((option) => option.value));
+      setSelectedSlots((initialSelection ?? []).map(option => option.value));
     } else {
       setSelectedSlots([]);
     }
 
     if (isDateQuestion) {
       const initialDateValue = initialSelection?.[0]?.value ?? '';
-      setSelectedDate(
-        initialDateValue ? parseSubmissionDateValue(initialDateValue) : null,
-      );
+      const parsedInitialDate = initialDateValue
+        ? parseSubmissionDateValue(initialDateValue)
+        : null;
+
+      if (parsedInitialDate) {
+        setSelectedDate(parsedInitialDate);
+      } else {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        let fallbackDate = today;
+        if (firstOption) {
+          const windowDays = parseDateWindowInDays(firstOption.value);
+          const maxDate = new Date(today);
+          maxDate.setDate(maxDate.getDate() + windowDays);
+          if (fallbackDate > maxDate) {
+            fallbackDate = maxDate;
+          }
+        }
+
+        setSelectedDate(fallbackDate);
+      }
     } else {
       setSelectedDate(null);
     }
 
     if (parsedRange) {
-      const defaultValue = resolveNumericDefault(
-        parsedRange,
-        question?.defaultValue ?? firstOption?.defaultValue ?? null,
-      );
       const numericInitial = initialSelection?.[0]?.value ?? '';
       const parsedNumeric =
         numericInitial.trim() === '' ? Number.NaN : Number(numericInitial);
       if (!Number.isNaN(parsedNumeric)) {
         setNumericSelection(parsedNumeric);
-      } else if (defaultValue !== null) {
-        setNumericSelection(defaultValue);
       } else {
-        setNumericSelection(null);
+        // Check if there's an explicit default value provided
+        const hasExplicitDefault =
+          (question?.defaultValue !== null &&
+            question?.defaultValue !== undefined) ||
+          (firstOption?.defaultValue !== null &&
+            firstOption?.defaultValue !== undefined);
+
+        if (hasExplicitDefault) {
+          const defaultValue = resolveNumericDefault(
+            parsedRange,
+            question?.defaultValue ?? firstOption?.defaultValue ?? null,
+          );
+          setNumericSelection(defaultValue);
+        } else {
+          // Don't set a default value automatically - wait for user interaction
+          setNumericSelection(null);
+        }
       }
     } else {
       setNumericSelection(null);
@@ -204,9 +227,11 @@ export const QuestionnaireQuestion = ({
 
     if (allowMultipleChoice || allowSingleChoice) {
       selection = selectedChoiceIds
-        .map((id) => question.options.find((option) => option.id === id))
-        .filter((option): option is NonNullable<typeof option> => Boolean(option))
-        .map((option) => ({
+        .map(id => question.options.find(option => option.id === id))
+        .filter((option): option is NonNullable<typeof option> =>
+          Boolean(option),
+        )
+        .map(option => ({
           optionId: option.id,
           value: option.value,
           answerType: question.answerType,
@@ -227,7 +252,7 @@ export const QuestionnaireQuestion = ({
         },
       ];
     } else if (isTimeRangeQuestion && firstOption) {
-      selection = selectedSlots.map((slot) => ({
+      selection = selectedSlots.map(slot => ({
         optionId: firstOption.id,
         value: slot,
         answerType: question.answerType,
@@ -299,12 +324,19 @@ export const QuestionnaireQuestion = ({
     <View style={styles.container}>
       {(allowMultipleChoice || allowSingleChoice) && question.options.length ? (
         <AnswerTabs
-          options={question.options.map((option) => ({
+          options={question.options.map(option => ({
             id: option.id,
             label: option.value,
           }))}
           selectedOptionIds={selectedChoiceIds}
           selectionMode={allowMultipleChoice ? 'multiple' : 'single'}
+          variant={
+            allowMultipleChoice || allowSingleChoice
+              ? question.options.length > 5
+                ? 'multiple-many'
+                : 'multiple-few'
+              : 'default'
+          }
           onSelectionChange={setSelectedChoiceIds}
         />
       ) : null}

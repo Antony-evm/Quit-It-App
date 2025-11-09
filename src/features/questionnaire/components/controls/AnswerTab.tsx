@@ -4,10 +4,17 @@ import { Pressable, StyleSheet } from 'react-native';
 import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
 import { AppText } from '../../../../shared/components/ui';
 
+type AnswerTabVariant =
+  | 'timeslot'
+  | 'multiple-many'
+  | 'multiple-few'
+  | 'default';
+
 type AnswerTabProps = {
   label: string;
   isSelected?: boolean;
   disabled?: boolean;
+  variant?: AnswerTabVariant;
   onPress: () => void;
 };
 
@@ -15,44 +22,104 @@ export const AnswerTab = ({
   label,
   isSelected = false,
   disabled = false,
+  variant = 'default',
   onPress,
-}: AnswerTabProps) => (
-  <Pressable
-    accessibilityRole="tab"
-    accessibilityState={{ selected: isSelected, disabled }}
-    style={({ pressed }) => [
-      styles.tab,
-      isSelected && styles.tabSelected,
-      disabled && styles.tabDisabled,
-      pressed && !disabled && styles.tabPressed,
-    ]}
-    onPress={onPress}
-    disabled={disabled}>
-    <AppText
-      variant="body"
-      tone={isSelected ? 'primary' : 'secondary'}
-      style={styles.tabLabel}>
-      {label}
-    </AppText>
-  </Pressable>
-);
+}: AnswerTabProps) => {
+  const getVariantStyles = () => {
+    switch (variant) {
+      case 'timeslot':
+        return styles.timeslotTab;
+      case 'multiple-many':
+        return styles.multipleManyTab;
+      case 'multiple-few':
+        return styles.multipleFewTab;
+      default:
+        return {};
+    }
+  };
+
+  const getBaseStyles = () => {
+    // Use different base styles for multiple-few to avoid flex conflicts
+    if (variant === 'multiple-few') {
+      return styles.multipleFewBase;
+    }
+    return styles.tab;
+  };
+
+  return (
+    <Pressable
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isSelected, disabled }}
+      style={({ pressed }) => [
+        getBaseStyles(),
+        getVariantStyles(),
+        isSelected && styles.tabSelected,
+        disabled && styles.tabDisabled,
+        pressed && !disabled && styles.tabPressed,
+      ]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <AppText
+        variant="body"
+        tone={isSelected ? 'inverse' : 'primary'}
+        style={[
+          styles.tabLabel,
+          isSelected && { color: COLOR_PALETTE.backgroundMuted },
+          !isSelected && { color: COLOR_PALETTE.backgroundCream },
+        ]}
+      >
+        {label}
+      </AppText>
+    </Pressable>
+  );
+};
 
 const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.xl,
-    borderRadius: 22,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    flexBasis: '48%',
     flexGrow: 1,
     minHeight: 80,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  multipleFewBase: {
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.xl,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    minHeight: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+  timeslotTab: {
+    borderRadius: 4,
+    minHeight: 20,
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.xs,
+    flexBasis: '20%',
+  },
+  multipleManyTab: {
+    borderRadius: 50,
+    minHeight: 30,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    flexBasis: '40%',
+  },
+  multipleFewTab: {
+    borderRadius: 20,
+    marginBottom: SPACING.sm,
+  },
   tabSelected: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
+    backgroundColor: COLOR_PALETTE.backgroundCream,
     borderColor: COLOR_PALETTE.accentPrimary,
   },
   tabDisabled: {
@@ -60,7 +127,6 @@ const styles = StyleSheet.create({
   },
   tabPressed: {
     opacity: 0.9,
-    transform: [{ scale: 0.98 }],
   },
   tabLabel: {
     textAlign: 'center',

@@ -5,15 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
 import type { SelectedAnswerOption } from '../types';
 import { BRAND_COLORS, SPACING } from '../../../shared/theme';
-import { AppButton, AppText } from '../../../shared/components/ui';
+import { AppButton, AppText, BackArrow } from '../../../shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
-const REVIEW_TITLE = 'Review your answers';
+const REVIEW_TITLE = 'Summary';
 const REVIEW_SUBTITLE =
-  'Ensure these responses reflect your preferences before finishing.';
+  'Take a moment to review everything and make sure it feels right for you. You’ll be able to adjust your plan later if anything changes, this is just to help you get started.';
+const QUESTIONNAIRE_SUBMIT_LABEL = 'Submit';
 
 type QuestionnaireScreenProps = {
   onFinish?: () => void;
@@ -37,11 +38,12 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
     submitAnswers,
     isReviewing,
     history,
-    restart,
     goBack,
     canGoBack,
     selection,
     submitQuestionnaire,
+    resumeFromReview,
+    canResumeReview,
   } = useQuestionnaire();
 
   useEffect(() => {
@@ -68,34 +70,31 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
     ? REVIEW_TITLE
     : prompt || DEFAULT_HEADER_TITLE;
   const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
-  const headerEyebrow = isReviewing ? 'Final step' : 'Guided check-in';
 
   const primaryActionLabel = useMemo(() => {
     if (isReviewing) {
-      return 'Submit questionnaire';
+      return QUESTIONNAIRE_SUBMIT_LABEL;
     }
 
+    // Use "Submit" for most question types, "Continue" only for specific cases
     switch (question?.answerType) {
       case 'multiple_choice':
-        return question.answerHandling === 'all'
-          ? 'Save selection'
-          : 'Continue';
+        // For multiple choice, always use "Submit" instead of varying by answerHandling
+        return QUESTIONNAIRE_SUBMIT_LABEL;
       case 'numeric':
-        return 'Submit range';
+        return QUESTIONNAIRE_SUBMIT_LABEL;
       case 'time':
-        return 'Save times';
+        return QUESTIONNAIRE_SUBMIT_LABEL;
       case 'date':
-        return 'Confirm date';
+        return QUESTIONNAIRE_SUBMIT_LABEL;
       default:
-        return 'Continue';
+        return QUESTIONNAIRE_SUBMIT_LABEL;
     }
   }, [isReviewing, question]);
 
   const primaryActionDisabled = isReviewing
     ? isLoading || isSubmitting || !history.length
-    : isLoading ||
-      isSubmitting ||
-      (!isSelectionValid || !activeSelection.length);
+    : isLoading || isSubmitting || !isSelectionValid || !activeSelection.length;
 
   const showValidationError =
     hasAttemptedSubmit &&
@@ -106,6 +105,11 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
     isReviewing || (!!question && !isLoading && !error);
 
   const handlePrimaryAction = async () => {
+    // Extra safeguard: don't proceed if button should be disabled
+    if (primaryActionDisabled) {
+      return;
+    }
+
     if (isReviewing) {
       try {
         await submitQuestionnaire();
@@ -132,7 +136,7 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
           <AppText variant="heading" tone="secondary">
             We could not load the questionnaire.
           </AppText>
-          <AppButton label="Try again" onPress={refresh} tone="secondary" />
+          <AppButton label="Try again" onPress={refresh} variant="secondary" />
         </View>
       );
     }
@@ -158,49 +162,51 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
     );
   };
 
+  const shouldShowBackArrow =
+    (!isReviewing && canGoBack) || (isReviewing && canResumeReview);
+
+  const handleBackPress = () => {
+    setHasAttemptedSubmit(false);
+    if (isReviewing) {
+      resumeFromReview();
+    } else {
+      goBack();
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <QuestionnaireTemplate
-        title={headerTitle}
-        subtitle={headerSubtitle}
-        eyebrowLabel={headerEyebrow}
-        isLoading={isLoading}
-        primaryActionLabel={
-          shouldShowPrimaryAction ? primaryActionLabel : undefined
-        }
-        primaryActionDisabled={primaryActionDisabled}
-        onPrimaryActionPress={handlePrimaryAction}
-        footerSlot={
-          isReviewing ? (
-            <AppButton
-              label="Restart questionnaire"
-              tone="secondary"
-              disabled={isLoading || isSubmitting}
-              onPress={() => {
-                setHasAttemptedSubmit(false);
-                restart();
-              }}
-            />
-          ) : canGoBack ? (
-            <AppButton
-              label="Go back"
-              tone="secondary"
-              disabled={isLoading || isSubmitting}
-              onPress={() => {
-                setHasAttemptedSubmit(false);
-                goBack();
-              }}
-            />
-          ) : undefined
-        }
-      >
-        {renderBody()}
-      </QuestionnaireTemplate>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <QuestionnaireTemplate
+          title={headerTitle}
+          subtitle={headerSubtitle}
+          isLoading={isLoading}
+          primaryActionLabel={
+            shouldShowPrimaryAction ? primaryActionLabel : undefined
+          }
+          primaryActionDisabled={primaryActionDisabled}
+          onPrimaryActionPress={handlePrimaryAction}
+          backButton={
+            shouldShowBackArrow ? (
+              <BackArrow
+                onPress={handleBackPress}
+                disabled={isLoading || isSubmitting}
+              />
+            ) : undefined
+          }
+        >
+          {renderBody()}
+        </QuestionnaireTemplate>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BRAND_COLORS.inkDark,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: BRAND_COLORS.inkDark,

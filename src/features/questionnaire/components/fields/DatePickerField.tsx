@@ -1,9 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
-import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { AppButton, AppText, AppTextInput } from '../../../../shared/components/ui';
+import { AppButton, AppText } from '../../../../shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
+import {
+  formatDisplayDate,
+  getRelativeDateInfo,
+} from '../../utils/dateFormatting';
 
 type DatePickerFieldProps = {
   value: Date | null;
@@ -28,11 +32,6 @@ const clampDate = (value: Date, min: Date, max: Date) => {
   return value;
 };
 
-const formatIsoDate = (date: Date) => date.toISOString().split('T')[0];
-
-const formatDisplayDate = (date: Date | null) =>
-  date ? date.toLocaleDateString() : 'Select a date';
-
 export const DatePickerField = ({
   value,
   minimumDate,
@@ -41,95 +40,108 @@ export const DatePickerField = ({
 }: DatePickerFieldProps) => {
   const min = useMemo(() => toDateOnly(minimumDate), [minimumDate]);
   const max = useMemo(() => toDateOnly(maximumDate), [maximumDate]);
-  const [manualValue, setManualValue] = useState<string>(
-    value ? formatIsoDate(value) : '',
-  );
+  const [showPicker, setShowPicker] = useState(Platform.OS === 'ios');
 
-  useEffect(() => {
-    setManualValue(value ? formatIsoDate(value) : '');
-  }, [value]);
+  // Use minimum date as default if no value is provided
+  const currentValue = value || min;
 
-  const commitDate = useCallback(
-    (candidate: Date) => {
-      const clamped = clampDate(toDateOnly(candidate), min, max);
-      onChange(clamped);
+  const handleDateChange = useCallback(
+    (event: any, selectedDate?: Date) => {
+      // On Android, hide the picker after selection
+      if (Platform.OS === 'android') {
+        setShowPicker(false);
+      }
+
+      if (selectedDate) {
+        const clamped = clampDate(toDateOnly(selectedDate), min, max);
+        onChange(clamped);
+      }
     },
     [max, min, onChange],
   );
 
-  const handleAndroidPick = useCallback(() => {
-    DateTimePickerAndroid.open({
-      value: value ? toDateOnly(value) : min,
-      onChange: (_, selectedDate) => {
-        if (selectedDate) {
-          commitDate(selectedDate);
-        }
-      },
-      mode: 'date',
-      minimumDate: min,
-      maximumDate: max,
-    });
-  }, [commitDate, max, min, value]);
-
-  const handleManualBlur = useCallback(() => {
-    if (!manualValue) {
-      return;
+  const handleShowPicker = useCallback(() => {
+    if (Platform.OS === 'android') {
+      setShowPicker(true);
     }
-    const candidate = new Date(manualValue);
-    if (!Number.isNaN(candidate.getTime())) {
-      commitDate(candidate);
-    }
-  }, [commitDate, manualValue]);
+  }, []);
 
-  const helper = (
-    <View style={styles.helper}>
-      <AppText variant="caption" tone="secondary" style={styles.helperEyebrow}>
-        Date window
-      </AppText>
-      <AppText tone="secondary">
-        Select any date between {formatIsoDate(min)} and {formatIsoDate(max)}.
-      </AppText>
-    </View>
-  );
-
-  if (Platform.OS === 'android') {
-    return (
-      <View style={styles.container}>
-        {helper}
-        <AppButton label={formatDisplayDate(value)} onPress={handleAndroidPick} />
-      </View>
-    );
-  }
+  const relativeInfo = getRelativeDateInfo(currentValue);
 
   return (
     <View style={styles.container}>
-      {helper}
-      <AppTextInput
-        value={manualValue}
-        onChangeText={setManualValue}
-        onBlur={handleManualBlur}
-        placeholder={`${formatIsoDate(min)} - ${formatIsoDate(max)}`}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
+      {/* Visual indicator with selected date and contextual info */}
+      <View style={styles.selectedDateDisplay}>
+        <AppText variant="heading" style={styles.selectedDateText}>
+          {formatDisplayDate(currentValue)}
+        </AppText>
+        {relativeInfo && (
+          <AppText variant="body" tone="secondary" style={styles.relativeInfo}>
+            {relativeInfo}
+          </AppText>
+        )}
+      </View>
+
+      {/* Date picker - always show on iOS, show on button press for Android */}
+      {Platform.OS === 'android' && !showPicker ? (
+        <View style={styles.buttonContainer}>
+          <AppButton
+            label="Change Date"
+            onPress={handleShowPicker}
+            variant="primary"
+            fullWidth
+          />
+        </View>
+      ) : null}
+
+      {/* Inline date picker */}
+      {showPicker && (
+        <View style={styles.pickerContainer}>
+          <DateTimePicker
+            value={currentValue}
+            mode="date"
+            display={Platform.OS === 'ios' ? 'compact' : 'default'}
+            minimumDate={min}
+            maximumDate={max}
+            onChange={handleDateChange}
+            style={styles.datePicker}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    gap: SPACING.sm,
+    gap: SPACING.lg,
   },
-  helper: {
+  selectedDateDisplay: {
+    alignItems: 'center',
+    gap: SPACING.xs,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+  },
+  selectedDateText: {
+    textAlign: 'center',
+  },
+  relativeInfo: {
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  buttonContainer: {
+    width: '100%',
+  },
+  pickerContainer: {
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    padding: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    gap: SPACING.xs,
   },
-  helperEyebrow: {
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+  datePicker: {
+    backgroundColor: 'transparent',
   },
 });

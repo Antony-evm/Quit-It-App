@@ -22,9 +22,9 @@ export const QuestionHeader = ({ title, subtitle }: QuestionHeaderProps) => (
 
 const styles = StyleSheet.create({
   container: {
-    gap: SPACING.xs,
+    gap: SPACING.lg,
   },
   subtitle: {
-    marginTop: SPACING.xs,
+    marginBottom: SPACING.md,
   },
 });
