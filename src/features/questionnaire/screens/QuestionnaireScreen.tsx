@@ -4,8 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
 import type { SelectedAnswerOption } from '../types';
-import { BRAND_COLORS, SPACING } from '../../../shared/theme';
-import { AppButton, AppText, BackArrow } from '../../../shared/components/ui';
+import type { RootStackScreenProps } from '@/types/navigation';
+import { BRAND_COLORS, SPACING } from '@/shared/theme';
+import { AppButton, AppText, BackArrow } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
@@ -16,11 +17,9 @@ const REVIEW_SUBTITLE =
   'Take a moment to review everything and make sure it feels right for you. You’ll be able to adjust your plan later if anything changes, this is just to help you get started.';
 const QUESTIONNAIRE_SUBMIT_LABEL = 'Submit';
 
-type QuestionnaireScreenProps = {
-  onFinish?: () => void;
-};
-
-export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
+export const QuestionnaireScreen = ({
+  navigation,
+}: RootStackScreenProps<'Questionnaire'>) => {
   const [activeSelection, setActiveSelection] = useState<
     SelectedAnswerOption[]
   >([]);
@@ -113,7 +112,11 @@ export const QuestionnaireScreen = ({ onFinish }: QuestionnaireScreenProps) => {
     if (isReviewing) {
       try {
         await submitQuestionnaire();
-        onFinish?.();
+        // Reset the navigation stack to remove questionnaire entirely
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
       } catch {
         // Handled via shared error state
       }

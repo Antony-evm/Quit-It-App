@@ -7,8 +7,8 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { AppText } from '../../../shared/components/ui';
-import { SPACING } from '../../../shared/theme';
+import { AppText } from '@/shared/components/ui';
+import { SPACING } from '@/shared/theme';
 
 const BACKGROUND_IMAGE = {
   uri: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80',

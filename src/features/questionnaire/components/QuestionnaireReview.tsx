@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { QuestionnaireResponseRecord } from '../types';
-import { AppSurface, AppText } from '../../../shared/components/ui';
-import { SPACING } from '../../../shared/theme';
+import { AppSurface, AppText } from '@/shared/components/ui';
+import { SPACING } from '@/shared/theme';
 import {
   formatDisplayDate,
   getRelativeDateInfo,

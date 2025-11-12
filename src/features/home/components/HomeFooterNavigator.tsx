@@ -6,16 +6,27 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { SvgProps } from 'react-native-svg';
 
-import { AppText } from '../../../shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
+import { AppText } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import AccountIcon from '@/assets/account.svg';
+import HomeIcon from '@/assets/home.svg';
+import ClipboardIcon from '@/assets/clipboard.svg';
 
-export type HomeFooterTab = 'home' | 'account';
+export type HomeFooterTab = 'account' | 'home' | 'log';
 
 const TABS: { key: HomeFooterTab; label: string }[] = [
-  { key: 'home', label: 'Home' },
   { key: 'account', label: 'Account' },
+  { key: 'home', label: 'Home' },
+  { key: 'log', label: 'Log' },
 ];
+
+const TAB_ICONS: Record<HomeFooterTab, React.ComponentType<SvgProps>> = {
+  account: AccountIcon,
+  home: HomeIcon,
+  log: ClipboardIcon,
+};
 
 type HomeFooterNavigatorProps = {
   activeTab: HomeFooterTab;
@@ -31,6 +42,10 @@ export const HomeFooterNavigator = ({
   <View style={[styles.container, style]}>
     {TABS.map(tab => {
       const isActive = tab.key === activeTab;
+      const Icon = TAB_ICONS[tab.key];
+      const iconColor = isActive
+        ? COLOR_PALETTE.accentPrimary
+        : COLOR_PALETTE.textSecondary;
 
       return (
         <Pressable
@@ -43,7 +58,7 @@ export const HomeFooterNavigator = ({
             }
           }}
         >
-          <View style={[styles.iconStub, isActive && styles.iconStubActive]} />
+          <Icon width={28} height={28} style={styles.icon} fill={iconColor} />
           <AppText
             variant="caption"
             style={[styles.label, isActive && styles.labelActive]}
@@ -74,15 +89,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  iconStub: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+  icon: {
     marginBottom: SPACING.xs,
-  },
-  iconStubActive: {
-    backgroundColor: COLOR_PALETTE.accentPrimary,
   },
   label: {
     color: COLOR_PALETTE.textSecondary,

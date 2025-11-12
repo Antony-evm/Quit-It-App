@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import BackArrowSvg from '../../../backArrow.svg';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../theme';
+import BackArrowSvg from '@/assets/backArrow.svg';
+import { BRAND_COLORS, COLOR_PALETTE } from '@/shared/theme';
 
 type BackArrowProps = {
   onPress: () => void;

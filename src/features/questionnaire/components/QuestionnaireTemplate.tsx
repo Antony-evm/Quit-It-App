@@ -1,13 +1,13 @@
 import React, { PropsWithChildren } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
-import { AppButton, AppSurface, AppText } from '../../../shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../../shared/theme';
-import { useDeviceDimensions } from '../../../shared/hooks/useDeviceDimensions';
+import { AppButton, AppSurface, AppText } from '@/shared/components/ui';
+import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
   QUESTIONNAIRE_HORIZONTAL_PADDING,
   QUESTIONNAIRE_MAX_CONTENT_WIDTH,
-} from '../../../shared/theme/layout';
+} from '@/shared/theme/layout';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;

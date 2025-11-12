@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 
-import { AppText } from '../../../../shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../../../shared/theme';
+import { AppText } from '@/shared/components/ui';
+import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type NumericRangeFieldProps = {
   minimum: number;

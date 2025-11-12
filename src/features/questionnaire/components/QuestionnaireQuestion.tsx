@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import type { Question, SelectedAnswerOption } from '../types';
-import { AppText } from '../../../shared/components/ui';
+import { AppText } from '@/shared/components/ui';
 import { AnswerTabs } from './controls/AnswerTabs';
 import { DatePickerField } from './fields/DatePickerField';
 import { NumericRangeField } from './fields/NumericRangeField';
 import { TimeSlotSelector } from './fields/TimeSlotSelector';
-import { SPACING } from '../../../shared/theme';
+import { SPACING } from '@/shared/theme';
 import {
   formatDateForSubmission,
   parseSubmissionDateValue,

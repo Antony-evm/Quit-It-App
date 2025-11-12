@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { AppSurface, AppText } from '../../../shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
+import { AppSurface, AppText } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type QuestionOptionCardProps = {
   label: string;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText } from '../../../shared/components/ui';
-import { SPACING } from '../../../shared/theme';
+import { AppText } from '@/shared/components/ui';
+import { SPACING } from '@/shared/theme';
 
 type QuestionHeaderProps = {
   title: string;

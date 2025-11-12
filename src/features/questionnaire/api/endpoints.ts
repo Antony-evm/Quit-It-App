@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../../../shared/api/apiConfig';
+import { API_BASE_URL } from '@/shared/api/apiConfig';
 
 export const QUESTIONNAIRE_ENDPOINT = `${API_BASE_URL}/api/v1/questionnaire`;
 export const QUESTIONNAIRE_ANSWER_ENDPOINT = `${QUESTIONNAIRE_ENDPOINT}/answers`;

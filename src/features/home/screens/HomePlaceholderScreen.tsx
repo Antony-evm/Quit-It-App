@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppButton, AppText } from '../../../shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '../../../shared/theme';
+import { AppText } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { HomeEntriesPlaceholder, HomeEntry } from '../components/HomeEntriesPlaceholder';
 import { HomeFooterNavigator, HomeFooterTab } from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
-
-type HomePlaceholderScreenProps = {
-  onStartOver?: () => void;
-};
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
@@ -42,7 +38,7 @@ const PLACEHOLDER_ENTRIES: HomeEntry[] = [
   },
 ];
 
-export const HomePlaceholderScreen = ({ onStartOver }: HomePlaceholderScreenProps) => {
+export const HomePlaceholderScreen = () => {
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
   const stats = STAT_CARDS;
   const entries = PLACEHOLDER_ENTRIES;
@@ -60,14 +56,6 @@ export const HomePlaceholderScreen = ({ onStartOver }: HomePlaceholderScreenProp
         </View>
         <HomeStatsRow stats={stats} style={styles.statsRow} />
         <HomeEntriesPlaceholder entries={entries} style={styles.entriesCard} />
-        {onStartOver ? (
-          <AppButton
-            label="Restart questionnaire"
-            onPress={onStartOver}
-            containerStyle={styles.restartButton}
-            tone="secondary"
-          />
-        ) : null}
       </View>
       <HomeFooterNavigator activeTab={activeTab} onTabChange={setActiveTab} />
     </SafeAreaView>
@@ -98,8 +86,5 @@ const styles = StyleSheet.create({
   entriesCard: {
     flex: 1,
     marginBottom: SPACING.xl,
-  },
-  restartButton: {
-    marginTop: SPACING.md,
   },
 });

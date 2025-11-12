@@ -2,8 +2,8 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { AppButton, AppText } from '../../../../shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
+import { AppButton, AppText } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import {
   formatDisplayDate,
   getRelativeDateInfo,

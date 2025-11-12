@@ -1,8 +1,8 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE, SPACING } from '../../../../shared/theme';
-import { AppText } from '../../../../shared/components/ui';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { AppText } from '@/shared/components/ui';
 
 type AnswerTabVariant =
   | 'timeslot'
