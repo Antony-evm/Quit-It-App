@@ -107,7 +107,7 @@ export const HomePlaceholderScreen = () => {
     }
   };
 
-  const shouldHideFooter = false;
+  const shouldHideFooter = isKeyboardVisible;
 
   return (
     <SafeAreaView style={styles.safeArea}>

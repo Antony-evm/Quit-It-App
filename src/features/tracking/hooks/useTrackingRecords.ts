@@ -23,7 +23,7 @@ export const useTrackingRecords = (options: UseTrackingRecordsOptions = {}) => {
     queryFn: () => fetchTrackingRecords({ user_id: userId, offset }),
     enabled,
     staleTime: 30000, // 30 seconds
-    select: (data) => {
+    select: data => {
       // Sort records by event_at date in descending order (newest first)
       return [...data].sort((a, b) => {
         const dateA = new Date(a.event_at);

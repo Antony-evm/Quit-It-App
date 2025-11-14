@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -18,6 +18,7 @@ import {
   CreateTrackingRecordPayload,
 } from '@/features/tracking/api/createTrackingRecord';
 import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
+import { useToast } from '@/shared/components/toast';
 
 type NotesCardProps = {
   userId?: number;
@@ -36,6 +37,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
     number | null
   >(null);
@@ -62,17 +64,14 @@ export const NotesCard: React.FC<NotesCardProps> = ({
       onSaveSuccess?.();
 
       // Show success message
-      Alert.alert('Success!', 'Your tracking entry has been saved.', [
-        { text: 'OK' },
-      ]);
+      showToast('Your tracking entry has been saved!', 'success');
     },
     onError: error => {
-      Alert.alert(
-        'Error',
+      showToast(
         error instanceof Error
           ? error.message
           : 'Failed to save tracking entry',
-        [{ text: 'OK' }],
+        'error'
       );
     },
   });

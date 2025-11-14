@@ -18,6 +18,7 @@ import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { updateTrackingRecord } from '../api/updateTrackingRecord';
 import { deleteTrackingRecord } from '../api/deleteTrackingRecord';
+import { useToast } from '@/shared/components/toast';
 
 type TrackingRecordCardProps = {
   record: TrackingRecordApiResponse;
@@ -67,6 +68,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedNote, setEditedNote] = useState(record.note || '');
@@ -135,14 +137,14 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       setIsEditMode(false);
-      Alert.alert('Success!', 'Your tracking entry has been updated.');
+      showToast('Your tracking entry has been updated!', 'success');
     },
     onError: error => {
-      Alert.alert(
-        'Error',
+      showToast(
         error instanceof Error
           ? error.message
           : 'Failed to update tracking entry',
+        'error'
       );
     },
   });
@@ -151,14 +153,14 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     mutationFn: deleteTrackingRecord,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      Alert.alert('Success!', 'Tracking entry has been deleted.');
+      showToast('Tracking entry has been deleted!', 'success');
     },
     onError: error => {
-      Alert.alert(
-        'Error',
+      showToast(
         error instanceof Error
           ? error.message
           : 'Failed to delete tracking entry',
+        'error'
       );
     },
   });
