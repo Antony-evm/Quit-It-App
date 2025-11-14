@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/shared/components/ui';
@@ -8,6 +14,8 @@ import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { HomeEntriesPlaceholder, HomeEntry } from '../components/HomeEntriesPlaceholder';
 import { HomeFooterNavigator, HomeFooterTab } from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
+import { TrackingLogList } from '@/features/tracking/components/TrackingLogList';
+import { TrackingLogForm } from '@/features/tracking/components/TrackingLogForm';
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
@@ -41,8 +49,23 @@ const PLACEHOLDER_ENTRIES: HomeEntry[] = [
 
 export const HomePlaceholderScreen = () => {
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const stats = STAT_CARDS;
   const entries = PLACEHOLDER_ENTRIES;
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const renderHomeTab = () => (
     <>
@@ -60,14 +83,22 @@ export const HomePlaceholderScreen = () => {
   );
 
   const renderLogTab = () => (
-    <View style={styles.placeholderCard}>
-      <AppText variant="heading" style={styles.placeholderTitle}>
-        Log
-      </AppText>
-      <AppText tone="secondary">
-        Your detailed activity log will live here soon.
-      </AppText>
-    </View>
+    <KeyboardAvoidingView
+      style={styles.logTab}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <View style={styles.logIntro}>
+        <AppText variant="title">Activity log</AppText>
+        <AppText tone="secondary">
+          Review your past entries and add new ones.
+        </AppText>
+      </View>
+      <TrackingLogForm />
+      <View style={styles.logListWrapper}>
+        <TrackingLogList />
+      </View>
+    </KeyboardAvoidingView>
   );
 
   const renderContent = () => {
@@ -86,12 +117,21 @@ export const HomePlaceholderScreen = () => {
     }
   };
 
+  const shouldHideFooter = activeTab === 'log' && isKeyboardVisible;
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.content}>
+      <View
+        style={[
+          styles.content,
+          shouldHideFooter ? styles.contentExpanded : undefined,
+        ]}
+      >
         {renderContent()}
       </View>
-      <HomeFooterNavigator activeTab={activeTab} onTabChange={setActiveTab} />
+      {!shouldHideFooter ? (
+        <HomeFooterNavigator activeTab={activeTab} onTabChange={setActiveTab} />
+      ) : null}
     </SafeAreaView>
   );
 };
@@ -107,6 +147,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.xl,
+  },
+  contentExpanded: {
+    paddingBottom: SPACING.md,
   },
   accountWrapper: {
     flex: 1,
@@ -124,17 +167,20 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: SPACING.xl,
   },
-  placeholderCard: {
+  logTab: {
     flex: 1,
-    borderWidth: 1,
+  },
+  logIntro: {
+    marginBottom: SPACING.lg,
+    gap: SPACING.xs,
+  },
+  logListWrapper: {
+    flex: 1,
     borderRadius: 16,
+    borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    padding: SPACING.xl,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  placeholderTitle: {
-    marginBottom: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
   },
 });
