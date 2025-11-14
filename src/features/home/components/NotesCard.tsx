@@ -71,7 +71,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
         error instanceof Error
           ? error.message
           : 'Failed to save tracking entry',
-        'error'
+        'error',
       );
     },
   });

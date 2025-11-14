@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -19,48 +19,13 @@ import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { updateTrackingRecord } from '../api/updateTrackingRecord';
 import { deleteTrackingRecord } from '../api/deleteTrackingRecord';
 import { useToast } from '@/shared/components/toast';
+import {
+  formatRelativeDateTimeForDisplay,
+  parseTimestampFromAPI,
+} from '@/utils/timezoneUtils';
 
 type TrackingRecordCardProps = {
   record: TrackingRecordApiResponse;
-};
-
-const formatEventDate = (eventAt: string): string => {
-  const date = new Date(eventAt);
-
-  if (isNaN(date.getTime())) {
-    return eventAt;
-  }
-
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const recordDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
-
-  const diffTime = today.getTime() - recordDate.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  let dateLabel = '';
-  if (diffDays === 0) {
-    dateLabel = 'Today';
-  } else if (diffDays === 1) {
-    dateLabel = 'Yesterday';
-  } else {
-    dateLabel = date.toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-    });
-  }
-
-  const timeLabel = date.toLocaleTimeString(undefined, {
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-
-  return `${dateLabel} at ${timeLabel}`;
 };
 
 export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
@@ -73,7 +38,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedNote, setEditedNote] = useState(record.note || '');
   const [editedDateTime, setEditedDateTime] = useState(
-    new Date(record.event_at),
+    parseTimestampFromAPI(record.event_at),
   );
   const [editedTrackingTypeId, setEditedTrackingTypeId] = useState(
     record.tracking_type_id,
@@ -89,7 +54,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     type => type.id === editedTrackingTypeId,
   );
 
-  const formattedDate = formatEventDate(record.event_at);
+  const formattedDate = formatRelativeDateTimeForDisplay(record.event_at);
   const maxChars = 500;
   const remainingChars = maxChars - editedNote.length;
 
@@ -144,7 +109,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         error instanceof Error
           ? error.message
           : 'Failed to update tracking entry',
-        'error'
+        'error',
       );
     },
   });
@@ -160,7 +125,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         error instanceof Error
           ? error.message
           : 'Failed to delete tracking entry',
-        'error'
+        'error',
       );
     },
   });
@@ -178,24 +143,13 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete this tracking entry? This action cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => deleteRecordMutation.mutate(record.record_id),
-        },
-      ],
-    );
+    deleteRecordMutation.mutate(record.record_id);
   };
 
   const handleCancel = () => {
     // Reset form values to original
     setEditedNote(record.note || '');
-    setEditedDateTime(new Date(record.event_at));
+    setEditedDateTime(parseTimestampFromAPI(record.event_at));
     setEditedTrackingTypeId(record.tracking_type_id);
     setIsEditMode(false);
     setShowDropdown(false);
@@ -318,6 +272,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
             value={editedDateTime}
             mode={pickerMode}
             is24Hour={false}
+            maximumDate={new Date()}
             onChange={handleDateTimeChange}
           />
         )}
