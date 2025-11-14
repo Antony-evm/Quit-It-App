@@ -11,7 +11,7 @@ import {
   AppText,
   AppTextInput,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { useTrackingTypes } from '@/features/tracking';
 import {
   createTrackingRecord,
@@ -50,7 +50,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
     mutationFn: createTrackingRecord,
     onSuccess: () => {
       // Invalidate and refetch tracking-related queries
-      queryClient.invalidateQueries({ queryKey: ['trackingLogs'] });
+      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
 
       // Reset form
       setNotes('');
@@ -167,12 +167,12 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   };
 
   const handleSave = () => {
-    if (selectedTrackingType && notes.trim()) {
+    if (selectedTrackingType) {
       const payload: CreateTrackingRecordPayload = {
         user_id: userId,
         tracking_type_id: selectedTrackingType.id,
         event_at: selectedDateTime.toISOString(),
-        note: notes.trim() || null,
+        note: notes.trim() || null, // Send null if notes is empty
       };
 
       // Call the legacy callback if provided
@@ -188,24 +188,10 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   };
 
   const isSaveDisabled =
-    !notes.trim() || !selectedTrackingType || createRecordMutation.isPending;
-
-  console.log('NotesCard Debug:', {
-    trackingTypes: trackingTypes?.length ?? 'undefined',
-    selectedTrackingTypeId,
-    selectedTrackingType: selectedTrackingType?.displayName,
-    notesLength: notes.length,
-    isSaveDisabled
-  });
+    !selectedTrackingType || createRecordMutation.isPending;
 
   if (!trackingTypes || trackingTypes.length === 0) {
-    return (
-      <AppSurface style={styles.card}>
-        <AppText style={{ color: 'red' }}>
-          DEBUG: No tracking types available. trackingTypes: {JSON.stringify(trackingTypes)}
-        </AppText>
-      </AppSurface>
-    );
+    return null; // Don't render if no tracking types available
   }
 
   return (
@@ -354,20 +340,14 @@ export const NotesCard: React.FC<NotesCardProps> = ({
         </View>
       </View>
 
-      {/* Debug: This should help us see if the save section is rendering */}
-      <View style={{ backgroundColor: 'rgba(255, 0, 0, 0.1)', padding: 10 }}>
-        <AppText style={{ color: 'red', fontSize: 12 }}>
-          DEBUG: Save button should be below this text
-        </AppText>
-        <AppButton
-          label={createRecordMutation.isPending ? 'Saving...' : 'Save Entry'}
-          onPress={handleSave}
-          disabled={isSaveDisabled}
-          fullWidth
-          style={[styles.saveButton, { backgroundColor: 'blue' }]}
-          variant="primary"
-        />
-      </View>
+      <AppButton
+        label={createRecordMutation.isPending ? 'Saving...' : 'Save Entry'}
+        onPress={handleSave}
+        disabled={isSaveDisabled}
+        fullWidth
+        style={styles.saveButton}
+        textStyle={styles.saveButtonText}
+      />
     </AppSurface>
   );
 };
@@ -512,5 +492,10 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: SPACING.sm,
+    backgroundColor: BRAND_COLORS.cream,
+    borderColor: BRAND_COLORS.cream,
+  },
+  saveButtonText: {
+    color: BRAND_COLORS.ink,
   },
 });

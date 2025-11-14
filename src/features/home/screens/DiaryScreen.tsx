@@ -4,6 +4,7 @@ import { StyleSheet, ScrollView, View } from 'react-native';
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { NotesCard } from '../components/NotesCard';
+import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 
 export const DiaryScreen = () => {
   return (
@@ -22,6 +23,7 @@ export const DiaryScreen = () => {
           </AppText>
         </View>
         <NotesCard />
+        <TrackingRecordsList />
       </ScrollView>
     </View>
   );
