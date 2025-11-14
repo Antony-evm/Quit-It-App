@@ -1,17 +1,17 @@
-import { TRACKING_ENDPOINT } from './endpoints';
-import { extractTrackingRecord, TrackingApiSinglePayload } from './transformers';
-import type { TrackingRecord } from '../types';
+import { API_BASE_URL } from '@/shared/api/apiConfig';
+
+const TRACKING_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
 
 export type CreateTrackingRecordPayload = {
   user_id: number;
   tracking_type_id: number;
-  event_at: string;
+  event_at: string; // ISO datetime string
   note?: string | null;
 };
 
 export const createTrackingRecord = async (
   payload: CreateTrackingRecordPayload,
-): Promise<TrackingRecord> => {
+): Promise<void> => {
   const response = await fetch(TRACKING_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -21,9 +21,6 @@ export const createTrackingRecord = async (
   });
 
   if (!response.ok) {
-    throw new Error('Failed to create tracking log');
+    throw new Error('Failed to create tracking record');
   }
-
-  const data = (await response.json()) as TrackingApiSinglePayload;
-  return extractTrackingRecord(data);
 };

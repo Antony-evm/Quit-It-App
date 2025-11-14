@@ -1,56 +1,30 @@
-import { API_BASE_URL } from '@/shared/api/apiConfig';
 import type { TrackingType } from '../types';
-
-const TRACKING_TYPES_ENDPOINT = `${API_BASE_URL}/api/v1/tracking/types`;
+import { TRACKING_TYPES_ENDPOINT } from './endpoints';
 
 type TrackingTypeApiRecord = {
   tracking_type_id: number;
   display_name: string;
   code: string;
-  description?: string | null;
+  description: string;
 };
 
-type TrackingTypesApiResponse =
-  | TrackingTypeApiRecord[]
-  | {
-      data?:
-        | TrackingTypeApiRecord[]
-        | {
-            tracking_types?: TrackingTypeApiRecord[];
-          };
-    };
+type TrackingTypesApiResponse = {
+  data: {
+    tracking_types: TrackingTypeApiRecord[];
+  };
+};
 
 const mapTrackingType = (record: TrackingTypeApiRecord): TrackingType => ({
   id: record.tracking_type_id,
   displayName: record.display_name,
   code: record.code,
-  description: record.description ?? null,
+  description: record.description,
 });
 
 const extractRecords = (
   payload: TrackingTypesApiResponse,
 ): TrackingTypeApiRecord[] => {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
-
-  if ('data' in payload) {
-    const data = payload.data;
-
-    if (!data) {
-      return [];
-    }
-
-    if (Array.isArray(data)) {
-      return data;
-    }
-
-    if ('tracking_types' in data && Array.isArray(data.tracking_types)) {
-      return data.tracking_types;
-    }
-  }
-
-  return [];
+  return payload.data.tracking_types;
 };
 
 export const fetchTrackingTypes = async (): Promise<TrackingType[]> => {

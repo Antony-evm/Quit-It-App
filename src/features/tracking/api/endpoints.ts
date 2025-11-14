@@ -1,5 +1,7 @@
 import { API_BASE_URL } from '@/shared/api/apiConfig';
 
+export const TRACKING_TYPES_ENDPOINT = `${API_BASE_URL}/api/v1/tracking/types`;
+
 export const TRACKING_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
 
 export const TRACKING_DEFAULT_PARAMS = {

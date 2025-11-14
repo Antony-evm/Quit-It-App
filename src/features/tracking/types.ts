@@ -15,5 +15,5 @@ export type TrackingType = {
   id: number;
   displayName: string;
   code: string;
-  description: string | null;
+  description: string;
 };

@@ -14,18 +14,18 @@ import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
 
-export type HomeFooterTab = 'account' | 'home' | 'log';
+export type HomeFooterTab = 'account' | 'home' | 'diary';
 
 const TABS: { key: HomeFooterTab; label: string }[] = [
   { key: 'account', label: 'Account' },
   { key: 'home', label: 'Home' },
-  { key: 'log', label: 'Log' },
+  { key: 'diary', label: 'Diary' },
 ];
 
 const TAB_ICONS: Record<HomeFooterTab, React.ComponentType<SvgProps>> = {
   account: AccountIcon,
   home: HomeIcon,
-  log: ClipboardIcon,
+  diary: ClipboardIcon,
 };
 
 type HomeFooterNavigatorProps = {

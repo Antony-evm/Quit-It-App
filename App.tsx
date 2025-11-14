@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { COLOR_PALETTE } from './src/shared/theme';
 import { AppNavigator } from './src/navigation';
+import { TrackingTypesProvider } from './src/features/tracking/components/TrackingTypesProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,13 +21,15 @@ const queryClient = new QueryClient({
 function App(): React.ReactElement {
   return (
     <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={COLOR_PALETTE.backgroundMuted}
-        />
-        <AppNavigator />
-      </SafeAreaProvider>
+      <TrackingTypesProvider>
+        <SafeAreaProvider>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={COLOR_PALETTE.backgroundMuted}
+          />
+          <AppNavigator />
+        </SafeAreaProvider>
+      </TrackingTypesProvider>
     </QueryClientProvider>
   );
 }

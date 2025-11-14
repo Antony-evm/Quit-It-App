@@ -11,11 +11,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
-import { HomeEntriesPlaceholder, HomeEntry } from '../components/HomeEntriesPlaceholder';
-import { HomeFooterNavigator, HomeFooterTab } from '../components/HomeFooterNavigator';
+import { DiaryScreen } from './DiaryScreen';
+import {
+  HomeEntriesPlaceholder,
+  HomeEntry,
+} from '../components/HomeEntriesPlaceholder';
+import {
+  HomeFooterNavigator,
+  HomeFooterTab,
+} from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
-import { TrackingLogList } from '@/features/tracking/components/TrackingLogList';
-import { TrackingLogForm } from '@/features/tracking/components/TrackingLogForm';
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
@@ -82,25 +87,6 @@ export const HomePlaceholderScreen = () => {
     </>
   );
 
-  const renderLogTab = () => (
-    <KeyboardAvoidingView
-      style={styles.logTab}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
-    >
-      <View style={styles.logIntro}>
-        <AppText variant="title">Activity log</AppText>
-        <AppText tone="secondary">
-          Review your past entries and add new ones.
-        </AppText>
-      </View>
-      <TrackingLogForm />
-      <View style={styles.logListWrapper}>
-        <TrackingLogList />
-      </View>
-    </KeyboardAvoidingView>
-  );
-
   const renderContent = () => {
     switch (activeTab) {
       case 'account':
@@ -109,15 +95,19 @@ export const HomePlaceholderScreen = () => {
             <AccountScreen />
           </View>
         );
-      case 'log':
-        return renderLogTab();
+      case 'diary':
+        return (
+          <View style={styles.diaryWrapper}>
+            <DiaryScreen />
+          </View>
+        );
       case 'home':
       default:
         return renderHomeTab();
     }
   };
 
-  const shouldHideFooter = activeTab === 'log' && isKeyboardVisible;
+  const shouldHideFooter = false;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -154,6 +144,9 @@ const styles = StyleSheet.create({
   accountWrapper: {
     flex: 1,
   },
+  diaryWrapper: {
+    flex: 1,
+  },
   title: {
     marginBottom: SPACING.sm,
   },
@@ -166,21 +159,5 @@ const styles = StyleSheet.create({
   entriesCard: {
     flex: 1,
     marginBottom: SPACING.xl,
-  },
-  logTab: {
-    flex: 1,
-  },
-  logIntro: {
-    marginBottom: SPACING.lg,
-    gap: SPACING.xs,
-  },
-  logListWrapper: {
-    flex: 1,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
   },
 });
