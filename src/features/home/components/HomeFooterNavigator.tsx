@@ -9,7 +9,7 @@ import {
 import { SvgProps } from 'react-native-svg';
 
 import { AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
@@ -43,9 +43,6 @@ export const HomeFooterNavigator = ({
     {TABS.map(tab => {
       const isActive = tab.key === activeTab;
       const Icon = TAB_ICONS[tab.key];
-      const iconColor = isActive
-        ? COLOR_PALETTE.accentPrimary
-        : COLOR_PALETTE.textSecondary;
 
       return (
         <Pressable
@@ -58,7 +55,12 @@ export const HomeFooterNavigator = ({
             }
           }}
         >
-          <Icon width={28} height={28} style={styles.icon} fill={iconColor} />
+          <Icon
+            width={28}
+            height={28}
+            style={styles.icon}
+            fill={BRAND_COLORS.cream}
+          />
           <AppText
             variant="caption"
             style={[styles.label, isActive && styles.labelActive]}
