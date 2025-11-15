@@ -21,14 +21,70 @@ export const useInfiniteTrackingRecords = (
 
   const queryKey = ['trackingRecords', 'infinite', userId];
 
+  // Helper function to merge new records with existing cache, removing duplicates
+  const mergeRecordsById = (
+    existingRecords: TrackingRecordApiResponse[],
+    newRecords: TrackingRecordApiResponse[],
+  ): TrackingRecordApiResponse[] => {
+    const recordMap = new Map<number, TrackingRecordApiResponse>();
+
+    // Add existing records to map
+    existingRecords.forEach(record => {
+      recordMap.set(record.record_id, record);
+    });
+
+    // Override with new records (this handles duplicates by using latest data)
+    newRecords.forEach(record => {
+      recordMap.set(record.record_id, record);
+    });
+
+    return Array.from(recordMap.values());
+  };
+
   const query = useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 0 }) => {
       console.log(`Fetching tracking records with offset: ${pageParam}`);
-      return fetchTrackingRecords({
+      const newRecords = await fetchTrackingRecords({
         user_id: userId,
         offset: pageParam as number,
       });
+
+      // After receiving new data, update the cache to handle duplicates across all pages
+      setTimeout(() => {
+        queryClient.setQueryData(queryKey, (oldData: any) => {
+          if (!oldData?.pages) return oldData;
+
+          // Flatten all existing records
+          const allExistingRecords = oldData.pages.flat();
+
+          // Merge with new records to remove duplicates
+          const mergedRecords = mergeRecordsById(
+            allExistingRecords,
+            newRecords,
+          );
+
+          // Redistribute records back into pages
+          const newPages: TrackingRecordApiResponse[][] = [];
+          for (
+            let i = 0;
+            i < mergedRecords.length;
+            i += TRACKING_RECORDS_PAGE_SIZE
+          ) {
+            newPages.push(
+              mergedRecords.slice(i, i + TRACKING_RECORDS_PAGE_SIZE),
+            );
+          }
+
+          // Preserve all infinite query metadata
+          return {
+            ...oldData,
+            pages: newPages.length > 0 ? newPages : [[]],
+          };
+        });
+      }, 0);
+
+      return newRecords;
     },
     enabled,
     staleTime: Infinity, // Never consider data stale to prevent automatic refetches
@@ -98,6 +154,25 @@ export const useInfiniteTrackingRecords = (
     });
   };
 
+  // Override cache with new records, using record_id as the key for deduplication
+  const overrideCacheWithRecords = (
+    newRecords: TrackingRecordApiResponse[],
+  ) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+
+      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
+        mergeRecordsById(page, newRecords),
+      );
+
+      // Preserve all infinite query metadata (pageParams, etc.)
+      return {
+        ...oldData,
+        pages: newPages,
+      };
+    });
+  };
+
   const addRecordToCache = (newRecord: TrackingRecordApiResponse) => {
     queryClient.setQueryData(queryKey, (oldData: any) => {
       if (!oldData?.pages?.length) return oldData;
@@ -126,11 +201,35 @@ export const useInfiniteTrackingRecords = (
     });
   };
 
+  // Replace optimistic record (temp ID) with real record from server
+  const replaceOptimisticRecord = (
+    tempId: number,
+    realRecord: TrackingRecordApiResponse,
+  ) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData?.pages?.length) return oldData;
+
+      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
+        page.map((record: TrackingRecordApiResponse) =>
+          record.record_id === tempId ? realRecord : record,
+        ),
+      );
+
+      // Preserve all infinite query metadata
+      return {
+        ...oldData,
+        pages: newPages,
+      };
+    });
+  };
+
   return {
     ...query,
     flatRecords: sortedRecords,
     updateRecordInCache,
     removeRecordFromCache,
     addRecordToCache,
+    overrideCacheWithRecords,
+    replaceOptimisticRecord,
   };
 };

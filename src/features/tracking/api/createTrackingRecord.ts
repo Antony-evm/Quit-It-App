@@ -1,4 +1,5 @@
 import { API_BASE_URL } from '@/shared/api/apiConfig';
+import type { TrackingRecordApiResponse } from './fetchTrackingRecords';
 
 const TRACKING_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
 
@@ -9,9 +10,13 @@ export type CreateTrackingRecordPayload = {
   note?: string | null;
 };
 
+export type CreateTrackingRecordResponse = {
+  data: TrackingRecordApiResponse;
+};
+
 export const createTrackingRecord = async (
   payload: CreateTrackingRecordPayload,
-): Promise<void> => {
+): Promise<TrackingRecordApiResponse> => {
   const response = await fetch(TRACKING_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -23,4 +28,7 @@ export const createTrackingRecord = async (
   if (!response.ok) {
     throw new Error('Failed to create tracking record');
   }
+
+  const result = (await response.json()) as CreateTrackingRecordResponse;
+  return result.data;
 };

@@ -39,7 +39,8 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
-  const { addRecordToCache } = useInfiniteTrackingRecords();
+  const { addRecordToCache, replaceOptimisticRecord } =
+    useInfiniteTrackingRecords();
   const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
     number | null
   >(null);
@@ -68,9 +69,14 @@ export const NotesCard: React.FC<NotesCardProps> = ({
       // Optimistically add the record to the cache
       addRecordToCache(optimisticRecord);
 
-      return { optimisticRecord };
+      return { optimisticRecord, tempId };
     },
-    onSuccess: (_data, _variables, _context) => {
+    onSuccess: (realRecord, _variables, context) => {
+      // Replace the optimistic record with the real record from server
+      if (context?.tempId) {
+        replaceOptimisticRecord(context.tempId, realRecord);
+      }
+
       // Reset form
       setNotes('');
       setSelectedDateTime(new Date());
@@ -82,9 +88,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 
       // Show success message
       showToast('Your tracking entry has been saved!', 'success');
-
-      // Note: No need to invalidate queries here as optimistic updates handle the cache
-      // The real data from server will replace the optimistic update automatically
     },
     onError: (error, _variables, _context) => {
       // On error, the optimistic update will be automatically reverted
