@@ -3,6 +3,7 @@ import { API_BASE_URL } from '@/shared/api/apiConfig';
 export type UpdateTrackingRecordPayload = {
   event_at: string; // ISO datetime string
   note?: string;
+  tracking_type_id: number;
 };
 
 export const updateTrackingRecord = async (

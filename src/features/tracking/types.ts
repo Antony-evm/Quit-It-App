@@ -16,4 +16,5 @@ export type TrackingType = {
   displayName: string;
   code: string;
   description: string;
+  is_default: boolean;
 };

@@ -83,7 +83,14 @@ export const NotesCard: React.FC<NotesCardProps> = ({
       trackingTypes.length > 0 &&
       selectedTrackingTypeId === null
     ) {
-      setSelectedTrackingTypeId(trackingTypes[0].id);
+      // First, try to find a tracking type marked as default
+      const defaultType = trackingTypes.find(type => type.is_default);
+      if (defaultType) {
+        setSelectedTrackingTypeId(defaultType.id);
+      } else {
+        // Fallback to the first tracking type if no default is found
+        setSelectedTrackingTypeId(trackingTypes[0].id);
+      }
     }
   }, [trackingTypes, selectedTrackingTypeId]);
 

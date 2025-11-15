@@ -6,7 +6,7 @@ import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { NotesCard } from '../components/NotesCard';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 
-export const DiaryScreen = () => {
+export const NotesScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView

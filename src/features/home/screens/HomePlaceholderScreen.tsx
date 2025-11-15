@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
-import { DiaryScreen } from './DiaryScreen';
+import { NotesScreen } from './NotesScreen';
 import {
   HomeEntriesPlaceholder,
   HomeEntry,
@@ -95,10 +95,10 @@ export const HomePlaceholderScreen = () => {
             <AccountScreen />
           </View>
         );
-      case 'diary':
+      case 'notes':
         return (
-          <View style={styles.diaryWrapper}>
-            <DiaryScreen />
+          <View style={styles.notesWrapper}>
+            <NotesScreen />
           </View>
         );
       case 'home':
@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   accountWrapper: {
     flex: 1,
   },
-  diaryWrapper: {
+  notesWrapper: {
     flex: 1,
   },
   title: {

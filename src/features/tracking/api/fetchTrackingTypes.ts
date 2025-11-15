@@ -6,6 +6,7 @@ type TrackingTypeApiRecord = {
   display_name: string;
   code: string;
   description: string;
+  is_default: boolean;
 };
 
 type TrackingTypesApiResponse = {
@@ -19,6 +20,7 @@ const mapTrackingType = (record: TrackingTypeApiRecord): TrackingType => ({
   displayName: record.display_name,
   code: record.code,
   description: record.description,
+  is_default: record.is_default,
 });
 
 const extractRecords = (

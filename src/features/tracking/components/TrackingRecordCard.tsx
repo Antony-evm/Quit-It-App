@@ -47,6 +47,28 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
 
+  // Ensure we have a valid tracking type ID, fallback to default if needed
+  React.useEffect(() => {
+    if (trackingTypes && trackingTypes.length > 0) {
+      // Check if current tracking type ID is valid
+      const currentTypeExists = trackingTypes.find(
+        type => type.id === editedTrackingTypeId,
+      );
+
+      // If the current tracking type doesn't exist or is null/undefined,
+      // set to default or first available
+      if (!currentTypeExists || editedTrackingTypeId == null) {
+        const defaultType = trackingTypes.find(type => type.is_default);
+        if (defaultType) {
+          setEditedTrackingTypeId(defaultType.id);
+        } else {
+          // Fallback to the first tracking type if no default is found
+          setEditedTrackingTypeId(trackingTypes[0].id);
+        }
+      }
+    }
+  }, [trackingTypes, editedTrackingTypeId]);
+
   const trackingType = trackingTypes?.find(
     type => type.id === record.tracking_type_id,
   );
@@ -99,8 +121,9 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   const updateRecordMutation = useMutation({
     mutationFn: ({ recordId, payload }: { recordId: number; payload: any }) =>
       updateTrackingRecord(recordId, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
+    onSuccess: async () => {
+      // Force refetch of tracking records to ensure fresh data
+      await queryClient.refetchQueries({ queryKey: ['trackingRecords'] });
       setIsEditMode(false);
       showToast('Your tracking entry has been updated!', 'success');
     },
@@ -134,6 +157,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     const payload = {
       event_at: editedDateTime.toISOString(),
       note: editedNote.trim() || undefined,
+      tracking_type_id: editedTrackingTypeId,
     };
 
     updateRecordMutation.mutate({
@@ -150,7 +174,28 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     // Reset form values to original
     setEditedNote(record.note || '');
     setEditedDateTime(parseTimestampFromAPI(record.event_at));
-    setEditedTrackingTypeId(record.tracking_type_id);
+
+    // Reset tracking type ID, but ensure it's valid
+    if (trackingTypes && trackingTypes.length > 0) {
+      const originalTypeExists = trackingTypes.find(
+        type => type.id === record.tracking_type_id,
+      );
+
+      if (originalTypeExists && record.tracking_type_id != null) {
+        setEditedTrackingTypeId(record.tracking_type_id);
+      } else {
+        // Fallback to default if original type is invalid
+        const defaultType = trackingTypes.find(type => type.is_default);
+        if (defaultType) {
+          setEditedTrackingTypeId(defaultType.id);
+        } else {
+          setEditedTrackingTypeId(trackingTypes[0].id);
+        }
+      }
+    } else {
+      setEditedTrackingTypeId(record.tracking_type_id);
+    }
+
     setIsEditMode(false);
     setShowDropdown(false);
     setShowDateTimePicker(false);

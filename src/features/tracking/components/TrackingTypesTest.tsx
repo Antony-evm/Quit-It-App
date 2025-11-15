@@ -39,6 +39,7 @@ export const TrackingTypesTest: React.FC = () => {
           <Text>Display Name: {type.displayName}</Text>
           <Text>Code: {type.code}</Text>
           <Text>Description: {type.description}</Text>
+          <Text>Is Default: {type.is_default ? 'Yes' : 'No'}</Text>
         </View>
       ))}
     </View>
