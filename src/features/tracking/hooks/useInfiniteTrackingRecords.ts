@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import {
   fetchTrackingRecords,
   TrackingRecordApiResponse,
@@ -17,9 +17,12 @@ export const useInfiniteTrackingRecords = (
   options: UseInfiniteTrackingRecordsOptions = {},
 ) => {
   const { userId = DEFAULT_TRACKING_USER_ID, enabled = true } = options;
+  const queryClient = useQueryClient();
+
+  const queryKey = ['trackingRecords', 'infinite', userId];
 
   const query = useInfiniteQuery({
-    queryKey: ['trackingRecords', 'infinite', userId],
+    queryKey,
     queryFn: ({ pageParam = 0 }) =>
       fetchTrackingRecords({ user_id: userId, offset: pageParam as number }),
     enabled,
@@ -43,8 +46,77 @@ export const useInfiniteTrackingRecords = (
     return dateB.getTime() - dateA.getTime();
   });
 
+  // Cache update utilities for optimistic updates
+  // These preserve the infinite query structure while updating data
+  const updateRecordInCache = (updatedRecord: TrackingRecordApiResponse) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+
+      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
+        page.map((record: TrackingRecordApiResponse) =>
+          record.record_id === updatedRecord.record_id ? updatedRecord : record,
+        ),
+      );
+
+      // Preserve all infinite query metadata (pageParams, etc.)
+      return {
+        ...oldData,
+        pages: newPages,
+      };
+    });
+  };
+
+  const removeRecordFromCache = (recordId: number) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData?.pages) return oldData;
+
+      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
+        page.filter(
+          (record: TrackingRecordApiResponse) => record.record_id !== recordId,
+        ),
+      );
+
+      // Preserve all infinite query metadata (pageParams, etc.)
+      return {
+        ...oldData,
+        pages: newPages,
+      };
+    });
+  };
+
+  const addRecordToCache = (newRecord: TrackingRecordApiResponse) => {
+    queryClient.setQueryData(queryKey, (oldData: any) => {
+      if (!oldData?.pages?.length) return oldData;
+
+      const newPages = [...oldData.pages];
+      const firstPage = [...newPages[0]];
+
+      // Find correct insertion position based on date (newest first)
+      const newRecordTime = new Date(newRecord.event_at).getTime();
+      let insertIndex = firstPage.findIndex(
+        record => new Date(record.event_at).getTime() < newRecordTime,
+      );
+
+      if (insertIndex === -1) {
+        insertIndex = firstPage.length;
+      }
+
+      firstPage.splice(insertIndex, 0, newRecord);
+      newPages[0] = firstPage;
+
+      // Preserve all infinite query metadata
+      return {
+        ...oldData,
+        pages: newPages,
+      };
+    });
+  };
+
   return {
     ...query,
     flatRecords: sortedRecords,
+    updateRecordInCache,
+    removeRecordFromCache,
+    addRecordToCache,
   };
 };
