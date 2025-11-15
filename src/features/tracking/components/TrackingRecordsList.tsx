@@ -1,18 +1,28 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import { useTrackingRecords } from '../hooks/useTrackingRecords';
+import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
+import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 
 export const TrackingRecordsList: React.FC = () => {
   const {
-    data: trackingRecords,
+    flatRecords: trackingRecords,
     isLoading,
     isError,
     error,
-  } = useTrackingRecords();
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteTrackingRecords();
+
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
   if (isLoading) {
     return (
@@ -55,6 +65,27 @@ export const TrackingRecordsList: React.FC = () => {
           <TrackingRecordCard key={record.record_id} record={record} />
         ))}
       </View>
+
+      {isFetchingNextPage && (
+        <View style={styles.loadingFooter}>
+          <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />
+          <AppText variant="body" tone="secondary" style={styles.loadingText}>
+            Loading more records...
+          </AppText>
+        </View>
+      )}
+
+      {hasNextPage && !isFetchingNextPage && trackingRecords.length > 0 && (
+        <View style={styles.loadMoreContainer}>
+          <AppText
+            variant="body"
+            style={styles.loadMoreButton}
+            onPress={handleLoadMore}
+          >
+            Load More
+          </AppText>
+        </View>
+      )}
     </View>
   );
 };
@@ -69,6 +100,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   recordsList: {
+    paddingBottom: SPACING.lg,
     gap: SPACING.xs,
   },
   loadingText: {
@@ -84,5 +116,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: SPACING.xl,
     paddingHorizontal: SPACING.lg,
+  },
+  loadingFooter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.md,
+    gap: SPACING.xs,
+  },
+  loadMoreContainer: {
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+  },
+  loadMoreButton: {
+    color: COLOR_PALETTE.accentPrimary,
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

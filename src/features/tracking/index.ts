@@ -5,6 +5,8 @@ export type {
   TrackingRecordsPage,
 } from './types';
 export { useTrackingTypes } from './hooks/useTrackingTypes';
+export { useTrackingRecords } from './hooks/useTrackingRecords';
+export { useInfiniteTrackingRecords } from './hooks/useInfiniteTrackingRecords';
 export { TrackingTypesProvider } from './components/TrackingTypesProvider';
 
 // Re-export API functions
