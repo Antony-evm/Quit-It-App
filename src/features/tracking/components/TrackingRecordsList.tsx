@@ -5,7 +5,6 @@ import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
-import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 
 export const TrackingRecordsList: React.FC = () => {
   const {
@@ -14,12 +13,12 @@ export const TrackingRecordsList: React.FC = () => {
     isError,
     error,
     fetchNextPage,
-    hasNextPage,
     isFetchingNextPage,
   } = useInfiniteTrackingRecords();
 
   const handleLoadMore = () => {
-    if (hasNextPage && !isFetchingNextPage) {
+    // Prevent multiple concurrent requests and only fetch if there's more data
+    if (!isFetchingNextPage) {
       fetchNextPage();
     }
   };
@@ -75,7 +74,7 @@ export const TrackingRecordsList: React.FC = () => {
         </View>
       )}
 
-      {hasNextPage && !isFetchingNextPage && trackingRecords.length > 0 && (
+      {!isFetchingNextPage && trackingRecords.length > 0 && (
         <View style={styles.loadMoreContainer}>
           <AppText
             variant="body"

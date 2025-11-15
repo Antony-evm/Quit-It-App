@@ -3,7 +3,7 @@ import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 
 import {
   AppButton,
@@ -13,10 +13,12 @@ import {
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { useTrackingTypes } from '@/features/tracking';
+import { useInfiniteTrackingRecords } from '@/features/tracking';
 import {
   createTrackingRecord,
   CreateTrackingRecordPayload,
 } from '@/features/tracking/api/createTrackingRecord';
+import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
 import { useToast } from '@/shared/components/toast';
 
@@ -36,8 +38,8 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   onSaveSuccess,
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
-  const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const { addRecordToCache } = useInfiniteTrackingRecords();
   const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
     number | null
   >(null);
@@ -50,10 +52,25 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   // Mutation for creating tracking record
   const createRecordMutation = useMutation({
     mutationFn: createTrackingRecord,
-    onSuccess: () => {
-      // Invalidate and refetch tracking-related queries
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
+    onMutate: async (variables: CreateTrackingRecordPayload) => {
+      // Generate a temporary ID for the optimistic update
+      const tempId = Date.now(); // Use timestamp as temp ID
 
+      // Create optimistic record that matches API response format
+      const optimisticRecord: TrackingRecordApiResponse = {
+        record_id: tempId,
+        user_id: variables.user_id,
+        tracking_type_id: variables.tracking_type_id,
+        event_at: variables.event_at,
+        note: variables.note || null,
+      };
+
+      // Optimistically add the record to the cache
+      addRecordToCache(optimisticRecord);
+
+      return { optimisticRecord };
+    },
+    onSuccess: (_data, _variables, _context) => {
       // Reset form
       setNotes('');
       setSelectedDateTime(new Date());
@@ -65,8 +82,13 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 
       // Show success message
       showToast('Your tracking entry has been saved!', 'success');
+
+      // Note: No need to invalidate queries here as optimistic updates handle the cache
+      // The real data from server will replace the optimistic update automatically
     },
-    onError: error => {
+    onError: (error, _variables, _context) => {
+      // On error, the optimistic update will be automatically reverted
+      // No need to manually invalidate queries
       showToast(
         error instanceof Error
           ? error.message

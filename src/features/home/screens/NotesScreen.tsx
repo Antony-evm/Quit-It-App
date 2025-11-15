@@ -1,12 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { SPACING } from '@/shared/theme';
 import { NotesCard } from '../components/NotesCard';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
+import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
 
 export const NotesScreen = () => {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Reset the infinite query cache when navigating to notes
+    // This ensures we always start fresh with offset=0 and only make one initial call
+    const queryKey = ['trackingRecords', 'infinite', DEFAULT_TRACKING_USER_ID];
+    queryClient.resetQueries({ queryKey });
+  }, [queryClient]);
+
   return (
     <View style={styles.container}>
       <ScrollView

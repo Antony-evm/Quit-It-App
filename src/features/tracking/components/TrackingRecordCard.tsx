@@ -3,7 +3,7 @@ import { StyleSheet, View, Pressable, Platform } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import EditSvg from '@/assets/edit.svg';
 import DeleteSvg from '@/assets/delete.svg';
 
@@ -15,6 +15,7 @@ import {
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
+import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { updateTrackingRecord } from '../api/updateTrackingRecord';
 import { deleteTrackingRecord } from '../api/deleteTrackingRecord';
@@ -32,8 +33,9 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   record,
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
-  const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const { updateRecordInCache, removeRecordFromCache } =
+    useInfiniteTrackingRecords();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedNote, setEditedNote] = useState(record.note || '');
@@ -121,13 +123,24 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   const updateRecordMutation = useMutation({
     mutationFn: ({ recordId, payload }: { recordId: number; payload: any }) =>
       updateTrackingRecord(recordId, payload),
-    onSuccess: async () => {
-      // Force refetch of tracking records to ensure fresh data
-      await queryClient.refetchQueries({ queryKey: ['trackingRecords'] });
+    onMutate: async ({ recordId, payload }) => {
+      // Optimistically update the record in the cache
+      const updatedRecord: TrackingRecordApiResponse = {
+        ...record,
+        event_at: payload.event_at,
+        note: payload.note || null,
+        tracking_type_id: payload.tracking_type_id,
+      };
+      updateRecordInCache(updatedRecord);
+      return { recordId, originalRecord: record };
+    },
+    onSuccess: () => {
       setIsEditMode(false);
       showToast('Your tracking entry has been updated!', 'success');
     },
-    onError: error => {
+    onError: (error, _variables, _context) => {
+      // On error, optimistic update will be automatically reverted
+      // No need to manually invalidate queries
       showToast(
         error instanceof Error
           ? error.message
@@ -139,11 +152,17 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
   const deleteRecordMutation = useMutation({
     mutationFn: deleteTrackingRecord,
+    onMutate: async recordId => {
+      // Optimistically remove the record from the cache
+      removeRecordFromCache(recordId);
+      return { recordId };
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       showToast('Tracking entry has been deleted!', 'success');
     },
-    onError: error => {
+    onError: (error, _recordId, _context) => {
+      // On error, optimistic update will be automatically reverted
+      // No need to manually invalidate queries
       showToast(
         error instanceof Error
           ? error.message

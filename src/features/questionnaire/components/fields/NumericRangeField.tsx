@@ -28,7 +28,7 @@ export const NumericRangeField = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}></View>
+      <View style={styles.header} />
       <View style={styles.valuePill}>
         <AppText variant="title">{displayValue}</AppText>
       </View>
