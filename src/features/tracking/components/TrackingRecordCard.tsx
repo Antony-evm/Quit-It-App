@@ -97,20 +97,44 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     event: DateTimePickerEvent,
     selectedDate?: Date,
   ) => {
-    if (Platform.OS === 'android') {
-      setShowDateTimePicker(false);
-    }
-
     if (selectedDate) {
-      setEditedDateTime(selectedDate);
+      if (pickerMode === 'date') {
+        // Update the date part
+        const newDateTime = new Date(editedDateTime);
+        newDateTime.setFullYear(
+          selectedDate.getFullYear(),
+          selectedDate.getMonth(),
+          selectedDate.getDate(),
+        );
+        setEditedDateTime(newDateTime);
 
-      if (Platform.OS === 'ios' && pickerMode === 'date') {
-        // On iOS, show time picker after date is selected
-        setPickerMode('time');
-      } else {
+        // On Android, after date selection, switch to time
+        if (Platform.OS === 'android') {
+          setPickerMode('time');
+          return; // Keep picker open for time selection
+        } else {
+          // On iOS, show time picker after date
+          setPickerMode('time');
+        }
+      } else if (pickerMode === 'time') {
+        // Update the time part
+        const newDateTime = new Date(editedDateTime);
+        newDateTime.setHours(
+          selectedDate.getHours(),
+          selectedDate.getMinutes(),
+          0,
+          0,
+        );
+        setEditedDateTime(newDateTime);
+
+        // Close picker after time selection
         setShowDateTimePicker(false);
         setPickerMode('date');
       }
+    } else {
+      // User cancelled
+      setShowDateTimePicker(false);
+      setPickerMode('date');
     }
   };
 
@@ -282,17 +306,14 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
         {/* Notes Section */}
         <View style={styles.section}>
-          <AppText variant="body" style={styles.sectionLabel}>
-            Notes (Optional)
-          </AppText>
           <AppTextInput
             style={styles.notesInput}
-            placeholder="Add your notes here..."
+            placeholder="What's on your mind?"
             value={editedNote}
             onChangeText={setEditedNote}
             multiline
             maxLength={maxChars}
-            placeholderTextColor={COLOR_PALETTE.textSecondary}
+            placeholderTextColor={COLOR_PALETTE.textMuted}
           />
           <AppText variant="caption" tone="secondary" style={styles.charCount}>
             {remainingChars} characters remaining
@@ -362,7 +383,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
           </AppText>
         ) : (
           <AppText variant="body" style={styles.notePlaceholder}>
-            No notes added
+            Add a thought about this moment…
           </AppText>
         )}
       </View>
@@ -413,7 +434,7 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   notePlaceholder: {
-    color: COLOR_PALETTE.textSecondary,
+    color: COLOR_PALETTE.textMuted,
     fontStyle: 'italic',
   },
   // Edit mode styles
@@ -466,7 +487,7 @@ const styles = StyleSheet.create({
     borderBottomColor: COLOR_PALETTE.borderDefault,
   },
   dropdownItemSelected: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
   dropdownItemText: {
     color: COLOR_PALETTE.textPrimary,
