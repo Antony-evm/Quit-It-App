@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import React, { useState, useRef, RefObject } from 'react';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -29,15 +35,19 @@ import {
 
 type TrackingRecordCardProps = {
   record: TrackingRecordApiResponse;
+  scrollViewRef?: RefObject<ScrollView | null>;
 };
 
 export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   record,
+  scrollViewRef,
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
   const { updateRecordInCache, removeRecordFromCache } =
     useInfiniteTrackingRecords();
+
+  const cardRef = useRef<View>(null);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedNote, setEditedNote] = useState(record.note || '');
@@ -265,164 +275,205 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
   const handleEditPress = () => {
     setIsEditMode(true);
+
+    // Use setTimeout to ensure the UI has updated before measuring and scrolling
+    setTimeout(() => {
+      // Scroll the card to center if scrollViewRef is available
+      if (scrollViewRef?.current && cardRef.current) {
+        cardRef.current.measureLayout(
+          scrollViewRef.current.getInnerViewNode(),
+          (x, y, width, height) => {
+            // Calculate the center position of the card
+            const cardCenter = y + height / 2;
+
+            // Get the screen height to calculate scroll position
+            // Assuming a reasonable viewport height for centering
+            const viewportHeight = 600; // This could be made more dynamic
+            const scrollPosition = cardCenter - viewportHeight / 2;
+
+            // Scroll to center the card
+            scrollViewRef.current?.scrollTo({
+              y: Math.max(0, scrollPosition),
+              animated: true,
+            });
+          },
+          () => {
+            // Error callback - fallback to simple scroll
+            console.warn('Could not measure card position for scrolling');
+          },
+        );
+      }
+    }, 100);
   };
 
   if (isEditMode) {
     return (
-      <AppSurface style={styles.card}>
-        <View style={styles.section}>
-          <View style={styles.dropdownContainer}>
-            <Pressable
-              style={styles.dropdown}
-              onPress={() => setShowDropdown(!showDropdown)}
-            >
-              <AppText style={styles.dropdownText}>
-                {editedTrackingType?.displayName || 'Select tracking type'}
-              </AppText>
-              {showDropdown ? (
-                <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
-              ) : (
-                <ArrowDownSvg
-                  width={16}
-                  height={16}
-                  fill={BRAND_COLORS.cream}
-                />
-              )}
-            </Pressable>
+      <View ref={cardRef}>
+        <AppSurface style={styles.card}>
+          <View style={styles.section}>
+            <View style={styles.dropdownContainer}>
+              <Pressable
+                style={styles.dropdown}
+                onPress={() => setShowDropdown(!showDropdown)}
+              >
+                <AppText style={styles.dropdownText}>
+                  {editedTrackingType?.displayName || 'Select tracking type'}
+                </AppText>
+                {showDropdown ? (
+                  <ArrowUpSvg
+                    width={16}
+                    height={16}
+                    fill={BRAND_COLORS.cream}
+                  />
+                ) : (
+                  <ArrowDownSvg
+                    width={16}
+                    height={16}
+                    fill={BRAND_COLORS.cream}
+                  />
+                )}
+              </Pressable>
 
-            {showDropdown && trackingTypes && (
-              <View style={styles.dropdownList}>
-                {trackingTypes.map(type => (
-                  <Pressable
-                    key={type.id}
-                    style={[
-                      styles.dropdownItem,
-                      editedTrackingTypeId === type.id &&
-                        styles.dropdownItemSelected,
-                    ]}
-                    onPress={() => {
-                      setEditedTrackingTypeId(type.id);
-                      setShowDropdown(false);
-                    }}
-                  >
-                    <AppText
+              {showDropdown && trackingTypes && (
+                <View style={styles.dropdownList}>
+                  {trackingTypes.map(type => (
+                    <Pressable
+                      key={type.id}
                       style={[
-                        styles.dropdownItemText,
+                        styles.dropdownItem,
                         editedTrackingTypeId === type.id &&
-                          styles.dropdownItemTextSelected,
+                          styles.dropdownItemSelected,
                       ]}
+                      onPress={() => {
+                        setEditedTrackingTypeId(type.id);
+                        setShowDropdown(false);
+                      }}
                     >
-                      {type.displayName}
-                    </AppText>
-                  </Pressable>
-                ))}
-              </View>
-            )}
+                      <AppText
+                        style={[
+                          styles.dropdownItemText,
+                          editedTrackingTypeId === type.id &&
+                            styles.dropdownItemTextSelected,
+                        ]}
+                      >
+                        {type.displayName}
+                      </AppText>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </View>
           </View>
-        </View>
 
-        {/* Date/Time Section */}
-        <View style={styles.section}>
-          <Pressable
-            style={styles.dateTimeButton}
-            onPress={showDateTimePickerModal}
-          >
-            <AppText style={styles.dateTimeText}>
-              {formatRelativeDateTimeForDisplay(editedDateTime.toISOString())}
+          {/* Date/Time Section */}
+          <View style={styles.section}>
+            <Pressable
+              style={styles.dateTimeButton}
+              onPress={showDateTimePickerModal}
+            >
+              <AppText style={styles.dateTimeText}>
+                {formatRelativeDateTimeForDisplay(editedDateTime.toISOString())}
+              </AppText>
+            </Pressable>
+          </View>
+
+          {/* Notes Section */}
+          <View style={styles.section}>
+            <AppTextInput
+              style={styles.notesInput}
+              placeholder="What's on your mind?"
+              value={editedNote}
+              onChangeText={setEditedNote}
+              multiline
+              maxLength={maxChars}
+              placeholderTextColor={COLOR_PALETTE.textMuted}
+            />
+            <AppText
+              variant="caption"
+              tone="secondary"
+              style={styles.charCount}
+            >
+              {remainingChars} characters remaining
             </AppText>
-          </Pressable>
-        </View>
+          </View>
 
-        {/* Notes Section */}
-        <View style={styles.section}>
-          <AppTextInput
-            style={styles.notesInput}
-            placeholder="What's on your mind?"
-            value={editedNote}
-            onChangeText={setEditedNote}
-            multiline
-            maxLength={maxChars}
-            placeholderTextColor={COLOR_PALETTE.textMuted}
-          />
-          <AppText variant="caption" tone="secondary" style={styles.charCount}>
-            {remainingChars} characters remaining
-          </AppText>
-        </View>
+          {/* Edit Mode Buttons */}
+          <View style={styles.editActions}>
+            <AppButton
+              label="Cancel"
+              variant="outline"
+              size="xs"
+              onPress={handleCancel}
+              containerStyle={styles.cancelButton}
+            />
+            <AppButton
+              label="Save"
+              variant="primary"
+              size="xs"
+              onPress={handleSave}
+              containerStyle={styles.saveButton}
+            />
+          </View>
 
-        {/* Edit Mode Buttons */}
-        <View style={styles.editActions}>
-          <AppButton
-            label="Cancel"
-            variant="outline"
-            size="xs"
-            onPress={handleCancel}
-            containerStyle={styles.cancelButton}
-          />
-          <AppButton
-            label="Save"
-            variant="primary"
-            size="xs"
-            onPress={handleSave}
-            containerStyle={styles.saveButton}
-          />
-        </View>
-
-        {/* Date Time Picker */}
-        {showDateTimePicker && (
-          <DateTimePicker
-            value={editedDateTime}
-            mode={pickerMode}
-            is24Hour={false}
-            maximumDate={new Date()}
-            onChange={handleDateTimeChange}
-          />
-        )}
-      </AppSurface>
+          {/* Date Time Picker */}
+          {showDateTimePicker && (
+            <DateTimePicker
+              value={editedDateTime}
+              mode={pickerMode}
+              is24Hour={false}
+              maximumDate={new Date()}
+              onChange={handleDateTimeChange}
+            />
+          )}
+        </AppSurface>
+      </View>
     );
   }
 
   return (
-    <AppSurface style={styles.card}>
-      <View style={styles.titleRow}>
-        <AppText variant="heading" style={styles.trackingTypeName}>
-          {trackingType?.displayName || `Type ${record.tracking_type_id}`}
-        </AppText>
-        <View style={styles.actionButtons}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.notesQuickActionsButton,
-              { opacity: pressed ? 0.7 : 1 },
-            ]}
-            onPress={handleEditPress}
-          >
-            <EditSvg width={18} height={18} />
-          </Pressable>
-          <Pressable
-            style={({ pressed }) => [
-              styles.notesQuickActionsButton,
-              { opacity: pressed ? 0.7 : 1 },
-            ]}
-            onPress={handleDelete}
-          >
-            <DeleteSvg width={18} height={18} />
-          </Pressable>
+    <View ref={cardRef}>
+      <AppSurface style={styles.card}>
+        <View style={styles.titleRow}>
+          <AppText variant="heading" style={styles.trackingTypeName}>
+            {trackingType?.displayName || `Type ${record.tracking_type_id}`}
+          </AppText>
+          <View style={styles.actionButtons}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.notesQuickActionsButton,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+              onPress={handleEditPress}
+            >
+              <EditSvg width={18} height={18} />
+            </Pressable>
+            <Pressable
+              style={({ pressed }) => [
+                styles.notesQuickActionsButton,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+              onPress={handleDelete}
+            >
+              <DeleteSvg width={18} height={18} />
+            </Pressable>
+          </View>
         </View>
-      </View>
-      <AppText variant="caption" tone="secondary">
-        {formattedDate}
-      </AppText>
-      <View style={styles.noteSection}>
-        {record.note ? (
-          <AppText variant="body" style={styles.noteText}>
-            {record.note}
-          </AppText>
-        ) : (
-          <AppText variant="body" style={styles.notePlaceholder}>
-            Add a thought about this moment…
-          </AppText>
-        )}
-      </View>
-    </AppSurface>
+        <AppText variant="caption" tone="secondary">
+          {formattedDate}
+        </AppText>
+        <View style={styles.noteSection}>
+          {record.note ? (
+            <AppText variant="body" style={styles.noteText}>
+              {record.note}
+            </AppText>
+          ) : (
+            <AppText variant="body" style={styles.notePlaceholder}>
+              Add a thought about this moment…
+            </AppText>
+          )}
+        </View>
+      </AppSurface>
+    </View>
   );
 };
 

@@ -9,7 +9,6 @@ import type {
 } from '../types';
 import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
-import { submitQuestionnaireAnswerBatch } from '../api/submitAnswerBatch';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../data/questionnaireStorage';
 
@@ -47,16 +46,6 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
 
   return unique[0];
 };
-
-const mapRecordToAnswerPayload = (
-  record: QuestionnaireResponseRecord,
-  userId: number,
-): QuestionnaireAnswerPayload => ({
-  user_id: userId,
-  question_id: record.questionId,
-  question: record.question,
-  answer_options: record.answerOptions,
-});
 
 export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const userId = options.userId ?? DEFAULT_USER_ID;
@@ -239,28 +228,6 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     [question, userId],
   );
 
-  const submitQuestionnaire = useCallback(async () => {
-    try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-
-      const historyRecords = await questionnaireStorage.all();
-
-      await submitQuestionnaireAnswerBatch({
-        user_id: userId,
-        answers: historyRecords.map((entry) =>
-          mapRecordToAnswerPayload(entry, userId),
-        ),
-      });
-      await questionnaireStorage.clear();
-    } catch (caughtError) {
-      setSubmitError(caughtError as Error);
-      throw caughtError;
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [userId]);
-
   const refresh = useCallback(() => {
     return refetch();
   }, [refetch]);
@@ -360,7 +327,6 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     refresh,
     submitAnswers,
     restart,
-    submitQuestionnaire,
     goBack,
     canGoBack,
     selection: currentSelection,

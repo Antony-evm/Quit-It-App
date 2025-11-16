@@ -1,12 +1,18 @@
-import React from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import React, { RefObject } from 'react';
+import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
 
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
 
-export const TrackingRecordsList: React.FC = () => {
+type TrackingRecordsListProps = {
+  scrollViewRef?: RefObject<ScrollView | null>;
+};
+
+export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
+  scrollViewRef,
+}) => {
   const {
     flatRecords: trackingRecords,
     isLoading,
@@ -60,7 +66,11 @@ export const TrackingRecordsList: React.FC = () => {
 
       <View style={styles.recordsList}>
         {trackingRecords.map(record => (
-          <TrackingRecordCard key={record.record_id} record={record} />
+          <TrackingRecordCard
+            key={record.record_id}
+            record={record}
+            scrollViewRef={scrollViewRef}
+          />
         ))}
       </View>
 

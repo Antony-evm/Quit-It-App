@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, ScrollView, View } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -10,6 +10,7 @@ import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
 
 export const NotesScreen = () => {
   const queryClient = useQueryClient();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
     const queryKey = ['trackingRecords', 'infinite', DEFAULT_TRACKING_USER_ID];
@@ -19,6 +20,7 @@ export const NotesScreen = () => {
   return (
     <View style={styles.container}>
       <ScrollView
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -34,7 +36,7 @@ export const NotesScreen = () => {
           </AppText>
         </View>
         <NotesCard />
-        <TrackingRecordsList />
+        <TrackingRecordsList scrollViewRef={scrollViewRef} />
       </ScrollView>
     </View>
   );

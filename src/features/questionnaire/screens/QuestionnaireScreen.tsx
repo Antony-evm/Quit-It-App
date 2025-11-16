@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
+import { questionnaireStorage } from '../data/questionnaireStorage';
 import type { SelectedAnswerOption } from '../types';
 import type { RootStackScreenProps } from '@/types/navigation';
 import { BRAND_COLORS, SPACING } from '@/shared/theme';
@@ -40,7 +41,6 @@ export const QuestionnaireScreen = ({
     goBack,
     canGoBack,
     selection,
-    submitQuestionnaire,
     resumeFromReview,
     canResumeReview,
   } = useQuestionnaire();
@@ -110,15 +110,15 @@ export const QuestionnaireScreen = ({
     }
 
     if (isReviewing) {
+      // Individual answers were already submitted, just clear storage and navigate
       try {
-        await submitQuestionnaire();
-        // Reset the navigation stack to remove questionnaire entirely
+        await questionnaireStorage.clear();
         navigation.reset({
           index: 0,
           routes: [{ name: 'Home' }],
         });
       } catch {
-        // Handled via shared error state
+        // Handle navigation errors if needed
       }
       return;
     }
