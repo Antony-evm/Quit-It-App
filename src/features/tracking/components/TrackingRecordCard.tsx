@@ -292,19 +292,21 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   };
 
   const handleEditPress = () => {
-    console.log('Edit pressed for record ID:', record.record_id);
+    console.log('🟡 Edit pressed for record ID:', record.record_id);
     setIsEditMode(true);
 
     // Use ScrollManager to ensure only one scroll operation at a time
     ScrollManager.scheduleScroll(() => {
+      console.log('🟡 Executing scroll for edit press, record ID:', record.record_id);
       ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
     }, 150);
   };
 
   const handleNotesPress = () => {
-    console.log('Notes pressed for record ID:', record.record_id);
+    console.log('🔵 Notes pressed for record ID:', record.record_id, 'isEditMode:', isEditMode);
     // Use ScrollManager for consistent scroll behavior
     ScrollManager.scheduleScroll(() => {
+      console.log('🔵 Executing scroll for notes press, record ID:', record.record_id);
       ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
     }, 50); // Shorter delay since no mode change needed
   };
@@ -387,6 +389,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
               placeholder="What's on your mind?"
               value={editedNote}
               onChangeText={setEditedNote}
+              onFocus={handleNotesPress}
               multiline
               maxLength={maxChars}
               placeholderTextColor={COLOR_PALETTE.textMuted}
@@ -464,7 +467,13 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         <AppText variant="caption" tone="secondary">
           {formattedDate}
         </AppText>
-        <Pressable style={styles.noteSection} onPress={handleNotesPress}>
+        <Pressable 
+          style={({ pressed }) => [
+            styles.noteSection,
+            { opacity: pressed ? 0.7 : 1 }
+          ]} 
+          onPress={handleNotesPress}
+        >
           {record.note ? (
             <AppText variant="body" style={styles.noteText}>
               {record.note}
