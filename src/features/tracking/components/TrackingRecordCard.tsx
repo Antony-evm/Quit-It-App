@@ -428,8 +428,8 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: SPACING.md,
-    padding: SPACING.md,
+    marginBottom: SPACING.lg,
+    padding: SPACING.lg,
     borderRadius: 16,
   },
   header: {
