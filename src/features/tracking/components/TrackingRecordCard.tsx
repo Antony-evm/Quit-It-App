@@ -227,17 +227,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   if (isEditMode) {
     return (
       <AppSurface style={styles.card}>
-        <View style={styles.editHeader}>
-          <AppText variant="heading" style={styles.editTitle}>
-            Edit Entry
-          </AppText>
-        </View>
-
-        {/* Tracking Type Dropdown */}
         <View style={styles.section}>
-          <AppText variant="body" style={styles.sectionLabel}>
-            Type
-          </AppText>
           <Pressable
             style={styles.dropdown}
             onPress={() => setShowDropdown(!showDropdown)}
@@ -280,9 +270,6 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
         {/* Date/Time Section */}
         <View style={styles.section}>
-          <AppText variant="body" style={styles.sectionLabel}>
-            Date & Time
-          </AppText>
           <Pressable
             style={styles.dateTimeButton}
             onPress={showDateTimePickerModal}
@@ -346,32 +333,35 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
   return (
     <AppSurface style={styles.card}>
-      <View style={styles.header}>
-        <View style={styles.titleRow}>
-          <AppText variant="heading" style={styles.trackingTypeName}>
-            {trackingType?.displayName || `Type ${record.tracking_type_id}`}
-          </AppText>
-          <View style={styles.actionButtons}>
-            <Pressable style={styles.editButton} onPress={handleEditPress}>
-              <EditSvg width={18} height={18} fill={BRAND_COLORS.ink} />
-            </Pressable>
-            <Pressable style={styles.deleteButton} onPress={handleDelete}>
-              <DeleteSvg width={18} height={18} fill="#F87171" />
-            </Pressable>
-          </View>
-        </View>
-        <AppText variant="caption" tone="secondary" style={styles.dateTime}>
-          {formattedDate}
+      <View style={styles.titleRow}>
+        <AppText variant="heading" style={styles.trackingTypeName}>
+          {trackingType?.displayName || `Type ${record.tracking_type_id}`}
         </AppText>
+        <View style={styles.actionButtons}>
+          <Pressable
+            style={styles.notesQuickActionsButton}
+            onPress={handleEditPress}
+          >
+            <EditSvg width={18} height={18} />
+          </Pressable>
+          <Pressable
+            style={styles.notesQuickActionsButton}
+            onPress={handleDelete}
+          >
+            <DeleteSvg width={18} height={18} />
+          </Pressable>
+        </View>
       </View>
-
-      {record.note && (
-        <View style={styles.noteSection}>
+      <AppText variant="caption" tone="secondary">
+        {formattedDate}
+      </AppText>
+      <View style={styles.noteSection}>
+        {record.note && (
           <AppText variant="body" style={styles.noteText}>
             {record.note}
           </AppText>
-        </View>
-      )}
+        )}
+      </View>
     </AppSurface>
   );
 };
@@ -393,18 +383,13 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textPrimary,
     flex: 1,
   },
-  editButton: {
+  notesQuickActionsButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
     backgroundColor: BRAND_COLORS.cream,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
@@ -413,29 +398,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SPACING.sm,
   },
-  deleteButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: BRAND_COLORS.cream,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  dateTime: {
-    fontSize: 12,
-  },
   noteSection: {
     marginTop: SPACING.md,
     paddingTop: SPACING.md,
-    borderTopWidth: 1,
+    borderTopWidth: 2,
     borderTopColor: COLOR_PALETTE.borderDefault,
   },
   noteText: {
