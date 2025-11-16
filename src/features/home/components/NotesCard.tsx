@@ -21,6 +21,9 @@ import {
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
 import { useToast } from '@/shared/components/toast';
+import ArrowDownSvg from '@/assets/arrowDown.svg';
+import ArrowUpSvg from '@/assets/arrowUp.svg';
+import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 
 type NotesCardProps = {
   userId?: number;
@@ -101,19 +104,16 @@ export const NotesCard: React.FC<NotesCardProps> = ({
     },
   });
 
-  // Set default tracking type when data loads
   React.useEffect(() => {
     if (
       trackingTypes &&
       trackingTypes.length > 0 &&
       selectedTrackingTypeId === null
     ) {
-      // First, try to find a tracking type marked as default
       const defaultType = trackingTypes.find(type => type.is_default);
       if (defaultType) {
         setSelectedTrackingTypeId(defaultType.id);
       } else {
-        // Fallback to the first tracking type if no default is found
         setSelectedTrackingTypeId(trackingTypes[0].id);
       }
     }
@@ -222,15 +222,12 @@ export const NotesCard: React.FC<NotesCardProps> = ({
     !selectedTrackingType || createRecordMutation.isPending;
 
   if (!trackingTypes || trackingTypes.length === 0) {
-    return null; // Don't render if no tracking types available
+    return null;
   }
 
   return (
     <AppSurface style={styles.card}>
       <View style={styles.header}>
-        <AppText tone="secondary" style={styles.trackingTypeLabel}>
-          Tracking Type
-        </AppText>
         <Pressable
           style={styles.dropdownContainer}
           onPress={() => setShowDropdown(!showDropdown)}
@@ -243,7 +240,11 @@ export const NotesCard: React.FC<NotesCardProps> = ({
             tone="secondary"
             style={styles.dropdownArrow}
           >
-            {showDropdown ? '▲' : '▼'}
+            {showDropdown ? (
+              <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
+            ) : (
+              <ArrowDownSvg width={16} height={16} fill={BRAND_COLORS.cream} />
+            )}{' '}
           </AppText>
         </Pressable>
 
@@ -280,77 +281,21 @@ export const NotesCard: React.FC<NotesCardProps> = ({
           </View>
         )}
       </View>
-
-      <View style={styles.dateTimeSection}>
-        <AppText tone="secondary" style={styles.dateTimeLabel}>
-          Date & Time
-        </AppText>
-
-        <View style={styles.dateTimeRow}>
-          <View style={styles.dateTimeDisplay}>
-            <AppText variant="body" style={styles.dateTimeText}>
-              {formatDateTime(selectedDateTime)}
-            </AppText>
-            <AppText
-              variant="caption"
-              tone="secondary"
-              style={styles.clickableHint}
-            >
-              {showDateTimePicker
-                ? pickerMode === 'date'
-                  ? 'Select date, then time'
-                  : 'Select time to finish'
-                : 'Tap button to change'}
-            </AppText>
-          </View>
-
-          <AppButton
-            label={showDateTimePicker ? 'Done' : 'Change'}
-            variant="outline"
-            size="sm"
-            onPress={
-              showDateTimePicker
-                ? () => setShowDateTimePicker(false)
-                : handleDateTimePress
-            }
-            style={styles.changeDateTimeButton}
-          />
-        </View>
-
-        {/* Combined Date/Time Picker */}
-        {showDateTimePicker && (
-          <View style={styles.pickerContainer}>
-            <AppText
-              variant="caption"
-              tone="secondary"
-              style={styles.pickerModeLabel}
-            >
-              {pickerMode === 'date' ? '📅 Select Date' : '⏰ Select Time'}
-            </AppText>
-            <DateTimePicker
-              value={selectedDateTime}
-              mode={pickerMode}
-              display={Platform.OS === 'ios' ? 'compact' : 'default'}
-              onChange={handleDateTimeChange}
-              style={styles.picker}
-            />
-            {Platform.OS === 'ios' && pickerMode === 'date' && (
-              <AppButton
-                label="Next: Set Time"
-                variant="outline"
-                size="sm"
-                onPress={() => setPickerMode('time')}
-                style={styles.nextButton}
-              />
-            )}
-          </View>
-        )}
+      <View style={styles.section}>
+        <Pressable
+          style={styles.dateTimeButton}
+          onPress={
+            showDateTimePicker
+              ? () => setShowDateTimePicker(false)
+              : handleDateTimePress
+          }
+        >
+          <AppText style={styles.dateTimeText}>
+            {formatRelativeDateTimeForDisplay(selectedDateTime.toISOString())}
+          </AppText>
+        </Pressable>
       </View>
-
       <View style={styles.notesContainer}>
-        <AppText tone="secondary" style={styles.notesLabel}>
-          Notes
-        </AppText>
         <AppTextInput
           value={notes}
           onChangeText={handleNotesChange}
@@ -395,13 +340,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: SPACING.xs,
   },
+  section: {
+    marginBottom: SPACING.md,
+  },
+  dateTimeButton: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+  },
   dropdownContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: SPACING.md,
-    backgroundColor: COLOR_PALETTE.accentMuted,
-    borderRadius: 12,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -500,19 +457,19 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   notesContainer: {
-    marginBottom: SPACING.lg,
-  },
-  notesLabel: {
-    fontSize: 12,
-    marginBottom: SPACING.xs,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.sm,
   },
   notesInput: {
-    minHeight: 100,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: 8,
-    padding: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    color: COLOR_PALETTE.textPrimary,
+    minHeight: 80,
+    textAlignVertical: 'top',
   },
   charCountContainer: {
     alignItems: 'flex-end',

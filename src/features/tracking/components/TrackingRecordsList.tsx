@@ -26,7 +26,7 @@ export const TrackingRecordsList: React.FC = () => {
     return (
       <View style={styles.container}>
         <AppText variant="body" tone="secondary" style={styles.loadingText}>
-          Loading tracking records...
+          Bringing your notes together...
         </AppText>
       </View>
     );
@@ -46,7 +46,7 @@ export const TrackingRecordsList: React.FC = () => {
     return (
       <View style={styles.container}>
         <AppText variant="body" tone="secondary" style={styles.emptyText}>
-          No tracking records found. Start by adding your first entry above!
+          Your notes help you understand your habits. Start with just one.
         </AppText>
       </View>
     );

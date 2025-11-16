@@ -311,7 +311,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
             onPress={showDateTimePickerModal}
           >
             <AppText style={styles.dateTimeText}>
-              {formatDateTime(editedDateTime)}
+              {formatRelativeDateTimeForDisplay(editedDateTime.toISOString())}
             </AppText>
           </Pressable>
         </View>
