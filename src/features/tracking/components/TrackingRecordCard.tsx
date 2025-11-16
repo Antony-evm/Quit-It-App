@@ -127,6 +127,23 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
           0,
           0,
         );
+
+        // Check if the selected time is in the future for today's date
+        const now = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDateOnly = new Date(newDateTime);
+        selectedDateOnly.setHours(0, 0, 0, 0);
+
+        if (
+          selectedDateOnly.getTime() === today.getTime() &&
+          newDateTime > now
+        ) {
+          // If it's today and the time is in the future, don't update and show a warning
+          showToast('Cannot select a future time for today', 'error');
+          return;
+        }
+
         setEditedDateTime(newDateTime);
 
         // Close picker after time selection
@@ -407,6 +424,7 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.md,
     padding: SPACING.md,
+    borderRadius: 16,
   },
   header: {
     gap: SPACING.xs,
@@ -423,7 +441,7 @@ const styles = StyleSheet.create({
   notesQuickActionsButton: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: 16,
     backgroundColor: BRAND_COLORS.cream,
     justifyContent: 'center',
     alignItems: 'center',
@@ -476,7 +494,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -494,7 +512,7 @@ const styles = StyleSheet.create({
     right: 0,
     marginTop: SPACING.xs,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     maxHeight: 150,
@@ -533,7 +551,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -544,7 +562,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 8,
+    borderRadius: 16,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     color: COLOR_PALETTE.textPrimary,
@@ -563,8 +581,10 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
+    borderRadius: 16,
   },
   saveButton: {
     flex: 1,
+    borderRadius: 16,
   },
 });

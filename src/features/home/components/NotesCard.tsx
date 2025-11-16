@@ -174,6 +174,23 @@ export const NotesCard: React.FC<NotesCardProps> = ({
           0,
           0,
         );
+
+        // Check if the selected time is in the future for today's date
+        const now = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDateOnly = new Date(newDateTime);
+        selectedDateOnly.setHours(0, 0, 0, 0);
+
+        if (
+          selectedDateOnly.getTime() === today.getTime() &&
+          newDateTime > now
+        ) {
+          // If it's today and the time is in the future, don't update and show a warning
+          showToast('Cannot select a future time for today', 'error');
+          return;
+        }
+
         setSelectedDateTime(newDateTime);
 
         // Close picker after time selection
@@ -217,9 +234,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
       createRecordMutation.mutate(payload);
     }
   };
-
-  const isSaveDisabled =
-    !selectedTrackingType || createRecordMutation.isPending;
 
   if (!trackingTypes || trackingTypes.length === 0) {
     return null;
@@ -269,13 +283,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                 >
                   {type.displayName}
                 </AppText>
-                <AppText
-                  variant="caption"
-                  tone="secondary"
-                  style={styles.dropdownItemDescription}
-                >
-                  {type.description}
-                </AppText>
               </Pressable>
             ))}
           </View>
@@ -315,15 +322,23 @@ export const NotesCard: React.FC<NotesCardProps> = ({
           </AppText>
         </View>
       </View>
-
       <AppButton
-        label={createRecordMutation.isPending ? 'Saving...' : 'Save Entry'}
+        label={createRecordMutation.isPending ? 'Saving...' : 'Save'}
+        variant="primary"
+        size="xs"
         onPress={handleSave}
-        disabled={isSaveDisabled}
-        fullWidth
-        style={styles.saveButton}
-        textStyle={styles.saveButtonText}
+        containerStyle={styles.saveButton}
       />
+      {/* Date Time Picker */}
+      {showDateTimePicker && (
+        <DateTimePicker
+          value={selectedDateTime}
+          mode={pickerMode}
+          is24Hour={false}
+          maximumDate={new Date()}
+          onChange={handleDateTimeChange}
+        />
+      )}
     </AppSurface>
   );
 };
@@ -332,6 +347,7 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.lg, // Reduced from xl since ScrollView has content padding
     padding: SPACING.lg,
+    borderRadius: 16,
   },
   header: {
     marginBottom: SPACING.md,
@@ -347,7 +363,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -358,7 +374,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -372,7 +388,7 @@ const styles = StyleSheet.create({
   dropdown: {
     marginTop: SPACING.xs,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     maxHeight: 200,
@@ -387,11 +403,15 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     color: COLOR_PALETTE.textPrimary,
-    fontWeight: '500',
-    marginBottom: SPACING.xs,
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 28,
   },
   dropdownItemTextSelected: {
-    color: COLOR_PALETTE.accentPrimary,
+    color: COLOR_PALETTE.textPrimary,
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 28,
   },
   dropdownItemDescription: {
     fontSize: 12,
@@ -412,7 +432,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: SPACING.md,
     backgroundColor: COLOR_PALETTE.accentMuted,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -435,7 +455,7 @@ const styles = StyleSheet.create({
     marginTop: SPACING.md,
     padding: SPACING.md,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     alignItems: 'center',
@@ -464,7 +484,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 8,
+    borderRadius: 16,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     color: COLOR_PALETTE.textPrimary,
@@ -479,9 +499,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   saveButton: {
-    marginTop: SPACING.sm,
-    backgroundColor: BRAND_COLORS.cream,
-    borderColor: BRAND_COLORS.cream,
+    borderRadius: 16,
   },
   saveButtonText: {
     color: BRAND_COLORS.ink,
