@@ -354,7 +354,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
         <AppTextInput
           value={notes}
           onChangeText={handleNotesChange}
-          placeholder="Write how you feel..."
+          placeholder="What's on your mind?"
           multiline
           numberOfLines={4}
           style={styles.notesInput}

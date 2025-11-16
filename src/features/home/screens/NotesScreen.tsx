@@ -12,8 +12,6 @@ export const NotesScreen = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    // Reset the infinite query cache when navigating to notes
-    // This ensures we always start fresh with offset=0 and only make one initial call
     const queryKey = ['trackingRecords', 'infinite', DEFAULT_TRACKING_USER_ID];
     queryClient.resetQueries({ queryKey });
   }, [queryClient]);
@@ -27,10 +25,12 @@ export const NotesScreen = () => {
       >
         <View style={styles.header}>
           <AppText variant="title" style={styles.title}>
-            My Diary
+            Your Quit Journal
           </AppText>
           <AppText tone="secondary" style={styles.subtitle}>
-            Track your journey and thoughts along the way.
+            Reflect, reset, and strengthen the smoke-free version of you.
+            Logging cravings shows you how far you've come and what strengthens
+            you.
           </AppText>
         </View>
         <NotesCard />

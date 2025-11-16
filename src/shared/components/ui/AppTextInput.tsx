@@ -14,7 +14,7 @@ export const AppTextInput = ({
 }: AppTextInputProps) => (
   <TextInput
     style={[styles.input, hasError && styles.inputError, style]}
-    placeholderTextColor={COLOR_PALETTE.textSecondary}
+    placeholderTextColor={COLOR_PALETTE.textMuted}
     {...textInputProps}
   />
 );

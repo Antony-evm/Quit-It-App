@@ -17,7 +17,6 @@ export const TrackingRecordsList: React.FC = () => {
   } = useInfiniteTrackingRecords();
 
   const handleLoadMore = () => {
-    // Prevent multiple concurrent requests and only fetch if there's more data
     if (!isFetchingNextPage) {
       fetchNextPage();
     }
@@ -56,7 +55,7 @@ export const TrackingRecordsList: React.FC = () => {
   return (
     <View style={styles.container}>
       <AppText variant="heading" style={styles.sectionTitle}>
-        Recent Activity
+        Your Journey So Far
       </AppText>
 
       <View style={styles.recordsList}>

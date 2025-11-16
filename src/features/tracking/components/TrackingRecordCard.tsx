@@ -356,9 +356,13 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         {formattedDate}
       </AppText>
       <View style={styles.noteSection}>
-        {record.note && (
+        {record.note ? (
           <AppText variant="body" style={styles.noteText}>
             {record.note}
+          </AppText>
+        ) : (
+          <AppText variant="body" style={styles.notePlaceholder}>
+            No notes added
           </AppText>
         )}
       </View>
@@ -406,6 +410,10 @@ const styles = StyleSheet.create({
   },
   noteText: {
     color: COLOR_PALETTE.textPrimary,
+    fontStyle: 'italic',
+  },
+  notePlaceholder: {
+    color: COLOR_PALETTE.textSecondary,
     fontStyle: 'italic',
   },
   // Edit mode styles
