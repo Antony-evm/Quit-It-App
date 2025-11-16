@@ -389,13 +389,19 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         </AppText>
         <View style={styles.actionButtons}>
           <Pressable
-            style={styles.notesQuickActionsButton}
+            style={({ pressed }) => [
+              styles.notesQuickActionsButton,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
             onPress={handleEditPress}
           >
             <EditSvg width={18} height={18} />
           </Pressable>
           <Pressable
-            style={styles.notesQuickActionsButton}
+            style={({ pressed }) => [
+              styles.notesQuickActionsButton,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
             onPress={handleDelete}
           >
             <DeleteSvg width={18} height={18} />
@@ -452,6 +458,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     gap: SPACING.sm,
+    borderRadius: 16,
   },
   noteSection: {
     marginTop: SPACING.md,

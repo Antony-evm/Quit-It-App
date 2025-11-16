@@ -242,51 +242,47 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   return (
     <AppSurface style={styles.card}>
       <View style={styles.header}>
-        <Pressable
-          style={styles.dropdownContainer}
-          onPress={() => setShowDropdown(!showDropdown)}
-        >
-          <AppText variant="heading" style={styles.selectedTrackingType}>
-            {selectedTrackingType?.displayName || 'Select tracking type'}
-          </AppText>
-          <AppText
-            variant="caption"
-            tone="secondary"
-            style={styles.dropdownArrow}
+        <View style={styles.dropdownContainer}>
+          <Pressable
+            style={styles.dropdown}
+            onPress={() => setShowDropdown(!showDropdown)}
           >
+            <AppText style={styles.dropdownText}>
+              {selectedTrackingType?.displayName || 'Select tracking type'}
+            </AppText>
             {showDropdown ? (
               <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
             ) : (
               <ArrowDownSvg width={16} height={16} fill={BRAND_COLORS.cream} />
-            )}{' '}
-          </AppText>
-        </Pressable>
+            )}
+          </Pressable>
 
-        {showDropdown && (
-          <View style={styles.dropdown}>
-            {trackingTypes.map(type => (
-              <Pressable
-                key={type.id}
-                style={[
-                  styles.dropdownItem,
-                  type.id === selectedTrackingTypeId &&
-                    styles.dropdownItemSelected,
-                ]}
-                onPress={() => handleTrackingTypeSelect(type.id)}
-              >
-                <AppText
+          {showDropdown && trackingTypes && (
+            <View style={styles.dropdownList}>
+              {trackingTypes.map(type => (
+                <Pressable
+                  key={type.id}
                   style={[
-                    styles.dropdownItemText,
-                    type.id === selectedTrackingTypeId &&
-                      styles.dropdownItemTextSelected,
+                    styles.dropdownItem,
+                    selectedTrackingTypeId === type.id &&
+                      styles.dropdownItemSelected,
                   ]}
+                  onPress={() => handleTrackingTypeSelect(type.id)}
                 >
-                  {type.displayName}
-                </AppText>
-              </Pressable>
-            ))}
-          </View>
-        )}
+                  <AppText
+                    style={[
+                      styles.dropdownItemText,
+                      selectedTrackingTypeId === type.id &&
+                        styles.dropdownItemTextSelected,
+                    ]}
+                  >
+                    {type.displayName}
+                  </AppText>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
       </View>
       <View style={styles.section}>
         <Pressable
@@ -368,6 +364,10 @@ const styles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
   },
   dropdownContainer: {
+    position: 'relative',
+    zIndex: 1000,
+  },
+  dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -378,28 +378,42 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
-  selectedTrackingType: {
+  dropdownText: {
     color: COLOR_PALETTE.textPrimary,
     flex: 1,
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 28,
   },
-  dropdownArrow: {
-    marginLeft: SPACING.sm,
-  },
-  dropdown: {
+  dropdownList: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
     marginTop: SPACING.xs,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    maxHeight: 200,
+    maxHeight: 150,
+    zIndex: 1001,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   dropdownItem: {
-    padding: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
   },
   dropdownItemSelected: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
   dropdownItemText: {
     color: COLOR_PALETTE.textPrimary,
@@ -408,13 +422,10 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   dropdownItemTextSelected: {
-    color: COLOR_PALETTE.textPrimary,
+    color: COLOR_PALETTE.accentPrimary,
     fontWeight: '600',
     fontSize: 20,
     lineHeight: 28,
-  },
-  dropdownItemDescription: {
-    fontSize: 12,
   },
   trackingType: {
     color: COLOR_PALETTE.textPrimary,
