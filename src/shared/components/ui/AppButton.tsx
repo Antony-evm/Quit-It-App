@@ -11,7 +11,7 @@ import { AppText } from './AppText';
 import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
-type ButtonSize = 'sm' | 'md' | 'lg';
+type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export type AppButtonProps = PressableProps & {
   label: string;
@@ -58,6 +58,10 @@ const variantToStyles: Record<
 };
 
 const sizeToStyles: Record<ButtonSize, ViewStyle> = {
+  xs: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+  },
   sm: {
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.md,

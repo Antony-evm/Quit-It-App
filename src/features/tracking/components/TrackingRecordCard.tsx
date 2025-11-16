@@ -337,14 +337,14 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
           <AppButton
             label="Cancel"
             variant="outline"
-            size="sm"
+            size="xs"
             onPress={handleCancel}
             containerStyle={styles.cancelButton}
           />
           <AppButton
             label="Save"
             variant="primary"
-            size="sm"
+            size="xs"
             onPress={handleSave}
             containerStyle={styles.saveButton}
           />
