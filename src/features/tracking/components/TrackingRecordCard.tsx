@@ -6,6 +6,8 @@ import DateTimePicker, {
 import { useMutation } from '@tanstack/react-query';
 import EditSvg from '@/assets/edit.svg';
 import DeleteSvg from '@/assets/delete.svg';
+import ArrowDownSvg from '@/assets/arrowDown.svg';
+import ArrowUpSvg from '@/assets/arrowUp.svg';
 
 import {
   AppSurface,
@@ -252,44 +254,54 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     return (
       <AppSurface style={styles.card}>
         <View style={styles.section}>
-          <Pressable
-            style={styles.dropdown}
-            onPress={() => setShowDropdown(!showDropdown)}
-          >
-            <AppText style={styles.dropdownText}>
-              {editedTrackingType?.displayName || 'Select tracking type'}
-            </AppText>
-            <AppText style={styles.dropdownArrow}>▼</AppText>
-          </Pressable>
+          <View style={styles.dropdownContainer}>
+            <Pressable
+              style={styles.dropdown}
+              onPress={() => setShowDropdown(!showDropdown)}
+            >
+              <AppText style={styles.dropdownText}>
+                {editedTrackingType?.displayName || 'Select tracking type'}
+              </AppText>
+              {showDropdown ? (
+                <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
+              ) : (
+                <ArrowDownSvg
+                  width={16}
+                  height={16}
+                  fill={BRAND_COLORS.cream}
+                />
+              )}
+            </Pressable>
 
-          {showDropdown && trackingTypes && (
-            <View style={styles.dropdownList}>
-              {trackingTypes.map(type => (
-                <Pressable
-                  key={type.id}
-                  style={[
-                    styles.dropdownItem,
-                    editedTrackingTypeId === type.id &&
-                      styles.dropdownItemSelected,
-                  ]}
-                  onPress={() => {
-                    setEditedTrackingTypeId(type.id);
-                    setShowDropdown(false);
-                  }}
-                >
-                  <AppText
+            {showDropdown && trackingTypes && (
+              <View style={styles.dropdownList}>
+                {trackingTypes.map(type => (
+                  <Pressable
+                    key={type.id}
                     style={[
-                      styles.dropdownItemText,
+                      styles.dropdownItem,
                       editedTrackingTypeId === type.id &&
-                        styles.dropdownItemTextSelected,
+                        styles.dropdownItemSelected,
                     ]}
+                    onPress={() => {
+                      setEditedTrackingTypeId(type.id);
+                      setShowDropdown(false);
+                    }}
                   >
-                    {type.displayName}
-                  </AppText>
-                </Pressable>
-              ))}
-            </View>
-          )}
+                    <AppText
+                      style={[
+                        styles.dropdownItemText,
+                        editedTrackingTypeId === type.id &&
+                          styles.dropdownItemTextSelected,
+                      ]}
+                    >
+                      {type.displayName}
+                    </AppText>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Date/Time Section */}
@@ -453,6 +465,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
     fontWeight: '500',
   },
+  dropdownContainer: {
+    position: 'relative',
+    zIndex: 1000,
+  },
   dropdown: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -467,18 +483,30 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: COLOR_PALETTE.textPrimary,
     flex: 1,
-  },
-  dropdownArrow: {
-    color: COLOR_PALETTE.textSecondary,
-    fontSize: 12,
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 28,
   },
   dropdownList: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
     marginTop: SPACING.xs,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     maxHeight: 150,
+    zIndex: 1001,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   dropdownItem: {
     paddingHorizontal: SPACING.md,
@@ -491,10 +519,15 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     color: COLOR_PALETTE.textPrimary,
+    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 28,
   },
   dropdownItemTextSelected: {
     color: COLOR_PALETTE.accentPrimary,
     fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 28,
   },
   dateTimeButton: {
     paddingHorizontal: SPACING.md,
