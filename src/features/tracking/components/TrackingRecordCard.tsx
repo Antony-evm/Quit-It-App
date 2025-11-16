@@ -5,6 +5,7 @@ import {
   Pressable,
   Platform,
   ScrollView,
+  Dimensions,
 } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -32,6 +33,7 @@ import {
   formatRelativeDateTimeForDisplay,
   parseTimestampFromAPI,
 } from '@/utils/timezoneUtils';
+import ScrollManager from '@/utils/scrollManager';
 
 type TrackingRecordCardProps = {
   record: TrackingRecordApiResponse;
@@ -48,6 +50,14 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     useInfiniteTrackingRecords();
 
   const cardRef = useRef<View>(null);
+
+  // Cleanup scroll operations when component unmounts
+  React.useEffect(() => {
+    return () => {
+      // Only cancel if this component was the one that scheduled the current operation
+      ScrollManager.cancelCurrent();
+    };
+  }, []);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedNote, setEditedNote] = useState(record.note || '');
@@ -271,39 +281,32 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     setIsEditMode(false);
     setShowDropdown(false);
     setShowDateTimePicker(false);
+
+    // Cancel any pending scroll operations
+    ScrollManager.cancelCurrent();
+  };
+
+  // Helper function to scroll card to 20% from top of screen
+  const scrollCardToPosition = () => {
+    ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
   };
 
   const handleEditPress = () => {
+    console.log('Edit pressed for record ID:', record.record_id);
     setIsEditMode(true);
 
-    // Use setTimeout to ensure the UI has updated before measuring and scrolling
-    setTimeout(() => {
-      // Scroll the card to center if scrollViewRef is available
-      if (scrollViewRef?.current && cardRef.current) {
-        cardRef.current.measureLayout(
-          scrollViewRef.current.getInnerViewNode(),
-          (x, y, width, height) => {
-            // Calculate the center position of the card
-            const cardCenter = y + height / 2;
+    // Use ScrollManager to ensure only one scroll operation at a time
+    ScrollManager.scheduleScroll(() => {
+      ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
+    }, 150);
+  };
 
-            // Get the screen height to calculate scroll position
-            // Assuming a reasonable viewport height for centering
-            const viewportHeight = 600; // This could be made more dynamic
-            const scrollPosition = cardCenter - viewportHeight / 2;
-
-            // Scroll to center the card
-            scrollViewRef.current?.scrollTo({
-              y: Math.max(0, scrollPosition),
-              animated: true,
-            });
-          },
-          () => {
-            // Error callback - fallback to simple scroll
-            console.warn('Could not measure card position for scrolling');
-          },
-        );
-      }
-    }, 100);
+  const handleNotesPress = () => {
+    console.log('Notes pressed for record ID:', record.record_id);
+    // Use ScrollManager for consistent scroll behavior
+    ScrollManager.scheduleScroll(() => {
+      ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
+    }, 50); // Shorter delay since no mode change needed
   };
 
   if (isEditMode) {
@@ -461,7 +464,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         <AppText variant="caption" tone="secondary">
           {formattedDate}
         </AppText>
-        <View style={styles.noteSection}>
+        <Pressable style={styles.noteSection} onPress={handleNotesPress}>
           {record.note ? (
             <AppText variant="body" style={styles.noteText}>
               {record.note}
@@ -471,7 +474,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
               Add a thought about this moment…
             </AppText>
           )}
-        </View>
+        </Pressable>
       </AppSurface>
     </View>
   );

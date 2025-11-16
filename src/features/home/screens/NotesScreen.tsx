@@ -35,7 +35,7 @@ export const NotesScreen = () => {
             you.
           </AppText>
         </View>
-        <NotesCard />
+        <NotesCard scrollViewRef={scrollViewRef} />
         <TrackingRecordsList scrollViewRef={scrollViewRef} />
       </ScrollView>
     </View>

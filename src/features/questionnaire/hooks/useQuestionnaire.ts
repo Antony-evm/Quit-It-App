@@ -28,7 +28,7 @@ const DEFAULT_USER_ID = 2;
 
 const ensureVariationId = (candidates: number[], fallback: number) => {
   const normalized = candidates.filter(
-    (value) => typeof value === 'number' && !Number.isNaN(value),
+    value => typeof value === 'number' && !Number.isNaN(value),
   );
 
   if (!normalized.length) {
@@ -87,7 +87,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   });
 
   const question: Question | null = fetchedQuestion ?? null;
-  const isLoading = (isQueryLoading || isQueryFetching) && !question && !isReviewing;
+  const isLoading =
+    (isQueryLoading || isQueryFetching) && !question && !isReviewing;
   const loadError = (queryError as Error | null) ?? null;
   const error = submitError ?? loadError;
 
@@ -96,13 +97,12 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       return;
     }
 
-    setNavigationStack((prev) => {
+    setNavigationStack(prev => {
       const existingIndex = prev.findIndex(
-        (entry) => entry.questionId === question.id,
+        entry => entry.questionId === question.id,
       );
 
-      const base =
-        existingIndex >= 0 ? prev.slice(0, existingIndex + 1) : prev;
+      const base = existingIndex >= 0 ? prev.slice(0, existingIndex + 1) : prev;
       const alreadyCurrent =
         base.length &&
         base[base.length - 1]?.questionId === question.id &&
@@ -141,8 +141,11 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setIsReviewing(true);
     };
 
-    loadHistory().catch((storageError) => {
-      console.error('Failed to load questionnaire history from storage', storageError);
+    loadHistory().catch(storageError => {
+      console.error(
+        'Failed to load questionnaire history from storage',
+        storageError,
+      );
     });
 
     return () => {
@@ -164,7 +167,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           user_id: userId,
           question_id: question.id,
           question: question.prompt,
-          answer_options: selectedOptions.map((option) => ({
+          answer_options: selectedOptions.map(option => ({
             answer_option_id: option.optionId,
             answer_value: option.value,
             answer_type: option.answerType,
@@ -183,14 +186,14 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
         await questionnaireStorage.save(record);
 
-        setSelections((prev) => ({
+        setSelections(prev => ({
           ...prev,
           [question.id]: selectedOptions,
         }));
 
-        setHistory((prev) => {
+        setHistory(prev => {
           const existingIndex = prev.findIndex(
-            (entry) => entry.questionId === record.questionId,
+            entry => entry.questionId === record.questionId,
           );
 
           if (existingIndex >= 0) {
@@ -203,7 +206,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         });
 
         const nextVariationId = ensureVariationId(
-          selectedOptions.map((option) => option.nextVariationId),
+          selectedOptions.map(option => option.nextVariationId),
           question.variationId,
         );
 
@@ -245,7 +248,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   }, [queryClient]);
 
   const goBack = useCallback(() => {
-    setNavigationStack((prev) => {
+    setNavigationStack(prev => {
       if (prev.length <= 1) {
         return prev;
       }
@@ -259,24 +262,24 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setIsReviewing(false);
       setSubmitError(null);
 
-      setHistory((existing) =>
-        existing.filter((record) => record.questionId !== popped.questionId),
+      setHistory(existing =>
+        existing.filter(record => record.questionId !== popped.questionId),
       );
 
-      setSelections((existing) => {
+      setSelections(existing => {
         const copy = { ...existing };
         delete copy[popped.questionId];
         return copy;
       });
 
-      questionnaireStorage.removeByQuestionId(popped.questionId).catch(
-        (storageError) => {
+      questionnaireStorage
+        .removeByQuestionId(popped.questionId)
+        .catch(storageError => {
           console.error(
             'Failed to remove questionnaire record from storage',
             storageError,
           );
-        },
-      );
+        });
 
       return nextStack;
     });
@@ -298,7 +301,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const activeVariationId = question?.variationId ?? variationId;
 
   const resumeFromReview = useCallback(() => {
-    setNavigationStack((prev) => {
+    setNavigationStack(prev => {
       if (!prev.length) {
         return prev;
       }
@@ -312,7 +315,13 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       return prev;
     });
-  }, [setOrderId, setVariationId, setIsReviewing, setSubmitError, setNavigationStack]);
+  }, [
+    setOrderId,
+    setVariationId,
+    setIsReviewing,
+    setSubmitError,
+    setNavigationStack,
+  ]);
 
   return {
     question,

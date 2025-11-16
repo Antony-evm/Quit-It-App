@@ -1,5 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Pressable, Platform } from 'react-native';
+import React, { useState, useRef, RefObject } from 'react';
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  Platform,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -24,6 +31,7 @@ import { useToast } from '@/shared/components/toast';
 import ArrowDownSvg from '@/assets/arrowDown.svg';
 import ArrowUpSvg from '@/assets/arrowUp.svg';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
+import ScrollManager from '@/utils/scrollManager';
 
 type NotesCardProps = {
   userId?: number;
@@ -33,12 +41,14 @@ type NotesCardProps = {
     notes: string;
   }) => void;
   onSaveSuccess?: () => void;
+  scrollViewRef?: RefObject<ScrollView | null>;
 };
 
 export const NotesCard: React.FC<NotesCardProps> = ({
   userId = DEFAULT_TRACKING_USER_ID,
   onSave,
   onSaveSuccess,
+  scrollViewRef,
 }) => {
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
@@ -52,6 +62,16 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [showDateTimePicker, setShowDateTimePicker] = useState(false);
   const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
+
+  // Add ref for the NotesCard component
+  const cardRef = useRef<View>(null);
+
+  // Cleanup scroll operations when component unmounts
+  React.useEffect(() => {
+    return () => {
+      ScrollManager.cancelCurrent();
+    };
+  }, []);
 
   // Mutation for creating tracking record
   const createRecordMutation = useMutation({
@@ -209,6 +229,18 @@ export const NotesCard: React.FC<NotesCardProps> = ({
     }
   };
 
+  // Helper function to scroll card to 20% from top of screen
+  const scrollCardToPosition = () => {
+    ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
+  };
+
+  const handleNotesFocus = () => {
+    // Use ScrollManager to ensure only one scroll operation at a time
+    ScrollManager.scheduleScroll(() => {
+      ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
+    }, 50); // Shorter delay for focus events
+  };
+
   const handleTrackingTypeSelect = (trackingTypeId: number) => {
     setSelectedTrackingTypeId(trackingTypeId);
     setShowDropdown(false);
@@ -240,102 +272,109 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   }
 
   return (
-    <AppSurface style={styles.card}>
-      <View style={styles.header}>
-        <View style={styles.dropdownContainer}>
-          <Pressable
-            style={styles.dropdown}
-            onPress={() => setShowDropdown(!showDropdown)}
-          >
-            <AppText style={styles.dropdownText}>
-              {selectedTrackingType?.displayName || 'Select tracking type'}
-            </AppText>
-            {showDropdown ? (
-              <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
-            ) : (
-              <ArrowDownSvg width={16} height={16} fill={BRAND_COLORS.cream} />
-            )}
-          </Pressable>
+    <View ref={cardRef}>
+      <AppSurface style={styles.card}>
+        <View style={styles.header}>
+          <View style={styles.dropdownContainer}>
+            <Pressable
+              style={styles.dropdown}
+              onPress={() => setShowDropdown(!showDropdown)}
+            >
+              <AppText style={styles.dropdownText}>
+                {selectedTrackingType?.displayName || 'Select tracking type'}
+              </AppText>
+              {showDropdown ? (
+                <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
+              ) : (
+                <ArrowDownSvg
+                  width={16}
+                  height={16}
+                  fill={BRAND_COLORS.cream}
+                />
+              )}
+            </Pressable>
 
-          {showDropdown && trackingTypes && (
-            <View style={styles.dropdownList}>
-              {trackingTypes.map(type => (
-                <Pressable
-                  key={type.id}
-                  style={[
-                    styles.dropdownItem,
-                    selectedTrackingTypeId === type.id &&
-                      styles.dropdownItemSelected,
-                  ]}
-                  onPress={() => handleTrackingTypeSelect(type.id)}
-                >
-                  <AppText
+            {showDropdown && trackingTypes && (
+              <View style={styles.dropdownList}>
+                {trackingTypes.map(type => (
+                  <Pressable
+                    key={type.id}
                     style={[
-                      styles.dropdownItemText,
+                      styles.dropdownItem,
                       selectedTrackingTypeId === type.id &&
-                        styles.dropdownItemTextSelected,
+                        styles.dropdownItemSelected,
                     ]}
+                    onPress={() => handleTrackingTypeSelect(type.id)}
                   >
-                    {type.displayName}
-                  </AppText>
-                </Pressable>
-              ))}
-            </View>
-          )}
+                    <AppText
+                      style={[
+                        styles.dropdownItemText,
+                        selectedTrackingTypeId === type.id &&
+                          styles.dropdownItemTextSelected,
+                      ]}
+                    >
+                      {type.displayName}
+                    </AppText>
+                  </Pressable>
+                ))}
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-      <View style={styles.section}>
-        <Pressable
-          style={styles.dateTimeButton}
-          onPress={
-            showDateTimePicker
-              ? () => setShowDateTimePicker(false)
-              : handleDateTimePress
-          }
-        >
-          <AppText style={styles.dateTimeText}>
-            {formatRelativeDateTimeForDisplay(selectedDateTime.toISOString())}
-          </AppText>
-        </Pressable>
-      </View>
-      <View style={styles.notesContainer}>
-        <AppTextInput
-          value={notes}
-          onChangeText={handleNotesChange}
-          placeholder="What's on your mind?"
-          multiline
-          numberOfLines={4}
-          style={styles.notesInput}
-          textAlignVertical="top"
-        />
-        <View style={styles.charCountContainer}>
-          <AppText
-            variant="caption"
-            tone={remainingChars < 50 ? 'primary' : 'secondary'}
-            style={styles.charCount}
+        <View style={styles.section}>
+          <Pressable
+            style={styles.dateTimeButton}
+            onPress={
+              showDateTimePicker
+                ? () => setShowDateTimePicker(false)
+                : handleDateTimePress
+            }
           >
-            {remainingChars} characters remaining
-          </AppText>
+            <AppText style={styles.dateTimeText}>
+              {formatRelativeDateTimeForDisplay(selectedDateTime.toISOString())}
+            </AppText>
+          </Pressable>
         </View>
-      </View>
-      <AppButton
-        label={createRecordMutation.isPending ? 'Saving...' : 'Save'}
-        variant="primary"
-        size="xs"
-        onPress={handleSave}
-        containerStyle={styles.saveButton}
-      />
-      {/* Date Time Picker */}
-      {showDateTimePicker && (
-        <DateTimePicker
-          value={selectedDateTime}
-          mode={pickerMode}
-          is24Hour={false}
-          maximumDate={new Date()}
-          onChange={handleDateTimeChange}
+        <View style={styles.notesContainer}>
+          <AppTextInput
+            value={notes}
+            onChangeText={handleNotesChange}
+            onFocus={handleNotesFocus}
+            placeholder="What's on your mind?"
+            multiline
+            numberOfLines={4}
+            style={styles.notesInput}
+            textAlignVertical="top"
+          />
+          <View style={styles.charCountContainer}>
+            <AppText
+              variant="caption"
+              tone={remainingChars < 50 ? 'primary' : 'secondary'}
+              style={styles.charCount}
+            >
+              {remainingChars} characters remaining
+            </AppText>
+          </View>
+        </View>
+        <AppButton
+          label={createRecordMutation.isPending ? 'Saving...' : 'Save'}
+          variant="primary"
+          size="xs"
+          onPress={handleSave}
+          containerStyle={styles.saveButton}
         />
-      )}
-    </AppSurface>
+        {/* Date Time Picker */}
+        {showDateTimePicker && (
+          <DateTimePicker
+            value={selectedDateTime}
+            mode={pickerMode}
+            is24Hour={false}
+            maximumDate={new Date()}
+            onChange={handleDateTimeChange}
+          />
+        )}
+      </AppSurface>
+    </View>
   );
 };
 
