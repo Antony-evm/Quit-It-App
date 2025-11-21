@@ -1,3 +1,4 @@
+import { authenticatedGet } from '@/shared/api/apiConfig';
 import { API_BASE_URL } from '@/shared/api/apiConfig';
 
 const TRACKING_RECORDS_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
@@ -31,7 +32,9 @@ export const fetchTrackingRecords = async (
     offset: offset.toString(),
   });
 
-  const response = await fetch(`${TRACKING_RECORDS_ENDPOINT}?${queryParams}`);
+  const response = await authenticatedGet(
+    `${TRACKING_RECORDS_ENDPOINT}?${queryParams}`,
+  );
 
   if (!response.ok) {
     throw new Error('Failed to fetch tracking records');

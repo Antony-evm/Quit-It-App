@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '@/shared/api/apiConfig';
+import { authenticatedFetch, API_BASE_URL } from '@/shared/api/apiConfig';
 
 export type UpdateTrackingRecordPayload = {
   event_at: string; // ISO datetime string
@@ -14,11 +14,8 @@ export const updateTrackingRecord = async (
 
   console.log('Updating tracking record:', { recordId, payload, url });
 
-  const response = await fetch(url, {
+  const response = await authenticatedFetch(url, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(payload),
   });
 

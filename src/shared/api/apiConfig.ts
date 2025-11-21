@@ -1,5 +1,15 @@
 import { Platform } from 'react-native';
 
+// Re-export authenticated fetch utilities
+export {
+  authenticatedFetch,
+  authenticatedGet,
+  authenticatedPost,
+  authenticatedPut,
+  authenticatedDelete,
+  getCurrentUserId,
+} from './authenticatedFetch';
+
 type MaybeEnv = {
   process?: {
     env?: Record<string, string | undefined>;

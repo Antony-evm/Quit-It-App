@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/shared/auth';
 
 import type {
   Question,
@@ -11,6 +12,7 @@ import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../data/questionnaireStorage';
+import { useBackendUserIdSafe } from '@/shared/hooks';
 
 type UseQuestionnaireOptions = {
   userId?: number;
@@ -48,7 +50,9 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
 };
 
 export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
-  const userId = options.userId ?? DEFAULT_USER_ID;
+  const { isAuthenticated } = useAuth();
+  const backendUserId = useBackendUserIdSafe();
+  const userId = options.userId ?? backendUserId ?? DEFAULT_USER_ID;
   const initialOrderId =
     options.initialOrderId ?? QUESTIONNAIRE_PLACEHOLDERS.orderId;
   const initialVariationId =
@@ -78,7 +82,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     refetch,
   } = useQuery({
     queryKey: ['questionnaire', orderId, variationId],
-    enabled: !isReviewing,
+    enabled: !isReviewing && isAuthenticated, // Only fetch when authenticated and not reviewing
     queryFn: () =>
       fetchQuestion({
         orderId,

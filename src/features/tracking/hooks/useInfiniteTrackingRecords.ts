@@ -1,12 +1,11 @@
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuth } from '@/shared/auth';
 import {
   fetchTrackingRecords,
   TrackingRecordApiResponse,
 } from '../api/fetchTrackingRecords';
-import {
-  DEFAULT_TRACKING_USER_ID,
-  TRACKING_RECORDS_PAGE_SIZE,
-} from '../constants';
+import { TRACKING_RECORDS_PAGE_SIZE } from '../constants';
+import { useCurrentUserId } from './useCurrentUserId';
 
 export type UseInfiniteTrackingRecordsOptions = {
   userId?: number;
@@ -16,7 +15,9 @@ export type UseInfiniteTrackingRecordsOptions = {
 export const useInfiniteTrackingRecords = (
   options: UseInfiniteTrackingRecordsOptions = {},
 ) => {
-  const { userId = DEFAULT_TRACKING_USER_ID, enabled = true } = options;
+  const { isAuthenticated } = useAuth();
+  const currentUserId = useCurrentUserId();
+  const { userId = currentUserId, enabled = true } = options;
   const queryClient = useQueryClient();
 
   const queryKey = ['trackingRecords', 'infinite', userId];
@@ -86,7 +87,7 @@ export const useInfiniteTrackingRecords = (
 
       return newRecords;
     },
-    enabled,
+    enabled: enabled && isAuthenticated, // Only fetch when user is authenticated AND enabled
     staleTime: Infinity, // Never consider data stale to prevent automatic refetches
     gcTime: 5 * 60 * 1000, // 5 minutes - shorter cache time to allow fresh data
     getNextPageParam: (lastPage, allPages) => {

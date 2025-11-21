@@ -9,6 +9,8 @@ import { COLOR_PALETTE } from './src/shared/theme';
 import { AppNavigator } from './src/navigation';
 import { TrackingTypesProvider } from './src/features/tracking/components/TrackingTypesProvider';
 import { ToastProvider, ToastContainer } from './src/shared/components/toast';
+import { AuthProvider } from './src/shared/auth';
+import { DeveloperMenuTrigger } from './src/shared/components/dev';
 
 // Initialize Stytch client
 const stytchClient = new StytchClient(
@@ -30,18 +32,21 @@ function App(): React.ReactElement {
   return (
     <StytchProvider stytch={stytchClient}>
       <QueryClientProvider client={queryClient}>
-        <TrackingTypesProvider>
-          <ToastProvider>
-            <SafeAreaProvider>
-              <StatusBar
-                barStyle="light-content"
-                backgroundColor={COLOR_PALETTE.backgroundMuted}
-              />
-              <AppNavigator />
-              <ToastContainer />
-            </SafeAreaProvider>
-          </ToastProvider>
-        </TrackingTypesProvider>
+        <AuthProvider>
+          <TrackingTypesProvider>
+            <ToastProvider>
+              <SafeAreaProvider>
+                <StatusBar
+                  barStyle="light-content"
+                  backgroundColor={COLOR_PALETTE.backgroundMuted}
+                />
+                <AppNavigator />
+                <ToastContainer />
+                {__DEV__ && <DeveloperMenuTrigger />}
+              </SafeAreaProvider>
+            </ToastProvider>
+          </TrackingTypesProvider>
+        </AuthProvider>
       </QueryClientProvider>
     </StytchProvider>
   );

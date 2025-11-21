@@ -1,3 +1,4 @@
+import { authenticatedGet } from '@/shared/api/apiConfig';
 import type { TrackingType } from '../types';
 import { TRACKING_TYPES_ENDPOINT } from './endpoints';
 
@@ -30,7 +31,7 @@ const extractRecords = (
 };
 
 export const fetchTrackingTypes = async (): Promise<TrackingType[]> => {
-  const response = await fetch(TRACKING_TYPES_ENDPOINT);
+  const response = await authenticatedGet(TRACKING_TYPES_ENDPOINT);
 
   if (!response.ok) {
     throw new Error('Failed to load tracking types');

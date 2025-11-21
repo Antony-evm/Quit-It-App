@@ -1,3 +1,4 @@
+import { authenticatedGet } from '@/shared/api/apiConfig';
 import type {
   AnswerHandling,
   AnswerOption,
@@ -51,9 +52,7 @@ const parseDefaultValue = (value: string | null | undefined): number | null => {
   return Number.isNaN(parsed) ? null : parsed;
 };
 
-const mapOptions = (
-  record: QuestionResponse['options'] = {},
-): AnswerOption[] =>
+const mapOptions = (record: QuestionResponse['options'] = {}): AnswerOption[] =>
   Object.entries(record).map(([optionId, option]) => ({
     id: Number(optionId),
     label: option.value,
@@ -67,10 +66,13 @@ const extractQuestionDefaultValue = (
   fallback: number | null,
 ): number | null => {
   const candidate = options.find(
-    (option) => option.defaultValue !== null && option.defaultValue !== undefined,
+    option => option.defaultValue !== null && option.defaultValue !== undefined,
   );
 
-  if (candidate?.defaultValue !== null && candidate?.defaultValue !== undefined) {
+  if (
+    candidate?.defaultValue !== null &&
+    candidate?.defaultValue !== undefined
+  ) {
     return candidate.defaultValue;
   }
 
@@ -107,7 +109,7 @@ export const fetchQuestion = async (
     variationId,
   )}`;
 
-  const response = await fetch(requestUrl);
+  const response = await authenticatedGet(requestUrl);
 
   if (response.status === 404 || response.status === 204) {
     return null;

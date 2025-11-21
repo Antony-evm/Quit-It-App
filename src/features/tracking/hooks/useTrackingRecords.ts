@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/shared/auth';
 import {
   fetchTrackingRecords,
   TrackingRecordApiResponse,
 } from '../api/fetchTrackingRecords';
-import { DEFAULT_TRACKING_USER_ID } from '../constants';
+import { useCurrentUserId } from './useCurrentUserId';
 
 export type UseTrackingRecordsOptions = {
   userId?: number;
@@ -12,16 +13,14 @@ export type UseTrackingRecordsOptions = {
 };
 
 export const useTrackingRecords = (options: UseTrackingRecordsOptions = {}) => {
-  const {
-    userId = DEFAULT_TRACKING_USER_ID,
-    offset = 0,
-    enabled = true,
-  } = options;
+  const { isAuthenticated } = useAuth();
+  const currentUserId = useCurrentUserId();
+  const { userId = currentUserId, offset = 0, enabled = true } = options;
 
   return useQuery<TrackingRecordApiResponse[]>({
     queryKey: ['trackingRecords', userId, offset],
     queryFn: () => fetchTrackingRecords({ user_id: userId, offset }),
-    enabled,
+    enabled: enabled && isAuthenticated, // Only fetch when user is authenticated AND enabled
     staleTime: 30000, // 30 seconds
     select: data => {
       // Sort records by event_at date in descending order (newest first)

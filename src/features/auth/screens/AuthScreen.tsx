@@ -12,7 +12,9 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { useStytch } from '@stytch/react-native';
+import { useAuth } from '@/shared/auth';
+import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
+import { usePasswordValidation } from '@/shared/hooks/usePasswordValidation';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
@@ -20,9 +22,18 @@ type AuthScreenProps = RootStackScreenProps<'Auth'>;
 export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const stytch = useStytch();
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
+  const { login, signup } = useAuth();
+
+  // Password validation for signup mode
+  const passwordValidation = usePasswordValidation(password);
 
   const validateForm = useCallback(() => {
     if (!email.trim()) {
@@ -33,59 +44,85 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
       Alert.alert('Error', 'Please enter your password');
       return false;
     }
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
-      return false;
+
+    // For signup mode, validate additional fields
+    if (!isLoginMode) {
+      if (!firstName.trim()) {
+        Alert.alert('Error', 'Please enter your first name');
+        return false;
+      }
+      if (!lastName.trim()) {
+        Alert.alert('Error', 'Please enter your last name');
+        return false;
+      }
+      if (!confirmPassword.trim()) {
+        Alert.alert('Error', 'Please confirm your password');
+        return false;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match');
+        return false;
+      }
+      if (!passwordValidation.isValid) {
+        Alert.alert(
+          'Password Too Weak',
+          'Password must achieve a zxcvbn strength score of 3 or higher. Please choose a stronger password.',
+        );
+        return false;
+      }
+    } else {
+      // For login mode, just require minimum length
+      if (password.length < 6) {
+        Alert.alert('Error', 'Password must be at least 6 characters long');
+        return false;
+      }
     }
+
     return true;
-  }, [email, password]);
+  }, [
+    email,
+    password,
+    confirmPassword,
+    firstName,
+    lastName,
+    isLoginMode,
+    passwordValidation.isValid,
+  ]);
 
   const handleLogin = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
     try {
-      const response = await stytch.passwords.authenticate({
-        email: email.trim(),
-        password: password,
-        session_duration_minutes: 60, // 30 days
-      });
+      await login(email.trim(), password);
 
-      if (response.status_code === 200) {
-        Alert.alert('Success', 'Login successful!', [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Questionnaire'),
-          },
-        ]);
-      }
+      Alert.alert('Success', 'Login successful!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Questionnaire'),
+        },
+      ]);
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [validateForm, stytch, email, password, navigation]);
+  }, [validateForm, login, email, password, navigation]);
 
   const handleSignup = useCallback(async () => {
     if (!validateForm()) return;
 
     setIsLoading(true);
     try {
-      const response = await stytch.passwords.create({
-        email: email.trim(),
-        password: password,
-        session_duration_minutes: 60, // 30 days
-      });
+      await signup(email.trim(), password, firstName.trim(), lastName.trim());
 
-      if (response.status_code === 200) {
-        Alert.alert('Success', 'Account created successfully!', [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('Questionnaire'),
-          },
-        ]);
-      }
+      Alert.alert('Success', 'Account created successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.navigate('Questionnaire'),
+        },
+      ]);
     } catch (error) {
       console.error('Signup error:', error);
       Alert.alert(
@@ -95,7 +132,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [validateForm, stytch, email, password, navigation]);
+  }, [validateForm, signup, email, password, firstName, lastName, navigation]);
 
   const handleSubmit = useCallback(() => {
     if (isLoginMode) {
@@ -107,6 +144,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 
   const handleLoginModePress = useCallback(() => {
     setIsLoginMode(true);
+    // Clear signup-specific fields when switching to login
+    setConfirmPassword('');
+    setFirstName('');
+    setLastName('');
   }, []);
 
   const handleSignupModePress = useCallback(() => {
@@ -172,6 +213,32 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
             </View>
 
             <View style={styles.formContainer}>
+              {/* First Name - Only in signup mode */}
+              {!isLoginMode && (
+                <TextInput
+                  style={styles.input}
+                  placeholder="First name"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  autoCapitalize="words"
+                  autoComplete="given-name"
+                  editable={!isLoading}
+                />
+              )}
+
+              {/* Last Name - Only in signup mode */}
+              {!isLoginMode && (
+                <TextInput
+                  style={styles.input}
+                  placeholder="Last name"
+                  value={lastName}
+                  onChangeText={setLastName}
+                  autoCapitalize="words"
+                  autoComplete="family-name"
+                  editable={!isLoading}
+                />
+              )}
+
               <TextInput
                 style={styles.input}
                 placeholder="Email address"
@@ -183,15 +250,59 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                 editable={!isLoading}
               />
 
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                autoComplete="password"
-                editable={!isLoading}
-              />
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!isPasswordVisible}
+                  autoComplete="password"
+                  editable={!isLoading}
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                >
+                  <Text style={styles.passwordToggleText}>
+                    {isPasswordVisible ? '🙈' : '👁️'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Confirm Password - Only in signup mode */}
+              {!isLoginMode && (
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!isConfirmPasswordVisible}
+                    autoComplete="password"
+                    editable={!isLoading}
+                  />
+                  <TouchableOpacity
+                    style={styles.passwordToggle}
+                    onPress={() =>
+                      setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                    }
+                  >
+                    <Text style={styles.passwordToggleText}>
+                      {isConfirmPasswordVisible ? '🙈' : '👁️'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {/* Show password strength indicator only in signup mode */}
+              {!isLoginMode && password.length > 0 && (
+                <PasswordStrengthIndicator
+                  password={password}
+                  showDetails={true}
+                  style={styles.passwordStrength}
+                />
+              )}
 
               <TouchableOpacity
                 style={submitButtonStyle}
@@ -342,6 +453,42 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+  },
+  passwordToggle: {
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  passwordToggleText: {
+    fontSize: 18,
+  },
+  passwordStrength: {
+    marginTop: 8,
+    marginBottom: 16,
   },
   footerText: {
     fontSize: 14,

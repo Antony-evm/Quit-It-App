@@ -1,3 +1,4 @@
+import { authenticatedPost } from '@/shared/api/apiConfig';
 import { API_BASE_URL } from '@/shared/api/apiConfig';
 import type { TrackingRecordApiResponse } from './fetchTrackingRecords';
 
@@ -17,13 +18,7 @@ export type CreateTrackingRecordResponse = {
 export const createTrackingRecord = async (
   payload: CreateTrackingRecordPayload,
 ): Promise<TrackingRecordApiResponse> => {
-  const response = await fetch(TRACKING_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+  const response = await authenticatedPost(TRACKING_ENDPOINT, payload);
 
   if (!response.ok) {
     throw new Error('Failed to create tracking record');

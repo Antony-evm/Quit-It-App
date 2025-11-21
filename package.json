@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/datetimepicker": "7.7.0",
     "@react-native-community/slider": "5.1.0",
     "@react-native/new-app-screen": "0.82.0",
@@ -17,6 +18,7 @@
     "@react-navigation/native-stack": "^7.6.2",
     "@stytch/react-native": "^0.67.1",
     "@tanstack/react-query": "5.90.5",
+    "@types/zxcvbn": "^4.4.5",
     "datetimepicker": "0.1.39",
     "react": "19.1.1",
     "react-native": "0.82.0",
@@ -24,7 +26,8 @@
     "react-native-keychain": "^10.0.0",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.18.0",
-    "react-native-svg": "^15.14.0"
+    "react-native-svg": "^15.14.0",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@babel/core": "7.28.4",

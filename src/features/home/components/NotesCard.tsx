@@ -26,8 +26,8 @@ import {
   CreateTrackingRecordPayload,
 } from '@/features/tracking/api/createTrackingRecord';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
-import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
 import { useToast } from '@/shared/components/toast';
+import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import ArrowDownSvg from '@/assets/arrowDown.svg';
 import ArrowUpSvg from '@/assets/arrowUp.svg';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
@@ -45,11 +45,13 @@ type NotesCardProps = {
 };
 
 export const NotesCard: React.FC<NotesCardProps> = ({
-  userId = DEFAULT_TRACKING_USER_ID,
+  userId,
   onSave,
   onSaveSuccess,
   scrollViewRef,
 }) => {
+  const currentUserId = useCurrentUserId();
+  const actualUserId = userId ?? currentUserId;
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
   const { addRecordToCache, replaceOptimisticRecord } =
@@ -249,7 +251,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   const handleSave = () => {
     if (selectedTrackingType) {
       const payload: CreateTrackingRecordPayload = {
-        user_id: userId,
+        user_id: actualUserId,
         tracking_type_id: selectedTrackingType.id,
         event_at: selectedDateTime.toISOString(),
         note: notes.trim() || null, // Send null if notes is empty

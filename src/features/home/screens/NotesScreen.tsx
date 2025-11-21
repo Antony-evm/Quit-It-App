@@ -6,16 +6,17 @@ import { AppText } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 import { NotesCard } from '../components/NotesCard';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
-import { DEFAULT_TRACKING_USER_ID } from '@/features/tracking/constants';
+import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 
 export const NotesScreen = () => {
   const queryClient = useQueryClient();
   const scrollViewRef = useRef<ScrollView>(null);
+  const currentUserId = useCurrentUserId();
 
   useEffect(() => {
-    const queryKey = ['trackingRecords', 'infinite', DEFAULT_TRACKING_USER_ID];
+    const queryKey = ['trackingRecords', 'infinite', currentUserId];
     queryClient.resetQueries({ queryKey });
-  }, [queryClient]);
+  }, [queryClient, currentUserId]);
 
   return (
     <View style={styles.container}>

@@ -4,6 +4,7 @@ import {
   ScrollView,
   StyleSheet,
   View,
+  Alert,
 } from 'react-native';
 
 import {
@@ -13,6 +14,7 @@ import {
   AppTextInput,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { useAuth } from '@/shared/auth';
 import { fetchUserGreeting } from '../api/fetchUserGreeting';
 import { fetchUserEmail } from '../api/fetchUserEmail';
 import { fetchSmokingTarget } from '../api/fetchSmokingTarget';
@@ -53,7 +55,9 @@ const formatEmailAccessory = (value: UserEmail | null) => {
 export const AccountScreen = () => {
   const [greeting, setGreeting] = useState<UserGreeting | null>(null);
   const [email, setEmail] = useState<UserEmail | null>(null);
-  const [smokingTarget, setSmokingTarget] = useState<SmokingTarget | null>(null);
+  const [smokingTarget, setSmokingTarget] = useState<SmokingTarget | null>(
+    null,
+  );
   const [smokingTargetInput, setSmokingTargetInput] = useState('');
   const [smokingTargetNote, setSmokingTargetNote] = useState('');
   const [quitDate, setQuitDate] = useState<QuitDate | null>(null);
@@ -61,7 +65,8 @@ export const AccountScreen = () => {
   const [notificationSchedule, setNotificationSchedule] =
     useState<NotificationSchedule | null>(null);
   const [notificationTimesInput, setNotificationTimesInput] = useState('');
-  const [notificationTimezoneInput, setNotificationTimezoneInput] = useState('');
+  const [notificationTimezoneInput, setNotificationTimezoneInput] =
+    useState('');
 
   const [isBootstrapping, setIsBootstrapping] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -74,6 +79,8 @@ export const AccountScreen = () => {
   const [targetStatus, setTargetStatus] = useState<FieldStatus>(null);
   const [quitDateStatus, setQuitDateStatus] = useState<FieldStatus>(null);
   const [scheduleStatus, setScheduleStatus] = useState<FieldStatus>(null);
+
+  const { logout, user } = useAuth();
 
   const loadAccountData = useCallback(async () => {
     const responses = await Promise.all([
@@ -224,7 +231,7 @@ export const AccountScreen = () => {
     setScheduleStatus(null);
     const normalizedTimes = notificationTimesInput
       .split(',')
-      .map((time) => time.trim())
+      .map(time => time.trim())
       .filter(Boolean);
 
     if (!normalizedTimes.length) {
@@ -236,7 +243,7 @@ export const AccountScreen = () => {
     }
 
     const invalidTime = normalizedTimes.find(
-      (value) => !/^\d{2}:\d{2}$/.test(value),
+      value => !/^\d{2}:\d{2}$/.test(value),
     );
 
     if (invalidTime) {
@@ -268,11 +275,30 @@ export const AccountScreen = () => {
     }
   }, [notificationTimesInput, notificationTimezoneInput]);
 
+  const handleLogout = useCallback(async () => {
+    Alert.alert('Log Out', 'Are you sure you want to log out?', [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await logout();
+            // Navigation will be handled by the app navigator when auth state changes
+          } catch (error) {
+            console.error('Logout error:', error);
+            Alert.alert('Error', 'Failed to log out. Please try again.');
+          }
+        },
+      },
+    ]);
+  }, [logout]);
+
   const greetingText = useMemo(() => formatGreeting(greeting), [greeting]);
-  const emailAccessory = useMemo(
-    () => formatEmailAccessory(email),
-    [email],
-  );
+  const emailAccessory = useMemo(() => formatEmailAccessory(email), [email]);
 
   const notificationTimes = notificationSchedule?.times ?? [];
 
@@ -288,7 +314,9 @@ export const AccountScreen = () => {
         variant="caption"
         style={[
           styles.statusText,
-          status.tone === 'error' ? styles.statusTextError : styles.statusTextSuccess,
+          status.tone === 'error'
+            ? styles.statusTextError
+            : styles.statusTextSuccess,
         ]}
       >
         {status.message}
@@ -319,11 +347,7 @@ export const AccountScreen = () => {
           </AppText>
         </View>
 
-        {error ? (
-          <AppText style={styles.globalError}>
-            {error}
-          </AppText>
-        ) : null}
+        {error ? <AppText style={styles.globalError}>{error}</AppText> : null}
 
         <AppSurface style={styles.card}>
           <AppText variant="heading" style={styles.cardTitle}>
@@ -420,7 +444,7 @@ export const AccountScreen = () => {
 
           <View style={styles.chipsRow}>
             {notificationTimes.length ? (
-              notificationTimes.map((time) => (
+              notificationTimes.map(time => (
                 <View key={time} style={styles.chip}>
                   <AppText variant="caption">{time}</AppText>
                 </View>
@@ -455,6 +479,21 @@ export const AccountScreen = () => {
             fullWidth
           />
           {renderStatus(scheduleStatus)}
+        </AppSurface>
+
+        <AppSurface style={styles.card}>
+          <AppText variant="heading" style={styles.cardTitle}>
+            Account Actions
+          </AppText>
+          <AppText tone="secondary" style={styles.cardDescription}>
+            Logged in as {user?.email || 'Unknown'}
+          </AppText>
+          <AppButton
+            label="Log Out"
+            onPress={handleLogout}
+            fullWidth
+            variant="secondary"
+          />
         </AppSurface>
       </ScrollView>
     </View>
