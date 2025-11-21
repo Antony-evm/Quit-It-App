@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -42,15 +42,39 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [showCursor, setShowCursor] = useState(true);
   const { login, signup } = useAuth();
 
-  // Custom password validation for signup mode
+  const appName = 'QUIT IT';
+  useEffect(() => {
+    const startDelay = setTimeout(() => {
+      let currentIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (currentIndex <= appName.length) {
+          setDisplayedText(appName.slice(0, currentIndex));
+          currentIndex++;
+        } else {
+          clearInterval(typingInterval);
+          setTimeout(() => setShowCursor(false), 1000);
+        }
+      }, 150);
+
+      return () => clearInterval(typingInterval);
+    }, 500);
+
+    const cursorInterval = setInterval(() => {
+      setShowCursor(prev => !prev);
+    }, 500);
+
+    return () => {
+      clearTimeout(startDelay);
+      clearInterval(cursorInterval);
+    };
+  }, []);
+
   const passwordValidation = useCustomPasswordValidation(password);
-
-  // Email validation for real-time feedback
   const emailValidation = useEmailValidation(email);
-
-  // Name validations
   const firstNameValidation = validateName(firstName, 50);
   const lastNameValidation = validateName(lastName, 100);
   const confirmPasswordValidation = validateConfirmPassword(
@@ -58,7 +82,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     confirmPassword,
   );
 
-  // Check if form is ready for submission
   const isFormReady = useMemo(() => {
     if (isLoginMode) {
       return (
@@ -169,8 +192,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     try {
       const { sanitizedEmail } = validateAndSanitizeEmail(email);
       await login(sanitizedEmail, password);
-
-      // Navigate directly without success popup
       navigation.navigate('Questionnaire');
     } catch (error) {
       console.error('Login error:', error);
@@ -221,35 +242,26 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     setIsLoginMode(false);
   }, []);
 
-  // Memoize style arrays to prevent recreating them on every render
-  const loginToggleStyle = useMemo(
-    () => [styles.toggleButton, isLoginMode && styles.activeToggle],
-    [isLoginMode],
-  );
-
-  const signupToggleStyle = useMemo(
-    () => [styles.toggleButton, !isLoginMode && styles.activeToggle],
-    [isLoginMode],
-  );
-
-  const loginToggleTextStyle = useMemo(
-    () => [styles.toggleText, isLoginMode && styles.activeToggleText],
-    [isLoginMode],
-  );
-
-  const signupToggleTextStyle = useMemo(
-    () => [styles.toggleText, !isLoginMode && styles.activeToggleText],
-    [isLoginMode],
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        {/* Logo at top 10% of screen */}
+        <View style={styles.logoSection}>
+          <AppText variant="heading" tone="inverse" style={styles.appName}>
+            {displayedText}
+          </AppText>
+          <Logo size="large" />
+        </View>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
+            {/* Placeholder text below logo */}
             <AppText variant="title" tone="inverse" style={styles.title}>
               Welcome to Quit It
             </AppText>
@@ -257,29 +269,26 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
               Your journey to quit smoking starts here
             </AppText>
 
-            <View style={styles.logoContainer}>
-              <Logo size="large" />
-            </View>
-
-            <View style={styles.toggleContainer}>
-              <TouchableOpacity
-                style={loginToggleStyle}
-                onPress={handleLoginModePress}
+            {/* Mode toggle text */}
+            <TouchableOpacity
+              style={styles.modeToggle}
+              onPress={
+                isLoginMode ? handleSignupModePress : handleLoginModePress
+              }
+              activeOpacity={0.7}
+            >
+              <AppText
+                variant="body"
+                tone="inverse"
+                style={styles.modeToggleText}
               >
-                <AppText variant="body" style={loginToggleTextStyle}>
-                  Login
-                </AppText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={signupToggleStyle}
-                onPress={handleSignupModePress}
-              >
-                <AppText variant="body" style={signupToggleTextStyle}>
-                  Sign Up
-                </AppText>
-              </TouchableOpacity>
-            </View>
+                {isLoginMode
+                  ? "Don't have an account? Tap here to sign up"
+                  : 'Already have an account? Tap here to login'}
+              </AppText>
+            </TouchableOpacity>
 
+            {/* Auth form */}
             <View style={styles.formContainer}>
               {/* First Name - Only in signup mode */}
               {!isLoginMode && (
@@ -372,9 +381,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                 >
                   {isPasswordVisible ? (
-                    <ShowPasswordSvg width={24} height={24} />
+                    <ShowPasswordSvg width={24} height={24} fill="none" />
                   ) : (
-                    <HidePasswordSvg width={24} height={24} />
+                    <HidePasswordSvg width={24} height={24} fill="none" />
                   )}
                 </TouchableOpacity>
               </View>
@@ -402,9 +411,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                     }
                   >
                     {isConfirmPasswordVisible ? (
-                      <ShowPasswordSvg width={24} height={24} />
+                      <ShowPasswordSvg width={24} height={24} fill="none" />
                     ) : (
-                      <HidePasswordSvg width={24} height={24} />
+                      <HidePasswordSvg width={24} height={24} fill="none" />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -427,25 +436,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                   style={styles.passwordStrength}
                 />
               )}
-
-              <AppButton
-                label={isLoginMode ? 'Login' : 'Create Account'}
-                variant="primary"
-                size="lg"
-                fullWidth
-                disabled={isLoading || !isFormReady}
-                onPress={handleSubmit}
-                containerStyle={styles.submitButton}
-              />
             </View>
-
-            <AppText variant="body" tone="inverse" style={styles.footerText}>
-              {isLoginMode
-                ? "Don't have an account? Tap Sign Up above"
-                : 'Already have an account? Tap Login above'}
-            </AppText>
           </View>
         </ScrollView>
+
+        {/* Button at bottom of screen */}
+        <View style={styles.bottomButtonContainer}>
+          <AppButton
+            label={isLoginMode ? 'Login' : 'Create Account'}
+            variant="primary"
+            size="lg"
+            fullWidth
+            disabled={isLoading || !isFormReady}
+            onPress={handleSubmit}
+          />
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -459,12 +464,26 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
+  logoSection: {
+    height: '30%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingTop: SPACING.xxl,
+    paddingBottom: SPACING.lg,
+  },
+  appName: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    letterSpacing: 4,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+    color: BRAND_COLORS.cream,
+  },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: SPACING.xl,
   },
   content: {
-    flex: 1,
-    justifyContent: 'center',
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.xl,
   },
@@ -472,42 +491,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: SPACING.xs,
     fontWeight: 'bold',
+    color: BRAND_COLORS.cream, // Explicit color for better visibility
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: SPACING.xxl,
-    lineHeight: 24,
-  },
-  logoContainer: {
-    marginBottom: SPACING.xxl,
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    backgroundColor: COLOR_PALETTE.accentMuted,
-    borderRadius: 12,
-    padding: SPACING.xs,
     marginBottom: SPACING.xl,
+    lineHeight: 24,
+    color: BRAND_COLORS.cream, // Explicit color for better visibility
+    opacity: 0.9,
   },
-  toggleButton: {
-    flex: 1,
+  modeToggle: {
+    marginBottom: SPACING.xl,
     paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     alignItems: 'center',
+    backgroundColor: 'rgba(249, 246, 242, 0.05)', // Subtle background to show touchable area
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(249, 246, 242, 0.1)',
   },
-  activeToggle: {
-    backgroundColor: BRAND_COLORS.cream,
-  },
-  toggleText: {
+  modeToggleText: {
+    textAlign: 'center',
+    textDecorationLine: 'underline',
     fontSize: 16,
-    color: COLOR_PALETTE.textMuted,
     fontWeight: '500',
+    color: BRAND_COLORS.cream, // Explicitly set color for better visibility
   },
-  activeToggleText: {
-    color: BRAND_COLORS.ink,
-    fontWeight: '600',
+  formContainer: {
+    width: '100%',
   },
   fieldContainer: {
     marginBottom: SPACING.md,
@@ -517,14 +528,8 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     marginLeft: SPACING.sm,
   },
-  formContainer: {
-    width: '100%',
-  },
   input: {
     marginBottom: SPACING.lg,
-  },
-  submitButton: {
-    marginTop: SPACING.xs,
   },
   passwordContainer: {
     flexDirection: 'row',
@@ -554,12 +559,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     marginBottom: SPACING.lg,
   },
-  footerText: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: SPACING.xl,
-    lineHeight: 20,
-  },
   emailContainer: {
     marginBottom: SPACING.lg,
   },
@@ -574,5 +573,11 @@ const styles = StyleSheet.create({
   },
   emailInvalidText: {
     color: COLOR_PALETTE.systemError,
+  },
+  bottomButtonContainer: {
+    paddingHorizontal: SPACING.xxl,
+    paddingBottom: SPACING.xl,
+    paddingTop: SPACING.lg,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
 });
