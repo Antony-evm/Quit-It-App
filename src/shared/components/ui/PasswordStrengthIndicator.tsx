@@ -47,7 +47,9 @@ export const PasswordStrengthIndicator: React.FC<
     return (
       <View style={[styles.container, style]}>
         <Text style={styles.requirementText}>
-          Password must have a strength score of 3 or higher
+          Password Requirements: Create a strong password by making it at least
+          8 characters long, avoiding common passwords, and using a mix of
+          different characters.
         </Text>
       </View>
     );
@@ -108,18 +110,20 @@ export const PasswordStrengthIndicator: React.FC<
 
           {/* Requirement Details */}
           <View style={styles.requirementContainer}>
-            <Text style={styles.requirementTitle}>Password Requirements:</Text>
-            <Text style={styles.requirementItem}>
-              • Must achieve zxcvbn score of 3 or higher
+            <Text style={styles.requirementTitle}>
+              To create a strong password:
             </Text>
             <Text style={styles.requirementItem}>
-              • Uses advanced strength estimation (not simple character rules)
+              • Make it at least 8 characters long
             </Text>
             <Text style={styles.requirementItem}>
-              • Recognizes and weighs 30k+ common passwords
+              • Avoid common passwords and dictionary words
             </Text>
             <Text style={styles.requirementItem}>
-              • No mixing of uppercase/lowercase/numbers/symbols required
+              • Use a mix of letters, numbers, and symbols
+            </Text>
+            <Text style={styles.requirementItem}>
+              • Consider using a memorable phrase or sentence
             </Text>
           </View>
 

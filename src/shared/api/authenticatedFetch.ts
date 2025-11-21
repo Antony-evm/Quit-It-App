@@ -49,11 +49,19 @@ export async function authenticatedFetch(
     });
 
     // Use session_token or JWT based on preference
-    const tokenToUse = useSessionToken ? tokens.sessionToken : tokens.sessionJwt;
+    const tokenToUse = useSessionToken
+      ? tokens.sessionToken
+      : tokens.sessionJwt;
     const authHeader = `Bearer ${tokenToUse}`;
 
-    console.log('[AuthenticatedFetch] Using token type:', useSessionToken ? 'sessionToken' : 'sessionJwt');
-    console.log('[AuthenticatedFetch] Token preview:', tokenToUse ? `${tokenToUse.substring(0, 20)}...` : 'null');
+    console.log(
+      '[AuthenticatedFetch] Using token type:',
+      useSessionToken ? 'sessionToken' : 'sessionJwt',
+    );
+    console.log(
+      '[AuthenticatedFetch] Token preview:',
+      tokenToUse ? `${tokenToUse.substring(0, 20)}...` : 'null',
+    );
 
     requestHeaders.set('Authorization', authHeader);
 
@@ -63,8 +71,11 @@ export async function authenticatedFetch(
 
   // Make the request
   console.log('[AuthenticatedFetch] Making request to:', url);
-  console.log('[AuthenticatedFetch] Request headers:', Object.fromEntries(requestHeaders.entries()));
-  
+  console.log(
+    '[AuthenticatedFetch] Request headers:',
+    Object.fromEntries(requestHeaders.entries()),
+  );
+
   const response = await fetch(url, {
     ...restConfig,
     headers: requestHeaders,
@@ -75,11 +86,11 @@ export async function authenticatedFetch(
   // Handle token expiration
   if (response.status === 401) {
     console.log('[AuthenticatedFetch] 401 Unauthorized - clearing auth state');
-    
+
     // Log response details for debugging
     const responseText = await response.clone().text();
     console.log('[AuthenticatedFetch] 401 response body:', responseText);
-    
+
     // Token might be expired - clear auth state
     await AuthService.clearAuth();
     throw new Error('Authentication failed. Please log in again.');

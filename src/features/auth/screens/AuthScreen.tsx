@@ -1,20 +1,32 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
   Alert,
   SafeAreaView,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
+import ShowPasswordSvg from '@/assets/showPassword.svg';
+import HidePasswordSvg from '@/assets/hidePassword.svg';
 import { useAuth } from '@/shared/auth';
-import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
-import { usePasswordValidation } from '@/shared/hooks/usePasswordValidation';
+import {
+  CustomPasswordStrengthIndicator,
+  AppButton,
+  AppText,
+  AppTextInput,
+  Logo,
+} from '@/shared/components/ui';
+import {
+  useCustomPasswordValidation,
+  useEmailValidation,
+  validateName,
+  validateConfirmPassword,
+} from '@/shared/hooks';
+import { validateAndSanitizeEmail } from '@/utils/emailValidation';
+import { COLOR_PALETTE, BRAND_COLORS, SPACING } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
@@ -32,14 +44,72 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     useState(false);
   const { login, signup } = useAuth();
 
-  // Password validation for signup mode
-  const passwordValidation = usePasswordValidation(password);
+  // Custom password validation for signup mode
+  const passwordValidation = useCustomPasswordValidation(password);
+
+  // Email validation for real-time feedback
+  const emailValidation = useEmailValidation(email);
+
+  // Name validations
+  const firstNameValidation = validateName(firstName, 50);
+  const lastNameValidation = validateName(lastName, 100);
+  const confirmPasswordValidation = validateConfirmPassword(
+    password,
+    confirmPassword,
+  );
+
+  // Check if form is ready for submission
+  const isFormReady = useMemo(() => {
+    if (isLoginMode) {
+      return (
+        email.trim() !== '' &&
+        password.trim() !== '' &&
+        emailValidation.isValid &&
+        password.length >= 6
+      );
+    } else {
+      return (
+        email.trim() !== '' &&
+        password.trim() !== '' &&
+        confirmPassword.trim() !== '' &&
+        firstName.trim() !== '' &&
+        lastName.trim() !== '' &&
+        emailValidation.isValid &&
+        passwordValidation.isValid &&
+        firstNameValidation.isValid &&
+        lastNameValidation.isValid &&
+        confirmPasswordValidation.isValid
+      );
+    }
+  }, [
+    email,
+    password,
+    confirmPassword,
+    firstName,
+    lastName,
+    isLoginMode,
+    emailValidation.isValid,
+    passwordValidation.isValid,
+    firstNameValidation.isValid,
+    lastNameValidation.isValid,
+    confirmPasswordValidation.isValid,
+  ]);
 
   const validateForm = useCallback(() => {
+    // Validate and sanitize email
+    const { sanitizedEmail, isValid: isEmailValid } =
+      validateAndSanitizeEmail(email);
+
     if (!email.trim()) {
       Alert.alert('Error', 'Please enter your email address');
       return false;
     }
+
+    if (!isEmailValid) {
+      Alert.alert('Invalid Email', 'Please enter a valid email address');
+      return false;
+    }
+
     if (!password.trim()) {
       Alert.alert('Error', 'Please enter your password');
       return false;
@@ -47,26 +117,26 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 
     // For signup mode, validate additional fields
     if (!isLoginMode) {
-      if (!firstName.trim()) {
-        Alert.alert('Error', 'Please enter your first name');
+      if (!firstNameValidation.isValid) {
+        Alert.alert('Error', `First name: ${firstNameValidation.error}`);
         return false;
       }
-      if (!lastName.trim()) {
-        Alert.alert('Error', 'Please enter your last name');
+      if (!lastNameValidation.isValid) {
+        Alert.alert('Error', `Last name: ${lastNameValidation.error}`);
         return false;
       }
-      if (!confirmPassword.trim()) {
-        Alert.alert('Error', 'Please confirm your password');
-        return false;
-      }
-      if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match');
+      if (!confirmPasswordValidation.isValid) {
+        Alert.alert(
+          'Error',
+          confirmPasswordValidation.error || 'Please confirm your password',
+        );
         return false;
       }
       if (!passwordValidation.isValid) {
+        const missingRequirements = passwordValidation.errors.join('\n• ');
         Alert.alert(
-          'Password Too Weak',
-          'Password must achieve a zxcvbn strength score of 3 or higher. Please choose a stronger password.',
+          'Password Requirements Not Met',
+          `Your password must include:\n\n• ${missingRequirements}`,
         );
         return false;
       }
@@ -86,7 +156,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     firstName,
     lastName,
     isLoginMode,
-    passwordValidation.isValid,
+    passwordValidation,
+    firstNameValidation,
+    lastNameValidation,
+    confirmPasswordValidation,
   ]);
 
   const handleLogin = useCallback(async () => {
@@ -94,14 +167,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 
     setIsLoading(true);
     try {
-      await login(email.trim(), password);
+      const { sanitizedEmail } = validateAndSanitizeEmail(email);
+      await login(sanitizedEmail, password);
 
-      Alert.alert('Success', 'Login successful!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Questionnaire'),
-        },
-      ]);
+      // Navigate directly without success popup
+      navigation.navigate('Questionnaire');
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Invalid email or password. Please try again.');
@@ -115,14 +185,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 
     setIsLoading(true);
     try {
-      await signup(email.trim(), password, firstName.trim(), lastName.trim());
+      const { sanitizedEmail } = validateAndSanitizeEmail(email);
+      await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
 
-      Alert.alert('Success', 'Account created successfully!', [
-        {
-          text: 'OK',
-          onPress: () => navigation.navigate('Questionnaire'),
-        },
-      ]);
+      // Navigate directly without success popup
+      navigation.navigate('Questionnaire');
     } catch (error) {
       console.error('Signup error:', error);
       Alert.alert(
@@ -175,11 +242,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     [isLoginMode],
   );
 
-  const submitButtonStyle = useMemo(
-    () => [styles.submitButton, isLoading && styles.buttonDisabled],
-    [isLoading],
-  );
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -188,13 +250,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.content}>
-            <Text style={styles.title}>Welcome to Quit It</Text>
-            <Text style={styles.subtitle}>
+            <AppText variant="title" tone="inverse" style={styles.title}>
+              Welcome to Quit It
+            </AppText>
+            <AppText variant="body" tone="inverse" style={styles.subtitle}>
               Your journey to quit smoking starts here
-            </Text>
+            </AppText>
 
             <View style={styles.logoContainer}>
-              <Text style={styles.logoEmoji}>🚭</Text>
+              <Logo size="large" />
             </View>
 
             <View style={styles.toggleContainer}>
@@ -202,56 +266,99 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                 style={loginToggleStyle}
                 onPress={handleLoginModePress}
               >
-                <Text style={loginToggleTextStyle}>Login</Text>
+                <AppText variant="body" style={loginToggleTextStyle}>
+                  Login
+                </AppText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={signupToggleStyle}
                 onPress={handleSignupModePress}
               >
-                <Text style={signupToggleTextStyle}>Sign Up</Text>
+                <AppText variant="body" style={signupToggleTextStyle}>
+                  Sign Up
+                </AppText>
               </TouchableOpacity>
             </View>
 
             <View style={styles.formContainer}>
               {/* First Name - Only in signup mode */}
               {!isLoginMode && (
-                <TextInput
-                  style={styles.input}
-                  placeholder="First name"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  autoCapitalize="words"
-                  autoComplete="given-name"
-                  editable={!isLoading}
-                />
+                <View style={styles.fieldContainer}>
+                  <AppTextInput
+                    style={styles.input}
+                    placeholder="First name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="words"
+                    autoComplete="given-name"
+                    editable={!isLoading}
+                    hasError={
+                      firstName.length > 0 && !firstNameValidation.isValid
+                    }
+                  />
+                  {firstName.length > 0 && !firstNameValidation.isValid && (
+                    <AppText variant="caption" style={styles.errorText}>
+                      {firstNameValidation.error}
+                    </AppText>
+                  )}
+                </View>
               )}
 
               {/* Last Name - Only in signup mode */}
               {!isLoginMode && (
-                <TextInput
-                  style={styles.input}
-                  placeholder="Last name"
-                  value={lastName}
-                  onChangeText={setLastName}
-                  autoCapitalize="words"
-                  autoComplete="family-name"
-                  editable={!isLoading}
-                />
+                <View style={styles.fieldContainer}>
+                  <AppTextInput
+                    style={styles.input}
+                    placeholder="Last name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="words"
+                    autoComplete="family-name"
+                    editable={!isLoading}
+                    hasError={
+                      lastName.length > 0 && !lastNameValidation.isValid
+                    }
+                  />
+                  {lastName.length > 0 && !lastNameValidation.isValid && (
+                    <AppText variant="caption" style={styles.errorText}>
+                      {lastNameValidation.error}
+                    </AppText>
+                  )}
+                </View>
               )}
 
-              <TextInput
-                style={styles.input}
-                placeholder="Email address"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoComplete="email"
-                editable={!isLoading}
-              />
+              <View style={styles.emailContainer}>
+                <AppTextInput
+                  hasError={
+                    emailValidation.hasInput && !emailValidation.isValid
+                  }
+                  placeholder="Email address"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoComplete="email"
+                  editable={!isLoading}
+                />
+                {emailValidation.hasInput && !emailValidation.isEmpty && (
+                  <AppText
+                    variant="body"
+                    style={[
+                      styles.emailValidationText,
+                      emailValidation.isValid
+                        ? styles.emailValidText
+                        : styles.emailInvalidText,
+                    ]}
+                  >
+                    {emailValidation.isValid
+                      ? '✓ Valid email'
+                      : '✗ Invalid email format'}
+                  </AppText>
+                )}
+              </View>
 
               <View style={styles.passwordContainer}>
-                <TextInput
+                <AppTextInput
                   style={styles.passwordInput}
                   placeholder="Password"
                   value={password}
@@ -264,16 +371,18 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                   style={styles.passwordToggle}
                   onPress={() => setIsPasswordVisible(!isPasswordVisible)}
                 >
-                  <Text style={styles.passwordToggleText}>
-                    {isPasswordVisible ? '🙈' : '👁️'}
-                  </Text>
+                  {isPasswordVisible ? (
+                    <ShowPasswordSvg width={24} height={24} />
+                  ) : (
+                    <HidePasswordSvg width={24} height={24} />
+                  )}
                 </TouchableOpacity>
               </View>
 
               {/* Confirm Password - Only in signup mode */}
               {!isLoginMode && (
                 <View style={styles.passwordContainer}>
-                  <TextInput
+                  <AppTextInput
                     style={styles.passwordInput}
                     placeholder="Confirm password"
                     value={confirmPassword}
@@ -281,6 +390,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                     secureTextEntry={!isConfirmPasswordVisible}
                     autoComplete="password"
                     editable={!isLoading}
+                    hasError={
+                      confirmPassword.length > 0 &&
+                      !confirmPasswordValidation.isValid
+                    }
                   />
                   <TouchableOpacity
                     style={styles.passwordToggle}
@@ -288,42 +401,49 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                       setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
                     }
                   >
-                    <Text style={styles.passwordToggleText}>
-                      {isConfirmPasswordVisible ? '🙈' : '👁️'}
-                    </Text>
+                    {isConfirmPasswordVisible ? (
+                      <ShowPasswordSvg width={24} height={24} />
+                    ) : (
+                      <HidePasswordSvg width={24} height={24} />
+                    )}
                   </TouchableOpacity>
                 </View>
               )}
 
+              {/* Confirm password error */}
+              {!isLoginMode &&
+                confirmPassword.length > 0 &&
+                !confirmPasswordValidation.isValid && (
+                  <AppText variant="caption" style={styles.errorText}>
+                    {confirmPasswordValidation.error}
+                  </AppText>
+                )}
+
               {/* Show password strength indicator only in signup mode */}
               {!isLoginMode && password.length > 0 && (
-                <PasswordStrengthIndicator
-                  password={password}
+                <CustomPasswordStrengthIndicator
+                  validation={passwordValidation}
                   showDetails={true}
                   style={styles.passwordStrength}
                 />
               )}
 
-              <TouchableOpacity
-                style={submitButtonStyle}
+              <AppButton
+                label={isLoginMode ? 'Login' : 'Create Account'}
+                variant="primary"
+                size="lg"
+                fullWidth
+                disabled={isLoading || !isFormReady}
                 onPress={handleSubmit}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="white" size="small" />
-                ) : (
-                  <Text style={styles.buttonText}>
-                    {isLoginMode ? 'Login' : 'Create Account'}
-                  </Text>
-                )}
-              </TouchableOpacity>
+                containerStyle={styles.submitButton}
+              />
             </View>
 
-            <Text style={styles.footerText}>
+            <AppText variant="body" tone="inverse" style={styles.footerText}>
               {isLoginMode
                 ? "Don't have an account? Tap Sign Up above"
                 : 'Already have an account? Tap Login above'}
-            </Text>
+            </AppText>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -334,7 +454,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
   keyboardView: {
     flex: 1,
@@ -345,156 +465,114 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     justifyContent: 'center',
-    paddingHorizontal: 32,
-    paddingVertical: 20,
+    paddingHorizontal: SPACING.xxl,
+    paddingVertical: SPACING.xl,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 8,
-    color: '#2c3e50',
+    marginBottom: SPACING.xs,
+    fontWeight: 'bold',
   },
   subtitle: {
-    fontSize: 18,
     textAlign: 'center',
-    marginBottom: 32,
-    color: '#7f8c8d',
+    marginBottom: SPACING.xxl,
     lineHeight: 24,
   },
   logoContainer: {
-    marginBottom: 32,
+    marginBottom: SPACING.xxl,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
     alignSelf: 'center',
-  },
-  logoEmoji: {
-    fontSize: 40,
   },
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: '#e9ecef',
+    backgroundColor: COLOR_PALETTE.accentMuted,
     borderRadius: 12,
-    padding: 4,
-    marginBottom: 24,
+    padding: SPACING.xs,
+    marginBottom: SPACING.xl,
   },
   toggleButton: {
     flex: 1,
-    paddingVertical: 12,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
     borderRadius: 8,
   },
   activeToggle: {
-    backgroundColor: '#007AFF',
+    backgroundColor: BRAND_COLORS.cream,
   },
   toggleText: {
     fontSize: 16,
-    color: '#6c757d',
+    color: COLOR_PALETTE.textMuted,
     fontWeight: '500',
   },
   activeToggleText: {
-    color: 'white',
+    color: BRAND_COLORS.ink,
     fontWeight: '600',
+  },
+  fieldContainer: {
+    marginBottom: SPACING.md,
+  },
+  errorText: {
+    color: COLOR_PALETTE.systemError,
+    marginTop: SPACING.xs,
+    marginLeft: SPACING.sm,
   },
   formContainer: {
     width: '100%',
   },
   input: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#dee2e6',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: SPACING.lg,
   },
   submitButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-    shadowColor: '#007AFF',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  buttonDisabled: {
-    backgroundColor: '#adb5bd',
-    shadowOpacity: 0.1,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+    marginTop: SPACING.xs,
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderWidth: 1,
-    borderColor: '#dee2e6',
+    borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    marginBottom: SPACING.lg,
   },
   passwordInput: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
     fontSize: 16,
+    color: COLOR_PALETTE.textPrimary,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   passwordToggle: {
-    paddingHorizontal: 12,
-    paddingVertical: 14,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  passwordToggleText: {
-    fontSize: 18,
-  },
   passwordStrength: {
-    marginTop: 8,
-    marginBottom: 16,
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.lg,
   },
   footerText: {
     fontSize: 14,
     textAlign: 'center',
-    marginTop: 24,
-    color: '#6c757d',
+    marginTop: SPACING.xl,
     lineHeight: 20,
+  },
+  emailContainer: {
+    marginBottom: SPACING.lg,
+  },
+  emailValidationText: {
+    fontSize: 12,
+    marginTop: SPACING.xs,
+    marginLeft: SPACING.xs,
+    fontWeight: '500',
+  },
+  emailValidText: {
+    color: BRAND_COLORS.cream,
+  },
+  emailInvalidText: {
+    color: COLOR_PALETTE.systemError,
   },
 });
