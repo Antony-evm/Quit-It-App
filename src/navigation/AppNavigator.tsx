@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '@/types/navigation';
 import { QuestionnaireScreen } from '@/features/questionnaire/screens/QuestionnaireScreen';
 import { HomePlaceholderScreen } from '@/features/home/screens/HomePlaceholderScreen';
+import { AuthScreen } from '@/features/auth';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -12,13 +13,20 @@ export const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Questionnaire"
+        initialRouteName="Auth"
         screenOptions={{
           headerShown: false,
           animation: 'slide_from_right',
           gestureEnabled: true,
         }}
       >
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{
+            gestureEnabled: false, // Prevent swipe back from auth
+          }}
+        />
         <Stack.Screen
           name="Questionnaire"
           component={QuestionnaireScreen}
