@@ -5,10 +5,10 @@ import { useErrorHandler } from '@/shared/error';
 import { updateQuitDate } from '../api/updateQuitDate';
 import { updateSmokingTarget } from '../api/updateSmokingTarget';
 import { updateNotificationSchedule } from '../api/updateNotificationSchedule';
-import type { 
-  UpdateQuitDatePayload, 
-  UpdateSmokingTargetPayload, 
-  UpdateNotificationSchedulePayload 
+import type {
+  UpdateQuitDatePayload,
+  UpdateSmokingTargetPayload,
+  UpdateNotificationSchedulePayload,
 } from '../types';
 
 export const useUpdateQuitDateMutation = () => {
@@ -19,13 +19,13 @@ export const useUpdateQuitDateMutation = () => {
     mutationFn: (payload: UpdateQuitDatePayload) => updateQuitDate(payload),
     onSuccess: () => {
       console.log('[useUpdateQuitDateMutation] Update successful');
-      
+
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['quitDate'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
       queryClient.invalidateQueries({ queryKey: ['userGreeting'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useUpdateQuitDateMutation] Update failed:', error);
       handleError(error, {
         context: { operation: 'update_quit_date' },
@@ -40,15 +40,16 @@ export const useUpdateSmokingTargetMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateSmokingTargetPayload) => updateSmokingTarget(payload),
+    mutationFn: (payload: UpdateSmokingTargetPayload) =>
+      updateSmokingTarget(payload),
     onSuccess: () => {
       console.log('[useUpdateSmokingTargetMutation] Update successful');
-      
+
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['smokingTarget'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useUpdateSmokingTargetMutation] Update failed:', error);
       handleError(error, {
         context: { operation: 'update_smoking_target' },
@@ -63,16 +64,20 @@ export const useUpdateNotificationScheduleMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: UpdateNotificationSchedulePayload) => updateNotificationSchedule(payload),
+    mutationFn: (payload: UpdateNotificationSchedulePayload) =>
+      updateNotificationSchedule(payload),
     onSuccess: () => {
       console.log('[useUpdateNotificationScheduleMutation] Update successful');
-      
+
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['notificationSchedule'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
-    onError: (error) => {
-      console.error('[useUpdateNotificationScheduleMutation] Update failed:', error);
+    onError: error => {
+      console.error(
+        '[useUpdateNotificationScheduleMutation] Update failed:',
+        error,
+      );
       handleError(error, {
         context: { operation: 'update_notification_schedule' },
         showToast: true,
@@ -91,13 +96,13 @@ export const useAccountMutations = () => {
     updateQuitDate,
     updateSmokingTarget,
     updateNotificationSchedule,
-    isLoading: 
-      updateQuitDate.isPending || 
-      updateSmokingTarget.isPending || 
+    isLoading:
+      updateQuitDate.isPending ||
+      updateSmokingTarget.isPending ||
       updateNotificationSchedule.isPending,
-    error: 
-      updateQuitDate.error || 
-      updateSmokingTarget.error || 
+    error:
+      updateQuitDate.error ||
+      updateSmokingTarget.error ||
       updateNotificationSchedule.error,
   };
 };

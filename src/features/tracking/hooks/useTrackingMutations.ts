@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '@/shared/error';
-import { 
-  updateTrackingRecord, 
-  type UpdateTrackingRecordPayload 
+import {
+  updateTrackingRecord,
+  type UpdateTrackingRecordPayload,
 } from '../api/updateTrackingRecord';
 
 interface UpdateTrackingRecordMutationPayload {
@@ -15,28 +15,28 @@ export const useUpdateTrackingRecordMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ record_id, data }: UpdateTrackingRecordMutationPayload) => 
+    mutationFn: ({ record_id, data }: UpdateTrackingRecordMutationPayload) =>
       updateTrackingRecord(record_id, data),
     onSuccess: (_, variables) => {
       console.log('[useUpdateTrackingRecordMutation] Update successful');
-      
+
       // Invalidate tracking-related queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      queryClient.invalidateQueries({ 
-        queryKey: ['trackingRecords', variables.record_id] 
+      queryClient.invalidateQueries({
+        queryKey: ['trackingRecords', variables.record_id],
       });
-      
+
       // Also invalidate infinite queries if they exist
-      queryClient.invalidateQueries({ 
-        queryKey: ['infiniteTrackingRecords'] 
+      queryClient.invalidateQueries({
+        queryKey: ['infiniteTrackingRecords'],
       });
     },
     onError: (error, variables) => {
       console.error('[useUpdateTrackingRecordMutation] Update failed:', error);
       handleError(error, {
-        context: { 
+        context: {
           operation: 'update_tracking_record',
-          record_id: variables.record_id 
+          record_id: variables.record_id,
         },
         showToast: true,
       });
@@ -56,15 +56,15 @@ export const useCreateTrackingRecordMutation = () => {
     },
     onSuccess: () => {
       console.log('[useCreateTrackingRecordMutation] Create successful');
-      
+
       // Invalidate tracking-related queries
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      queryClient.invalidateQueries({ 
-        queryKey: ['infiniteTrackingRecords'] 
+      queryClient.invalidateQueries({
+        queryKey: ['infiniteTrackingRecords'],
       });
       queryClient.invalidateQueries({ queryKey: ['trackingTypes'] });
     },
-    onError: (error) => {
+    onError: error => {
       console.error('[useCreateTrackingRecordMutation] Create failed:', error);
       handleError(error, {
         context: { operation: 'create_tracking_record' },

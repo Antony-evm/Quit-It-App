@@ -7,6 +7,7 @@ Your app now follows **100% of modern API handling best practices**. Here's what
 ## ✅ **1. Modern Mutation Hooks (useMutation)**
 
 ### Auth Operations
+
 ```typescript
 import { useAuthMutations } from '@/features/auth/hooks';
 
@@ -14,15 +15,16 @@ const { login, signup, isLoading, error } = useAuthMutations();
 
 // Usage in components
 const handleLogin = () => {
-  login.mutate({ 
-    stytch_user_id: userId, 
-    email, 
-    methodology: 'email+password' 
+  login.mutate({
+    stytch_user_id: userId,
+    email,
+    methodology: 'email+password',
   });
 };
 ```
 
 ### Tracking Operations
+
 ```typescript
 import { useTrackingMutations } from '@/features/tracking/hooks';
 
@@ -34,16 +36,18 @@ update.mutate({
   data: {
     event_at: '2025-11-22T10:00:00Z',
     tracking_type_id: 1,
-    note: 'Updated note'
-  }
+    note: 'Updated note',
+  },
 });
 ```
 
 ### Account Operations
+
 ```typescript
 import { useAccountMutations } from '@/features/account/hooks';
 
-const { updateQuitDate, updateSmokingTarget, isLoading } = useAccountMutations();
+const { updateQuitDate, updateSmokingTarget, isLoading } =
+  useAccountMutations();
 
 // Update quit date
 updateQuitDate.mutate({ isoDate: '2025-12-01' });
@@ -60,8 +64,8 @@ Sensitive data now uses **React Native Keychain** with fallback to AsyncStorage:
 // In authService.ts - automatically handles secure storage
 await AuthService.storeTokens({
   sessionJwt: 'jwt_token',
-  sessionToken: 'session_token', 
-  userId: 'user_123'
+  sessionToken: 'session_token',
+  userId: 'user_123',
 });
 
 // Tokens stored securely in:
@@ -91,7 +95,7 @@ React Query handles all state management:
 const [isLoading, setIsLoading] = useState(false);
 const [error, setError] = useState(null);
 
-// NEW WAY ✅ 
+// NEW WAY ✅
 const { mutate, isPending, error } = useLoginMutation();
 
 // React Query provides: isPending, error, isSuccess, data
@@ -108,12 +112,10 @@ class ApiClient {
   // - Add auth headers
   // - Set content-type
   // - Log requests
-
   // Automatic response interceptors:
   // - Log responses
   // - Handle 401 errors
   // - Clear auth on token expiration
-  
   // Automatic error interceptors:
   // - Log errors with context
   // - Structured error handling
@@ -147,6 +149,7 @@ apiClient.addResponseInterceptor((response, url, config) => {
 ## 🚀 **Migration Guide**
 
 ### For New Components
+
 Use the new mutation hooks instead of manual API calls:
 
 ```typescript
@@ -173,6 +176,7 @@ const handleUpdate = () => {
 ```
 
 ### For Existing Components
+
 Gradually migrate to use the new hooks. Both old and new patterns work together.
 
 ## 📊 **Benefits Achieved**
@@ -190,7 +194,7 @@ Gradually migrate to use the new hooks. Both old and new patterns work together.
 Your app now achieves **100% compliance** with modern API handling best practices:
 
 - ✅ Shared HTTP client with global logic
-- ✅ Feature-based API modules with clean exports  
+- ✅ Feature-based API modules with clean exports
 - ✅ Short, typed endpoint functions
 - ✅ Mutation hooks instead of manual async handling
 - ✅ Automatic cache invalidation

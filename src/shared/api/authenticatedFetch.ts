@@ -14,7 +14,9 @@ export interface ApiRequestConfig extends RequestInit {
 type RequestInterceptor = (
   url: string,
   config: ApiRequestConfig,
-) => Promise<{ url: string; config: ApiRequestConfig }> | { url: string; config: ApiRequestConfig };
+) =>
+  | Promise<{ url: string; config: ApiRequestConfig }>
+  | { url: string; config: ApiRequestConfig };
 
 /**
  * Response interceptor function
@@ -46,7 +48,12 @@ class ApiClient {
   private setupDefaultInterceptors() {
     // Default request interceptor for headers and auth
     this.addRequestInterceptor(async (url, config) => {
-      const { headers = {}, useSessionToken = false, requiresAuth = true, ...restConfig } = config;
+      const {
+        headers = {},
+        useSessionToken = false,
+        requiresAuth = true,
+        ...restConfig
+      } = config;
 
       // Prepare headers
       const requestHeaders = new Headers(headers);
@@ -62,11 +69,15 @@ class ApiClient {
 
         if (!tokens) {
           console.log('[ApiClient] No tokens found');
-          throw new Error('No authentication tokens found. User may need to log in.');
+          throw new Error(
+            'No authentication tokens found. User may need to log in.',
+          );
         }
 
         // Use session_token or JWT based on preference
-        const tokenToUse = useSessionToken ? tokens.sessionToken : tokens.sessionJwt;
+        const tokenToUse = useSessionToken
+          ? tokens.sessionToken
+          : tokens.sessionJwt;
         const authHeader = `Bearer ${tokenToUse}`;
 
         requestHeaders.set('Authorization', authHeader);
@@ -84,9 +95,11 @@ class ApiClient {
 
     // Default request logging interceptor
     this.addRequestInterceptor((url, config) => {
-      const headers = config.headers instanceof Headers ? 
-        Object.fromEntries(config.headers.entries()) : config.headers;
-      
+      const headers =
+        config.headers instanceof Headers
+          ? Object.fromEntries(config.headers.entries())
+          : config.headers;
+
       console.log('[ApiClient] Making request:', {
         url,
         method: config.method || 'GET',
@@ -133,8 +146,10 @@ class ApiClient {
         error: error.message,
         config: {
           ...config,
-          headers: config.headers instanceof Headers ? 
-            Object.fromEntries(config.headers.entries()) : config.headers,
+          headers:
+            config.headers instanceof Headers
+              ? Object.fromEntries(config.headers.entries())
+              : config.headers,
         },
       });
 

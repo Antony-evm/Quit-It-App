@@ -150,7 +150,7 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
     try {
       // Use the existing auth context login (Stytch integration)
       await login(sanitizedEmail, password);
-      
+
       // Navigate to next screen after successful authentication
       navigation.navigate('Questionnaire');
     } catch (error) {
@@ -232,7 +232,7 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
 
     // Loading state from mutations - no more manual state management!
     isLoading: loginMutation.isPending || signupMutation.isPending,
-    
+
     // Error state from mutations
     error: loginMutation.error || signupMutation.error,
 

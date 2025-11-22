@@ -68,12 +68,14 @@ const secureStorage = {
   async clear(): Promise<void> {
     // Clear sensitive items from Keychain
     const sensitiveKeys = [AUTH_KEYS.SESSION_JWT, AUTH_KEYS.SESSION_TOKEN];
-    await Promise.all(
-      sensitiveKeys.map(key => this.removeSecureItem(key))
-    );
-    
+    await Promise.all(sensitiveKeys.map(key => this.removeSecureItem(key)));
+
     // Clear non-sensitive items from AsyncStorage
-    const nonSensitiveKeys = [AUTH_KEYS.USER_ID, AUTH_KEYS.USER_DATA, AUTH_KEYS.IS_AUTHENTICATED];
+    const nonSensitiveKeys = [
+      AUTH_KEYS.USER_ID,
+      AUTH_KEYS.USER_DATA,
+      AUTH_KEYS.IS_AUTHENTICATED,
+    ];
     await AsyncStorage.multiRemove(nonSensitiveKeys);
   },
 };
@@ -101,7 +103,10 @@ export class AuthService {
     try {
       await Promise.all([
         secureStorage.setSecureItem(AUTH_KEYS.SESSION_JWT, tokens.sessionJwt),
-        secureStorage.setSecureItem(AUTH_KEYS.SESSION_TOKEN, tokens.sessionToken),
+        secureStorage.setSecureItem(
+          AUTH_KEYS.SESSION_TOKEN,
+          tokens.sessionToken,
+        ),
         secureStorage.setItem(AUTH_KEYS.USER_ID, tokens.userId),
         secureStorage.setItem(AUTH_KEYS.IS_AUTHENTICATED, 'true'),
       ]);
