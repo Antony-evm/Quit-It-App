@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { useStytch } from '@stytch/react-native';
 import AuthService, { type AuthTokens, type UserData } from './authService';
+import { UserStatusService } from '@/shared/services/userStatusService';
 
 import {
   createUser,
@@ -21,13 +22,13 @@ interface AuthContextType {
   isLoading: boolean;
   user: UserData | null;
   tokens: AuthTokens | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ userStatusId: number }>;
   signup: (
     email: string,
     password: string,
     firstName: string,
     lastName: string,
-  ) => Promise<void>;
+  ) => Promise<{ userStatusId: number }>;
   logout: () => Promise<void>;
   refreshAuthState: () => Promise<void>;
   getBackendUserId: () => number | null;
@@ -135,11 +136,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             // Use the updated loginUser function (no JWT token needed)
             const backendResponse = await loginUser(loginUserPayload);
-            console.log('Backend user login successful:', backendResponse); // Update user data with backend user_id
+            console.log('Backend user login successful:', backendResponse);
+
+            // Update user data with backend user_id and user_status_id
+            let userStatusId = 0; // Default fallback
             if (backendResponse.data?.user_id) {
+              userStatusId = backendResponse.data.user_status_id || 0;
               const updatedUserData = {
                 ...userData,
                 backendUserId: backendResponse.data.user_id,
+                userStatusId: userStatusId,
               };
 
               await AuthService.storeUserData(updatedUserData);
@@ -153,6 +159,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // NOW mark as authenticated - this will trigger React Query hooks
           // Only do this AFTER backend integration is complete
           setIsAuthenticated(true);
+
+          // Return the userStatusId for immediate navigation handling
+          const currentUser = await AuthService.getUserData();
+          return { userStatusId: currentUser?.userStatusId || 0 };
         } else {
           throw new Error('Authentication failed');
         }
@@ -226,11 +236,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             // Use the updated createUser function (no JWT token needed)
             const backendResponse = await createUser(createUserPayload);
-            console.log('Backend user creation successful:', backendResponse); // Update user data with backend user_id
+            console.log('Backend user creation successful:', backendResponse);
+
+            // Update user data with backend user_id and user_status_id
+            let userStatusId = 0; // Default fallback
             if (backendResponse.data?.user_id) {
+              userStatusId = backendResponse.data.user_status_id || 0;
               const updatedUserData = {
                 ...userData,
                 backendUserId: backendResponse.data.user_id,
+                userStatusId: userStatusId,
               };
 
               await AuthService.storeUserData(updatedUserData);
@@ -245,6 +260,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // NOW mark as authenticated - this will trigger React Query hooks
           // Only do this AFTER backend integration is complete
           setIsAuthenticated(true);
+
+          // Return the userStatusId for immediate navigation handling
+          const currentUser = await AuthService.getUserData();
+          return { userStatusId: currentUser?.userStatusId || 0 };
         } else {
           throw new Error('Account creation failed');
         }
@@ -301,6 +320,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     loadAuthState();
   }, [loadAuthState]);
+
+  // Initialize user status service on mount
+  useEffect(() => {
+    const initializeStatusService = async () => {
+      try {
+        await UserStatusService.initialize();
+        console.log('UserStatusService initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize UserStatusService:', error);
+      }
+    };
+
+    initializeStatusService();
+  }, []);
 
   const value: AuthContextType = {
     isAuthenticated,

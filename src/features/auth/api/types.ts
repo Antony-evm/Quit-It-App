@@ -11,6 +11,7 @@ export interface CreateUserPayload {
 export interface CreateUserResponse {
   data: {
     user_id: number;
+    user_status_id: number;
   };
   success?: boolean;
   message?: string;
@@ -25,6 +26,7 @@ export interface LoginUserPayload {
 export interface LoginUserResponse {
   data: {
     user_id: number;
+    user_status_id: number;
   };
   success?: boolean;
   message?: string;

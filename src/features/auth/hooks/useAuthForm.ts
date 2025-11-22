@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
-import { useAuth } from '@/shared/auth';
+import { useAuthWithNavigation } from '@/shared/hooks/useAuthWithNavigation';
 import {
   useCustomPasswordValidation,
   useEmailValidation,
@@ -24,7 +24,7 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
 
-  const { login, signup } = useAuth();
+  const { login, signup } = useAuthWithNavigation();
 
   // Validations
   const passwordValidation = useCustomPasswordValidation(password);
@@ -146,14 +146,14 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
     try {
       const { sanitizedEmail } = validateAndSanitizeEmail(email);
       await login(sanitizedEmail, password);
-      navigation.navigate('Questionnaire');
+      // Navigation is now handled automatically by the login function
     } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Error', 'Invalid email or password. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }, [validateForm, login, email, password, navigation]);
+  }, [validateForm, login, email, password]);
 
   const handleSignup = useCallback(async () => {
     if (!validateForm()) return;
@@ -162,9 +162,7 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
     try {
       const { sanitizedEmail } = validateAndSanitizeEmail(email);
       await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
-
-      // Navigate directly without success popup
-      navigation.navigate('Questionnaire');
+      // Navigation is now handled automatically by the signup function
     } catch (error) {
       console.error('Signup error:', error);
       Alert.alert(
@@ -174,7 +172,7 @@ export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
     } finally {
       setIsLoading(false);
     }
-  }, [validateForm, signup, email, password, firstName, lastName, navigation]);
+  }, [validateForm, signup, email, password, firstName, lastName]);
 
   const handleSubmit = useCallback(() => {
     if (isLoginMode) {
