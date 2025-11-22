@@ -1,4 +1,4 @@
-import { authenticatedGet, API_BASE_URL } from '@/shared/api/apiConfig';
+import { publicGet, API_BASE_URL } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
 import { LoginUserPayload, LoginUserResponse } from './types';
 
@@ -14,7 +14,7 @@ export const loginUser = async (
 
   try {
     // Use the stytch_user_id as the user_id query parameter
-    const response = await authenticatedGet(url);
+    const response = await publicGet(url);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

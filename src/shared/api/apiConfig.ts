@@ -10,6 +10,14 @@ export {
   getCurrentUserId,
 } from './authenticatedFetch';
 
+// Re-export public (non-authenticated) fetch utilities
+export {
+  publicGet,
+  publicPost,
+  publicPut,
+  publicDelete,
+} from './authenticatedFetch';
+
 type MaybeEnv = {
   process?: {
     env?: Record<string, string | undefined>;

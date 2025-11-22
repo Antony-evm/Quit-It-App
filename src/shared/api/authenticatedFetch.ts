@@ -280,3 +280,63 @@ export async function getCurrentUserId(): Promise<string | null> {
   const tokens = await AuthService.getAuthTokens();
   return tokens?.userId || null;
 }
+
+/**
+ * Convenience function for making public GET requests (no authentication)
+ */
+export async function publicGet(
+  url: string,
+  config: Omit<ApiRequestConfig, 'method' | 'requiresAuth'> = {},
+): Promise<Response> {
+  return authenticatedFetch(url, {
+    ...config,
+    method: 'GET',
+    requiresAuth: false,
+  });
+}
+
+/**
+ * Convenience function for making public POST requests (no authentication)
+ */
+export async function publicPost(
+  url: string,
+  data?: any,
+  config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
+): Promise<Response> {
+  return authenticatedFetch(url, {
+    ...config,
+    method: 'POST',
+    body: data ? JSON.stringify(data) : undefined,
+    requiresAuth: false,
+  });
+}
+
+/**
+ * Convenience function for making public PUT requests (no authentication)
+ */
+export async function publicPut(
+  url: string,
+  data?: any,
+  config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
+): Promise<Response> {
+  return authenticatedFetch(url, {
+    ...config,
+    method: 'PUT',
+    body: data ? JSON.stringify(data) : undefined,
+    requiresAuth: false,
+  });
+}
+
+/**
+ * Convenience function for making public DELETE requests (no authentication)
+ */
+export async function publicDelete(
+  url: string,
+  config: Omit<ApiRequestConfig, 'method' | 'requiresAuth'> = {},
+): Promise<Response> {
+  return authenticatedFetch(url, {
+    ...config,
+    method: 'DELETE',
+    requiresAuth: false,
+  });
+}

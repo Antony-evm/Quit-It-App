@@ -1,4 +1,4 @@
-import { authenticatedPost, API_BASE_URL } from '@/shared/api/apiConfig';
+import { publicPost, API_BASE_URL } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
 import { CreateUserPayload, CreateUserResponse } from './types';
 
@@ -11,7 +11,7 @@ export const createUser = async (
   const url = `${API_BASE_URL}/api/v1/auth/create`;
 
   try {
-    const response = await authenticatedPost(url, payload);
+    const response = await publicPost(url, payload);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
