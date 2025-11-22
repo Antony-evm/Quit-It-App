@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AppTextInput, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, BRAND_COLORS, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface EmailValidation {
   hasInput: boolean;
@@ -22,6 +22,26 @@ export const EmailField: React.FC<EmailFieldProps> = ({
   validation,
   isLoading = false,
 }) => {
+  const [showValidHint, setShowValidHint] = useState(true);
+
+  // Effect to hide valid email hint after 500ms
+  useEffect(() => {
+    if (validation.isValid && validation.hasInput && !validation.isEmpty) {
+      const timer = setTimeout(() => {
+        setShowValidHint(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Reset to show hint when email becomes invalid or empty
+      setShowValidHint(true);
+    }
+  }, [validation.isValid, validation.hasInput, validation.isEmpty]);
+
+  const shouldShowHint = validation.hasInput && !validation.isEmpty;
+  const shouldShowValidHint = validation.isValid && showValidHint;
+  const shouldShowInvalidHint = !validation.isValid;
+
   return (
     <View>
       <AppTextInput
@@ -34,7 +54,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
         autoComplete="email"
         editable={!isLoading}
       />
-      {validation.hasInput && !validation.isEmpty && (
+      {shouldShowHint && (shouldShowValidHint || shouldShowInvalidHint) && (
         <AppText
           variant="body"
           style={[

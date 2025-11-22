@@ -66,20 +66,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.content}>
-            {/* Welcome text */}
-            <WelcomeText isSignup={!isLoginMode} />
+          <WelcomeText isSignup={!isLoginMode} />
 
-            {/* Mode toggle */}
-            <AuthModeToggle
-              isLoginMode={isLoginMode}
-              onToggle={handleModeToggle}
-              isLoading={isLoading}
-            />
-          </View>
-
-          {/* Cream background section for form and below */}
-          <View style={styles.creamSection}>
+          <View style={styles.inkDarkContainer}>
             {/* Auth form */}
             <View style={styles.formContainer}>
               {/* Name fields - Only in signup mode */}
@@ -133,15 +122,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
                 />
               )}
 
-              {/* Show password strength indicator only in signup mode */}
-              {!isLoginMode && password.length > 0 && (
+              {/* Show password strength indicator always in signup mode */}
+              {!isLoginMode && (
                 <CustomPasswordStrengthIndicator
                   validation={passwordValidation}
-                  showDetails={true}
                   style={styles.passwordStrength}
                 />
               )}
             </View>
+
+            {/* Mode toggle */}
+            <AuthModeToggle
+              isLoginMode={isLoginMode}
+              onToggle={handleModeToggle}
+              isLoading={isLoading}
+            />
           </View>
         </ScrollView>
 
@@ -164,20 +159,15 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BRAND_COLORS.inkDark,
   },
   keyboardView: {
     flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: SPACING.xl,
   },
-  content: {
-    paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xl,
-  },
-  creamSection: {
+  inkDarkContainer: {
     backgroundColor: BRAND_COLORS.inkDark,
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.xl,
@@ -192,7 +182,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xl,
+    paddingVertical: SPACING.xxl,
     backgroundColor: BRAND_COLORS.inkDark,
   },
 });

@@ -28,6 +28,8 @@ export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    backgroundColor: BRAND_COLORS.ink,
+    paddingTop: SPACING.xxl,
   },
   title: {
     textAlign: 'center',

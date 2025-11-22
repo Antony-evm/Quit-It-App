@@ -7,13 +7,12 @@ import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordV
 
 interface CustomPasswordStrengthIndicatorProps {
   validation: CustomPasswordValidation;
-  showDetails?: boolean;
   style?: any;
 }
 
 export const CustomPasswordStrengthIndicator: React.FC<
   CustomPasswordStrengthIndicatorProps
-> = ({ validation, showDetails = true, style }) => {
+> = ({ validation, style }) => {
   if (!validation.password) {
     return (
       <View style={[styles.container, style]}>
@@ -21,37 +20,19 @@ export const CustomPasswordStrengthIndicator: React.FC<
           Password must contain:
         </AppText>
         <AppText variant="caption" style={styles.requirementItem}>
-          • 8-32 characters
+          ✗ 8-32 characters
         </AppText>
         <AppText variant="caption" style={styles.requirementItem}>
-          • At least one uppercase letter
+          ✗ At least one uppercase letter
         </AppText>
         <AppText variant="caption" style={styles.requirementItem}>
-          • At least one lowercase letter
+          ✗ At least one lowercase letter
         </AppText>
         <AppText variant="caption" style={styles.requirementItem}>
-          • At least one number
+          ✗ At least one number
         </AppText>
         <AppText variant="caption" style={styles.requirementItem}>
-          • At least one special character
-        </AppText>
-      </View>
-    );
-  }
-
-  if (!showDetails) {
-    return (
-      <View style={[styles.container, style]}>
-        <AppText
-          variant="caption"
-          style={[
-            styles.statusText,
-            validation.isValid ? styles.validText : styles.invalidText,
-          ]}
-        >
-          {validation.isValid
-            ? '✓ Password meets requirements'
-            : '✗ Password requirements not met'}
+          ✗ At least one special character
         </AppText>
       </View>
     );
@@ -143,28 +124,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   requirementText: {
-    color: COLOR_PALETTE.textSecondary,
+    color: COLOR_PALETTE.textPrimary,
     marginBottom: SPACING.xs,
     fontWeight: '600',
   },
   requirementItem: {
     marginBottom: 2,
     paddingLeft: SPACING.xs,
+    color: COLOR_PALETTE.textMuted,
   },
   metRequirement: {
     color: '#10B981', // Green color for met requirements
   },
   unmetRequirement: {
     color: COLOR_PALETTE.textMuted,
-  },
-  statusText: {
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  validText: {
-    color: '#10B981', // Green color for valid
-  },
-  invalidText: {
-    color: COLOR_PALETTE.systemError,
   },
 });
