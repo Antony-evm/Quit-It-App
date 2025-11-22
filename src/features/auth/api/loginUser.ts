@@ -1,4 +1,5 @@
 import { authenticatedGet, API_BASE_URL } from '@/shared/api/apiConfig';
+import { ErrorFactory } from '@/shared/error';
 import { LoginUserPayload, LoginUserResponse } from './types';
 
 /**
@@ -7,21 +8,44 @@ import { LoginUserPayload, LoginUserResponse } from './types';
 export const loginUser = async (
   payload: LoginUserPayload,
 ): Promise<LoginUserResponse> => {
-  // Use the stytch_user_id as the user_id query parameter
-  const response = await authenticatedGet(
-    `${API_BASE_URL}/api/v1/auth?user_id=${encodeURIComponent(
-      payload.stytch_user_id,
-    )}`,
-  );
+  const url = `${API_BASE_URL}/api/v1/auth?user_id=${encodeURIComponent(
+    payload.stytch_user_id,
+  )}`;
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(
-      errorData.message ||
-        `Failed to login user: ${response.status} ${response.statusText}`,
+  try {
+    // Use the stytch_user_id as the user_id query parameter
+    const response = await authenticatedGet(url);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.message || 'Failed to login user';
+
+      throw ErrorFactory.apiError(response.status, errorMessage, {
+        payload,
+        url,
+        operation: 'login_user',
+        errorData,
+      });
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AppError') {
+      throw error;
+    }
+
+    // Handle network errors or other unexpected errors
+    throw ErrorFactory.networkError(
+      `Failed to login user: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      {
+        payload,
+        url,
+        operation: 'login_user',
+        originalError: error,
+      },
     );
   }
-
-  const result = await response.json();
-  return result;
 };

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ErrorFactory } from '../error';
 
 // Keys for storing auth data
 const AUTH_KEYS = {
@@ -61,7 +62,13 @@ export class AuthService {
       ]);
     } catch (error) {
       console.error('Failed to store auth tokens:', error);
-      throw new Error('Failed to store authentication tokens');
+      throw ErrorFactory.storageError('store auth tokens', error, {
+        tokens: {
+          ...tokens,
+          sessionJwt: '[REDACTED]',
+          sessionToken: '[REDACTED]',
+        },
+      });
     }
   }
 
@@ -76,7 +83,9 @@ export class AuthService {
       );
     } catch (error) {
       console.error('Failed to store user data:', error);
-      throw new Error('Failed to store user data');
+      throw ErrorFactory.storageError('store user data', error, {
+        userId: userData.id,
+      });
     }
   }
 
@@ -88,7 +97,7 @@ export class AuthService {
       return await secureStorage.getItem(AUTH_KEYS.SESSION_JWT);
     } catch (error) {
       console.error('Failed to get session JWT:', error);
-      return null;
+      throw ErrorFactory.storageError('get session JWT', error);
     }
   }
 
@@ -100,7 +109,7 @@ export class AuthService {
       return await secureStorage.getItem(AUTH_KEYS.SESSION_TOKEN);
     } catch (error) {
       console.error('Failed to get session token:', error);
-      return null;
+      throw ErrorFactory.storageError('get session token', error);
     }
   }
 
@@ -112,7 +121,7 @@ export class AuthService {
       return await secureStorage.getItem(AUTH_KEYS.USER_ID);
     } catch (error) {
       console.error('Failed to get user ID:', error);
-      return null;
+      throw ErrorFactory.storageError('get user ID', error);
     }
   }
 
@@ -125,7 +134,7 @@ export class AuthService {
       return userData ? JSON.parse(userData) : null;
     } catch (error) {
       console.error('Failed to get user data:', error);
-      return null;
+      throw ErrorFactory.storageError('get user data', error);
     }
   }
 
@@ -141,7 +150,7 @@ export class AuthService {
       return isAuth === 'true' && sessionJwt !== null;
     } catch (error) {
       console.error('Failed to check authentication status:', error);
-      return false;
+      throw ErrorFactory.storageError('check authentication status', error);
     }
   }
 
@@ -167,7 +176,7 @@ export class AuthService {
       };
     } catch (error) {
       console.error('Failed to get auth tokens:', error);
-      return null;
+      throw ErrorFactory.storageError('get auth tokens', error);
     }
   }
 
@@ -179,7 +188,7 @@ export class AuthService {
       await secureStorage.clear();
     } catch (error) {
       console.error('Failed to clear auth data:', error);
-      throw new Error('Failed to clear authentication data');
+      throw ErrorFactory.storageError('clear auth data', error);
     }
   }
 
