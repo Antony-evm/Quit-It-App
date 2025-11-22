@@ -13,6 +13,7 @@ import {
   type CreateUserPayload,
   type LoginUserPayload,
 } from '@/features/auth/api/createUser';
+import { UserAuthenticationMethod } from '@/features/auth/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -219,9 +220,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Register user with our backend BEFORE marking as authenticated
           try {
             const createUserPayload: CreateUserPayload = {
-              stytch_user_id: user_id,
+              first_name: firstName.trim() || null,
+              last_name: lastName.trim() || null,
               email: user.emails?.[0]?.email || email,
-              methodology: 'email+password',
+              stytch_user_id: user_id,
+              user_authentication_method:
+                UserAuthenticationMethod.EMAIL_PASSWORD,
             };
 
             // Pass the fresh JWT token for new user registration
@@ -266,7 +270,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    */
   const logout = useCallback(async () => {
     try {
-      // Clear stored auth data
+      // First try to revoke the session on Stytch servers
+      try {
+        await stytch.session.revoke();
+      } catch (stytchError) {
+        console.warn(
+          'Failed to revoke Stytch session (server may be unreachable):',
+          stytchError,
+        );
+        // Continue with local logout even if Stytch revocation fails
+      }
+
+      // Clear stored auth data locally
       await AuthService.logout();
 
       // Update state
@@ -277,7 +292,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('Logout error:', error);
       throw error;
     }
-  }, []);
+  }, [stytch]);
 
   /**
    * Refresh authentication state

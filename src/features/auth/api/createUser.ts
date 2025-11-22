@@ -1,9 +1,12 @@
 import { authenticatedPost, API_BASE_URL } from '@/shared/api/apiConfig';
+import { UserAuthenticationMethod } from '../types';
 
 export interface CreateUserPayload {
-  stytch_user_id: string;
+  first_name?: string | null;
+  last_name?: string | null;
   email: string;
-  methodology: 'email+password' | 'google' | 'apple' | 'magic_link' | string;
+  stytch_user_id: string;
+  user_authentication_method: UserAuthenticationMethod;
 }
 
 export interface CreateUserResponse {

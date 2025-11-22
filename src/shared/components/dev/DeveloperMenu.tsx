@@ -8,6 +8,7 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
+import { useStytch } from '@stytch/react-native';
 import { useAuth } from '../../auth/AuthContext';
 import { COLOR_PALETTE } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,6 +20,7 @@ interface DeveloperMenuProps {
 
 const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
   const { user, isAuthenticated, logout } = useAuth();
+  const stytch = useStytch();
   const [refreshing, setRefreshing] = useState(false);
 
   if (!visible) return null;
@@ -77,6 +79,22 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
     } catch (error) {
       console.error('[DevMenu] Force logout error:', error);
       Alert.alert('Error', 'Force logout failed');
+    }
+  };
+
+  const forceLocalLogout = async () => {
+    try {
+      console.log('[DevMenu] Initiating local-only logout');
+      // Only clear local storage, bypass Stytch session revocation
+      await stytch.session.revoke({ forceClear: true });
+      console.log('[DevMenu] Local logout completed');
+      Alert.alert(
+        'Success',
+        'Local logout completed (session revoked with forceClear)',
+      );
+    } catch (error) {
+      console.error('[DevMenu] Local logout error:', error);
+      Alert.alert('Error', 'Local logout failed');
     }
   };
 
@@ -180,7 +198,11 @@ Platform: React Native
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={forceLogout}>
-              <Text style={styles.buttonText}>Force Logout</Text>
+              <Text style={styles.buttonText}>Logout (Server + Local)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.button} onPress={forceLocalLogout}>
+              <Text style={styles.buttonText}>Logout (Local Only)</Text>
             </TouchableOpacity>
 
             <TouchableOpacity

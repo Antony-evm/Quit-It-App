@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xxl,
+    paddingVertical: SPACING.xs,
     backgroundColor: BRAND_COLORS.inkDark,
   },
 });

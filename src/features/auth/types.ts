@@ -1,3 +1,7 @@
+export enum UserAuthenticationMethod {
+  EMAIL_PASSWORD = 'email_password',
+}
+
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
