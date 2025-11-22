@@ -9,12 +9,18 @@ import type { QuestionnaireCompleteResponse } from '../types';
 export const completeQuestionnaire =
   async (): Promise<QuestionnaireCompleteResponse> => {
     try {
-      console.log('Making questionnaire completion request to:', QUESTIONNAIRE_COMPLETE_ENDPOINT);
-      
+      console.log(
+        'Making questionnaire completion request to:',
+        QUESTIONNAIRE_COMPLETE_ENDPOINT,
+      );
+
       const response = await authenticatedGet(QUESTIONNAIRE_COMPLETE_ENDPOINT);
 
       console.log('Questionnaire completion response status:', response.status);
-      console.log('Questionnaire completion response headers:', Object.fromEntries(response.headers.entries()));
+      console.log(
+        'Questionnaire completion response headers:',
+        Object.fromEntries(response.headers.entries()),
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
