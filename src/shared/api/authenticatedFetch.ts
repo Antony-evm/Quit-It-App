@@ -9,95 +9,204 @@ export interface ApiRequestConfig extends RequestInit {
 }
 
 /**
+ * Request interceptor function
+ */
+type RequestInterceptor = (
+  url: string,
+  config: ApiRequestConfig,
+) => Promise<{ url: string; config: ApiRequestConfig }> | { url: string; config: ApiRequestConfig };
+
+/**
+ * Response interceptor function
+ */
+type ResponseInterceptor = (
+  response: Response,
+  url: string,
+  config: ApiRequestConfig,
+) => Promise<Response> | Response;
+
+/**
+ * Error interceptor function
+ */
+type ErrorInterceptor = (
+  error: Error,
+  url: string,
+  config: ApiRequestConfig,
+) => Promise<never> | never;
+
+class ApiClient {
+  private requestInterceptors: RequestInterceptor[] = [];
+  private responseInterceptors: ResponseInterceptor[] = [];
+  private errorInterceptors: ErrorInterceptor[] = [];
+
+  constructor() {
+    this.setupDefaultInterceptors();
+  }
+
+  private setupDefaultInterceptors() {
+    // Default request interceptor for headers and auth
+    this.addRequestInterceptor(async (url, config) => {
+      const { headers = {}, useSessionToken = false, requiresAuth = true, ...restConfig } = config;
+
+      // Prepare headers
+      const requestHeaders = new Headers(headers);
+
+      // Set default content type if not provided
+      if (!requestHeaders.get('Content-Type')) {
+        requestHeaders.set('Content-Type', 'application/json');
+      }
+
+      // Add authentication token if required
+      if (requiresAuth) {
+        const tokens = await AuthService.getAuthTokens();
+
+        if (!tokens) {
+          console.log('[ApiClient] No tokens found');
+          throw new Error('No authentication tokens found. User may need to log in.');
+        }
+
+        // Use session_token or JWT based on preference
+        const tokenToUse = useSessionToken ? tokens.sessionToken : tokens.sessionJwt;
+        const authHeader = `Bearer ${tokenToUse}`;
+
+        requestHeaders.set('Authorization', authHeader);
+        requestHeaders.set('X-User-ID', tokens.userId);
+      }
+
+      return {
+        url,
+        config: {
+          ...restConfig,
+          headers: requestHeaders,
+        },
+      };
+    });
+
+    // Default request logging interceptor
+    this.addRequestInterceptor((url, config) => {
+      const headers = config.headers instanceof Headers ? 
+        Object.fromEntries(config.headers.entries()) : config.headers;
+      
+      console.log('[ApiClient] Making request:', {
+        url,
+        method: config.method || 'GET',
+        headers,
+      });
+
+      return { url, config };
+    });
+
+    // Default response logging interceptor
+    this.addResponseInterceptor((response, url, config) => {
+      console.log('[ApiClient] Response received:', {
+        url,
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
+
+      return response;
+    });
+
+    // Default response error interceptor
+    this.addResponseInterceptor(async (response, url, config) => {
+      // Handle token expiration
+      if (response.status === 401) {
+        console.log('[ApiClient] 401 Unauthorized - clearing auth state');
+
+        // Log response details for debugging
+        const responseText = await response.clone().text();
+        console.log('[ApiClient] 401 response body:', responseText);
+
+        // Token might be expired - clear auth state
+        await AuthService.clearAuth();
+        throw new Error('Authentication failed. Please log in again.');
+      }
+
+      return response;
+    });
+
+    // Default error interceptor
+    this.addErrorInterceptor((error, url, config) => {
+      console.error('[ApiClient] Request failed:', {
+        url,
+        error: error.message,
+        config: {
+          ...config,
+          headers: config.headers instanceof Headers ? 
+            Object.fromEntries(config.headers.entries()) : config.headers,
+        },
+      });
+
+      throw error;
+    });
+  }
+
+  addRequestInterceptor(interceptor: RequestInterceptor) {
+    this.requestInterceptors.push(interceptor);
+  }
+
+  addResponseInterceptor(interceptor: ResponseInterceptor) {
+    this.responseInterceptors.push(interceptor);
+  }
+
+  addErrorInterceptor(interceptor: ErrorInterceptor) {
+    this.errorInterceptors.push(interceptor);
+  }
+
+  /**
+   * Enhanced fetch function that automatically includes authentication tokens and applies interceptors
+   */
+  async fetch(url: string, config: ApiRequestConfig = {}): Promise<Response> {
+    try {
+      // Apply request interceptors
+      let processedUrl = url;
+      let processedConfig = config;
+
+      for (const interceptor of this.requestInterceptors) {
+        const result = await interceptor(processedUrl, processedConfig);
+        processedUrl = result.url;
+        processedConfig = result.config;
+      }
+
+      // Make the actual request
+      let response = await fetch(processedUrl, processedConfig);
+
+      // Apply response interceptors
+      for (const interceptor of this.responseInterceptors) {
+        response = await interceptor(response, processedUrl, processedConfig);
+      }
+
+      return response;
+    } catch (error) {
+      // Apply error interceptors
+      for (const interceptor of this.errorInterceptors) {
+        interceptor(error as Error, url, config);
+      }
+
+      // If no error interceptor handled it, re-throw
+      throw error;
+    }
+  }
+}
+
+// Create singleton instance
+const apiClient = new ApiClient();
+
+/**
  * Enhanced fetch function that automatically includes authentication tokens
  */
 export async function authenticatedFetch(
   url: string,
   config: ApiRequestConfig = {},
 ): Promise<Response> {
-  const {
-    headers = {},
-    useSessionToken = false,
-    requiresAuth = true,
-    ...restConfig
-  } = config;
-
-  // Prepare headers
-  const requestHeaders = new Headers(headers);
-
-  // Set default content type if not provided
-  if (!requestHeaders.get('Content-Type')) {
-    requestHeaders.set('Content-Type', 'application/json');
-  }
-
-  // Add authentication token if required
-  if (requiresAuth) {
-    const tokens = await AuthService.getAuthTokens();
-
-    if (!tokens) {
-      console.log('[AuthenticatedFetch] No tokens found');
-      throw new Error(
-        'No authentication tokens found. User may need to log in.',
-      );
-    }
-
-    console.log('[AuthenticatedFetch] Tokens available:', {
-      hasSessionJwt: !!tokens.sessionJwt,
-      hasSessionToken: !!tokens.sessionToken,
-      userId: tokens.userId,
-      useSessionToken,
-    });
-
-    // Use session_token or JWT based on preference
-    const tokenToUse = useSessionToken
-      ? tokens.sessionToken
-      : tokens.sessionJwt;
-    const authHeader = `Bearer ${tokenToUse}`;
-
-    console.log(
-      '[AuthenticatedFetch] Using token type:',
-      useSessionToken ? 'sessionToken' : 'sessionJwt',
-    );
-    console.log(
-      '[AuthenticatedFetch] Token preview:',
-      tokenToUse ? `${tokenToUse.substring(0, 20)}...` : 'null',
-    );
-
-    requestHeaders.set('Authorization', authHeader);
-
-    // Also include user ID for backend convenience
-    requestHeaders.set('X-User-ID', tokens.userId);
-  }
-
-  // Make the request
-  console.log('[AuthenticatedFetch] Making request to:', url);
-  console.log(
-    '[AuthenticatedFetch] Request headers:',
-    Object.fromEntries(requestHeaders.entries()),
-  );
-
-  const response = await fetch(url, {
-    ...restConfig,
-    headers: requestHeaders,
-  });
-
-  console.log('[AuthenticatedFetch] Response status:', response.status);
-
-  // Handle token expiration
-  if (response.status === 401) {
-    console.log('[AuthenticatedFetch] 401 Unauthorized - clearing auth state');
-
-    // Log response details for debugging
-    const responseText = await response.clone().text();
-    console.log('[AuthenticatedFetch] 401 response body:', responseText);
-
-    // Token might be expired - clear auth state
-    await AuthService.clearAuth();
-    throw new Error('Authentication failed. Please log in again.');
-  }
-
-  return response;
+  return apiClient.fetch(url, config);
 }
+
+/**
+ * Export the API client instance for advanced usage (adding custom interceptors)
+ */
+export { apiClient };
 
 /**
  * Convenience function for making authenticated GET requests

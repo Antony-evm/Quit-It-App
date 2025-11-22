@@ -1,3 +1,4 @@
+import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ErrorFactory } from '../error';
 
@@ -11,10 +12,47 @@ const AUTH_KEYS = {
 } as const;
 
 /**
- * Storage wrapper that uses AsyncStorage for simplicity and reliability
- * Note: For production apps, consider using react-native-keychain for additional security
+ * Secure storage wrapper that uses Keychain for sensitive data and AsyncStorage for non-sensitive data
  */
 const secureStorage = {
+  // Use Keychain for sensitive tokens
+  async setSecureItem(key: string, value: string): Promise<void> {
+    try {
+      await Keychain.setGenericPassword(key, value, { service: key });
+    } catch (error) {
+      console.error(`Failed to store secure item ${key}:`, error);
+      // Fallback to AsyncStorage if Keychain fails
+      await AsyncStorage.setItem(key, value);
+    }
+  },
+
+  async getSecureItem(key: string): Promise<string | null> {
+    try {
+      const credentials = await Keychain.getGenericPassword({ service: key });
+      if (credentials && typeof credentials !== 'boolean') {
+        return credentials.password;
+      }
+      return null;
+    } catch (error) {
+      console.error(`Failed to retrieve secure item ${key}:`, error);
+      // Fallback to AsyncStorage if Keychain fails
+      return await AsyncStorage.getItem(key);
+    }
+  },
+
+  async removeSecureItem(key: string): Promise<void> {
+    try {
+      // Use the generic method instead of resetInternetCredentials
+      const result = await Keychain.resetGenericPassword({ service: key });
+      console.log(`Removed secure item ${key}:`, result);
+    } catch (error) {
+      console.error(`Failed to remove secure item ${key}:`, error);
+      // Fallback to AsyncStorage if Keychain fails
+      await AsyncStorage.removeItem(key);
+    }
+  },
+
+  // Use AsyncStorage for non-sensitive data
   async setItem(key: string, value: string): Promise<void> {
     await AsyncStorage.setItem(key, value);
   },
@@ -28,8 +66,15 @@ const secureStorage = {
   },
 
   async clear(): Promise<void> {
-    const keys = Object.values(AUTH_KEYS);
-    await AsyncStorage.multiRemove(keys);
+    // Clear sensitive items from Keychain
+    const sensitiveKeys = [AUTH_KEYS.SESSION_JWT, AUTH_KEYS.SESSION_TOKEN];
+    await Promise.all(
+      sensitiveKeys.map(key => this.removeSecureItem(key))
+    );
+    
+    // Clear non-sensitive items from AsyncStorage
+    const nonSensitiveKeys = [AUTH_KEYS.USER_ID, AUTH_KEYS.USER_DATA, AUTH_KEYS.IS_AUTHENTICATED];
+    await AsyncStorage.multiRemove(nonSensitiveKeys);
   },
 };
 
@@ -55,8 +100,8 @@ export class AuthService {
   static async storeTokens(tokens: AuthTokens): Promise<void> {
     try {
       await Promise.all([
-        secureStorage.setItem(AUTH_KEYS.SESSION_JWT, tokens.sessionJwt),
-        secureStorage.setItem(AUTH_KEYS.SESSION_TOKEN, tokens.sessionToken),
+        secureStorage.setSecureItem(AUTH_KEYS.SESSION_JWT, tokens.sessionJwt),
+        secureStorage.setSecureItem(AUTH_KEYS.SESSION_TOKEN, tokens.sessionToken),
         secureStorage.setItem(AUTH_KEYS.USER_ID, tokens.userId),
         secureStorage.setItem(AUTH_KEYS.IS_AUTHENTICATED, 'true'),
       ]);
@@ -94,7 +139,7 @@ export class AuthService {
    */
   static async getSessionJwt(): Promise<string | null> {
     try {
-      return await secureStorage.getItem(AUTH_KEYS.SESSION_JWT);
+      return await secureStorage.getSecureItem(AUTH_KEYS.SESSION_JWT);
     } catch (error) {
       console.error('Failed to get session JWT:', error);
       throw ErrorFactory.storageError('get session JWT', error);
@@ -106,7 +151,7 @@ export class AuthService {
    */
   static async getSessionToken(): Promise<string | null> {
     try {
-      return await secureStorage.getItem(AUTH_KEYS.SESSION_TOKEN);
+      return await secureStorage.getSecureItem(AUTH_KEYS.SESSION_TOKEN);
     } catch (error) {
       console.error('Failed to get session token:', error);
       throw ErrorFactory.storageError('get session token', error);
