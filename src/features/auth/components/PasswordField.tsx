@@ -49,9 +49,9 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
           disabled={isLoading}
         >
           {isPasswordVisible ? (
-            <ShowPasswordSvg width={24} height={24} fill="none" />
+            <ShowPasswordSvg width={20} height={20} fill="none" />
           ) : (
-            <HidePasswordSvg width={24} height={24} fill="none" />
+            <HidePasswordSvg width={20} height={20} fill="none" />
           )}
         </TouchableOpacity>
       </View>
@@ -81,10 +81,10 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    fontSize: 16,
     color: COLOR_PALETTE.textPrimary,
     backgroundColor: 'transparent',
     borderWidth: 0,
+    marginBottom: 0, // Override default margin from AppTextInput
   },
   passwordToggle: {
     paddingHorizontal: SPACING.md,

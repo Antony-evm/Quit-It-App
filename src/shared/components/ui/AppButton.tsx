@@ -28,10 +28,10 @@ const variantToStyles: Record<
 > = {
   primary: {
     container: {
-      backgroundColor: '#F9F6F2', // CREAM
+      backgroundColor: COLOR_PALETTE.backgroundCream, // CREAM
       borderWidth: 0,
     },
-    textColor: '#022C22', // BRAND INK
+    textColor: COLOR_PALETTE.textSecondary, // BRAND INK
   },
   secondary: {
     container: {

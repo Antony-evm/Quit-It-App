@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 
-import { COLOR_PALETTE, SPACING } from '../../theme';
+import { COLOR_PALETTE, SPACING, TYPOGRAPHY } from '../../theme';
 
 export type AppTextInputProps = TextInputProps & {
   hasError?: boolean;
@@ -26,8 +26,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
+    fontSize: TYPOGRAPHY.body.fontSize,
     color: COLOR_PALETTE.textPrimary,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    marginBottom: SPACING.lg,
   },
   inputError: {
     borderColor: COLOR_PALETTE.accentPrimary,

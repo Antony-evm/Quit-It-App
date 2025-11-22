@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, SPACING } from '@/shared/theme';
+import { BRAND_COLORS, SPACING, TYPOGRAPHY } from '@/shared/theme';
 
 interface AuthModeToggleProps {
   isLoginMode: boolean;
@@ -18,13 +18,21 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
     <TouchableOpacity
       style={styles.modeToggle}
       onPress={onToggle}
-      activeOpacity={0.7}
+      activeOpacity={1}
       disabled={isLoading}
     >
       <AppText variant="body" tone="inverse" style={styles.modeToggleText}>
-        {isLoginMode
-          ? "Don't have an account? Tap here to sign up"
-          : 'Already have an account? Tap here to login'}
+        {isLoginMode ? (
+          <>
+            Don't have an account? Tap{' '}
+            <Text style={styles.underlinedText}>here</Text> to sign up
+          </>
+        ) : (
+          <>
+            Already have an account? Tap{' '}
+            <Text style={styles.underlinedText}>here</Text> to login
+          </>
+        )}
       </AppText>
     </TouchableOpacity>
   );
@@ -32,20 +40,17 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
 
 const styles = StyleSheet.create({
   modeToggle: {
-    marginBottom: SPACING.xl,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
+    padding: SPACING.md,
     alignItems: 'center',
-    backgroundColor: 'rgba(249, 246, 242, 0.05)',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(249, 246, 242, 0.1)',
   },
   modeToggleText: {
     textAlign: 'center',
+    ...TYPOGRAPHY.caption,
+    color: BRAND_COLORS.cream,
+  },
+  underlinedText: {
     textDecorationLine: 'underline',
-    fontSize: 16,
-    fontWeight: '500',
+    ...TYPOGRAPHY.caption,
     color: BRAND_COLORS.cream,
   },
 });

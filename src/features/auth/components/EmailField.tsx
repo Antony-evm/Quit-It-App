@@ -23,7 +23,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
   isLoading = false,
 }) => {
   return (
-    <View style={styles.emailContainer}>
+    <View>
       <AppTextInput
         hasError={validation.hasInput && !validation.isValid}
         placeholder="Email address"
@@ -52,17 +52,15 @@ export const EmailField: React.FC<EmailFieldProps> = ({
 };
 
 const styles = StyleSheet.create({
-  emailContainer: {
-    marginBottom: SPACING.lg,
-  },
   emailValidationText: {
     fontSize: 12,
-    marginTop: SPACING.xs,
+    marginTop: -SPACING.lg + SPACING.xs,
     marginLeft: SPACING.xs,
     fontWeight: '500',
+    marginBottom: SPACING.lg,
   },
   emailValidText: {
-    color: '#059669', // Green for valid email on cream background
+    color: '#059669',
   },
   emailInvalidText: {
     color: COLOR_PALETTE.systemError,

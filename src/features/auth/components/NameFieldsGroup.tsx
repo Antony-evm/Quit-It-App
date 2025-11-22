@@ -30,9 +30,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   return (
     <View>
       {/* First Name Field */}
-      <View style={styles.fieldContainer}>
+      <View>
         <AppTextInput
-          style={styles.input}
           placeholder="First name"
           value={firstName}
           onChangeText={onFirstNameChange}
@@ -49,9 +48,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
       </View>
 
       {/* Last Name Field */}
-      <View style={styles.fieldContainer}>
+      <View>
         <AppTextInput
-          style={styles.input}
           placeholder="Last name"
           value={lastName}
           onChangeText={onLastNameChange}
@@ -71,15 +69,10 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
 };
 
 const styles = StyleSheet.create({
-  fieldContainer: {
-    marginBottom: SPACING.md,
-  },
-  input: {
-    marginBottom: SPACING.lg,
-  },
   errorText: {
     color: COLOR_PALETTE.systemError,
-    marginTop: SPACING.xs,
+    marginTop: -SPACING.lg + SPACING.xs,
     marginLeft: SPACING.sm,
+    marginBottom: SPACING.lg,
   },
 });

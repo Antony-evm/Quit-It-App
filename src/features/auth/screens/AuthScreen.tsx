@@ -149,7 +149,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
         <View style={styles.bottomButtonContainer}>
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
-            variant="secondary"
+            variant="primary"
             size="lg"
             fullWidth
             disabled={isLoading || !isFormReady}
@@ -192,8 +192,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     paddingHorizontal: SPACING.xxl,
-    paddingBottom: SPACING.xl,
-    paddingTop: SPACING.lg,
-    backgroundColor: BRAND_COLORS.cream,
+    paddingVertical: SPACING.xl,
+    backgroundColor: BRAND_COLORS.inkDark,
   },
 });

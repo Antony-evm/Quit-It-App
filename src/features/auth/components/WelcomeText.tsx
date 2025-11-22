@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { SPACING, BRAND_COLORS } from '@/shared/theme';
+import { SPACING, BRAND_COLORS, TYPOGRAPHY } from '@/shared/theme';
 
 interface WelcomeTextProps {
   isSignup: boolean;
 }
 
 export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
-  const title = isSignup ? 'Welcome to Quit It' : 'Welcome Back';
+  const title = isSignup ? 'It starts with one choice!' : 'Welcome Back!';
   const subtitle = isSignup
-    ? 'Your journey to quit smoking starts here'
-    : 'Continue your smoke-free journey';
+    ? 'Make yours with Quit It today.'
+    : 'Continue your smoke-free journey.';
 
   return (
     <View style={styles.container}>
@@ -31,15 +31,14 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: SPACING.xs,
-    fontWeight: 'bold',
+    marginBottom: SPACING.sm,
+    ...TYPOGRAPHY.title,
     color: BRAND_COLORS.cream,
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: SPACING.xl,
-    lineHeight: 24,
+    marginBottom: SPACING.lg,
     color: BRAND_COLORS.cream,
-    opacity: 0.9,
+    ...TYPOGRAPHY.caption,
   },
 });
