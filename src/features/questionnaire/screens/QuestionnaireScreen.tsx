@@ -11,6 +11,7 @@ import { AppButton, AppText, BackArrow } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
+import { UserStatusService } from '@/shared/services/userStatusService';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
 const REVIEW_TITLE = 'Summary';
@@ -30,12 +31,15 @@ export const QuestionnaireScreen = ({
   const {
     isLoading,
     isSubmitting,
+    isCompleting,
     error,
     refresh,
     question,
     prompt,
     explanation,
     submitAnswers,
+    completeQuestionnaireFlow,
+    completionData,
     isReviewing,
     history,
     goBack,
@@ -92,8 +96,12 @@ export const QuestionnaireScreen = ({
   }, [isReviewing, question]);
 
   const primaryActionDisabled = isReviewing
-    ? isLoading || isSubmitting || !history.length
-    : isLoading || isSubmitting || !isSelectionValid || !activeSelection.length;
+    ? isLoading || isSubmitting || isCompleting || !history.length
+    : isLoading ||
+      isSubmitting ||
+      isCompleting ||
+      !isSelectionValid ||
+      !activeSelection.length;
 
   const showValidationError =
     hasAttemptedSubmit &&
@@ -110,15 +118,39 @@ export const QuestionnaireScreen = ({
     }
 
     if (isReviewing) {
-      // Individual answers were already submitted, just clear storage and navigate
+      // Complete the questionnaire and get user status information
       try {
+        const completionResponse = await completeQuestionnaireFlow();
+
+        if (completionResponse) {
+          const { user_status_id } = completionResponse.data;
+
+          // Initialize UserStatusService if not already done
+          await UserStatusService.initialize();
+
+          // Clear questionnaire storage
+          await questionnaireStorage.clear();
+
+          // Execute navigation based on user status
+          UserStatusService.executeStatusAction(
+            user_status_id,
+            navigation as any,
+          );
+        } else {
+          // If completion failed, fallback to home navigation
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
+        }
+      } catch (completionError) {
+        console.error('Failed to complete questionnaire:', completionError);
+        // Clear storage and navigate to home as fallback
         await questionnaireStorage.clear();
         navigation.reset({
           index: 0,
           routes: [{ name: 'Home' }],
         });
-      } catch {
-        // Handle navigation errors if needed
       }
       return;
     }

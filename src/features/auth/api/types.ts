@@ -1,4 +1,5 @@
 import { UserAuthenticationMethod } from '../types';
+import { UserDataResponse } from '@/shared/types/api';
 
 export interface CreateUserPayload {
   first_name?: string | null;
@@ -8,14 +9,7 @@ export interface CreateUserPayload {
   user_authentication_method: UserAuthenticationMethod;
 }
 
-export interface CreateUserResponse {
-  data: {
-    user_id: number;
-    user_status_id: number;
-  };
-  success?: boolean;
-  message?: string;
-}
+export interface CreateUserResponse extends UserDataResponse {}
 
 export interface LoginUserPayload {
   stytch_user_id: string;
@@ -23,11 +17,4 @@ export interface LoginUserPayload {
   methodology: 'email+password' | 'google' | 'apple' | 'magic_link' | string;
 }
 
-export interface LoginUserResponse {
-  data: {
-    user_id: number;
-    user_status_id: number;
-  };
-  success?: boolean;
-  message?: string;
-}
+export interface LoginUserResponse extends UserDataResponse {}

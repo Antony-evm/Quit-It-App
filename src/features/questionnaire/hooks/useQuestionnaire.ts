@@ -7,12 +7,15 @@ import type {
   QuestionnaireAnswerPayload,
   QuestionnaireResponseRecord,
   SelectedAnswerOption,
+  QuestionnaireCompleteResponse,
 } from '../types';
 import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
+import { completeQuestionnaire } from '../api/completeQuestionnaire';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../data/questionnaireStorage';
 import { useBackendUserIdSafe } from '@/shared/hooks';
+import { UserStatusService } from '@/shared/services/userStatusService';
 
 type UseQuestionnaireOptions = {
   userId?: number;
@@ -68,6 +71,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<Error | null>(null);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [completionData, setCompletionData] =
+    useState<QuestionnaireCompleteResponse | null>(null);
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
   const [selections, setSelections] = useState<
@@ -235,6 +241,24 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     [question, userId],
   );
 
+  const completeQuestionnaireFlow =
+    useCallback(async (): Promise<QuestionnaireCompleteResponse | null> => {
+      try {
+        setIsCompleting(true);
+        setSubmitError(null);
+
+        const response = await completeQuestionnaire();
+        setCompletionData(response);
+
+        return response;
+      } catch (caughtError) {
+        setSubmitError(caughtError as Error);
+        return null;
+      } finally {
+        setIsCompleting(false);
+      }
+    }, []);
+
   const refresh = useCallback(() => {
     return refetch();
   }, [refetch]);
@@ -333,12 +357,15 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     variationId: activeVariationId,
     isLoading,
     isSubmitting,
+    isCompleting,
     error,
     isReviewing,
     history,
+    completionData,
     ...derived,
     refresh,
     submitAnswers,
+    completeQuestionnaireFlow,
     restart,
     goBack,
     canGoBack,

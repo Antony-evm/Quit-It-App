@@ -102,6 +102,12 @@ export class AuthService {
    */
   static async storeTokens(tokens: AuthTokens): Promise<void> {
     try {
+      console.log('[AuthService] Storing tokens...', {
+        hasJwt: !!tokens.sessionJwt,
+        hasToken: !!tokens.sessionToken,
+        hasUserId: !!tokens.userId,
+      });
+
       await Promise.all([
         secureStorage.setSecureItem(AUTH_KEYS.SESSION_JWT, tokens.sessionJwt),
         secureStorage.setSecureItem(
@@ -111,6 +117,8 @@ export class AuthService {
         secureStorage.setItem(AUTH_KEYS.USER_ID, tokens.userId),
         secureStorage.setItem(AUTH_KEYS.IS_AUTHENTICATED, 'true'),
       ]);
+
+      console.log('[AuthService] Tokens stored successfully');
     } catch (error) {
       console.error('Failed to store auth tokens:', error);
       throw ErrorFactory.storageError('store auth tokens', error, {
@@ -195,7 +203,9 @@ export class AuthService {
   static async isAuthenticated(): Promise<boolean> {
     try {
       const isAuth = await secureStorage.getItem(AUTH_KEYS.IS_AUTHENTICATED);
-      const sessionJwt = await secureStorage.getItem(AUTH_KEYS.SESSION_JWT);
+      const sessionJwt = await secureStorage.getSecureItem(
+        AUTH_KEYS.SESSION_JWT,
+      );
 
       // User is authenticated if both flag is set and JWT exists
       return isAuth === 'true' && sessionJwt !== null;
@@ -210,16 +220,26 @@ export class AuthService {
    */
   static async getAuthTokens(): Promise<AuthTokens | null> {
     try {
+      console.log('[AuthService] Retrieving stored tokens...');
+
       const [sessionJwt, sessionToken, userId] = await Promise.all([
-        secureStorage.getItem(AUTH_KEYS.SESSION_JWT),
-        secureStorage.getItem(AUTH_KEYS.SESSION_TOKEN),
+        secureStorage.getSecureItem(AUTH_KEYS.SESSION_JWT),
+        secureStorage.getSecureItem(AUTH_KEYS.SESSION_TOKEN),
         secureStorage.getItem(AUTH_KEYS.USER_ID),
       ]);
 
+      console.log('[AuthService] Token retrieval results:', {
+        hasJwt: !!sessionJwt,
+        hasToken: !!sessionToken,
+        hasUserId: !!userId,
+      });
+
       if (!sessionJwt || !sessionToken || !userId) {
+        console.log('[AuthService] Missing required tokens, returning null');
         return null;
       }
 
+      console.log('[AuthService] All tokens retrieved successfully');
       return {
         sessionJwt,
         sessionToken,

@@ -1,3 +1,5 @@
+import type { UserDataResponse } from '@/shared/types/api';
+
 export type AnswerType =
   | 'multiple_choice'
   | 'numeric'
@@ -83,3 +85,5 @@ export interface SelectedAnswerOption {
   answerType: AnswerType;
   nextVariationId: number;
 }
+
+export interface QuestionnaireCompleteResponse extends UserDataResponse {}
