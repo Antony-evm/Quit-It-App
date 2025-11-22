@@ -7,12 +7,13 @@ import React, {
 } from 'react';
 import { useStytch } from '@stytch/react-native';
 import AuthService, { type AuthTokens, type UserData } from './authService';
+
 import {
   createUser,
   loginUser,
   type CreateUserPayload,
   type LoginUserPayload,
-} from '@/features/auth/api/createUser';
+} from '@/features/auth/api';
 import { UserAuthenticationMethod } from '@/features/auth/types';
 
 interface AuthContextType {
@@ -124,22 +125,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             throw new Error('Failed to store authentication tokens');
           }
 
-          // Login/sync user with our backend BEFORE marking as authenticated
-          try {
-            const loginUserPayload: LoginUserPayload = {
-              stytch_user_id: user_id,
-              email: user.emails?.[0]?.email || email,
-              methodology: 'email+password',
-            };
+            // Login/sync user with our backend BEFORE marking as authenticated
+            try {
+              const loginUserPayload: LoginUserPayload = {
+                stytch_user_id: user_id,
+                email: user.emails?.[0]?.email || email,
+                methodology: 'email+password',
+              };
 
-            // Pass the fresh JWT token for user login
-            const backendResponse = await loginUser(
-              loginUserPayload,
-              session_jwt,
-            );
-            console.log('Backend user login successful:', backendResponse);
-
-            // Update user data with backend user_id
+              // Use the updated loginUser function (no JWT token needed)
+              const backendResponse = await loginUser(loginUserPayload);
+              console.log('Backend user login successful:', backendResponse);            // Update user data with backend user_id
             if (backendResponse.data?.user_id) {
               const updatedUserData = {
                 ...userData,
@@ -217,25 +213,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             throw new Error('Failed to store authentication tokens');
           }
 
-          // Register user with our backend BEFORE marking as authenticated
-          try {
-            const createUserPayload: CreateUserPayload = {
-              first_name: firstName.trim() || null,
-              last_name: lastName.trim() || null,
-              email: user.emails?.[0]?.email || email,
-              stytch_user_id: user_id,
-              user_authentication_method:
-                UserAuthenticationMethod.EMAIL_PASSWORD,
-            };
+            // Register user with our backend BEFORE marking as authenticated
+            try {
+              const createUserPayload: CreateUserPayload = {
+                first_name: firstName.trim() || null,
+                last_name: lastName.trim() || null,
+                email: user.emails?.[0]?.email || email,
+                stytch_user_id: user_id,
+                user_authentication_method:
+                  UserAuthenticationMethod.EMAIL_PASSWORD,
+              };
 
-            // Pass the fresh JWT token for new user registration
-            const backendResponse = await createUser(
-              createUserPayload,
-              session_jwt,
-            );
-            console.log('Backend user creation successful:', backendResponse);
-
-            // Update user data with backend user_id
+              // Use the updated createUser function (no JWT token needed)
+              const backendResponse = await createUser(createUserPayload);
+              console.log('Backend user creation successful:', backendResponse);            // Update user data with backend user_id
             if (backendResponse.data?.user_id) {
               const updatedUserData = {
                 ...userData,
