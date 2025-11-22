@@ -125,17 +125,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             throw new Error('Failed to store authentication tokens');
           }
 
-            // Login/sync user with our backend BEFORE marking as authenticated
-            try {
-              const loginUserPayload: LoginUserPayload = {
-                stytch_user_id: user_id,
-                email: user.emails?.[0]?.email || email,
-                methodology: 'email+password',
-              };
+          // Login/sync user with our backend BEFORE marking as authenticated
+          try {
+            const loginUserPayload: LoginUserPayload = {
+              stytch_user_id: user_id,
+              email: user.emails?.[0]?.email || email,
+              methodology: 'email+password',
+            };
 
-              // Use the updated loginUser function (no JWT token needed)
-              const backendResponse = await loginUser(loginUserPayload);
-              console.log('Backend user login successful:', backendResponse);            // Update user data with backend user_id
+            // Use the updated loginUser function (no JWT token needed)
+            const backendResponse = await loginUser(loginUserPayload);
+            console.log('Backend user login successful:', backendResponse); // Update user data with backend user_id
             if (backendResponse.data?.user_id) {
               const updatedUserData = {
                 ...userData,
@@ -213,20 +213,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             throw new Error('Failed to store authentication tokens');
           }
 
-            // Register user with our backend BEFORE marking as authenticated
-            try {
-              const createUserPayload: CreateUserPayload = {
-                first_name: firstName.trim() || null,
-                last_name: lastName.trim() || null,
-                email: user.emails?.[0]?.email || email,
-                stytch_user_id: user_id,
-                user_authentication_method:
-                  UserAuthenticationMethod.EMAIL_PASSWORD,
-              };
+          // Register user with our backend BEFORE marking as authenticated
+          try {
+            const createUserPayload: CreateUserPayload = {
+              first_name: firstName.trim() || null,
+              last_name: lastName.trim() || null,
+              email: user.emails?.[0]?.email || email,
+              stytch_user_id: user_id,
+              user_authentication_method:
+                UserAuthenticationMethod.EMAIL_PASSWORD,
+            };
 
-              // Use the updated createUser function (no JWT token needed)
-              const backendResponse = await createUser(createUserPayload);
-              console.log('Backend user creation successful:', backendResponse);            // Update user data with backend user_id
+            // Use the updated createUser function (no JWT token needed)
+            const backendResponse = await createUser(createUserPayload);
+            console.log('Backend user creation successful:', backendResponse); // Update user data with backend user_id
             if (backendResponse.data?.user_id) {
               const updatedUserData = {
                 ...userData,

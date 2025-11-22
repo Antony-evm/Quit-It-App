@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 import {
   CustomPasswordStrengthIndicator,
@@ -19,12 +20,14 @@ import { EmailField } from '../components/EmailField';
 import { NameFieldsGroup } from '../components/NameFieldsGroup';
 import { WelcomeText } from '../components/WelcomeText';
 import { useAuthForm } from '../hooks/useAuthForm';
-import { COLOR_PALETTE, BRAND_COLORS, SPACING } from '@/shared/theme';
+import { BRAND_COLORS, SPACING } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
   const {
     // Form state
     email,
@@ -53,10 +56,24 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     confirmPasswordValidation,
   } = useAuthForm({ navigation });
 
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
       >
         {/* Header with animated logo */}
@@ -65,6 +82,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           <WelcomeText isSignup={!isLoginMode} />
 
@@ -140,8 +158,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
           </View>
         </ScrollView>
 
-        {/* Submit button */}
-        <View style={styles.bottomButtonContainer}>
+        {/* Submit button - back at the bottom but with stable positioning */}
+        <View
+          style={[
+            styles.bottomButtonContainer,
+            isKeyboardVisible && styles.bottomButtonContainerKeyboardVisible,
+          ]}
+        >
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             variant="primary"
@@ -166,6 +189,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: SPACING.lg,
   },
   inkDarkContainer: {
     backgroundColor: BRAND_COLORS.inkDark,
@@ -182,7 +206,10 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xs,
+    paddingVertical: SPACING.xxl,
     backgroundColor: BRAND_COLORS.inkDark,
+  },
+  bottomButtonContainerKeyboardVisible: {
+    paddingVertical: SPACING.sm, // Smaller padding when keyboard is visible for stability
   },
 });
