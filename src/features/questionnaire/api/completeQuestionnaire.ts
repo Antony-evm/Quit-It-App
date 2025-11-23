@@ -1,4 +1,4 @@
-import { authenticatedGet } from '@/shared/api/apiConfig';
+import { authenticatedPost } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
 import { QUESTIONNAIRE_COMPLETE_ENDPOINT } from './endpoints';
 import type { QuestionnaireCompleteResponse } from '../types';
@@ -14,7 +14,7 @@ export const completeQuestionnaire =
         QUESTIONNAIRE_COMPLETE_ENDPOINT,
       );
 
-      const response = await authenticatedGet(QUESTIONNAIRE_COMPLETE_ENDPOINT);
+      const response = await authenticatedPost(QUESTIONNAIRE_COMPLETE_ENDPOINT);
 
       console.log('Questionnaire completion response status:', response.status);
       console.log(
