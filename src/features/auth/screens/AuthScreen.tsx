@@ -60,7 +60,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     firstNameValidation,
     lastNameValidation,
     confirmPasswordValidation,
-  } = useAuthForm({ navigation, initialMode });
+  } = useAuthForm({ initialMode });
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => {

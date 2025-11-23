@@ -52,7 +52,7 @@ const PLACEHOLDER_ENTRIES: HomeEntry[] = [
   },
 ];
 
-export const HomePlaceholderScreen = () => {
+export const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const stats = STAT_CARDS;

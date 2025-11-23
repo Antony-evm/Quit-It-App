@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import type { RootStackParamList } from '@/types/navigation';
 import { QuestionnaireScreen } from '@/features/questionnaire/screens/QuestionnaireScreen';
-import { HomePlaceholderScreen } from '@/features/home/screens/HomePlaceholderScreen';
+import { HomeScreen } from '@/features/home/screens/Home';
 import { AuthScreen } from '@/features/auth';
 import { PaywallScreen } from '@/features/paywall';
 import { StartupNavigationHandler } from '@/shared/components/StartupNavigationHandler';
@@ -46,7 +46,7 @@ export const AppNavigator = () => {
           />
           <Stack.Screen
             name="Home"
-            component={HomePlaceholderScreen}
+            component={HomeScreen}
             options={{
               gestureEnabled: false, // Prevent swipe back to questionnaire once completed
             }}
