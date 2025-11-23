@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useStytch } from '@stytch/react-native';
 import AuthService, { type AuthTokens, type UserData } from './authService';
-import { UserStatusService } from '@/shared/services/userStatusService';
+import { UserStatusService, UserTypeService } from '@/shared/services';
 
 import {
   createUser,
@@ -323,16 +323,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize user status service on mount
   useEffect(() => {
-    const initializeStatusService = async () => {
+    const initializeServices = async () => {
       try {
-        await UserStatusService.initialize();
-        console.log('UserStatusService initialized successfully');
+        // Initialize both services in parallel for better performance
+        await Promise.all([
+          UserStatusService.initialize(),
+          UserTypeService.initialize(),
+        ]);
+        console.log('UserStatusService and UserTypeService initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize UserStatusService:', error);
+        console.error('Failed to initialize services:', error);
       }
     };
 
-    initializeStatusService();
+    initializeServices();
   }, []);
 
   const value: AuthContextType = {
