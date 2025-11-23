@@ -21,7 +21,7 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
       activeOpacity={1}
       disabled={isLoading}
     >
-      <AppText variant="body" tone="inverse" style={styles.modeToggleText}>
+      <AppText variant="body" tone="primary" style={styles.modeToggleText}>
         {isLoginMode ? (
           <>
             Don't have an account? Tap{' '}

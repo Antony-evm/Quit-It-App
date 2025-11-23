@@ -1,5 +1,5 @@
-import { NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   UserStatus,
   UserStatusMap,
@@ -15,18 +15,32 @@ type AppNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export class UserStatusService {
   private static statusMap: UserStatusMap | null = null;
+  private static readonly CACHE_KEY = 'user_status_map_cache_v1';
 
   /**
    * Initialize the status map by fetching statuses from the backend
    */
-  static async initialize(): Promise<void> {
-    try {
-      const response: UserStatusesResponse = await fetchUserStatuses();
-      this.statusMap = this.buildStatusMap(response.data.statuses);
-    } catch (error) {
-      console.error('Failed to initialize user status service:', error);
-      throw error;
+  static async initialize({ forceRefresh = false } = {}): Promise<void> {
+    if (this.statusMap && !forceRefresh) {
+      return;
     }
+
+    if (!forceRefresh) {
+      const cachedMap = await this.loadFromCache();
+      if (cachedMap) {
+        this.statusMap = cachedMap;
+        // Refresh in background to keep data current
+        void this.refreshFromNetwork().catch(error => {
+          console.warn(
+            'Failed to refresh user status map from network, using cache',
+            error,
+          );
+        });
+        return;
+      }
+    }
+
+    await this.refreshFromNetwork();
   }
 
   /**
@@ -45,6 +59,48 @@ export class UserStatusService {
     });
 
     return map;
+  }
+
+  private static async refreshFromNetwork(): Promise<void> {
+    try {
+      const response: UserStatusesResponse = await fetchUserStatuses();
+      const statuses = response.data.statuses;
+      this.statusMap = this.buildStatusMap(statuses);
+      await this.persistCache(statuses);
+    } catch (error) {
+      console.error('Failed to initialize user status service:', error);
+      throw error;
+    }
+  }
+
+  private static async loadFromCache(): Promise<UserStatusMap | null> {
+    try {
+      const raw = await AsyncStorage.getItem(this.CACHE_KEY);
+      if (!raw) {
+        return null;
+      }
+
+      const cachedStatuses: UserStatus[] = JSON.parse(raw);
+      if (!Array.isArray(cachedStatuses) || cachedStatuses.length === 0) {
+        return null;
+      }
+
+      return this.buildStatusMap(cachedStatuses);
+    } catch (error) {
+      console.warn(
+        '[UserStatusService] Failed to load cached status map, ignoring cache',
+        error,
+      );
+      return null;
+    }
+  }
+
+  private static async persistCache(statuses: UserStatus[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(statuses));
+    } catch (error) {
+      console.warn('[UserStatusService] Failed to persist status cache', error);
+    }
   }
 
   /**

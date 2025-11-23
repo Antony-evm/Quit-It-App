@@ -13,7 +13,7 @@ export interface BootstrapAuthResult {
  * Intended to be called once on startup.
  */
 export async function bootstrapAuthState(
-  stytchClient?: any,
+  stytchClient: any,
 ): Promise<BootstrapAuthResult> {
   const [tokens, user] = await Promise.all([
     readStoredTokens(),
@@ -29,20 +29,29 @@ export async function bootstrapAuthState(
     };
   }
 
-  // Default to valid if we cannot validate
-  let isSessionValid = true;
+  if (!stytchClient?.session?.authenticate) {
+    console.warn(
+      '[AuthBootstrap] Stytch client missing, treating session as invalid',
+    );
+    return {
+      tokens,
+      user,
+      isAuthenticated: true,
+      isSessionValid: false,
+    };
+  }
 
-  if (stytchClient) {
-    try {
-      const sessionResponse = await stytchClient.session.authenticate({
-        session_token: tokens.sessionToken,
-        session_duration_minutes: 60,
-      });
-      isSessionValid = sessionResponse.status_code === 200;
-    } catch (error) {
-      console.log('[AuthBootstrap] Session validation error:', error);
-      isSessionValid = false;
-    }
+  let isSessionValid = false;
+
+  try {
+    const sessionResponse = await stytchClient.session.authenticate({
+      session_token: tokens.sessionToken,
+      session_duration_minutes: 60,
+    });
+    isSessionValid = sessionResponse.status_code === 200;
+  } catch (error) {
+    console.log('[AuthBootstrap] Session validation error:', error);
+    isSessionValid = false;
   }
 
   if (!isSessionValid) {

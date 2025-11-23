@@ -57,7 +57,7 @@ export const QuestionnaireTemplate = ({
               <View style={styles.heroText}>
                 <AppText variant="title">{title}</AppText>
                 {subtitle ? (
-                  <AppText tone="secondary" style={styles.subtitle}>
+                  <AppText tone="primary" style={styles.subtitle}>
                     {subtitle}
                   </AppText>
                 ) : null}

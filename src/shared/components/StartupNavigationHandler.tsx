@@ -185,8 +185,7 @@ export const StartupNavigationHandler: React.FC<
 
   useEffect(() => {
     if (!bootstrapDone) {
-      const timer = setTimeout(handleStartupNavigation, 100);
-      return () => clearTimeout(timer);
+      void handleStartupNavigation();
     }
   }, [bootstrapDone, handleStartupNavigation]);
 

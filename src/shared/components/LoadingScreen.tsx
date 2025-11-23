@@ -13,10 +13,12 @@ export const LoadingScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    zIndex: 2,
+    elevation: 2,
   },
   loadingText: {
     marginTop: 16,
