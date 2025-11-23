@@ -9,6 +9,7 @@ import { AuthScreen } from '@/features/auth';
 import { PaywallScreen } from '@/features/paywall';
 import { StartupNavigationHandler } from '@/shared/components/StartupNavigationHandler';
 import { useNavigationReady } from '@/navigation/NavigationContext';
+import { navigationRef } from '@/navigation/navigationRef';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,6 +18,7 @@ export const AppNavigator = () => {
 
   return (
     <NavigationContainer
+      ref={navigationRef}
       onReady={() => {
         console.log(
           '[Navigation] Navigation container is ready, calling setReady()',

@@ -1,17 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStytch } from '@stytch/react-native';
 import { useAuth } from '@/shared/auth';
 import AuthService from '@/shared/auth/authService';
 import { bootstrapAuthState } from '@/shared/auth/authBootstrap';
 import { useNavigationReady } from '@/navigation/NavigationContext';
+import { resetNavigation } from '@/navigation/navigationRef';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { USER_STATUS_ACTIONS } from '@/shared/constants/userStatus';
 import { LoadingScreen } from './LoadingScreen';
 import type { RootStackParamList } from '@/types/navigation';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface StartupNavigationHandlerProps {
   children: React.ReactNode;
@@ -26,10 +23,15 @@ export const StartupNavigationHandler: React.FC<
   // ALL HOOKS MUST BE CALLED IN THE SAME ORDER EVERY TIME
   const { initializeFromBootstrap, refreshAuthState } = useAuth();
   const { isReady: isNavReady } = useNavigationReady();
-  const navigation = useNavigation<NavigationProp>();
   const stytch = useStytch();
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasNavigated, setHasNavigated] = useState(false);
+  const [bootstrapDone, setBootstrapDone] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<{
+    route: keyof RootStackParamList;
+    params?: any;
+  } | null>(null);
+  const [navigationAttempt, setNavigationAttempt] = useState(0);
 
   // Safe navigation helper
   const safeNavigate = useCallback(
@@ -46,30 +48,20 @@ export const StartupNavigationHandler: React.FC<
           params ? `with params: ${JSON.stringify(params)}` : '',
         );
 
-        // Check if navigation object has the reset method
-        if (!navigation || typeof navigation.reset !== 'function') {
-          console.error('[StartupNavigation] Navigation object not ready');
-          return false;
-        }
-
-        navigation.reset({
-          index: 0,
-          routes: [{ name: routeName, ...(params && { params }) }],
-        });
-        return true;
+        return resetNavigation(routeName, params);
       } catch (error) {
         console.error('[StartupNavigation] Navigation error:', error);
         return false;
       }
     },
-    [navigation, isNavReady],
+    [isNavReady],
   );
 
   const handleStartupNavigation = useCallback(async () => {
-    if (hasNavigated) return;
+    if (bootstrapDone) return;
 
     try {
-      setHasNavigated(true);
+      setBootstrapDone(true);
       console.log('[StartupNavigation] Starting authentication check...');
 
       const authResult = await bootstrapAuthState(stytch);
@@ -88,13 +80,8 @@ export const StartupNavigationHandler: React.FC<
 
       // Case 1: No tokens found - navigate to signup
       if (!authResult.isAuthenticated) {
-        console.log(
-          '[StartupNavigation] No tokens found, navigating to Auth (signup)',
-        );
-
-        if (!safeNavigate('Auth', { mode: 'signup' })) {
-          return; // Navigation failed, exit early
-        }
+        console.log('[StartupNavigation] No tokens found, enqueue Auth signup');
+        setPendingRoute({ route: 'Auth', params: { mode: 'signup' } });
         return;
       }
 
@@ -108,9 +95,7 @@ export const StartupNavigationHandler: React.FC<
         await AuthService.clearAuth();
         await refreshAuthState();
 
-        if (!safeNavigate('Auth', { mode: 'login' })) {
-          return; // Navigation failed, exit early
-        }
+        setPendingRoute({ route: 'Auth', params: { mode: 'login' } });
         return;
       }
 
@@ -130,7 +115,7 @@ export const StartupNavigationHandler: React.FC<
           console.warn(
             '[StartupNavigation] No user status ID found, navigating to questionnaire',
           );
-          safeNavigate('Questionnaire');
+          setPendingRoute({ route: 'Questionnaire' });
           return;
         }
 
@@ -156,29 +141,29 @@ export const StartupNavigationHandler: React.FC<
             console.warn(
               '[StartupNavigation] No action found for status, navigating to questionnaire',
             );
-            safeNavigate('Questionnaire');
+            setPendingRoute({ route: 'Questionnaire' });
             return;
           }
 
           // Navigate based on action type using reset for clean navigation stack
           switch (action.type) {
             case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
-              safeNavigate('Questionnaire');
+              setPendingRoute({ route: 'Questionnaire' });
               break;
             case USER_STATUS_ACTIONS.NAVIGATE_TO_PAYWALL:
-              safeNavigate('Paywall');
+              setPendingRoute({ route: 'Paywall' });
               break;
             case USER_STATUS_ACTIONS.NAVIGATE_TO_HOME:
-              safeNavigate('Home');
+              setPendingRoute({ route: 'Home' });
               break;
             case USER_STATUS_ACTIONS.PLACEHOLDER_CALL:
-              safeNavigate('Home');
+              setPendingRoute({ route: 'Home' });
               break;
             default:
               console.warn(
                 '[StartupNavigation] Unknown action type, navigating to questionnaire',
               );
-              safeNavigate('Questionnaire');
+              setPendingRoute({ route: 'Questionnaire' });
           }
         } catch (statusError) {
           console.error(
@@ -186,29 +171,73 @@ export const StartupNavigationHandler: React.FC<
             statusError,
           );
           // Fallback to questionnaire if status service fails
-          safeNavigate('Questionnaire');
+          setPendingRoute({ route: 'Questionnaire' });
         }
       }
     } catch (error) {
       console.error('[StartupNavigation] Startup navigation error:', error);
       // Fallback to auth screen on any error
-      safeNavigate('Auth');
+      setPendingRoute({ route: 'Auth' });
     } finally {
-      setIsInitializing(false);
+      // will be cleared after navigation attempt succeeds
     }
-  }, [stytch, refreshAuthState, safeNavigate, hasNavigated, initializeFromBootstrap]);
+  }, [stytch, refreshAuthState, initializeFromBootstrap, bootstrapDone]);
 
   useEffect(() => {
-    if (!hasNavigated) {
+    if (!bootstrapDone) {
       const timer = setTimeout(handleStartupNavigation, 100);
       return () => clearTimeout(timer);
     }
-  }, [hasNavigated, handleStartupNavigation]);
+  }, [bootstrapDone, handleStartupNavigation]);
 
-  // Don't render children until startup navigation is complete
-  if (isInitializing) {
-    return <LoadingScreen />;
-  }
+  // Attempt navigation once we have a pending route and nav is ready
+  useEffect(() => {
+    if (!pendingRoute || hasNavigated) {
+      return;
+    }
 
-  return <>{children}</>;
+    if (!isNavReady) {
+      console.log('[StartupNavigation] Waiting for navigation ready...');
+      const retry = setTimeout(
+        () => setNavigationAttempt(prev => prev + 1),
+        50,
+      );
+      return () => clearTimeout(retry);
+    }
+
+    console.log(
+      '[StartupNavigation] Attempting navigation',
+      pendingRoute.route,
+      pendingRoute.params || '',
+      'attempt:',
+      navigationAttempt,
+    );
+
+    const success = safeNavigate(pendingRoute.route, pendingRoute.params);
+    if (success) {
+      console.log('[StartupNavigation] Navigation succeeded');
+      setHasNavigated(true);
+      setIsInitializing(false);
+      return;
+    }
+
+    console.warn('[StartupNavigation] Navigation attempt failed, retrying...');
+    const retry = setTimeout(() => setNavigationAttempt(prev => prev + 1), 100);
+    return () => clearTimeout(retry);
+  }, [
+    pendingRoute,
+    isNavReady,
+    hasNavigated,
+    safeNavigate,
+    navigationAttempt,
+  ]);
+
+  // Always render children so NavigationContainer can become ready;
+  // overlay loading screen while startup is in progress.
+  return (
+    <>
+      {children}
+      {isInitializing && <LoadingScreen />}
+    </>
+  );
 };
