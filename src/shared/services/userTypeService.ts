@@ -27,8 +27,25 @@ export class UserTypeService {
   private static buildTypeMap(types: UserType[]): UserTypeMap {
     const map: UserTypeMap = {};
 
+    // Safety check for empty or invalid input
+    if (!Array.isArray(types)) {
+      console.warn(
+        '[UserTypeService] buildTypeMap received invalid input:',
+        types,
+      );
+      return map;
+    }
+
     types.forEach(type => {
-      map[type.id] = type;
+      if (
+        type &&
+        typeof type.id === 'number' &&
+        typeof type.code === 'string'
+      ) {
+        map[type.id] = type;
+      } else {
+        console.warn('[UserTypeService] Invalid type object:', type);
+      }
     });
 
     return map;
@@ -39,9 +56,7 @@ export class UserTypeService {
    */
   static getType(typeId: number): UserType | null {
     if (!this.typeMap) {
-      console.warn(
-        'UserTypeService not initialized. Call initialize() first.',
-      );
+      console.warn('UserTypeService not initialized. Call initialize() first.');
       return null;
     }
 
@@ -53,13 +68,15 @@ export class UserTypeService {
    */
   static getTypeByCode(code: string): UserType | null {
     if (!this.typeMap) {
-      console.warn(
-        'UserTypeService not initialized. Call initialize() first.',
-      );
+      console.warn('UserTypeService not initialized. Call initialize() first.');
       return null;
     }
 
-    return Object.values(this.typeMap).find((type: UserType) => type.code === code) || null;
+    return (
+      Object.values(this.typeMap).find(
+        (type: UserType) => type.code === code,
+      ) || null
+    );
   }
 
   /**
@@ -67,9 +84,7 @@ export class UserTypeService {
    */
   static getAllTypes(): UserType[] {
     if (!this.typeMap) {
-      console.warn(
-        'UserTypeService not initialized. Call initialize() first.',
-      );
+      console.warn('UserTypeService not initialized. Call initialize() first.');
       return [];
     }
 

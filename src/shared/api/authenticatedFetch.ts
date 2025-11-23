@@ -1,4 +1,5 @@
 import AuthService from '../auth/authService';
+import { clearAuthState, getTokens } from '../auth/authState';
 
 /**
  * Configuration for authenticated API requests
@@ -65,7 +66,7 @@ class ApiClient {
 
       // Add authentication token if required
       if (requiresAuth) {
-        const tokens = await AuthService.getAuthTokens();
+        const tokens = getTokens();
 
         if (!tokens) {
           console.log('[ApiClient] No tokens found');
@@ -95,28 +96,18 @@ class ApiClient {
 
     // Default request logging interceptor
     this.addRequestInterceptor((url, config) => {
-      const headers =
-        config.headers instanceof Headers
-          ? Object.fromEntries(config.headers.entries())
-          : config.headers;
-
-      console.log('[ApiClient] Making request:', {
-        url,
-        method: config.method || 'GET',
-        headers,
-      });
+      const method = config.method || 'GET';
+      console.log(`[ApiClient] ${method} ${url}`);
 
       return { url, config };
     });
 
     // Default response logging interceptor
     this.addResponseInterceptor((response, url, config) => {
-      console.log('[ApiClient] Response received:', {
-        url,
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-      });
+      const method = config.method || 'GET';
+      const status = response.status;
+      const statusText = status >= 400 ? ` (${response.statusText})` : '';
+      console.log(`[ApiClient] ${method} ${url} → ${status}${statusText}`);
 
       return response;
     });
@@ -133,6 +124,7 @@ class ApiClient {
 
         // Token might be expired - clear auth state
         await AuthService.clearAuth();
+        clearAuthState();
         throw new Error('Authentication failed. Please log in again.');
       }
 
@@ -277,7 +269,7 @@ export async function authenticatedDelete(
  * Get current user ID from stored tokens
  */
 export async function getCurrentUserId(): Promise<string | null> {
-  const tokens = await AuthService.getAuthTokens();
+  const tokens = getTokens();
   return tokens?.userId || null;
 }
 

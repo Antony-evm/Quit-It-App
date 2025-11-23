@@ -4,6 +4,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStytch } from '@stytch/react-native';
 import { useAuth } from '@/shared/auth';
 import AuthService from '@/shared/auth/authService';
+import { bootstrapAuthState } from '@/shared/auth/authBootstrap';
+import { useNavigationReady } from '@/navigation/NavigationContext';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { USER_STATUS_ACTIONS } from '@/shared/constants/userStatus';
 import { LoadingScreen } from './LoadingScreen';
@@ -21,20 +23,56 @@ interface StartupNavigationHandlerProps {
 export const StartupNavigationHandler: React.FC<
   StartupNavigationHandlerProps
 > = ({ children }) => {
-  const { isLoading: authLoading, refreshAuthState } = useAuth();
+  // ALL HOOKS MUST BE CALLED IN THE SAME ORDER EVERY TIME
+  const { initializeFromBootstrap, refreshAuthState } = useAuth();
+  const { isReady: isNavReady } = useNavigationReady();
   const navigation = useNavigation<NavigationProp>();
   const stytch = useStytch();
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasNavigated, setHasNavigated] = useState(false);
+
+  // Safe navigation helper
+  const safeNavigate = useCallback(
+    (routeName: keyof RootStackParamList, params?: any) => {
+      try {
+        if (!isNavReady) {
+          console.warn('[StartupNavigation] Navigation not ready yet');
+          return false;
+        }
+
+        console.log(
+          '[StartupNavigation] Navigating to:',
+          routeName,
+          params ? `with params: ${JSON.stringify(params)}` : '',
+        );
+
+        // Check if navigation object has the reset method
+        if (!navigation || typeof navigation.reset !== 'function') {
+          console.error('[StartupNavigation] Navigation object not ready');
+          return false;
+        }
+
+        navigation.reset({
+          index: 0,
+          routes: [{ name: routeName, ...(params && { params }) }],
+        });
+        return true;
+      } catch (error) {
+        console.error('[StartupNavigation] Navigation error:', error);
+        return false;
+      }
+    },
+    [navigation, isNavReady],
+  );
 
   const handleStartupNavigation = useCallback(async () => {
+    if (hasNavigated) return;
+
     try {
-      setIsInitializing(true);
+      setHasNavigated(true);
       console.log('[StartupNavigation] Starting authentication check...');
 
-      // Check authentication status with token validation
-      const authResult = await AuthService.checkAuthenticationWithValidation(
-        stytch,
-      );
+      const authResult = await bootstrapAuthState(stytch);
 
       console.log('[StartupNavigation] Auth check result:', {
         isAuthenticated: authResult.isAuthenticated,
@@ -43,15 +81,20 @@ export const StartupNavigationHandler: React.FC<
         userStatusId: authResult.user?.userStatusId,
       });
 
+      initializeFromBootstrap({
+        tokens: authResult.tokens,
+        user: authResult.user,
+      });
+
       // Case 1: No tokens found - navigate to signup
       if (!authResult.isAuthenticated) {
         console.log(
           '[StartupNavigation] No tokens found, navigating to Auth (signup)',
         );
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Auth', params: { mode: 'signup' } }],
-        });
+
+        if (!safeNavigate('Auth', { mode: 'signup' })) {
+          return; // Navigation failed, exit early
+        }
         return;
       }
 
@@ -60,13 +103,14 @@ export const StartupNavigationHandler: React.FC<
         console.log(
           '[StartupNavigation] Invalid tokens found, clearing and navigating to Auth (login)',
         );
+
         // Clear invalid tokens
         await AuthService.clearAuth();
         await refreshAuthState();
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Auth', params: { mode: 'login' } }],
-        });
+
+        if (!safeNavigate('Auth', { mode: 'login' })) {
+          return; // Navigation failed, exit early
+        }
         return;
       }
 
@@ -86,10 +130,7 @@ export const StartupNavigationHandler: React.FC<
           console.warn(
             '[StartupNavigation] No user status ID found, navigating to questionnaire',
           );
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Questionnaire' }],
-          });
+          safeNavigate('Questionnaire');
           return;
         }
 
@@ -115,47 +156,29 @@ export const StartupNavigationHandler: React.FC<
             console.warn(
               '[StartupNavigation] No action found for status, navigating to questionnaire',
             );
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Questionnaire' }],
-            });
+            safeNavigate('Questionnaire');
             return;
           }
 
           // Navigate based on action type using reset for clean navigation stack
           switch (action.type) {
             case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Questionnaire' }],
-              });
+              safeNavigate('Questionnaire');
               break;
             case USER_STATUS_ACTIONS.NAVIGATE_TO_PAYWALL:
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Paywall' }],
-              });
+              safeNavigate('Paywall');
               break;
             case USER_STATUS_ACTIONS.NAVIGATE_TO_HOME:
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-              });
+              safeNavigate('Home');
               break;
             case USER_STATUS_ACTIONS.PLACEHOLDER_CALL:
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Home' }],
-              });
+              safeNavigate('Home');
               break;
             default:
               console.warn(
                 '[StartupNavigation] Unknown action type, navigating to questionnaire',
               );
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Questionnaire' }],
-              });
+              safeNavigate('Questionnaire');
           }
         } catch (statusError) {
           console.error(
@@ -163,33 +186,27 @@ export const StartupNavigationHandler: React.FC<
             statusError,
           );
           // Fallback to questionnaire if status service fails
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Questionnaire' }],
-          });
+          safeNavigate('Questionnaire');
         }
       }
     } catch (error) {
       console.error('[StartupNavigation] Startup navigation error:', error);
       // Fallback to auth screen on any error
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Auth' }],
-      });
+      safeNavigate('Auth');
     } finally {
       setIsInitializing(false);
     }
-  }, [navigation, stytch, refreshAuthState]);
+  }, [stytch, refreshAuthState, safeNavigate, hasNavigated, initializeFromBootstrap]);
 
   useEffect(() => {
-    // Only run startup navigation when auth is not loading
-    if (!authLoading) {
-      handleStartupNavigation();
+    if (!hasNavigated) {
+      const timer = setTimeout(handleStartupNavigation, 100);
+      return () => clearTimeout(timer);
     }
-  }, [authLoading, handleStartupNavigation]);
+  }, [hasNavigated, handleStartupNavigation]);
 
   // Don't render children until startup navigation is complete
-  if (authLoading || isInitializing) {
+  if (isInitializing) {
     return <LoadingScreen />;
   }
 

@@ -8,12 +8,22 @@ import { HomeScreen } from '@/features/home/screens/HomeScreen';
 import { AuthScreen } from '@/features/auth';
 import { PaywallScreen } from '@/features/paywall';
 import { StartupNavigationHandler } from '@/shared/components/StartupNavigationHandler';
+import { useNavigationReady } from '@/navigation/NavigationContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
+  const { setReady } = useNavigationReady();
+
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      onReady={() => {
+        console.log(
+          '[Navigation] Navigation container is ready, calling setReady()',
+        );
+        setReady();
+      }}
+    >
       <StartupNavigationHandler>
         <Stack.Navigator
           screenOptions={{

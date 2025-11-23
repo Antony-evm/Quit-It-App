@@ -1,13 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useStytch } from '@stytch/react-native';
-import AuthService, { type AuthTokens, type UserData } from './authService';
-import { UserStatusService, UserTypeService } from '@/shared/services';
+import AuthService from './authService';
+import { clearAuthState, setAuthState } from './authState';
+import { type AuthTokens, type UserData } from './types';
 
 import {
   createUser,
@@ -22,6 +17,10 @@ interface AuthContextType {
   isLoading: boolean;
   user: UserData | null;
   tokens: AuthTokens | null;
+  initializeFromBootstrap: (state: {
+    tokens: AuthTokens | null;
+    user: UserData | null;
+  }) => void;
   login: (email: string, password: string) => Promise<{ userStatusId: number }>;
   signup: (
     email: string,
@@ -49,31 +48,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const stytch = useStytch();
 
   /**
-   * Load authentication state from secure storage
+   * Allow startup bootstrap to hydrate auth state after reading from storage.
    */
-  const loadAuthState = useCallback(async () => {
-    try {
-      setIsLoading(true);
-
-      const [storedTokens, storedUser] = await Promise.all([
-        AuthService.getAuthTokens(),
-        AuthService.getUserData(),
-      ]);
-
-      if (storedTokens && storedUser) {
-        setIsAuthenticated(true);
-        setUser(storedUser);
-        setTokens(storedTokens);
-      }
-    } catch (error) {
-      console.error('Failed to load auth state:', error);
-      setIsAuthenticated(false);
-      setUser(null);
-      setTokens(null);
-    } finally {
+  const initializeFromBootstrap = useCallback(
+    ({ tokens: bootstrapTokens, user: bootstrapUser }) => {
+      setTokens(bootstrapTokens);
+      setUser(bootstrapUser);
+      setAuthState(bootstrapTokens, bootstrapUser);
+      setIsAuthenticated(!!bootstrapTokens && !!bootstrapUser);
       setIsLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   /**
    * Login user with email and password
@@ -116,17 +102,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             AuthService.storeUserData(userData),
           ]);
 
-          // Update state first (but not isAuthenticated yet)
+          // Update in-memory and context state
           setUser(userData);
           setTokens(authTokens);
-
-          // Verify tokens were stored correctly before marking as authenticated
-          const storedTokens = await AuthService.getAuthTokens();
-          if (!storedTokens) {
-            throw new Error('Failed to store authentication tokens');
-          }
+          setAuthState(authTokens, userData);
 
           // Login/sync user with our backend BEFORE marking as authenticated
+          let userStatusId = 0;
           try {
             const loginUserPayload: LoginUserPayload = {
               stytch_user_id: user_id,
@@ -139,7 +121,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('Backend user login successful:', backendResponse);
 
             // Update user data with backend user_id and user_status_id
-            let userStatusId = 0; // Default fallback
             if (backendResponse.data?.user_id) {
               userStatusId = backendResponse.data.user_status_id || 0;
               const updatedUserData = {
@@ -150,6 +131,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
               await AuthService.storeUserData(updatedUserData);
               setUser(updatedUserData);
+              setAuthState(authTokens, updatedUserData);
             }
           } catch (backendError) {
             console.error('Backend user login failed:', backendError);
@@ -160,9 +142,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Only do this AFTER backend integration is complete
           setIsAuthenticated(true);
 
-          // Return the userStatusId for immediate navigation handling
-          const currentUser = await AuthService.getUserData();
-          return { userStatusId: currentUser?.userStatusId || 0 };
+          return { userStatusId };
         } else {
           throw new Error('Authentication failed');
         }
@@ -213,17 +193,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             AuthService.storeUserData(userData),
           ]);
 
-          // Update state first (but not isAuthenticated yet)
+          // Update in-memory and context state
           setUser(userData);
           setTokens(authTokens);
-
-          // Verify tokens were stored correctly before marking as authenticated
-          const storedTokens = await AuthService.getAuthTokens();
-          if (!storedTokens) {
-            throw new Error('Failed to store authentication tokens');
-          }
+          setAuthState(authTokens, userData);
 
           // Register user with our backend BEFORE marking as authenticated
+          let userStatusId = 0;
           try {
             const createUserPayload: CreateUserPayload = {
               first_name: firstName.trim() || null,
@@ -239,7 +215,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             console.log('Backend user creation successful:', backendResponse);
 
             // Update user data with backend user_id and user_status_id
-            let userStatusId = 0; // Default fallback
             if (backendResponse.data?.user_id) {
               userStatusId = backendResponse.data.user_status_id || 0;
               const updatedUserData = {
@@ -250,6 +225,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
               await AuthService.storeUserData(updatedUserData);
               setUser(updatedUserData);
+              setAuthState(authTokens, updatedUserData);
             }
           } catch (backendError) {
             console.error('Backend user creation failed:', backendError);
@@ -261,9 +237,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Only do this AFTER backend integration is complete
           setIsAuthenticated(true);
 
-          // Return the userStatusId for immediate navigation handling
-          const currentUser = await AuthService.getUserData();
-          return { userStatusId: currentUser?.userStatusId || 0 };
+          return { userStatusId };
         } else {
           throw new Error('Account creation failed');
         }
@@ -298,6 +272,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(false);
       setUser(null);
       setTokens(null);
+      clearAuthState();
+      setIsLoading(false);
     } catch (error) {
       console.error('Logout error:', error);
       throw error;
@@ -308,42 +284,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
    * Refresh authentication state
    */
   const refreshAuthState = useCallback(async () => {
-    await loadAuthState();
-  }, [loadAuthState]);
+    setIsAuthenticated(false);
+    setUser(null);
+    setTokens(null);
+    clearAuthState();
+    setIsLoading(false);
+  }, []);
 
   // Helper function to get backend user ID
   const getBackendUserId = useCallback((): number | null => {
     return user?.backendUserId ?? null;
   }, [user]);
 
-  // Load auth state on mount
-  useEffect(() => {
-    loadAuthState();
-  }, [loadAuthState]);
-
-  // Initialize user status service on mount
-  useEffect(() => {
-    const initializeServices = async () => {
-      try {
-        // Initialize both services in parallel for better performance
-        await Promise.all([
-          UserStatusService.initialize(),
-          UserTypeService.initialize(),
-        ]);
-        console.log('UserStatusService and UserTypeService initialized successfully');
-      } catch (error) {
-        console.error('Failed to initialize services:', error);
-      }
-    };
-
-    initializeServices();
-  }, []);
-
   const value: AuthContextType = {
     isAuthenticated,
     isLoading,
     user,
     tokens,
+    initializeFromBootstrap,
     login,
     signup,
     logout,
