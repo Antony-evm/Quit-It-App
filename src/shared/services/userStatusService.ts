@@ -6,6 +6,8 @@ import {
   UserStatusAction,
   UserStatusesResponse,
 } from '@/shared/types/userStatus';
+import { USER_STATUS_ACTIONS } from '@/shared/constants/userStatus';
+import { getStatusAction } from '@/shared/utils/statusActionConfig';
 import { fetchUserStatuses } from '@/shared/api/userStatusApi';
 import { RootStackParamList } from '@/types/navigation';
 
@@ -28,28 +30,13 @@ export class UserStatusService {
   }
 
   /**
-   * Build the status map with navigation actions
+   * Build the status map with navigation actions using configuration
    */
   private static buildStatusMap(statuses: UserStatus[]): UserStatusMap {
     const map: UserStatusMap = {};
 
     statuses.forEach(status => {
-      let action: UserStatusAction;
-
-      switch (status.code) {
-        case 'onboarding_incomplete':
-          action = { type: 'NAVIGATE_TO_QUESTIONNAIRE' };
-          break;
-        case 'onboarded_complete':
-          action = { type: 'NAVIGATE_TO_HOME' };
-          break;
-        case 'subscribed':
-          action = { type: 'NAVIGATE_TO_HOME' };
-          break;
-        default:
-          action = { type: 'PLACEHOLDER_CALL' };
-          break;
-      }
+      const action = getStatusAction(status);
 
       map[status.id] = {
         status,
@@ -106,15 +93,19 @@ export class UserStatusService {
     console.log(`Executing action for status: ${status.code}`, action);
 
     switch (action.type) {
-      case 'NAVIGATE_TO_QUESTIONNAIRE':
+      case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
         // First fetch questionnaire data, then navigate
         this.fetchQuestionnaireDataAndNavigate(navigation);
         break;
-      case 'NAVIGATE_TO_HOME':
+      case USER_STATUS_ACTIONS.NAVIGATE_TO_PAYWALL:
+        // Navigate to paywall screen (unskippable)
+        this.navigateToPaywall(navigation);
+        break;
+      case USER_STATUS_ACTIONS.NAVIGATE_TO_HOME:
         // Execute placeholder call, then navigate
         this.executePlaceholderCallAndNavigate(navigation);
         break;
-      case 'PLACEHOLDER_CALL':
+      case USER_STATUS_ACTIONS.PLACEHOLDER_CALL:
         this.executePlaceholderCallAndNavigate(navigation);
         break;
       default:
@@ -142,6 +133,16 @@ export class UserStatusService {
       // Handle error - maybe show error screen or navigate to home
       navigation.navigate('Home');
     }
+  }
+
+  /**
+   * Navigate to paywall screen
+   */
+  private static navigateToPaywall(
+    navigation: NativeStackNavigationProp<RootStackParamList>,
+  ): void {
+    console.log('Navigating to paywall screen...');
+    navigation.navigate('Paywall');
   }
 
   /**

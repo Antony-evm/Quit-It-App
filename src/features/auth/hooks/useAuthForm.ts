@@ -13,16 +13,20 @@ import type { RootStackParamList } from '@/types/navigation';
 
 interface UseAuthFormProps {
   navigation: NavigationProp<RootStackParamList>;
+  initialMode?: 'login' | 'signup';
 }
 
-export const useAuthForm = ({ navigation }: UseAuthFormProps) => {
+export const useAuthForm = ({
+  navigation,
+  initialMode = 'signup',
+}: UseAuthFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoginMode, setIsLoginMode] = useState(initialMode === 'login');
 
   const { login, signup } = useAuthWithNavigation();
 

@@ -252,6 +252,105 @@ export class AuthService {
   }
 
   /**
+   * Validate stored session with Stytch
+   * Returns user data if session is valid, null if invalid
+   */
+  static async validateSession(stytchClient?: any): Promise<UserData | null> {
+    try {
+      const tokens = await this.getAuthTokens();
+      const userData = await this.getUserData();
+
+      if (!tokens || !userData) {
+        console.log(
+          '[AuthService] No tokens or user data found for validation',
+        );
+        return null;
+      }
+
+      if (!stytchClient) {
+        console.warn(
+          '[AuthService] No Stytch client provided for session validation',
+        );
+        return userData; // Return stored user data if no validation possible
+      }
+
+      // Try to authenticate the session with Stytch
+      try {
+        const sessionResponse = await stytchClient.session.authenticate({
+          session_token: tokens.sessionToken,
+          session_duration_minutes: 60,
+        });
+
+        if (sessionResponse.status_code === 200) {
+          console.log('[AuthService] Session validation successful');
+          return userData;
+        } else {
+          console.log(
+            '[AuthService] Session validation failed:',
+            sessionResponse.status_code,
+          );
+          return null;
+        }
+      } catch (sessionError) {
+        console.log('[AuthService] Session validation error:', sessionError);
+        return null;
+      }
+    } catch (error) {
+      console.error('Failed to validate session:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Check authentication status and validate session
+   * Returns the authentication state with session validation
+   */
+  static async checkAuthenticationWithValidation(stytchClient?: any): Promise<{
+    isAuthenticated: boolean;
+    isSessionValid: boolean;
+    user: UserData | null;
+    tokens: AuthTokens | null;
+  }> {
+    try {
+      const [tokens, user] = await Promise.all([
+        this.getAuthTokens(),
+        this.getUserData(),
+      ]);
+
+      if (!tokens || !user) {
+        return {
+          isAuthenticated: false,
+          isSessionValid: false,
+          user: null,
+          tokens: null,
+        };
+      }
+
+      // Validate session if Stytch client is available
+      const validatedUser = stytchClient
+        ? await this.validateSession(stytchClient)
+        : user;
+
+      const isSessionValid = validatedUser !== null;
+
+      return {
+        isAuthenticated: !!tokens && !!user,
+        isSessionValid,
+        user: isSessionValid ? user : null,
+        tokens: isSessionValid ? tokens : null,
+      };
+    } catch (error) {
+      console.error('Failed to check authentication with validation:', error);
+      return {
+        isAuthenticated: false,
+        isSessionValid: false,
+        user: null,
+        tokens: null,
+      };
+    }
+  }
+
+  /**
    * Clear all stored authentication data
    */
   static async clearAuth(): Promise<void> {

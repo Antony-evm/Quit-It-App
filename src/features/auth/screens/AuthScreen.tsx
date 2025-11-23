@@ -25,8 +25,14 @@ import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({
+  navigation,
+  route,
+}) => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+
+  // Get initial mode from route params, default to signup if no tokens, login if invalid tokens
+  const initialMode = route.params?.mode || 'signup';
 
   const {
     // Form state
@@ -54,7 +60,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ navigation }) => {
     firstNameValidation,
     lastNameValidation,
     confirmPasswordValidation,
-  } = useAuthForm({ navigation });
+  } = useAuthForm({ navigation, initialMode });
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => {

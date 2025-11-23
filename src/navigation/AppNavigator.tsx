@@ -6,42 +6,53 @@ import type { RootStackParamList } from '@/types/navigation';
 import { QuestionnaireScreen } from '@/features/questionnaire/screens/QuestionnaireScreen';
 import { HomePlaceholderScreen } from '@/features/home/screens/HomePlaceholderScreen';
 import { AuthScreen } from '@/features/auth';
+import { PaywallScreen } from '@/features/paywall';
+import { StartupNavigationHandler } from '@/shared/components/StartupNavigationHandler';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Auth"
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right',
-          gestureEnabled: true,
-        }}
-      >
-        <Stack.Screen
-          name="Auth"
-          component={AuthScreen}
-          options={{
-            gestureEnabled: false, // Prevent swipe back from auth
+      <StartupNavigationHandler>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+            gestureEnabled: true,
           }}
-        />
-        <Stack.Screen
-          name="Questionnaire"
-          component={QuestionnaireScreen}
-          options={{
-            gestureEnabled: false, // Prevent swipe back from questionnaire
-          }}
-        />
-        <Stack.Screen
-          name="Home"
-          component={HomePlaceholderScreen}
-          options={{
-            gestureEnabled: false, // Prevent swipe back to questionnaire once completed
-          }}
-        />
-      </Stack.Navigator>
+        >
+          <Stack.Screen
+            name="Auth"
+            component={AuthScreen}
+            options={{
+              gestureEnabled: false, // Prevent swipe back from auth
+            }}
+          />
+          <Stack.Screen
+            name="Questionnaire"
+            component={QuestionnaireScreen}
+            options={{
+              gestureEnabled: false, // Prevent swipe back from questionnaire
+            }}
+          />
+          <Stack.Screen
+            name="Paywall"
+            component={PaywallScreen}
+            options={{
+              gestureEnabled: false, // Prevent swipe back from paywall (unskippable)
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomePlaceholderScreen}
+            options={{
+              gestureEnabled: false, // Prevent swipe back to questionnaire once completed
+            }}
+          />
+        </Stack.Navigator>
+      </StartupNavigationHandler>
     </NavigationContainer>
   );
 };
