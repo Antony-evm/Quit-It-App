@@ -23,22 +23,11 @@ export const QuestionnaireReview = ({
         const answer = resolveAnswerDisplay(response);
         return (
           <AppSurface key={response.questionId} style={styles.card}>
-            <AppText variant="heading" style={styles.textBlock}>
-              {response.question}
-            </AppText>
+            <AppText variant="body">{response.question}</AppText>
             <View style={styles.answerBlock}>
-              <AppText variant="heading" style={styles.textBlock}>
+              <AppText variant="caption" style={styles.answerText}>
                 {answer.primary}
               </AppText>
-              {answer.secondary ? (
-                <AppText
-                  variant="body"
-                  tone="secondary"
-                  style={styles.answerMeta}
-                >
-                  {answer.secondary}
-                </AppText>
-              ) : null}
             </View>
           </AppSurface>
         );
@@ -73,12 +62,40 @@ const resolveAnswerDisplay = (
     }
   }
 
-  const values = response.answerOptions
-    .map(option => option.answer_value.trim())
-    .filter(value => value.length > 0);
+  // Create combined main answer - sub option pairs
+  const combinedValues = response.answerOptions
+    .map(option => {
+      const mainValue = option.answer_value.trim();
+      if (!mainValue) return null;
+
+      const subValue = option.answer_sub_option_value?.trim();
+
+      if (subValue) {
+        // Handle date formatting for sub-options
+        let formattedSubValue = subValue;
+        if (option.answer_sub_option_type === 'date') {
+          const parsed = parseSubmissionDateValue(subValue);
+          formattedSubValue = parsed ? formatDisplayDate(parsed) : subValue;
+        }
+
+        return `${mainValue} - ${formattedSubValue}`;
+      }
+
+      return mainValue;
+    })
+    .filter(value => value !== null) as string[];
+
+  if (!combinedValues.length) {
+    return {
+      primary: 'No answer selected',
+    };
+  }
+
+  // Join multiple values with line breaks
+  const primary = combinedValues.join('\n');
 
   return {
-    primary: values.length ? values.join(', ') : 'No answer selected',
+    primary,
   };
 };
 
@@ -87,18 +104,18 @@ const styles = StyleSheet.create({
     gap: SPACING.lg,
   },
   list: {
-    gap: SPACING.md,
+    gap: SPACING.lg,
   },
   card: {
-    gap: SPACING.md,
+    gap: SPACING.lg,
   },
   textBlock: {
-    marginBottom: 0,
+    marginBottom: SPACING.xs,
   },
   answerBlock: {
-    gap: SPACING.xs,
+    gap: SPACING.lg,
   },
-  answerMeta: {
-    fontStyle: 'italic',
+  answerText: {
+    lineHeight: 30,
   },
 });

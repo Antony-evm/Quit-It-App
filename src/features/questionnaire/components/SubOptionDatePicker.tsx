@@ -101,16 +101,13 @@ export const SubOptionDatePicker = ({
   if (!dateSubOption) {
     return (
       <View style={styles.container}>
-        <AppText tone="secondary">No date sub-option available.</AppText>
+        <AppText tone="primary">No date sub-option available.</AppText>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <AppText variant="body" style={styles.label}>
-        Select a date:
-      </AppText>
       <DatePickerField
         value={selectedDate}
         minimumDate={dateBounds.min}

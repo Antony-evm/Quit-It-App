@@ -10,21 +10,14 @@ type QuestionHeaderProps = {
 };
 
 export const QuestionHeader = ({ title, subtitle }: QuestionHeaderProps) => (
-  <View style={styles.container}>
+  <View>
     <AppText variant="title">{title}</AppText>
     {subtitle ? (
-      <AppText variant="body" tone="secondary" style={styles.subtitle}>
+      <AppText variant="body" tone="secondary">
         {subtitle}
       </AppText>
     ) : null}
   </View>
 );
 
-const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.lg,
-  },
-  subtitle: {
-    marginBottom: SPACING.md,
-  },
-});
+const styles = StyleSheet.create({});

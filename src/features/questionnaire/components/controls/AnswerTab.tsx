@@ -131,6 +131,5 @@ const styles = StyleSheet.create({
   tabLabel: {
     textAlign: 'center',
     letterSpacing: 0.4,
-    fontSize: 16,
   },
 });

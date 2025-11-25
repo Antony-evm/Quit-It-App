@@ -1,27 +1,33 @@
 export const TYPOGRAPHY = {
   title: {
     fontFamily: 'System',
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '600' as const,
-    lineHeight: 32,
+    lineHeight: 34,
   },
   heading: {
     fontFamily: 'System',
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '600' as const,
-    lineHeight: 28,
+    lineHeight: 30,
   },
   body: {
     fontFamily: 'System',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '400' as const,
-    lineHeight: 24,
+    lineHeight: 22,
   },
   caption: {
     fontFamily: 'System',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '400' as const,
     lineHeight: 20,
+  },
+  gridArea: {
+    fontFamily: 'System',
+    fontSize: 12,
+    fontWeight: '400' as const,
+    lineHeight: 24,
   },
 };
 

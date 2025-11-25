@@ -76,7 +76,7 @@ export const DatePickerField = ({
           {formatDisplayDate(currentValue)}
         </AppText>
         {relativeInfo && (
-          <AppText variant="body" tone="secondary" style={styles.relativeInfo}>
+          <AppText variant="body" tone="primary" style={styles.relativeInfo}>
             {relativeInfo}
           </AppText>
         )}

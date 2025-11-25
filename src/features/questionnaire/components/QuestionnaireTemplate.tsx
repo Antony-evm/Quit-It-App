@@ -48,9 +48,8 @@ export const QuestionnaireTemplate = ({
         style={styles.scrollView}
         testID="questionnaire-template"
       >
-        {backButton && (
-          <View style={styles.backButtonContainer}>{backButton}</View>
-        )}
+        <View style={styles.backButtonContainer}>{backButton}</View>
+
         <View style={[styles.container, { maxWidth: contentWidth }]}>
           {!isLoading ? (
             <View style={styles.hero}>
@@ -71,7 +70,7 @@ export const QuestionnaireTemplate = ({
                   size="large"
                   color={COLOR_PALETTE.accentPrimary}
                 />
-                <AppText tone="secondary" style={styles.loadingLabel}>
+                <AppText tone="primary" style={styles.loadingLabel}>
                   Loading your next question...
                 </AppText>
               </View>

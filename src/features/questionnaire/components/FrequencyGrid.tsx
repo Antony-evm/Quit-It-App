@@ -28,24 +28,16 @@ export const FrequencyGrid = ({
   onMainSelectionChange,
   onValidityChange,
 }: FrequencyGridProps) => {
-  // Store selections as Record<optionId, subOptionId>
   const [selections, setSelections] = useState<Record<number, number>>({});
 
-  // Initialize selections from initial data
   useEffect(() => {
     const initialSelections: Record<number, number> = {};
 
-    // Group initial selections by option (assuming the combination logic connects them)
-    initialSubSelection.forEach(subSelection => {
-      // For N:N combination, we need to determine which option this sub-selection belongs to
-      // This might need to be adjusted based on your backend logic
-      // For now, assuming we can derive it from the order or some other logic
-    });
+    initialSubSelection.forEach(subSelection => {});
 
     setSelections(initialSelections);
   }, [initialSubSelection]);
 
-  // Auto-select all main options for frequency grid (N:N combination)
   useEffect(() => {
     if (options.length > 0) {
       const allMainOptions: SelectedAnswerOption[] = options.map(option => ({
@@ -59,7 +51,6 @@ export const FrequencyGrid = ({
     }
   }, [options, onMainSelectionChange]);
 
-  // Handle selection change for a specific option-subOption pair
   const handleSelectionChange = useCallback(
     (optionId: number, subOptionId: number) => {
       setSelections(prev => ({
@@ -70,7 +61,6 @@ export const FrequencyGrid = ({
     [],
   );
 
-  // Convert internal selections to the format expected by parent
   useEffect(() => {
     const selectedSubOptions = Object.entries(selections)
       .map(([optionId, subOptionId]) => {
@@ -88,56 +78,33 @@ export const FrequencyGrid = ({
       .filter(item => item !== null) as SelectedAnswerSubOption[];
 
     onSubSelectionChange(selectedSubOptions);
-
-    // Check if all options have a selection (validation)
     const isValid =
       options.length > 0 &&
       options.every(option => selections[option.id] !== undefined);
 
-    console.log('[FrequencyGrid] Validation check:', {
-      optionsCount: options.length,
-      selectionsCount: Object.keys(selections).length,
-      selections,
-      isValid,
-    });
-
     onValidityChange?.(isValid);
   }, [selections, options, subOptions, onSubSelectionChange, onValidityChange]);
-
-  const renderGridHeader = () => (
-    <View style={styles.gridHeader}>
-      <View style={styles.optionHeaderCell}>
-        <AppText variant="body">Activity</AppText>
-      </View>
-      {subOptions.map(subOption => (
-        <View key={subOption.id} style={styles.subOptionHeaderCell}>
-          <AppText variant="caption" style={styles.headerText}>
-            {subOption.value}
-          </AppText>
-        </View>
-      ))}
-    </View>
-  );
 
   const renderGridRow = (option: AnswerOption) => (
     <View key={option.id} style={styles.gridRow}>
       <View style={styles.optionCell}>
-        <AppText variant="body">{option.value}</AppText>
+        <AppText variant="gridArea">{option.value}</AppText>
       </View>
       {subOptions.map(subOption => (
         <View key={subOption.id} style={styles.subOptionCell}>
           <TouchableOpacity
-            style={[
-              styles.radioButton,
-              selections[option.id] === subOption.id &&
-                styles.radioButtonSelected,
-            ]}
             onPress={() => handleSelectionChange(option.id, subOption.id)}
             activeOpacity={0.7}
           >
-            {selections[option.id] === subOption.id && (
-              <View style={styles.radioButtonInner} />
-            )}
+            <AppText
+              variant="gridArea"
+              style={[
+                selections[option.id] === subOption.id &&
+                  styles.subOptionTextSelected,
+              ]}
+            >
+              {subOption.value || 'NO VALUE'}
+            </AppText>
           </TouchableOpacity>
         </View>
       ))}
@@ -156,11 +123,7 @@ export const FrequencyGrid = ({
 
   return (
     <View style={styles.container}>
-      <AppText variant="body" style={styles.instructions}>
-        Select how often you smoke during each time period:
-      </AppText>
       <View style={styles.grid}>
-        {renderGridHeader()}
         {options.map(option => renderGridRow(option))}
       </View>
     </View>
@@ -171,15 +134,14 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: SPACING.md,
   },
-  instructions: {
-    marginBottom: SPACING.md,
-    textAlign: 'center',
-  },
   grid: {
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  gridRow: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
   },
   gridHeader: {
     flexDirection: 'row',
@@ -187,62 +149,32 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
   },
-  gridRow: {
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
-  },
   optionHeaderCell: {
     flex: 2,
-    padding: SPACING.sm,
-    borderRightWidth: 1,
-    borderRightColor: COLOR_PALETTE.borderDefault,
     justifyContent: 'center',
-  },
-  subOptionHeaderCell: {
-    flex: 1,
-    padding: SPACING.sm,
-    borderRightWidth: 1,
-    borderRightColor: COLOR_PALETTE.borderDefault,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   optionCell: {
-    flex: 2,
-    padding: SPACING.sm,
+    flex: 1.3,
+    paddingVertical: SPACING.lg,
+    paddingHorizontal: SPACING.xs,
+    justifyContent: 'center',
     borderRightWidth: 1,
     borderRightColor: COLOR_PALETTE.borderDefault,
-    justifyContent: 'center',
   },
   subOptionCell: {
     flex: 1,
-    padding: SPACING.sm,
-    borderRightWidth: 1,
-    borderRightColor: COLOR_PALETTE.borderDefault,
+    padding: SPACING.xs,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerText: {
+  subOptionText: {
     textAlign: 'center',
-    fontSize: 12,
+    opacity: 0.8,
   },
-  radioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: COLOR_PALETTE.borderDefault,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundCream,
-  },
-  radioButtonSelected: {
-    borderColor: COLOR_PALETTE.accentPrimary,
-  },
-  radioButtonInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: COLOR_PALETTE.accentPrimary,
+  subOptionTextSelected: {
+    opacity: 1,
+    textDecorationLine: 'underline',
+    color: COLOR_PALETTE.textPrimary,
+    fontWeight: 'bold',
   },
 });
