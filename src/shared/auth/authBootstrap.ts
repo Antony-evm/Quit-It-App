@@ -46,7 +46,7 @@ export async function bootstrapAuthState(
   try {
     const sessionResponse = await stytchClient.session.authenticate({
       session_token: tokens.sessionToken,
-      session_duration_minutes: 60,
+      session_duration_minutes: 600,
     });
     isSessionValid = sessionResponse.status_code === 200;
   } catch (error) {

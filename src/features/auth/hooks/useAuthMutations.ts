@@ -13,7 +13,6 @@ export const useLoginMutation = () => {
       // Login response received
       console.log('[useLoginMutation] Login successful:', data);
 
-      // Invalidate any user-related queries to refetch with new auth state
       queryClient.invalidateQueries({ queryKey: ['user'] });
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
