@@ -8,7 +8,12 @@ import {
 } from 'react-native';
 
 import { AppText } from './AppText';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../theme';
+import {
+  BRAND_COLORS,
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+} from '../../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';

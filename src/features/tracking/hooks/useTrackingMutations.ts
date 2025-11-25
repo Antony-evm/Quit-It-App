@@ -18,8 +18,6 @@ export const useUpdateTrackingRecordMutation = () => {
     mutationFn: ({ record_id, data }: UpdateTrackingRecordMutationPayload) =>
       updateTrackingRecord(record_id, data),
     onSuccess: (_, variables) => {
-      console.log('[useUpdateTrackingRecordMutation] Update successful');
-
       // Invalidate tracking-related queries to refetch updated data
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({
@@ -32,7 +30,6 @@ export const useUpdateTrackingRecordMutation = () => {
       });
     },
     onError: (error, variables) => {
-      console.error('[useUpdateTrackingRecordMutation] Update failed:', error);
       handleError(error, {
         context: {
           operation: 'update_tracking_record',
@@ -55,8 +52,6 @@ export const useCreateTrackingRecordMutation = () => {
       throw new Error('Create tracking record API not implemented yet');
     },
     onSuccess: () => {
-      console.log('[useCreateTrackingRecordMutation] Create successful');
-
       // Invalidate tracking-related queries
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({
@@ -65,7 +60,6 @@ export const useCreateTrackingRecordMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['trackingTypes'] });
     },
     onError: error => {
-      console.error('[useCreateTrackingRecordMutation] Create failed:', error);
       handleError(error, {
         context: { operation: 'create_tracking_record' },
         showToast: true,

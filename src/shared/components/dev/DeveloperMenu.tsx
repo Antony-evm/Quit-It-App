@@ -31,8 +31,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
       Alert.alert('Success', 'All AsyncStorage data cleared');
     } catch (error) {
       Alert.alert('Error', 'Failed to clear AsyncStorage');
-      console.error('Clear AsyncStorage error:', error);
-    }
+      }
   };
 
   const showAsyncStorageKeys = async () => {
@@ -48,8 +47,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
       Alert.alert('AsyncStorage Debug', debugInfo);
     } catch (error) {
       Alert.alert('Error', 'Failed to read AsyncStorage');
-      console.error('Read AsyncStorage error:', error);
-    }
+      }
   };
 
   const clearAuthTokens = async () => {
@@ -61,39 +59,31 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
         'auth_user_data',
       ];
 
-      console.log('[DevMenu] Clearing auth tokens:', authKeys);
       await AsyncStorage.multiRemove(authKeys);
       Alert.alert('Success', 'Auth tokens cleared');
     } catch (error) {
-      console.error('[DevMenu] Clear auth tokens error:', error);
       Alert.alert('Error', 'Failed to clear auth tokens');
     }
   };
 
   const forceLogout = async () => {
     try {
-      console.log('[DevMenu] Initiating force logout');
       await logout();
-      console.log('[DevMenu] Force logout completed');
       Alert.alert('Success', 'Force logout completed');
     } catch (error) {
-      console.error('[DevMenu] Force logout error:', error);
       Alert.alert('Error', 'Force logout failed');
     }
   };
 
   const forceLocalLogout = async () => {
     try {
-      console.log('[DevMenu] Initiating local-only logout');
       // Only clear local storage, bypass Stytch session revocation
       await stytch.session.revoke({ forceClear: true });
-      console.log('[DevMenu] Local logout completed');
       Alert.alert(
         'Success',
         'Local logout completed (session revoked with forceClear)',
       );
     } catch (error) {
-      console.error('[DevMenu] Local logout error:', error);
       Alert.alert('Error', 'Local logout failed');
     }
   };
@@ -146,7 +136,6 @@ Platform: React Native
 
   const testNetworkConnection = async () => {
     try {
-      console.log('[DevMenu] Testing network connection...');
       const response = await fetch('https://httpbin.org/get', {
         method: 'GET',
         headers: {
@@ -155,21 +144,14 @@ Platform: React Native
       });
 
       if (response.ok) {
-        console.log('[DevMenu] Network test successful');
         Alert.alert('Network Test', 'Network connection is working ✅');
       } else {
-        console.log(
-          '[DevMenu] Network test failed:',
-          response.status,
-          response.statusText,
-        );
         Alert.alert(
           'Network Test',
           `Network error: ${response.status} ${response.statusText} ❌`,
         );
       }
     } catch (error) {
-      console.error('[DevMenu] Network test error:', error);
       Alert.alert('Network Test', `Network failed: ${error} ❌`);
     }
   };

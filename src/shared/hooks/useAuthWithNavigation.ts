@@ -27,13 +27,8 @@ export const useAuthWithNavigation = () => {
         }
 
         // Execute navigation based on status
-        console.log(
-          'Executing immediate navigation for userStatusId:',
-          result.userStatusId,
-        );
         UserStatusService.executeStatusAction(result.userStatusId, navigation);
       } catch (error) {
-        console.error('Login with navigation failed:', error);
         throw error;
       }
     },
@@ -57,13 +52,8 @@ export const useAuthWithNavigation = () => {
         }
 
         // Execute navigation based on status
-        console.log(
-          'Executing immediate navigation for userStatusId:',
-          result.userStatusId,
-        );
         UserStatusService.executeStatusAction(result.userStatusId, navigation);
       } catch (error) {
-        console.error('Signup with navigation failed:', error);
         throw error;
       }
     },

@@ -18,7 +18,18 @@ import {
   AppText,
   AppTextInput,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BRAND_COLORS,
+  BORDER_RADIUS,
+} from '@/shared/theme';
+import {
+  SURFACE_VARIANTS,
+  LAYOUT_STYLES,
+  TEXT_STYLES,
+  getSurfaceVariant,
+} from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '@/features/tracking';
 import { useInfiniteTrackingRecords } from '@/features/tracking';
 import {
@@ -383,8 +394,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.lg, // Reduced from xl since ScrollView has content padding
-    padding: SPACING.lg,
-    borderRadius: 16,
+    ...getSurfaceVariant('card'),
   },
   header: {
     marginBottom: SPACING.md,
@@ -397,76 +407,33 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   dateTimeButton: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    ...getSurfaceVariant('interactive'),
   },
   dropdownContainer: {
-    position: 'relative',
-    zIndex: 1000,
+    ...LAYOUT_STYLES.dropdownContainer,
   },
   dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    ...getSurfaceVariant('interactive'),
+    ...LAYOUT_STYLES.rowBetween,
   },
   dropdownText: {
-    color: COLOR_PALETTE.textPrimary,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownText,
   },
   dropdownList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    marginTop: SPACING.xs,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    maxHeight: 150,
-    zIndex: 1001,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...getSurfaceVariant('elevated'),
+    ...LAYOUT_STYLES.dropdownList,
   },
   dropdownItem: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    ...LAYOUT_STYLES.dropdownItem,
   },
   dropdownItemSelected: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    ...LAYOUT_STYLES.dropdownItemSelected,
   },
   dropdownItemText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownItemText,
   },
   dropdownItemTextSelected: {
-    color: COLOR_PALETTE.accentPrimary,
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownItemTextSelected,
   },
   trackingType: {
     color: COLOR_PALETTE.textPrimary,
@@ -484,7 +451,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: SPACING.md,
     backgroundColor: COLOR_PALETTE.accentMuted,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },
@@ -505,12 +472,9 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     marginTop: SPACING.md,
-    padding: SPACING.md,
+    ...getSurfaceVariant('interactive'),
+    ...LAYOUT_STYLES.centered,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    alignItems: 'center',
   },
   picker: {
     backgroundColor: 'transparent',
@@ -533,12 +497,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   notesInput: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 16,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    ...getSurfaceVariant('input'),
     color: COLOR_PALETTE.textPrimary,
     minHeight: 80,
     textAlignVertical: 'top',
@@ -551,7 +510,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   saveButton: {
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
   },
   saveButtonText: {
     color: BRAND_COLORS.ink,

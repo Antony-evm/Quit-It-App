@@ -94,10 +94,13 @@ export class ErrorLogger {
 
       // For now, just console log that we would send this to remote service
       console.log('🔄 Would send to remote logging service:', {
-        code: logEntry.error.code,
-        severity: logEntry.error.severity,
-        category: logEntry.error.category,
-        timestamp: logEntry.error.timestamp,
+        error: {
+          code: logEntry.error.code,
+          severity: logEntry.error.severity,
+          category: logEntry.error.category,
+        },
+        userId: logEntry.userId,
+        additionalContext: logEntry.additionalContext,
       });
 
       // Example implementation for a remote service:
@@ -107,10 +110,7 @@ export class ErrorLogger {
       //   body: JSON.stringify(logEntry),
       // });
     } catch (loggingError) {
-      console.error(
-        'Failed to send error to remote logging service:',
-        loggingError,
-      );
+      console.error('Failed to send log to remote service:', loggingError);
     }
   }
 

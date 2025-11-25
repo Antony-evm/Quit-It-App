@@ -289,7 +289,6 @@ export const AccountScreen = () => {
             await logout();
             // Navigation will be handled by the app navigator when auth state changes
           } catch (error) {
-            console.error('Logout error:', error);
             Alert.alert('Error', 'Failed to log out. Please try again.');
           }
         },

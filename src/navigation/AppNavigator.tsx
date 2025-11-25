@@ -22,9 +22,7 @@ export const AppNavigator = () => {
     <NavigationContainer
       ref={navigationRef}
       onReady={() => {
-        console.log(
-          '[Navigation] Navigation container is ready, calling setReady()',
-        );
+        console.log('[AppNavigator] Navigation container is ready');
         setReady();
       }}
     >

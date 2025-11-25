@@ -31,11 +31,7 @@ export class UserStatusService {
         this.statusMap = cachedMap;
         // Refresh in background to keep data current
         void this.refreshFromNetwork().catch(error => {
-          console.warn(
-            'Failed to refresh user status map from network, using cache',
-            error,
-          );
-        });
+          });
         return;
       }
     }
@@ -68,7 +64,6 @@ export class UserStatusService {
       this.statusMap = this.buildStatusMap(statuses);
       await this.persistCache(statuses);
     } catch (error) {
-      console.error('Failed to initialize user status service:', error);
       throw error;
     }
   }
@@ -87,10 +82,6 @@ export class UserStatusService {
 
       return this.buildStatusMap(cachedStatuses);
     } catch (error) {
-      console.warn(
-        '[UserStatusService] Failed to load cached status map, ignoring cache',
-        error,
-      );
       return null;
     }
   }
@@ -99,8 +90,7 @@ export class UserStatusService {
     try {
       await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(statuses));
     } catch (error) {
-      console.warn('[UserStatusService] Failed to persist status cache', error);
-    }
+      }
   }
 
   /**
@@ -142,11 +132,8 @@ export class UserStatusService {
     const status = this.getStatus(statusId);
 
     if (!action || !status) {
-      console.error(`Invalid status ID: ${statusId}`);
       return;
     }
-
-    console.log(`Executing action for status: ${status.code}`, action);
 
     switch (action.type) {
       case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
@@ -165,8 +152,7 @@ export class UserStatusService {
         this.executePlaceholderCallAndNavigate(navigation);
         break;
       default:
-        console.warn('Unknown action type:', action);
-    }
+        }
   }
 
   /**
@@ -178,14 +164,11 @@ export class UserStatusService {
     try {
       // TODO: Implement actual questionnaire data fetching
       // For now, just navigate to the questionnaire screen
-      console.log('Fetching questionnaire data from api/v1/questionnaire...');
-
       // This would be the actual API call:
       // const questionnaireData = await fetchQuestionnaireData();
 
       navigation.navigate('Questionnaire');
     } catch (error) {
-      console.error('Failed to fetch questionnaire data:', error);
       // Handle error - maybe show error screen or navigate to home
       navigation.navigate('Home');
     }
@@ -197,7 +180,6 @@ export class UserStatusService {
   private static navigateToPaywall(
     navigation: NativeStackNavigationProp<RootStackParamList>,
   ): void {
-    console.log('Navigating to paywall screen...');
     navigation.navigate('Paywall');
   }
 
@@ -208,12 +190,10 @@ export class UserStatusService {
     navigation: NativeStackNavigationProp<RootStackParamList>,
   ): Promise<void> {
     try {
-      console.log('Executing placeholder call...');
       // TODO: Implement actual placeholder call
 
       navigation.navigate('Home');
     } catch (error) {
-      console.error('Failed to execute placeholder call:', error);
       // Still navigate to home even if placeholder call fails
       navigation.navigate('Home');
     }

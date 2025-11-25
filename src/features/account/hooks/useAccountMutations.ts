@@ -18,15 +18,12 @@ export const useUpdateQuitDateMutation = () => {
   return useMutation({
     mutationFn: (payload: UpdateQuitDatePayload) => updateQuitDate(payload),
     onSuccess: () => {
-      console.log('[useUpdateQuitDateMutation] Update successful');
-
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['quitDate'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
       queryClient.invalidateQueries({ queryKey: ['userGreeting'] });
     },
     onError: error => {
-      console.error('[useUpdateQuitDateMutation] Update failed:', error);
       handleError(error, {
         context: { operation: 'update_quit_date' },
         showToast: true,
@@ -43,14 +40,11 @@ export const useUpdateSmokingTargetMutation = () => {
     mutationFn: (payload: UpdateSmokingTargetPayload) =>
       updateSmokingTarget(payload),
     onSuccess: () => {
-      console.log('[useUpdateSmokingTargetMutation] Update successful');
-
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['smokingTarget'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
     onError: error => {
-      console.error('[useUpdateSmokingTargetMutation] Update failed:', error);
       handleError(error, {
         context: { operation: 'update_smoking_target' },
         showToast: true,
@@ -67,17 +61,11 @@ export const useUpdateNotificationScheduleMutation = () => {
     mutationFn: (payload: UpdateNotificationSchedulePayload) =>
       updateNotificationSchedule(payload),
     onSuccess: () => {
-      console.log('[useUpdateNotificationScheduleMutation] Update successful');
-
       // Invalidate account-related queries
       queryClient.invalidateQueries({ queryKey: ['notificationSchedule'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
     onError: error => {
-      console.error(
-        '[useUpdateNotificationScheduleMutation] Update failed:',
-        error,
-      );
       handleError(error, {
         context: { operation: 'update_notification_schedule' },
         showToast: true,

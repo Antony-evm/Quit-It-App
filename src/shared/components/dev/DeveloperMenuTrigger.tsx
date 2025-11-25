@@ -34,7 +34,6 @@ const DeveloperMenuTrigger: React.FC = () => {
 
     if (newTapCount >= 5) {
       // Open developer menu after 5 taps
-      console.log('[DevMenuTrigger] Opening developer menu after 5 taps');
       setMenuVisible(true);
       setTapCount(0);
       if (tapTimer.current) {
@@ -42,11 +41,9 @@ const DeveloperMenuTrigger: React.FC = () => {
       }
     } else {
       // Reset tap count after 2 seconds of no taps
-      console.log(`[DevMenuTrigger] Tap ${newTapCount}/5 registered`);
       tapTimer.current = setTimeout(() => {
         setTapCount(0);
-        console.log('[DevMenuTrigger] Tap count reset');
-      }, 2000);
+        }, 2000);
     }
   };
 

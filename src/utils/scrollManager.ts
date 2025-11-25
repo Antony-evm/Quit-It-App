@@ -71,12 +71,6 @@ class ScrollManager {
           // Calculate target scroll position
           const targetScrollY = y - desiredPosition;
 
-          console.log('ScrollManager measureLayout:', {
-            cardPositionInContent: y,
-            desiredPosition,
-            targetScrollY: Math.max(0, targetScrollY),
-          });
-
           scrollViewRef.current?.scrollTo({
             y: Math.max(0, targetScrollY),
             animated: true,
@@ -84,7 +78,6 @@ class ScrollManager {
         },
         () => {
           // Fallback if measureLayout fails
-          console.log('measureLayout failed, using fallback approach');
           this.fallbackScrollToPosition(
             cardRef,
             scrollViewRef,
@@ -93,7 +86,6 @@ class ScrollManager {
         },
       );
     } catch (error) {
-      console.log('measureLayout error, using fallback:', error);
       this.fallbackScrollToPosition(
         cardRef,
         scrollViewRef,
@@ -122,14 +114,6 @@ class ScrollManager {
             const cardTopRelativeToScrollView = cardY - scrollY;
             const desiredPosition = scrollHeight * targetPercentFromTop;
             const targetScrollY = cardTopRelativeToScrollView - desiredPosition;
-
-            console.log('ScrollManager fallback:', {
-              cardY,
-              scrollY,
-              cardTopRelativeToScrollView,
-              desiredPosition,
-              targetScrollY: Math.max(0, targetScrollY),
-            });
 
             scrollViewRef.current.scrollTo({
               y: Math.max(0, targetScrollY),

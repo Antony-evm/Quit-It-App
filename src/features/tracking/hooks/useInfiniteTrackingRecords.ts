@@ -45,7 +45,6 @@ export const useInfiniteTrackingRecords = (
   const query = useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      console.log(`Fetching tracking records with offset: ${pageParam}`);
       const newRecords = await fetchTrackingRecords({
         user_id: userId,
         offset: pageParam as number,
@@ -91,16 +90,11 @@ export const useInfiniteTrackingRecords = (
     staleTime: Infinity, // Never consider data stale to prevent automatic refetches
     gcTime: 5 * 60 * 1000, // 5 minutes - shorter cache time to allow fresh data
     getNextPageParam: (lastPage, allPages) => {
-      console.log(
-        `getNextPageParam called - lastPage length: ${lastPage.length}, total pages: ${allPages.length}`,
-      );
-
       // Calculate current offset based on total records fetched so far
       const totalRecords = allPages.flat().length;
 
       // Calculate next offset for pagination
       const nextOffset = Math.floor(totalRecords / TRACKING_RECORDS_PAGE_SIZE);
-      console.log(`Next offset will be: ${nextOffset}`);
       return nextOffset;
     },
     initialPageParam: 0,

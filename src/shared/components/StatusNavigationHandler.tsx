@@ -28,15 +28,9 @@ export const StatusNavigationHandler: React.FC<
       }
 
       try {
-        console.log(
-          'Handling status-based navigation for status ID:',
-          user.userStatusId,
-        );
-
         // Execute the status action which will handle navigation
         UserStatusService.executeStatusAction(user.userStatusId, navigation);
       } catch (error) {
-        console.error('Failed to handle status-based navigation:', error);
         // Fallback to home if something goes wrong
         navigation.navigate('Home');
       }

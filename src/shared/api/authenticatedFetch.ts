@@ -69,9 +69,6 @@ class ApiClient {
         const tokens = getTokens();
 
         if (!tokens) {
-          console.log(
-            '[ApiClient] No tokens found - authentication required but missing',
-          );
           throw new Error(
             'No authentication tokens found. User may need to log in.',
           );
@@ -81,13 +78,6 @@ class ApiClient {
         const tokenToUse = useSessionToken
           ? tokens.sessionToken
           : tokens.sessionJwt;
-
-        console.log(
-          '[ApiClient] Using auth token type:',
-          useSessionToken ? 'sessionToken' : 'sessionJwt',
-        );
-        console.log('[ApiClient] Token exists:', !!tokenToUse);
-        console.log('[ApiClient] User ID:', tokens.userId);
 
         const authHeader = `Bearer ${tokenToUse}`;
 
@@ -107,8 +97,6 @@ class ApiClient {
     // Default request logging interceptor
     this.addRequestInterceptor((url, config) => {
       const method = config.method || 'GET';
-      console.log(`[ApiClient] ${method} ${url}`);
-
       return { url, config };
     });
 
@@ -117,8 +105,6 @@ class ApiClient {
       const method = config.method || 'GET';
       const status = response.status;
       const statusText = status >= 400 ? ` (${response.statusText})` : '';
-      console.log(`[ApiClient] ${method} ${url} → ${status}${statusText}`);
-
       return response;
     });
 
@@ -126,12 +112,8 @@ class ApiClient {
     this.addResponseInterceptor(async (response, url, config) => {
       // Handle token expiration
       if (response.status === 401) {
-        console.log('[ApiClient] 401 Unauthorized - clearing auth state');
-
         // Log response details for debugging
         const responseText = await response.clone().text();
-        console.log('[ApiClient] 401 response body:', responseText);
-
         // Token might be expired - clear auth state
         await AuthService.clearAuth();
         clearAuthState();
@@ -143,18 +125,6 @@ class ApiClient {
 
     // Default error interceptor
     this.addErrorInterceptor((error, url, config) => {
-      console.error('[ApiClient] Request failed:', {
-        url,
-        error: error.message,
-        config: {
-          ...config,
-          headers:
-            config.headers instanceof Headers
-              ? Object.fromEntries(config.headers.entries())
-              : config.headers,
-        },
-      });
-
       throw error;
     });
   }

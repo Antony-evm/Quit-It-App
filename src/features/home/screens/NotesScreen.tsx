@@ -30,7 +30,7 @@ export const NotesScreen = () => {
           <AppText variant="title" style={styles.title}>
             Your Quit Journal
           </AppText>
-          <AppText tone="secondary" style={styles.subtitle}>
+          <AppText tone="primary">
             Reflect, reset, and strengthen the smoke-free version of you.
             Logging cravings shows you how far you've come and what strengthens
             you.
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: SPACING.sm,
   },
-  subtitle: {
-    marginBottom: SPACING.xl,
-  },
+  // subtitle: {
+  //   marginBottom: SPACING.xl,
+  // },
 });

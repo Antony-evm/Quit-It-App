@@ -36,7 +36,6 @@ export const TrackingTypesProvider: React.FC<TrackingTypesProviderProps> = ({
 
         // Only load tracking types if user should navigate to home
         if (action?.type === 'NAVIGATE_TO_HOME') {
-          console.log('Prefetching tracking types for home navigation');
           queryClient.prefetchQuery({
             queryKey: ['trackingTypes'],
             queryFn: fetchTrackingTypes,
@@ -45,11 +44,7 @@ export const TrackingTypesProvider: React.FC<TrackingTypesProviderProps> = ({
           });
         }
       } catch (error) {
-        console.error(
-          'Failed to determine if tracking types should be loaded:',
-          error,
-        );
-      }
+        }
     };
 
     shouldLoadTrackingTypes();

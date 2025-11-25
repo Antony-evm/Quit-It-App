@@ -13,8 +13,6 @@ export const updateTrackingRecord = async (
 ): Promise<void> => {
   const url = `${API_BASE_URL}/api/v1/tracking/${recordId}`;
 
-  console.log('Updating tracking record:', { recordId, payload, url });
-
   try {
     const response = await authenticatedFetch(url, {
       method: 'PATCH',
@@ -23,12 +21,6 @@ export const updateTrackingRecord = async (
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Update tracking record failed:', {
-        status: response.status,
-        statusText: response.statusText,
-        errorText,
-      });
-
       throw ErrorFactory.apiError(
         response.status,
         errorText || 'Failed to update tracking record',
@@ -41,8 +33,7 @@ export const updateTrackingRecord = async (
       );
     }
 
-    console.log('Tracking record updated successfully');
-  } catch (error) {
+    } catch (error) {
     if (error instanceof Error && error.name === 'AppError') {
       throw error;
     }

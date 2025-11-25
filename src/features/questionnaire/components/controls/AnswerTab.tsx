@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { AppText } from '@/shared/components/ui';
 
 type AnswerTabVariant =
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.xl,
-    borderRadius: 12,
+    borderRadius: BORDER_RADIUS.medium,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   multipleFewBase: {
     paddingHorizontal: SPACING.xl,
     paddingVertical: SPACING.xl,
-    borderRadius: 12,
+    borderRadius: BORDER_RADIUS.medium,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
@@ -101,21 +101,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   timeslotTab: {
-    borderRadius: 4,
+    borderRadius: BORDER_RADIUS.small,
     minHeight: 20,
     paddingVertical: SPACING.xs,
     paddingHorizontal: SPACING.xs,
     flexBasis: '20%',
   },
   multipleManyTab: {
-    borderRadius: 50,
+    borderRadius: BORDER_RADIUS.round,
     minHeight: 70,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
     flexBasis: '40%',
   },
   multipleFewTab: {
-    borderRadius: 20,
+    borderRadius: BORDER_RADIUS.xlarge,
     marginBottom: SPACING.sm,
   },
   tabSelected: {

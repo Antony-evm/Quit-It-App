@@ -13,9 +13,6 @@ export const useNavigationReady = () => {
   const context = useContext(NavigationReadyContext);
   if (!context) {
     // Return a default state instead of throwing an error
-    console.warn(
-      'useNavigationReady called outside of NavigationReadyProvider, returning default state',
-    );
     return { isReady: false, setReady: () => {} };
   }
   return context;
@@ -31,7 +28,7 @@ export const NavigationReadyProvider: React.FC<
   const [isReady, setIsReady] = useState(false);
 
   const setReady = () => {
-    console.log('[NavigationContext] Setting navigation as ready');
+    console.log('[NavigationContext] Setting navigation ready');
     setIsReady(true);
   };
 

@@ -13,11 +13,8 @@ import { AuthTokens, UserData } from './types';
 export class AuthService {
   static async storeTokens(tokens: AuthTokens): Promise<void> {
     try {
-      console.log('[AuthService] Storing authentication tokens...');
       await storeTokens(tokens);
-      console.log('[AuthService] Tokens stored successfully');
-    } catch (error) {
-      console.error('Failed to store auth tokens:', error);
+      } catch (error) {
       throw ErrorFactory.storageError('store auth tokens', error, {
         tokens: {
           ...tokens,
@@ -32,7 +29,6 @@ export class AuthService {
     try {
       await storeUserData(userData);
     } catch (error) {
-      console.error('Failed to store user data:', error);
       throw ErrorFactory.storageError('store user data', error, {
         userId: userData.id,
       });
@@ -43,7 +39,6 @@ export class AuthService {
     try {
       await clearAuthStorage();
     } catch (error) {
-      console.error('Failed to clear auth data:', error);
       throw ErrorFactory.storageError('clear auth data', error);
     }
   }

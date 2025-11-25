@@ -20,7 +20,6 @@ const secureStorage = {
     try {
       await Keychain.setGenericPassword(key, value, { service: key });
     } catch (error) {
-      console.error(`Failed to store secure item ${key}:`, error);
       await AsyncStorage.setItem(key, value);
     }
   },
@@ -32,7 +31,6 @@ const secureStorage = {
       }
       return null;
     } catch (error) {
-      console.error(`Failed to retrieve secure item ${key}:`, error);
       return await AsyncStorage.getItem(key);
     }
   },
@@ -40,7 +38,6 @@ const secureStorage = {
     try {
       await Keychain.resetGenericPassword({ service: key });
     } catch (error) {
-      console.error(`Failed to remove secure item ${key}:`, error);
       await AsyncStorage.removeItem(key);
     }
   },

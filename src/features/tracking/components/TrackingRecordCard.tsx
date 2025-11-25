@@ -22,7 +22,18 @@ import {
   AppTextInput,
   AppButton,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BRAND_COLORS,
+  BORDER_RADIUS,
+} from '@/shared/theme';
+import {
+  SURFACE_VARIANTS,
+  LAYOUT_STYLES,
+  TEXT_STYLES,
+  getSurfaceVariant,
+} from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -292,21 +303,17 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
   };
 
   const handleEditPress = () => {
-    console.log('🟡 Edit pressed for record ID:', record.record_id);
     setIsEditMode(true);
 
     // Use ScrollManager to ensure only one scroll operation at a time
     ScrollManager.scheduleScroll(() => {
-      console.log('🟡 Executing scroll for edit press, record ID:', record.record_id);
       ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
     }, 150);
   };
 
   const handleNotesPress = () => {
-    console.log('🔵 Notes pressed for record ID:', record.record_id, 'isEditMode:', isEditMode);
     // Use ScrollManager for consistent scroll behavior
     ScrollManager.scheduleScroll(() => {
-      console.log('🔵 Executing scroll for notes press, record ID:', record.record_id);
       ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
     }, 50); // Shorter delay since no mode change needed
   };
@@ -467,11 +474,11 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
         <AppText variant="caption" tone="secondary">
           {formattedDate}
         </AppText>
-        <Pressable 
+        <Pressable
           style={({ pressed }) => [
             styles.noteSection,
-            { opacity: pressed ? 0.7 : 1 }
-          ]} 
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
           onPress={handleNotesPress}
         >
           {record.note ? (
@@ -492,8 +499,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.lg,
-    padding: SPACING.lg,
-    borderRadius: 16,
+    ...getSurfaceVariant('card'),
   },
   header: {
     gap: SPACING.xs,
@@ -510,7 +516,7 @@ const styles = StyleSheet.create({
   notesQuickActionsButton: {
     width: 36,
     height: 36,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
     backgroundColor: BRAND_COLORS.cream,
     justifyContent: 'center',
     alignItems: 'center',
@@ -521,7 +527,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: 'row',
     gap: SPACING.sm,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
   },
   noteSection: {
     marginTop: SPACING.md,
@@ -554,87 +560,39 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   dropdownContainer: {
-    position: 'relative',
-    zIndex: 1000,
+    ...LAYOUT_STYLES.dropdownContainer,
   },
   dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    ...getSurfaceVariant('interactive'),
+    ...LAYOUT_STYLES.rowBetween,
   },
   dropdownText: {
-    color: COLOR_PALETTE.textPrimary,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '600',
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownText,
   },
   dropdownList: {
-    position: 'absolute',
-    top: '100%',
-    left: 0,
-    right: 0,
-    marginTop: SPACING.xs,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    maxHeight: 150,
-    zIndex: 1001,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...getSurfaceVariant('elevated'),
+    ...LAYOUT_STYLES.dropdownList,
   },
   dropdownItem: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    ...LAYOUT_STYLES.dropdownItem,
   },
   dropdownItemSelected: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    ...LAYOUT_STYLES.dropdownItemSelected,
   },
   dropdownItemText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownItemText,
   },
   dropdownItemTextSelected: {
-    color: COLOR_PALETTE.accentPrimary,
-    fontWeight: '600',
-    fontSize: 20,
-    lineHeight: 28,
+    ...TEXT_STYLES.dropdownItemTextSelected,
   },
   dateTimeButton: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    ...getSurfaceVariant('interactive'),
   },
   dateTimeText: {
     color: COLOR_PALETTE.textPrimary,
   },
   notesInput: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 16,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    ...getSurfaceVariant('input'),
     color: COLOR_PALETTE.textPrimary,
     minHeight: 80,
     textAlignVertical: 'top',
@@ -651,10 +609,10 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
   },
   saveButton: {
     flex: 1,
-    borderRadius: 16,
+    borderRadius: BORDER_RADIUS.large,
   },
 });

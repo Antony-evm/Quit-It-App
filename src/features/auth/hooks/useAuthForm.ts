@@ -170,7 +170,6 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await login(sanitizedEmail, password);
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      console.error(AUTH_DEBUG_MESSAGES.LOGIN_ERROR, error);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.LOGIN_ERROR);
     }
   }, [validateForm, login, password]);
@@ -186,7 +185,6 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      console.error(AUTH_DEBUG_MESSAGES.SIGNUP_ERROR, error);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.SIGNUP_ERROR);
     }
   }, [validateForm, signup, password, firstName, lastName]);

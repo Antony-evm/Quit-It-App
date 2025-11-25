@@ -47,9 +47,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const stytch = useStytch();
 
-  /**
-   * Allow startup bootstrap to hydrate auth state after reading from storage.
-   */
   const initializeFromBootstrap = useCallback(
     ({ tokens: bootstrapTokens, user: bootstrapUser }) => {
       setTokens(bootstrapTokens);
@@ -61,9 +58,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [],
   );
 
-  /**
-   * Login user with email and password
-   */
   const login = useCallback(
     async (email: string, password: string) => {
       try {
@@ -76,7 +70,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (response.status_code === 200) {
           const { session_jwt, session_token, user_id, user } = response;
 
-          // Store tokens securely
           const authTokens: AuthTokens = {
             sessionJwt: session_jwt,
             sessionToken: session_token,
@@ -102,12 +95,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             AuthService.storeUserData(userData),
           ]);
 
-          // Update in-memory and context state
           setUser(userData);
           setTokens(authTokens);
           setAuthState(authTokens, userData);
 
-          // Login/sync user with our backend BEFORE marking as authenticated
           let userStatusId = 0;
           try {
             const loginUserPayload: LoginUserPayload = {
@@ -116,11 +107,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               methodology: 'email+password',
             };
 
-            // Use the updated loginUser function (no JWT token needed)
             const backendResponse = await loginUser(loginUserPayload);
-            console.log('Backend user login successful:', backendResponse);
 
-            // Update user data with backend user_id and user_status_id
             if (backendResponse.data?.user_id) {
               userStatusId = backendResponse.data.user_status_id || 0;
               const updatedUserData = {
@@ -134,12 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setAuthState(authTokens, updatedUserData);
             }
           } catch (backendError) {
-            console.error('Backend user login failed:', backendError);
-            // Don't throw here - user is still authenticated with Stytch
+            // Backend user login failed
           }
 
-          // NOW mark as authenticated - this will trigger React Query hooks
-          // Only do this AFTER backend integration is complete
           setIsAuthenticated(true);
 
           return { userStatusId };
@@ -147,7 +132,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           throw new Error('Authentication failed');
         }
       } catch (error) {
-        console.error('Login error:', error);
         throw error;
       }
     },
@@ -212,7 +196,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
             // Use the updated createUser function (no JWT token needed)
             const backendResponse = await createUser(createUserPayload);
-            console.log('Backend user creation successful:', backendResponse);
 
             // Update user data with backend user_id and user_status_id
             if (backendResponse.data?.user_id) {
@@ -228,7 +211,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               setAuthState(authTokens, updatedUserData);
             }
           } catch (backendError) {
-            console.error('Backend user creation failed:', backendError);
             // Don't throw here - user is still authenticated with Stytch
             // You might want to show a warning or retry later
           }
@@ -242,7 +224,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           throw new Error('Account creation failed');
         }
       } catch (error) {
-        console.error('Signup error:', error);
         throw error;
       }
     },
@@ -258,10 +239,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         await stytch.session.revoke();
       } catch (stytchError) {
-        console.warn(
-          'Failed to revoke Stytch session (server may be unreachable):',
-          stytchError,
-        );
         // Continue with local logout even if Stytch revocation fails
       }
 
@@ -275,7 +252,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       clearAuthState();
       setIsLoading(false);
     } catch (error) {
-      console.error('Logout error:', error);
       throw error;
     }
   }, [stytch]);

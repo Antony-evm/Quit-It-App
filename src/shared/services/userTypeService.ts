@@ -20,11 +20,7 @@ export class UserTypeService {
         this.typeMap = cachedMap;
         // Keep cache fresh without blocking startup
         void this.refreshFromNetwork().catch(error => {
-          console.warn(
-            'Failed to refresh user type map from network, using cache',
-            error,
-          );
-        });
+          });
         return;
       }
     }
@@ -40,10 +36,6 @@ export class UserTypeService {
 
     // Safety check for empty or invalid input
     if (!Array.isArray(types)) {
-      console.warn(
-        '[UserTypeService] buildTypeMap received invalid input:',
-        types,
-      );
       return map;
     }
 
@@ -55,8 +47,7 @@ export class UserTypeService {
       ) {
         map[type.id] = type;
       } else {
-        console.warn('[UserTypeService] Invalid type object:', type);
-      }
+        }
     });
 
     return map;
@@ -69,7 +60,6 @@ export class UserTypeService {
       this.typeMap = this.buildTypeMap(types);
       await this.persistCache(types);
     } catch (error) {
-      console.error('Failed to initialize user type service:', error);
       throw error;
     }
   }
@@ -88,10 +78,6 @@ export class UserTypeService {
 
       return this.buildTypeMap(cachedTypes);
     } catch (error) {
-      console.warn(
-        '[UserTypeService] Failed to load cached type map, ignoring cache',
-        error,
-      );
       return null;
     }
   }
@@ -100,8 +86,7 @@ export class UserTypeService {
     try {
       await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(types));
     } catch (error) {
-      console.warn('[UserTypeService] Failed to persist type cache', error);
-    }
+      }
   }
 
   /**

@@ -38,19 +38,11 @@ export const StartupNavigationHandler: React.FC<
     (routeName: keyof RootStackParamList, params?: any) => {
       try {
         if (!isNavReady) {
-          console.warn('[StartupNavigation] Navigation not ready yet');
           return false;
         }
 
-        console.log(
-          '[StartupNavigation] Navigating to:',
-          routeName,
-          params ? `with params: ${JSON.stringify(params)}` : '',
-        );
-
         return resetNavigation(routeName, params);
       } catch (error) {
-        console.error('[StartupNavigation] Navigation error:', error);
         return false;
       }
     },
@@ -58,14 +50,11 @@ export const StartupNavigationHandler: React.FC<
   );
 
   const handleStartupNavigation = useCallback(async () => {
-    if (bootstrapDone) return;
+    console.log('[StartupNavigation] Starting authentication check...');
 
     try {
-      setBootstrapDone(true);
-      console.log('[StartupNavigation] Starting authentication check...');
-
+      console.log('[StartupNavigation] Starting bootstrap auth state');
       const authResult = await bootstrapAuthState(stytch);
-
       console.log('[StartupNavigation] Auth check result:', {
         isAuthenticated: authResult.isAuthenticated,
         isSessionValid: authResult.isSessionValid,
@@ -80,7 +69,7 @@ export const StartupNavigationHandler: React.FC<
 
       // Case 1: No tokens found - navigate to signup
       if (!authResult.isAuthenticated) {
-        console.log('[StartupNavigation] No tokens found, enqueue Auth signup');
+        console.log('[StartupNavigation] No auth - navigating to signup');
         setPendingRoute({ route: 'Auth', params: { mode: 'signup' } });
         return;
       }
@@ -88,7 +77,7 @@ export const StartupNavigationHandler: React.FC<
       // Case 2: Tokens exist but are invalid - navigate to login
       if (authResult.isAuthenticated && !authResult.isSessionValid) {
         console.log(
-          '[StartupNavigation] Invalid tokens found, clearing and navigating to Auth (login)',
+          '[StartupNavigation] Invalid session - navigating to login',
         );
 
         // Clear invalid tokens
@@ -105,16 +94,10 @@ export const StartupNavigationHandler: React.FC<
         authResult.isSessionValid &&
         authResult.user
       ) {
-        console.log(
-          '[StartupNavigation] Valid tokens found, navigating based on user status...',
-        );
-
+        console.log('[StartupNavigation] Valid tokens found, navigating based on user status...');
         const userStatusId = authResult.user.userStatusId;
 
         if (!userStatusId) {
-          console.warn(
-            '[StartupNavigation] No user status ID found, navigating to questionnaire',
-          );
           setPendingRoute({ route: 'Questionnaire' });
           return;
         }
@@ -122,25 +105,15 @@ export const StartupNavigationHandler: React.FC<
         // Initialize user status service if needed
         try {
           if (!UserStatusService.getStatus(userStatusId)) {
-            console.log(
-              '[StartupNavigation] Initializing UserStatusService...',
-            );
             await UserStatusService.initialize();
           }
 
           // Execute navigation based on user status
-          console.log(
-            '[StartupNavigation] Executing status-based navigation for status:',
-            userStatusId,
-          );
-
+          console.log('[StartupNavigation] Executing status-based navigation for status:', userStatusId);
           // Get the action to determine the navigation target
           const action = UserStatusService.getStatusAction(userStatusId);
 
           if (!action) {
-            console.warn(
-              '[StartupNavigation] No action found for status, navigating to questionnaire',
-            );
             setPendingRoute({ route: 'Questionnaire' });
             return;
           }
@@ -160,48 +133,32 @@ export const StartupNavigationHandler: React.FC<
               setPendingRoute({ route: 'Home' });
               break;
             default:
-              console.warn(
-                '[StartupNavigation] Unknown action type, navigating to questionnaire',
-              );
               setPendingRoute({ route: 'Questionnaire' });
           }
         } catch (statusError) {
-          console.error(
-            '[StartupNavigation] Failed to initialize UserStatusService:',
-            statusError,
-          );
           // Fallback to questionnaire if status service fails
           setPendingRoute({ route: 'Questionnaire' });
         }
       }
     } catch (error) {
-      console.error('[StartupNavigation] Startup navigation error:', error);
       // Fallback to auth screen on any error
       setPendingRoute({ route: 'Auth' });
-    } finally {
-      // will be cleared after navigation attempt succeeds
     }
-  }, [stytch, refreshAuthState, initializeFromBootstrap, bootstrapDone]);
+  }, [stytch, refreshAuthState, initializeFromBootstrap]);
 
+  // Run startup navigation only once on mount
   useEffect(() => {
     if (!bootstrapDone) {
+      console.log('[StartupNavigation] Running startup navigation...');
+      setBootstrapDone(true);
       void handleStartupNavigation();
     }
-  }, [bootstrapDone, handleStartupNavigation]);
+  }, []);
 
   // Attempt navigation once we have a pending route and nav is ready
   useEffect(() => {
-    if (!pendingRoute || hasNavigated) {
+    if (!pendingRoute || hasNavigated || !isNavReady) {
       return;
-    }
-
-    if (!isNavReady) {
-      console.log('[StartupNavigation] Waiting for navigation ready...');
-      const retry = setTimeout(
-        () => setNavigationAttempt(prev => prev + 1),
-        50,
-      );
-      return () => clearTimeout(retry);
     }
 
     console.log(
@@ -212,24 +169,24 @@ export const StartupNavigationHandler: React.FC<
       navigationAttempt,
     );
 
+    console.log(
+      '[StartupNavigation] Navigating to:',
+      pendingRoute.route,
+      pendingRoute.params || '',
+    );
     const success = safeNavigate(pendingRoute.route, pendingRoute.params);
+
     if (success) {
       console.log('[StartupNavigation] Navigation succeeded');
       setHasNavigated(true);
       setIsInitializing(false);
-      return;
+    } else {
+      console.log('[StartupNavigation] Navigation failed, retrying...');
+      // Retry with a slight delay
+      const retry = setTimeout(() => setNavigationAttempt(prev => prev + 1), 100);
+      return () => clearTimeout(retry);
     }
-
-    console.warn('[StartupNavigation] Navigation attempt failed, retrying...');
-    const retry = setTimeout(() => setNavigationAttempt(prev => prev + 1), 100);
-    return () => clearTimeout(retry);
-  }, [
-    pendingRoute,
-    isNavReady,
-    hasNavigated,
-    safeNavigate,
-    navigationAttempt,
-  ]);
+  }, [pendingRoute, isNavReady, hasNavigated, safeNavigate, navigationAttempt]);
 
   // Always render children so NavigationContainer can become ready;
   // overlay loading screen while startup is in progress.

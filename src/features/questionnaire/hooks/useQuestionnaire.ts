@@ -44,11 +44,7 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
   const unique = Array.from(new Set(normalized));
 
   if (unique.length > 1) {
-    console.warn(
-      'Multiple next_question_variation_id values detected. Using the first one.',
-      unique,
-    );
-  }
+    }
 
   return unique[0];
 };
@@ -156,11 +152,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     };
 
     loadHistory().catch(storageError => {
-      console.error(
-        'Failed to load questionnaire history from storage',
-        storageError,
-      );
-    });
+      });
 
     return () => {
       isMounted = false;
@@ -226,26 +218,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setIsSubmitting(true);
         setSubmitError(null);
 
-        console.log('[submitAnswers] Question data:', {
-          id: question.id,
-          questionCode: question.questionCode,
-          orderId: question.orderId,
-          variationId: question.variationId,
-          prompt: question.prompt,
-        });
-        console.log('[submitAnswers] Selected options:', selectedOptions);
-        console.log(
-          '[submitAnswers] Selected sub-options:',
-          selectedSubOptions,
-        );
-
         if (!question.questionCode) {
-          console.error(
-            '[submitAnswers] ERROR: question.questionCode is missing!',
-            question.questionCode,
-          );
-          console.error('[submitAnswers] Full question object:', question);
-        }
+          }
 
         const payload = {
           user_id: userId,
@@ -261,15 +235,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           ),
         };
 
-        console.log(
-          '[submitAnswers] Final payload before API call:',
-          JSON.stringify(payload, null, 2),
-        );
-
-        console.log('[submitAnswers] About to call API...');
         await submitQuestionAnswer(payload);
-        console.log('[submitAnswers] API call successful, saving record...');
-
         const record: QuestionnaireResponseRecord = {
           questionId: question.id,
           questionCode: question.questionCode,
@@ -283,10 +249,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           subAnswerHandling: question.subAnswerHandling,
         };
 
-        console.log('[submitAnswers] Saving record to storage...');
         await questionnaireStorage.save(record);
-        console.log('[submitAnswers] Record saved, updating state...');
-
         setSelections(prev => ({
           ...prev,
           [question.id]: {
@@ -309,17 +272,11 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           return [...prev, record];
         });
 
-        console.log('[submitAnswers] Determining next question...');
         const nextVariationId = ensureVariationId(
           selectedOptions.map(option => option.nextVariationId),
           question.variationId,
         );
-        console.log('[submitAnswers] Next variation ID:', nextVariationId);
-
         if (nextVariationId === -1) {
-          console.log(
-            '[submitAnswers] Questionnaire complete, switching to review mode...',
-          );
           const historyRecords = await questionnaireStorage.all();
           setHistory(historyRecords);
           setIsReviewing(true);
@@ -327,17 +284,10 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         }
 
         const nextOrderId = question.orderId + 1;
-        console.log('[submitAnswers] Moving to next question:', {
-          nextOrderId,
-          nextVariationId,
-        });
-
         setOrderId(nextOrderId);
         setVariationId(nextVariationId);
         setIsReviewing(false);
-        console.log('[submitAnswers] Submission completed successfully');
-      } catch (caughtError) {
-        console.error('[submitAnswers] Submission failed:', caughtError);
+        } catch (caughtError) {
         setSubmitError(caughtError as Error);
       } finally {
         setIsSubmitting(false);
@@ -408,11 +358,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       questionnaireStorage
         .removeByQuestionId(popped.questionId)
         .catch(storageError => {
-          console.error(
-            'Failed to remove questionnaire record from storage',
-            storageError,
-          );
-        });
+          });
 
       return nextStack;
     });

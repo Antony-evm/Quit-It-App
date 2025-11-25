@@ -95,10 +95,6 @@ export const QuestionnaireScreen = ({
 
   const handleSelectionChange = useCallback(
     (selection: SelectedAnswerOption[]) => {
-      console.log(
-        '[QuestionnaireScreen] handleSelectionChange called with:',
-        selection,
-      );
       setActiveSelection(selection);
     },
     [],
@@ -118,7 +114,6 @@ export const QuestionnaireScreen = ({
   const handleSubValidityChange = useCallback(
     (isSubValid: boolean) => {
       if (question?.subCombination === 'N:N') {
-        console.log('[QuestionnaireScreen] Sub-validity changed:', isSubValid);
         setIsSelectionValid(isSubValid);
       }
     },
@@ -160,17 +155,6 @@ export const QuestionnaireScreen = ({
       (question?.subCombination !== 'N:N' && !activeSelection.length);
 
   // Debug logging
-  console.log('[QuestionnaireScreen] Primary action state:', {
-    isReviewing,
-    isLoading,
-    isSubmitting,
-    isCompleting,
-    isSelectionValid,
-    activeSelectionLength: activeSelection.length,
-    subCombination: question?.subCombination,
-    primaryActionDisabled,
-  });
-
   const showValidationError =
     hasAttemptedSubmit &&
     !isReviewing &&
@@ -213,7 +197,6 @@ export const QuestionnaireScreen = ({
           });
         }
       } catch (completionError) {
-        console.error('Failed to complete questionnaire:', completionError);
         // Clear storage and navigate to home as fallback
         await questionnaireStorage.clear();
         navigation.reset({
@@ -225,17 +208,6 @@ export const QuestionnaireScreen = ({
     }
 
     setHasAttemptedSubmit(true);
-
-    console.log(
-      '[QuestionnaireScreen] handlePrimaryAction - submission data:',
-      {
-        isSelectionValid,
-        activeSelection,
-        activeSubSelection,
-        subCombination: question?.subCombination,
-        activeSelectionLength: activeSelection.length,
-      },
-    );
 
     if (
       !isSelectionValid ||

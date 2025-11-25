@@ -11,14 +11,11 @@ export const useLoginMutation = () => {
     mutationFn: (payload: LoginUserPayload) => loginUser(payload),
     onSuccess: data => {
       // Login response received
-      console.log('[useLoginMutation] Login successful:', data);
-
       queryClient.invalidateQueries({ queryKey: ['user'] });
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
     onError: error => {
-      console.error('[useLoginMutation] Login failed:', error);
       handleError(error, {
         context: { operation: 'login' },
         showToast: true,
@@ -34,13 +31,10 @@ export const useSignupMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateUserPayload) => createUser(payload),
     onSuccess: data => {
-      console.log('[useSignupMutation] Signup successful:', data);
-
       // Invalidate any user-related queries
       queryClient.invalidateQueries({ queryKey: ['user'] });
     },
     onError: error => {
-      console.error('[useSignupMutation] Signup failed:', error);
       handleError(error, {
         context: { operation: 'signup' },
         showToast: true,
