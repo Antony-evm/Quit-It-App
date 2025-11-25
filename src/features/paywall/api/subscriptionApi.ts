@@ -10,10 +10,17 @@ export interface SubscriptionResponse extends UserDataResponse {}
  */
 export const subscribeUser = async (): Promise<SubscriptionResponse> => {
   try {
-    console.log('[SubscriptionAPI] Making subscription request to:', SUBSCRIPTION_ENDPOINT);
+    console.log(
+      '[SubscriptionAPI] Making subscription request to:',
+      SUBSCRIPTION_ENDPOINT,
+    );
     const response = await authenticatedPost(SUBSCRIPTION_ENDPOINT);
 
-    console.log('[SubscriptionAPI] Response status:', response.status, response.statusText);
+    console.log(
+      '[SubscriptionAPI] Response status:',
+      response.status,
+      response.statusText,
+    );
 
     if (!response.ok) {
       // Try to get the error response body for better debugging
@@ -23,7 +30,10 @@ export const subscribeUser = async (): Promise<SubscriptionResponse> => {
         errorDetails = errorText ? ` - ${errorText}` : '';
         console.error('[SubscriptionAPI] Error response body:', errorText);
       } catch (parseError) {
-        console.error('[SubscriptionAPI] Could not parse error response:', parseError);
+        console.error(
+          '[SubscriptionAPI] Could not parse error response:',
+          parseError,
+        );
       }
 
       throw new Error(

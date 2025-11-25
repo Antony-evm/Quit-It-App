@@ -69,7 +69,9 @@ class ApiClient {
         const tokens = getTokens();
 
         if (!tokens) {
-          console.log('[ApiClient] No tokens found - authentication required but missing');
+          console.log(
+            '[ApiClient] No tokens found - authentication required but missing',
+          );
           throw new Error(
             'No authentication tokens found. User may need to log in.',
           );
@@ -79,11 +81,14 @@ class ApiClient {
         const tokenToUse = useSessionToken
           ? tokens.sessionToken
           : tokens.sessionJwt;
-        
-        console.log('[ApiClient] Using auth token type:', useSessionToken ? 'sessionToken' : 'sessionJwt');
+
+        console.log(
+          '[ApiClient] Using auth token type:',
+          useSessionToken ? 'sessionToken' : 'sessionJwt',
+        );
         console.log('[ApiClient] Token exists:', !!tokenToUse);
         console.log('[ApiClient] User ID:', tokens.userId);
-        
+
         const authHeader = `Bearer ${tokenToUse}`;
 
         requestHeaders.set('Authorization', authHeader);
