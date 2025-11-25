@@ -173,9 +173,29 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setIsSubmitting(true);
         setSubmitError(null);
 
+        console.log('[submitAnswers] Question data:', {
+          id: question.id,
+          questionCode: question.questionCode,
+          orderId: question.orderId,
+          variationId: question.variationId,
+          prompt: question.prompt,
+        });
+        console.log('[submitAnswers] Selected options:', selectedOptions);
+
+        if (!question.questionCode) {
+          console.error(
+            '[submitAnswers] ERROR: question.questionCode is missing!',
+            question.questionCode,
+          );
+          console.error('[submitAnswers] Full question object:', question);
+        }
+
         const payload = {
           user_id: userId,
           question_id: question.id,
+          question_code: question.questionCode,
+          question_order_id: question.orderId,
+          question_variation_id: question.variationId,
           question: question.prompt,
           answer_options: selectedOptions.map(option => ({
             answer_option_id: option.optionId,
@@ -184,10 +204,18 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           })),
         };
 
+        console.log(
+          '[submitAnswers] Final payload before API call:',
+          JSON.stringify(payload, null, 2),
+        );
+
         await submitQuestionAnswer(payload);
 
         const record: QuestionnaireResponseRecord = {
           questionId: question.id,
+          questionCode: question.questionCode,
+          questionOrderId: question.orderId,
+          questionVariationId: question.variationId,
           question: question.prompt,
           answerType: question.answerType,
           answerHandling: question.answerHandling,

@@ -1,15 +1,18 @@
-import type {
-  QuestionnaireResponseRecord,
-} from '../types';
+import type { QuestionnaireResponseRecord } from '../types';
 
 type StoredRecord = QuestionnaireResponseRecord & { createdAt: number };
 
-const cloneRecord = (record: QuestionnaireResponseRecord): QuestionnaireResponseRecord => ({
+const cloneRecord = (
+  record: QuestionnaireResponseRecord,
+): QuestionnaireResponseRecord => ({
   questionId: record.questionId,
+  questionCode: record.questionCode,
+  questionOrderId: record.questionOrderId,
+  questionVariationId: record.questionVariationId,
   question: record.question,
   answerType: record.answerType,
   answerHandling: record.answerHandling,
-  answerOptions: record.answerOptions.map((option) => ({
+  answerOptions: record.answerOptions.map(option => ({
     answer_option_id: option.answer_option_id,
     answer_value: option.answer_value,
     answer_type: option.answer_type,
@@ -39,19 +42,22 @@ export const questionnaireStorage = {
   },
   save: async (record: QuestionnaireResponseRecord): Promise<void> => {
     const existingIndex = records.findIndex(
-      (entry) => entry.questionId === record.questionId,
+      entry => entry.questionId === record.questionId,
     );
     const next = cloneStoredRecord({ ...record, createdAt: Date.now() });
 
     if (existingIndex >= 0) {
-      records[existingIndex] = { ...next, createdAt: records[existingIndex].createdAt };
+      records[existingIndex] = {
+        ...next,
+        createdAt: records[existingIndex].createdAt,
+      };
       return;
     }
 
     records = [...records, next];
   },
   removeByQuestionId: async (questionId: number): Promise<void> => {
-    records = records.filter((entry) => entry.questionId !== questionId);
+    records = records.filter(entry => entry.questionId !== questionId);
   },
   clear: async (): Promise<void> => {
     records = [];

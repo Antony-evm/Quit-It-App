@@ -17,6 +17,7 @@ export interface AnswerOptionRecord {
 
 export interface QuestionResponse {
   question_id: number;
+  code: string;
   order_id: number;
   variation_id: number;
   question: string;
@@ -37,6 +38,7 @@ export interface AnswerOption {
 
 export interface Question {
   id: number;
+  questionCode: string;
   orderId: number;
   variationId: number;
   prompt: string;
@@ -56,12 +58,18 @@ export interface QuestionnaireAnswerOptionPayload {
 export interface QuestionnaireAnswerPayload {
   user_id: number;
   question_id: number;
+  question_code: string;
+  question_order_id: number;
+  question_variation_id: number;
   question: string;
   answer_options: QuestionnaireAnswerOptionPayload[];
 }
 
 export interface QuestionnaireResponseRecord {
   questionId: number;
+  questionCode: string;
+  questionOrderId: number;
+  questionVariationId: number;
   question: string;
   answerType: AnswerType;
   answerHandling: AnswerHandling;

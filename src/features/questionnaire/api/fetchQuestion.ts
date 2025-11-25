@@ -85,6 +85,7 @@ const mapQuestionResponse = (data: QuestionResponse): Question => {
 
   return {
     id: data.question_id,
+    questionCode: data.code,
     orderId: data.order_id,
     variationId: data.variation_id,
     prompt: data.question,
@@ -112,10 +113,15 @@ export const fetchQuestion = async (
   const response = await authenticatedGet(requestUrl);
 
   if (response.status === 404 || response.status === 204) {
+    console.log('[fetchQuestion] No question found (404/204)');
     return null;
   }
 
   if (!response.ok) {
+    console.error(
+      '[fetchQuestion] Failed to load questionnaire data, status:',
+      response.status,
+    );
     throw new Error('Failed to load questionnaire data');
   }
 
@@ -124,5 +130,16 @@ export const fetchQuestion = async (
     | { data: QuestionResponse };
 
   const resolved = 'data' in payload ? payload.data : payload;
-  return mapQuestionResponse(resolved);
+  console.log(
+    '[fetchQuestion] Raw API response:',
+    JSON.stringify(resolved, null, 2),
+  );
+
+  const mappedQuestion = mapQuestionResponse(resolved);
+  console.log(
+    '[fetchQuestion] Mapped question:',
+    JSON.stringify(mappedQuestion, null, 2),
+  );
+
+  return mappedQuestion;
 };
