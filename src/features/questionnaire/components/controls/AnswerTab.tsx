@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
   },
   multipleManyTab: {
     borderRadius: 50,
-    minHeight: 30,
+    minHeight: 70,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
     flexBasis: '40%',

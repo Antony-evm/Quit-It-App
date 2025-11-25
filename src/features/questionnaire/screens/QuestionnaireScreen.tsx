@@ -1,16 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
 import { questionnaireStorage } from '../data/questionnaireStorage';
-import type { SelectedAnswerOption } from '../types';
+import type { SelectedAnswerOption, SelectedAnswerSubOption } from '../types';
 import type { RootStackScreenProps } from '@/types/navigation';
 import { BRAND_COLORS, SPACING } from '@/shared/theme';
 import { AppButton, AppText, BackArrow } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
+import { FrequencyGrid } from '../components/FrequencyGrid';
+import { SubOptionDatePicker } from '../components/SubOptionDatePicker';
 import { UserStatusService } from '@/shared/services/userStatusService';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
@@ -24,6 +26,9 @@ export const QuestionnaireScreen = ({
 }: RootStackScreenProps<'Questionnaire'>) => {
   const [activeSelection, setActiveSelection] = useState<
     SelectedAnswerOption[]
+  >([]);
+  const [activeSubSelection, setActiveSubSelection] = useState<
+    SelectedAnswerSubOption[]
   >([]);
   const [isSelectionValid, setIsSelectionValid] = useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
@@ -45,6 +50,8 @@ export const QuestionnaireScreen = ({
     goBack,
     canGoBack,
     selection,
+    selectedOptions,
+    selectedSubOptions,
     resumeFromReview,
     canResumeReview,
   } = useQuestionnaire();
@@ -56,18 +63,67 @@ export const QuestionnaireScreen = ({
   useEffect(() => {
     if (!question) {
       setActiveSelection([]);
+      setActiveSubSelection([]);
       setIsSelectionValid(false);
       return;
     }
 
-    if (selection && selection.length) {
-      setActiveSelection(selection);
-      setIsSelectionValid(true);
-    } else {
-      setActiveSelection([]);
-      setIsSelectionValid(false);
+    // For N:N combinations, let FrequencyGrid handle main options selection
+    // For numeric, time, and date questions, let QuestionnaireQuestion handle selection
+    const shouldLetComponentHandleSelection =
+      question.subCombination === 'N:N' ||
+      question.answerType === 'numeric' ||
+      question.answerType === 'time' ||
+      question.answerType === 'date';
+
+    if (!shouldLetComponentHandleSelection) {
+      if (selectedOptions && selectedOptions.length) {
+        setActiveSelection(selectedOptions);
+        setIsSelectionValid(true);
+      } else {
+        setActiveSelection([]);
+        setIsSelectionValid(false);
+      }
     }
-  }, [question, selection]);
+
+    if (selectedSubOptions && selectedSubOptions.length) {
+      setActiveSubSelection(selectedSubOptions);
+    } else {
+      setActiveSubSelection([]);
+    }
+  }, [question, selectedOptions, selectedSubOptions]);
+
+  const handleSelectionChange = useCallback(
+    (selection: SelectedAnswerOption[]) => {
+      console.log(
+        '[QuestionnaireScreen] handleSelectionChange called with:',
+        selection,
+      );
+      setActiveSelection(selection);
+    },
+    [],
+  );
+
+  const handleValidityChange = useCallback((isValid: boolean) => {
+    setIsSelectionValid(isValid);
+  }, []);
+
+  const handleSubSelectionChange = useCallback(
+    (subSelection: SelectedAnswerSubOption[]) => {
+      setActiveSubSelection(subSelection);
+    },
+    [],
+  );
+
+  const handleSubValidityChange = useCallback(
+    (isSubValid: boolean) => {
+      if (question?.subCombination === 'N:N') {
+        console.log('[QuestionnaireScreen] Sub-validity changed:', isSubValid);
+        setIsSelectionValid(isSubValid);
+      }
+    },
+    [question?.subCombination],
+  );
 
   const headerTitle = isReviewing
     ? REVIEW_TITLE
@@ -101,12 +157,25 @@ export const QuestionnaireScreen = ({
       isSubmitting ||
       isCompleting ||
       !isSelectionValid ||
-      !activeSelection.length;
+      (question?.subCombination !== 'N:N' && !activeSelection.length);
+
+  // Debug logging
+  console.log('[QuestionnaireScreen] Primary action state:', {
+    isReviewing,
+    isLoading,
+    isSubmitting,
+    isCompleting,
+    isSelectionValid,
+    activeSelectionLength: activeSelection.length,
+    subCombination: question?.subCombination,
+    primaryActionDisabled,
+  });
 
   const showValidationError =
     hasAttemptedSubmit &&
     !isReviewing &&
-    (!isSelectionValid || !activeSelection.length);
+    (!isSelectionValid ||
+      (question?.subCombination !== 'N:N' && !activeSelection.length));
 
   const shouldShowPrimaryAction =
     isReviewing || (!!question && !isLoading && !error);
@@ -157,11 +226,25 @@ export const QuestionnaireScreen = ({
 
     setHasAttemptedSubmit(true);
 
-    if (!isSelectionValid || !activeSelection.length) {
+    console.log(
+      '[QuestionnaireScreen] handlePrimaryAction - submission data:',
+      {
+        isSelectionValid,
+        activeSelection,
+        activeSubSelection,
+        subCombination: question?.subCombination,
+        activeSelectionLength: activeSelection.length,
+      },
+    );
+
+    if (
+      !isSelectionValid ||
+      (question?.subCombination !== 'N:N' && !activeSelection.length)
+    ) {
       return;
     }
 
-    await submitAnswers(activeSelection);
+    await submitAnswers(activeSelection, activeSubSelection);
   };
 
   const renderBody = () => {
@@ -182,15 +265,54 @@ export const QuestionnaireScreen = ({
 
     return (
       <>
-        <QuestionnaireQuestion
-          question={question}
-          initialSelection={selection}
-          onSelectionChange={setActiveSelection}
-          onValidityChange={setIsSelectionValid}
-        />
+        {/* For N:N combination questions, show only the frequency grid */}
+        {question?.subOptions &&
+        question.subOptions.length > 0 &&
+        question.subCombination === 'N:N' ? (
+          <FrequencyGrid
+            options={question.options}
+            subOptions={question.subOptions}
+            initialSubSelection={selectedSubOptions}
+            onSubSelectionChange={handleSubSelectionChange}
+            onMainSelectionChange={handleSelectionChange}
+            onValidityChange={handleSubValidityChange}
+          />
+        ) : (
+          /* For regular questions, show the standard question component */
+          <QuestionnaireQuestion
+            question={question}
+            initialSelection={selectedOptions}
+            onSelectionChange={handleSelectionChange}
+            onValidityChange={handleValidityChange}
+          />
+        )}
+
+        {/* Sub-option components for other combinations */}
+        {question?.subOptions &&
+        question.subOptions.length > 0 &&
+        question.subCombination === 'N:1' &&
+        question.subAnswerType === 'date' &&
+        question.subAnswerHandling === 'max' ? (
+          <SubOptionDatePicker
+            subOptions={question.subOptions}
+            initialSelection={selectedSubOptions}
+            onSelectionChange={handleSubSelectionChange}
+            onValidityChange={handleSubValidityChange}
+          />
+        ) : question?.subOptions &&
+          question.subOptions.length > 0 &&
+          question.subCombination !== 'N:N' ? (
+          <AppText variant="body" style={{ marginTop: SPACING.lg }}>
+            Sub-options with combination "{question.subCombination}" - UI not
+            implemented yet
+          </AppText>
+        ) : null}
+
         {showValidationError ? (
           <AppText tone="secondary" style={styles.validation}>
-            Please provide an answer before continuing.
+            {question?.subCombination === 'N:N'
+              ? 'Please select a frequency for each time period.'
+              : 'Please provide an answer before continuing.'}
           </AppText>
         ) : null}
       </>

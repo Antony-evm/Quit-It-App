@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const response = await stytch.passwords.authenticate({
           email: email.trim(),
           password: password,
-          session_duration_minutes: 60, // 30 days
+          session_duration_minutes: 600, // 30 days
         });
 
         if (response.status_code === 200) {
@@ -168,7 +168,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const response = await stytch.passwords.create({
           email: email.trim(),
           password: password,
-          session_duration_minutes: 60, // 30 days
+          session_duration_minutes: 600, // 30 days
         });
 
         if (response.status_code === 200) {

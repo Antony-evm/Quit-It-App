@@ -2,6 +2,7 @@ import { authenticatedGet } from '@/shared/api/apiConfig';
 import type {
   AnswerHandling,
   AnswerOption,
+  AnswerSubOption,
   AnswerType,
   Question,
   QuestionResponse,
@@ -61,6 +62,16 @@ const mapOptions = (record: QuestionResponse['options'] = {}): AnswerOption[] =>
     defaultValue: parseDefaultValue(option.default_value),
   }));
 
+const mapSubOptions = (
+  record: QuestionResponse['sub_options'] = {},
+): AnswerSubOption[] =>
+  Object.entries(record).map(([subOptionId, subOption]) => ({
+    id: Number(subOptionId),
+    label: subOption.value,
+    value: subOption.value,
+    combination: subOption.combination,
+  }));
+
 const extractQuestionDefaultValue = (
   options: AnswerOption[],
   fallback: number | null,
@@ -81,7 +92,9 @@ const extractQuestionDefaultValue = (
 
 const mapQuestionResponse = (data: QuestionResponse): Question => {
   const options = mapOptions(data.options);
+  const subOptions = mapSubOptions(data.sub_options);
   const questionDefault = parseDefaultValue(data.default_value);
+  const subQuestionDefault = parseDefaultValue(data.sub_default_value);
 
   return {
     id: data.question_id,
@@ -94,6 +107,15 @@ const mapQuestionResponse = (data: QuestionResponse): Question => {
     answerHandling: parseAnswerHandling(data.answer_handling ?? ''),
     options,
     defaultValue: extractQuestionDefaultValue(options, questionDefault),
+    subAnswerType: data.sub_answer_type
+      ? parseAnswerType(data.sub_answer_type)
+      : null,
+    subAnswerHandling: data.sub_answer_handling
+      ? parseAnswerHandling(data.sub_answer_handling)
+      : null,
+    subOptions,
+    subDefaultValue: subQuestionDefault,
+    subCombination: data.sub_combination ?? null,
   };
 };
 

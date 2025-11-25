@@ -15,6 +15,11 @@ export interface AnswerOptionRecord {
   default_value?: string | null;
 }
 
+export interface AnswerSubOptionRecord {
+  value: string;
+  combination: string;
+}
+
 export interface QuestionResponse {
   question_id: number;
   code: string;
@@ -25,7 +30,12 @@ export interface QuestionResponse {
   answer_type: string;
   answer_handling: string;
   default_value?: string | null;
+  sub_answer_type?: string | null;
+  sub_answer_handling?: string | null;
+  sub_default_value?: string | null;
+  sub_combination?: string | null;
   options: Record<number, AnswerOptionRecord>;
+  sub_options: Record<number, AnswerSubOptionRecord>;
 }
 
 export interface AnswerOption {
@@ -34,6 +44,13 @@ export interface AnswerOption {
   value: string;
   nextVariationId: number;
   defaultValue: number | null;
+}
+
+export interface AnswerSubOption {
+  id: number;
+  label: string;
+  value: string;
+  combination: string;
 }
 
 export interface Question {
@@ -47,12 +64,33 @@ export interface Question {
   answerHandling: AnswerHandling;
   options: AnswerOption[];
   defaultValue: number | null;
+  subAnswerType?: AnswerType | null;
+  subAnswerHandling?: AnswerHandling | null;
+  subOptions: AnswerSubOption[];
+  subDefaultValue?: number | null;
+  subCombination?: string | null;
 }
 
 export interface QuestionnaireAnswerOptionPayload {
   answer_option_id: number;
   answer_value: string;
   answer_type: AnswerType;
+}
+
+export interface QuestionnaireAnswerSubOptionPayload {
+  answer_sub_option_id: number;
+  answer_value: string;
+  answer_type: AnswerType;
+}
+
+// New payload format with combined answer options
+export interface AnswerOptionsPair {
+  answer_option_id: number;
+  answer_value: string;
+  answer_type: AnswerType;
+  answer_sub_option_id: number | null;
+  answer_sub_option_value: string | null;
+  answer_sub_option_type: AnswerType | null;
 }
 
 export interface QuestionnaireAnswerPayload {
@@ -62,7 +100,7 @@ export interface QuestionnaireAnswerPayload {
   question_order_id: number;
   question_variation_id: number;
   question: string;
-  answer_options: QuestionnaireAnswerOptionPayload[];
+  answer_options: AnswerOptionsPair[];
 }
 
 export interface QuestionnaireResponseRecord {
@@ -73,7 +111,9 @@ export interface QuestionnaireResponseRecord {
   question: string;
   answerType: AnswerType;
   answerHandling: AnswerHandling;
-  answerOptions: QuestionnaireAnswerOptionPayload[];
+  answerOptions: AnswerOptionsPair[];
+  subAnswerType?: AnswerType | null;
+  subAnswerHandling?: AnswerHandling | null;
 }
 
 export interface QuestionnaireProgress {
@@ -92,6 +132,14 @@ export interface SelectedAnswerOption {
   value: string;
   answerType: AnswerType;
   nextVariationId: number;
+}
+
+export interface SelectedAnswerSubOption {
+  optionId: number;
+  value: string;
+  answerType: AnswerType;
+  combination: string;
+  mainOptionId?: number; // Optional for backwards compatibility
 }
 
 export interface QuestionnaireCompleteResponse extends UserDataResponse {}

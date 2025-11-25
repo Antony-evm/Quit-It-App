@@ -16,7 +16,12 @@ const cloneRecord = (
     answer_option_id: option.answer_option_id,
     answer_value: option.answer_value,
     answer_type: option.answer_type,
+    answer_sub_option_id: option.answer_sub_option_id,
+    answer_sub_option_value: option.answer_sub_option_value,
+    answer_sub_option_type: option.answer_sub_option_type,
   })),
+  subAnswerType: record.subAnswerType,
+  subAnswerHandling: record.subAnswerHandling,
 });
 
 const cloneStoredRecord = (record: StoredRecord): StoredRecord => ({

@@ -7,6 +7,7 @@ import type {
   QuestionnaireAnswerPayload,
   QuestionnaireResponseRecord,
   SelectedAnswerOption,
+  SelectedAnswerSubOption,
   QuestionnaireCompleteResponse,
 } from '../types';
 import { fetchQuestion } from '../api/fetchQuestion';
@@ -77,7 +78,10 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
   const [selections, setSelections] = useState<
-    Record<number, SelectedAnswerOption[]>
+    Record<
+      number,
+      { options: SelectedAnswerOption[]; subOptions: SelectedAnswerSubOption[] }
+    >
   >({});
 
   const {
@@ -163,8 +167,57 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     };
   }, [question, isLoading, isReviewing, loadError]);
 
+  // Helper function to build answer options for the new payload format
+  const buildAnswerOptions = (
+    question: Question,
+    selectedOptions: SelectedAnswerOption[],
+    selectedSubOptions: SelectedAnswerSubOption[],
+  ) => {
+    if (question.subCombination === 'N:N' && selectedSubOptions.length > 0) {
+      // For N:N combinations (frequency grid), pair each main option with its sub-option
+      // Use mainOptionId to find the correct sub-option for each main option
+      return selectedOptions.map(option => {
+        const subOption = selectedSubOptions.find(
+          sub => sub.mainOptionId === option.optionId,
+        );
+        return {
+          answer_option_id: option.optionId,
+          answer_value: option.value,
+          answer_type: option.answerType,
+          answer_sub_option_id: subOption?.optionId || null,
+          answer_sub_option_value: subOption?.value || null,
+          answer_sub_option_type: subOption?.answerType || null,
+        };
+      });
+    } else if (selectedSubOptions.length > 0) {
+      // For other combinations (N:1, etc), handle differently if needed
+      // For now, we'll just include main options with first sub-option
+      return selectedOptions.map(option => ({
+        answer_option_id: option.optionId,
+        answer_value: option.value,
+        answer_type: option.answerType,
+        answer_sub_option_id: selectedSubOptions[0]?.optionId || null,
+        answer_sub_option_value: selectedSubOptions[0]?.value || null,
+        answer_sub_option_type: selectedSubOptions[0]?.answerType || null,
+      }));
+    } else {
+      // For regular questions, just return main options without sub-options
+      return selectedOptions.map(option => ({
+        answer_option_id: option.optionId,
+        answer_value: option.value,
+        answer_type: option.answerType,
+        answer_sub_option_id: null,
+        answer_sub_option_value: null,
+        answer_sub_option_type: null,
+      }));
+    }
+  };
+
   const submitAnswers = useCallback(
-    async (selectedOptions: SelectedAnswerOption[]) => {
+    async (
+      selectedOptions: SelectedAnswerOption[],
+      selectedSubOptions: SelectedAnswerSubOption[] = [],
+    ) => {
       if (!question) {
         return;
       }
@@ -181,6 +234,10 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           prompt: question.prompt,
         });
         console.log('[submitAnswers] Selected options:', selectedOptions);
+        console.log(
+          '[submitAnswers] Selected sub-options:',
+          selectedSubOptions,
+        );
 
         if (!question.questionCode) {
           console.error(
@@ -197,11 +254,11 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           question_order_id: question.orderId,
           question_variation_id: question.variationId,
           question: question.prompt,
-          answer_options: selectedOptions.map(option => ({
-            answer_option_id: option.optionId,
-            answer_value: option.value,
-            answer_type: option.answerType,
-          })),
+          answer_options: buildAnswerOptions(
+            question,
+            selectedOptions,
+            selectedSubOptions,
+          ),
         };
 
         console.log(
@@ -209,7 +266,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           JSON.stringify(payload, null, 2),
         );
 
+        console.log('[submitAnswers] About to call API...');
         await submitQuestionAnswer(payload);
+        console.log('[submitAnswers] API call successful, saving record...');
 
         const record: QuestionnaireResponseRecord = {
           questionId: question.id,
@@ -220,13 +279,20 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           answerType: question.answerType,
           answerHandling: question.answerHandling,
           answerOptions: payload.answer_options,
+          subAnswerType: question.subAnswerType,
+          subAnswerHandling: question.subAnswerHandling,
         };
 
+        console.log('[submitAnswers] Saving record to storage...');
         await questionnaireStorage.save(record);
+        console.log('[submitAnswers] Record saved, updating state...');
 
         setSelections(prev => ({
           ...prev,
-          [question.id]: selectedOptions,
+          [question.id]: {
+            options: selectedOptions,
+            subOptions: selectedSubOptions,
+          },
         }));
 
         setHistory(prev => {
@@ -243,12 +309,17 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           return [...prev, record];
         });
 
+        console.log('[submitAnswers] Determining next question...');
         const nextVariationId = ensureVariationId(
           selectedOptions.map(option => option.nextVariationId),
           question.variationId,
         );
+        console.log('[submitAnswers] Next variation ID:', nextVariationId);
 
         if (nextVariationId === -1) {
+          console.log(
+            '[submitAnswers] Questionnaire complete, switching to review mode...',
+          );
           const historyRecords = await questionnaireStorage.all();
           setHistory(historyRecords);
           setIsReviewing(true);
@@ -256,11 +327,17 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         }
 
         const nextOrderId = question.orderId + 1;
+        console.log('[submitAnswers] Moving to next question:', {
+          nextOrderId,
+          nextVariationId,
+        });
 
         setOrderId(nextOrderId);
         setVariationId(nextVariationId);
         setIsReviewing(false);
+        console.log('[submitAnswers] Submission completed successfully');
       } catch (caughtError) {
+        console.error('[submitAnswers] Submission failed:', caughtError);
         setSubmitError(caughtError as Error);
       } finally {
         setIsSubmitting(false);
@@ -350,6 +427,14 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   );
 
   const currentSelection = question ? selections[question.id] : undefined;
+  const currentOptions = useMemo(
+    () => currentSelection?.options ?? [],
+    [currentSelection?.options],
+  );
+  const currentSubOptions = useMemo(
+    () => currentSelection?.subOptions ?? [],
+    [currentSelection?.subOptions],
+  );
   const canGoBack = navigationStack.length > 1;
   const canResumeReview = navigationStack.length > 0;
 
@@ -398,6 +483,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     goBack,
     canGoBack,
     selection: currentSelection,
+    selectedOptions: currentOptions,
+    selectedSubOptions: currentSubOptions,
     resumeFromReview,
     canResumeReview,
   };

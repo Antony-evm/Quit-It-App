@@ -120,6 +120,15 @@ export const QuestionnaireQuestion = ({
   const firstOption = question?.options[0];
   const previousSelectionRef = useRef<SelectedAnswerOption[]>([]);
 
+  // Create a stable key for initialSelection to prevent constant re-initialization
+  const initialSelectionKey = useMemo(() => {
+    if (!initialSelection) return 'empty';
+    return initialSelection
+      .map(item => `${item.optionId}-${item.value}-${item.answerType}`)
+      .sort()
+      .join('|');
+  }, [initialSelection]);
+
   useEffect(() => {
     const parsedRange =
       firstOption && isNumericRangeQuestion
@@ -201,8 +210,11 @@ export const QuestionnaireQuestion = ({
       setNumericSelection(null);
     }
   }, [
-    firstOption,
-    initialSelection,
+    question?.id,
+    question?.options?.[0]?.id,
+    question?.options?.[0]?.value,
+    question?.options?.[0]?.defaultValue,
+    initialSelectionKey,
     allowMultipleChoice,
     allowSingleChoice,
     isDateQuestion,
@@ -278,7 +290,10 @@ export const QuestionnaireQuestion = ({
   }, [
     allowMultipleChoice,
     allowSingleChoice,
-    firstOption,
+    question?.id,
+    question?.answerType,
+    question?.options?.[0]?.id,
+    question?.options?.[0]?.nextVariationId,
     isDateQuestion,
     isNumericRangeQuestion,
     isTimeRangeQuestion,
@@ -286,7 +301,6 @@ export const QuestionnaireQuestion = ({
     numericSelection,
     onSelectionChange,
     onValidityChange,
-    question,
     question?.defaultValue,
     selectedChoiceIds,
     selectedDate,
