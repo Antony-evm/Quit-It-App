@@ -14,6 +14,16 @@ import {
   AppTextInput,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+
+// TEST HOT RELOAD COMPONENT
+const HotReloadTest = () => {
+  return (
+    <View style={{ backgroundColor: 'red', padding: 10, margin: 10 }}>
+      <AppText style={{ color: 'white' }}>HOT RELOAD TEST - CHANGE ME!</AppText>
+    </View>
+  );
+};
+
 import { useAuth } from '@/shared/auth';
 import { fetchUserGreeting } from '../api/fetchUserGreeting';
 import { fetchUserEmail } from '../api/fetchUserEmail';
@@ -325,6 +335,7 @@ export const AccountScreen = () => {
 
   return (
     <View style={styles.container}>
+      <HotReloadTest />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -341,7 +352,7 @@ export const AccountScreen = () => {
           <AppText variant="title" style={styles.headerTitle}>
             {greetingText}
           </AppText>
-          <AppText tone="secondary">
+          <AppText tone="primary">
             Keep your profile accurate so we can personalize your quit plan.
           </AppText>
         </View>

@@ -12,7 +12,6 @@ const NavigationReadyContext = createContext<NavigationReadyContextType | null>(
 export const useNavigationReady = () => {
   const context = useContext(NavigationReadyContext);
   if (!context) {
-    // Return a default state instead of throwing an error
     return { isReady: false, setReady: () => {} };
   }
   return context;

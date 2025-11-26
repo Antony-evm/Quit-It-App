@@ -12,12 +12,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import { useMutation } from '@tanstack/react-query';
 
-import {
-  AppButton,
-  AppSurface,
-  AppText,
-  AppTextInput,
-} from '@/shared/components/ui';
+import { AppSurface, AppText, AppTextInput } from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
   SPACING,
@@ -29,6 +24,7 @@ import {
   LAYOUT_STYLES,
   TEXT_STYLES,
   getSurfaceVariant,
+  SHADOWS,
 } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '@/features/tracking';
 import { useInfiniteTrackingRecords } from '@/features/tracking';
@@ -41,6 +37,7 @@ import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import ArrowDownSvg from '@/assets/arrowDown.svg';
 import ArrowUpSvg from '@/assets/arrowUp.svg';
+import CheckmarkSvg from '@/assets/checkmark.svg';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 import ScrollManager from '@/utils/scrollManager';
 
@@ -287,13 +284,13 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   return (
     <View ref={cardRef}>
       <AppSurface style={styles.card}>
-        <View style={styles.header}>
+        <View style={styles.headerContainer}>
           <View style={styles.dropdownContainer}>
             <Pressable
-              style={styles.dropdown}
+              style={[styles.dropdown]}
               onPress={() => setShowDropdown(!showDropdown)}
             >
-              <AppText style={styles.dropdownText}>
+              <AppText style={[styles.dropdownText, styles.headerDropdownText]}>
                 {selectedTrackingType?.displayName || 'Select tracking type'}
               </AppText>
               {showDropdown ? (
@@ -306,7 +303,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                 />
               )}
             </Pressable>
-
             {showDropdown && trackingTypes && (
               <View style={styles.dropdownList}>
                 {trackingTypes.map(type => (
@@ -333,8 +329,21 @@ export const NotesCard: React.FC<NotesCardProps> = ({
               </View>
             )}
           </View>
+          <View>
+            <Pressable
+              style={({ pressed }) => [
+                styles.saveButton,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+              onPress={handleSave}
+              disabled={createRecordMutation.isPending}
+            >
+              <CheckmarkSvg width={24} height={24} />
+            </Pressable>
+          </View>
         </View>
-        <View style={styles.section}>
+
+        <View style={[styles.dateTimeSection]}>
           <Pressable
             style={styles.dateTimeButton}
             onPress={
@@ -343,11 +352,12 @@ export const NotesCard: React.FC<NotesCardProps> = ({
                 : handleDateTimePress
             }
           >
-            <AppText style={styles.dateTimeText}>
+            <AppText variant="caption" tone="primary">
               {formatRelativeDateTimeForDisplay(selectedDateTime.toISOString())}
             </AppText>
           </Pressable>
         </View>
+
         <View style={styles.notesContainer}>
           <AppTextInput
             value={notes}
@@ -360,23 +370,12 @@ export const NotesCard: React.FC<NotesCardProps> = ({
             textAlignVertical="top"
           />
           <View style={styles.charCountContainer}>
-            <AppText
-              variant="caption"
-              tone={remainingChars < 50 ? 'primary' : 'secondary'}
-              style={styles.charCount}
-            >
+            <AppText variant="subcaption" tone="primary">
               {remainingChars} characters remaining
             </AppText>
           </View>
         </View>
-        <AppButton
-          label={createRecordMutation.isPending ? 'Saving...' : 'Save'}
-          variant="primary"
-          size="xs"
-          onPress={handleSave}
-          containerStyle={styles.saveButton}
-        />
-        {/* Date Time Picker */}
+
         {showDateTimePicker && (
           <DateTimePicker
             value={selectedDateTime}
@@ -393,34 +392,52 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: SPACING.lg, // Reduced from xl since ScrollView has content padding
-    ...getSurfaceVariant('card'),
+    marginBottom: SPACING.md, // Reduced from xl since ScrollView has content padding
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.md,
   },
-  header: {
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: SPACING.md,
   },
   trackingTypeLabel: {
     fontSize: 12,
     marginBottom: SPACING.xs,
   },
-  section: {
-    marginBottom: SPACING.md,
-  },
   dateTimeButton: {
-    ...getSurfaceVariant('interactive'),
+    marginHorizontal: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: BRAND_COLORS.cream,
+    borderStyle: 'dashed',
   },
   dropdownContainer: {
     ...LAYOUT_STYLES.dropdownContainer,
+    flex: 1,
+    marginRight: SPACING.md,
   },
   dropdown: {
-    ...getSurfaceVariant('interactive'),
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+
     ...LAYOUT_STYLES.rowBetween,
   },
   dropdownText: {
     ...TEXT_STYLES.dropdownText,
   },
+  headerDropdownText: {
+    ...TEXT_STYLES.dropdownText,
+  },
   dropdownList: {
-    ...getSurfaceVariant('elevated'),
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
     ...LAYOUT_STYLES.dropdownList,
   },
   dropdownItem: {
@@ -439,7 +456,7 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textPrimary,
   },
   dateTimeSection: {
-    marginBottom: SPACING.lg,
+    marginBottom: SPACING.sm,
   },
   dateTimeRow: {
     flexDirection: 'row',
@@ -447,72 +464,34 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: SPACING.md,
   },
-  dateTimeDisplay: {
-    flex: 1,
-    padding: SPACING.md,
-    backgroundColor: COLOR_PALETTE.accentMuted,
-    borderRadius: BORDER_RADIUS.large,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-  },
-  dateTimeButtons: {
-    flexDirection: 'row',
-    gap: SPACING.sm,
-  },
-  changeDateTimeButton: {
-    minWidth: 80,
-  },
-  pickerModeLabel: {
-    marginBottom: SPACING.sm,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  nextButton: {
-    marginTop: SPACING.md,
-  },
-  pickerContainer: {
-    marginTop: SPACING.md,
-    ...getSurfaceVariant('interactive'),
-    ...LAYOUT_STYLES.centered,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-  },
-  picker: {
-    backgroundColor: 'transparent',
-  },
-  dateTimeLabel: {
-    fontSize: 12,
-    marginBottom: SPACING.xs,
-  },
-  dateTimeText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '500',
-    marginBottom: SPACING.xs,
-  },
-  clickableHint: {
-    fontStyle: 'italic',
-    fontSize: 11,
-  },
   notesContainer: {
     marginTop: SPACING.xs,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   notesInput: {
-    ...getSurfaceVariant('input'),
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    borderRadius: BORDER_RADIUS.medium,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     color: COLOR_PALETTE.textPrimary,
     minHeight: 80,
     textAlignVertical: 'top',
+    marginBottom: SPACING.xs,
   },
   charCountContainer: {
     alignItems: 'flex-end',
-    marginTop: SPACING.xs,
-  },
-  charCount: {
-    fontSize: 11,
   },
   saveButton: {
+    width: 42,
+    height: 42,
     borderRadius: BORDER_RADIUS.large,
-  },
-  saveButtonText: {
-    color: BRAND_COLORS.ink,
+    backgroundColor: BRAND_COLORS.cream,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
 });

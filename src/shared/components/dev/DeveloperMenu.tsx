@@ -12,6 +12,7 @@ import { useStytch } from '@stytch/react-native';
 import { useAuth } from '../../auth/AuthContext';
 import { COLOR_PALETTE } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserStatusService } from '../../../shared/services/userStatusService';
 
 interface DeveloperMenuProps {
   visible: boolean;
@@ -31,7 +32,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
       Alert.alert('Success', 'All AsyncStorage data cleared');
     } catch (error) {
       Alert.alert('Error', 'Failed to clear AsyncStorage');
-      }
+    }
   };
 
   const showAsyncStorageKeys = async () => {
@@ -47,7 +48,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
       Alert.alert('AsyncStorage Debug', debugInfo);
     } catch (error) {
       Alert.alert('Error', 'Failed to read AsyncStorage');
-      }
+    }
   };
 
   const clearAuthTokens = async () => {
@@ -114,9 +115,31 @@ Backend User ID: ${user?.backendUserId || 'None'}
 Email: ${user?.email || 'None'}
 First Name: ${user?.firstName || 'None'}
 Last Name: ${user?.lastName || 'None'}
+User Status ID: ${user?.userStatusId || 'None'}
     `;
 
     Alert.alert('User Debug Info', debugInfo);
+  };
+
+  const showUserStatusDebug = () => {
+    if (!user?.userStatusId) {
+      Alert.alert('User Status Debug', 'No user status ID found');
+      return;
+    }
+
+    const status = UserStatusService.getStatus(user.userStatusId);
+    const action = UserStatusService.getStatusAction(user.userStatusId);
+
+    const debugInfo = `
+User Status ID: ${user.userStatusId}
+Status Code: ${status?.code || 'Unknown'}
+Navigation Action: ${action?.type || 'Unknown'}
+Is Service Initialized: ${UserStatusService.isInitialized()}
+
+Expected for 'subscribed': NAVIGATE_TO_HOME
+    `;
+
+    Alert.alert('User Status Debug', debugInfo);
   };
 
   const showAppDebugInfo = () => {
@@ -173,6 +196,13 @@ Platform: React Native
 
             <TouchableOpacity style={styles.button} onPress={showUserDebugInfo}>
               <Text style={styles.buttonText}>Show User Info</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={showUserStatusDebug}
+            >
+              <Text style={styles.buttonText}>Show User Status Debug</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={clearAuthTokens}>

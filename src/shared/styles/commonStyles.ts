@@ -36,8 +36,8 @@ export const SURFACE_VARIANTS = {
   interactive: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: BORDER_RADIUS.large,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: BORDER_RADIUS.xlarge,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },

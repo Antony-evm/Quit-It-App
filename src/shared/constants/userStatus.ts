@@ -2,7 +2,6 @@
 export const USER_STATUS_CODES = {
   ONBOARDING_INCOMPLETE: 'onboarding_incomplete',
   ONBOARDING_COMPLETE: 'onboarding_complete',
-  ONBOARDED_COMPLETE: 'onboarded_complete',
   SUBSCRIBED: 'subscribed',
 } as const;
 

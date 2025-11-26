@@ -4,12 +4,16 @@ import { COLOR_PALETTE } from '../../theme';
 import DeveloperMenu from './DeveloperMenu';
 
 const DeveloperMenuTrigger: React.FC = () => {
+  console.log('🔧 DeveloperMenuTrigger rendered - __DEV__ =', __DEV__);
+
   const [menuVisible, setMenuVisible] = useState(false);
   const [tapCount, setTapCount] = useState(0);
   const tapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const handleTap = () => {
+    console.log('🔧 DEV BUTTON TAPPED - Tap count:', tapCount + 1);
+
     // Animate the button press
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -34,6 +38,7 @@ const DeveloperMenuTrigger: React.FC = () => {
 
     if (newTapCount >= 5) {
       // Open developer menu after 5 taps
+      console.log('🔧 OPENING DEVELOPER MENU');
       setMenuVisible(true);
       setTapCount(0);
       if (tapTimer.current) {
@@ -43,7 +48,7 @@ const DeveloperMenuTrigger: React.FC = () => {
       // Reset tap count after 2 seconds of no taps
       tapTimer.current = setTimeout(() => {
         setTapCount(0);
-        }, 2000);
+      }, 2000);
     }
   };
 
@@ -55,6 +60,10 @@ const DeveloperMenuTrigger: React.FC = () => {
         <TouchableOpacity
           style={styles.trigger}
           onPress={handleTap}
+          onLongPress={() => {
+            console.log('🔧 LONG PRESS - Opening menu directly');
+            setMenuVisible(true);
+          }}
           activeOpacity={0.7}
         >
           <Text style={styles.triggerText}>DEV</Text>
@@ -76,27 +85,29 @@ const styles = StyleSheet.create({
     top: 50,
     right: 10,
     zIndex: 9998,
+    // Make more visible for debugging
+    backgroundColor: 'rgba(255, 0, 0, 0.1)', // Temporary red background
   },
   trigger: {
     backgroundColor: COLOR_PALETTE.accentMuted,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 12, // Increased padding
+    paddingVertical: 8, // Increased padding
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    minWidth: 40,
+    borderWidth: 2, // Thicker border
+    borderColor: '#FF0000', // Red border for visibility
+    minWidth: 50, // Larger minimum width
     alignItems: 'center',
     justifyContent: 'center',
   },
   triggerText: {
-    color: COLOR_PALETTE.textSecondary,
-    fontSize: 10,
+    color: '#000000', // Black text for better visibility
+    fontSize: 12, // Larger font
     fontWeight: 'bold',
     letterSpacing: 0.5,
   },
   tapCounter: {
-    color: COLOR_PALETTE.systemError,
-    fontSize: 8,
+    color: '#FF0000', // Red counter
+    fontSize: 10, // Larger counter
     fontWeight: 'bold',
     marginTop: 1,
   },

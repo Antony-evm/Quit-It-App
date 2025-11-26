@@ -30,8 +30,7 @@ export class UserStatusService {
       if (cachedMap) {
         this.statusMap = cachedMap;
         // Refresh in background to keep data current
-        void this.refreshFromNetwork().catch(error => {
-          });
+        void this.refreshFromNetwork().catch(error => {});
         return;
       }
     }
@@ -89,8 +88,7 @@ export class UserStatusService {
   private static async persistCache(statuses: UserStatus[]): Promise<void> {
     try {
       await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(statuses));
-    } catch (error) {
-      }
+    } catch (error) {}
   }
 
   /**
@@ -122,6 +120,13 @@ export class UserStatusService {
   }
 
   /**
+   * Check if the service has been initialized
+   */
+  static isInitialized(): boolean {
+    return this.statusMap !== null;
+  }
+
+  /**
    * Execute navigation based on user status
    */
   static executeStatusAction(
@@ -137,22 +142,19 @@ export class UserStatusService {
 
     switch (action.type) {
       case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
-        // First fetch questionnaire data, then navigate
         this.fetchQuestionnaireDataAndNavigate(navigation);
         break;
       case USER_STATUS_ACTIONS.NAVIGATE_TO_PAYWALL:
-        // Navigate to paywall screen (unskippable)
         this.navigateToPaywall(navigation);
         break;
       case USER_STATUS_ACTIONS.NAVIGATE_TO_HOME:
-        // Execute placeholder call, then navigate
         this.executePlaceholderCallAndNavigate(navigation);
         break;
       case USER_STATUS_ACTIONS.PLACEHOLDER_CALL:
         this.executePlaceholderCallAndNavigate(navigation);
         break;
       default:
-        }
+    }
   }
 
   /**

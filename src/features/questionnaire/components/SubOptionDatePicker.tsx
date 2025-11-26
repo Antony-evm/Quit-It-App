@@ -101,7 +101,9 @@ export const SubOptionDatePicker = ({
   if (!dateSubOption) {
     return (
       <View style={styles.container}>
-        <AppText tone="primary">No date sub-option available.</AppText>
+        <AppText variant="body" tone="primary">
+          No date sub-option available.
+        </AppText>
       </View>
     );
   }

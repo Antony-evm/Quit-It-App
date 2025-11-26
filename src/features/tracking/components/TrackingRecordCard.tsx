@@ -13,6 +13,8 @@ import DateTimePicker, {
 import { useMutation } from '@tanstack/react-query';
 import EditSvg from '@/assets/edit.svg';
 import DeleteSvg from '@/assets/delete.svg';
+import CheckmarkSvg from '@/assets/checkmark.svg';
+import CancelSvg from '@/assets/cancel.svg';
 import ArrowDownSvg from '@/assets/arrowDown.svg';
 import ArrowUpSvg from '@/assets/arrowUp.svg';
 
@@ -322,6 +324,34 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     return (
       <View ref={cardRef}>
         <AppSurface style={styles.card}>
+          {/* Title Row with Action Buttons */}
+          <View style={styles.titleRow}>
+            <AppText variant="heading" style={styles.trackingTypeName}>
+              {editedTrackingType?.displayName ||
+                `Type ${record.tracking_type_id}`}
+            </AppText>
+            <View style={styles.actionButtons}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.notesQuickActionsButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleSave}
+              >
+                <CheckmarkSvg width={18} height={18} />
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.notesQuickActionsButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleCancel}
+              >
+                <CancelSvg width={18} height={18} />
+              </Pressable>
+            </View>
+          </View>
+
           <View style={styles.section}>
             <View style={styles.dropdownContainer}>
               <Pressable
@@ -378,12 +408,12 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
           </View>
 
           {/* Date/Time Section */}
-          <View style={styles.section}>
+          <View style={[styles.section, { marginTop: SPACING.lg }]}>
             <Pressable
               style={styles.dateTimeButton}
               onPress={showDateTimePickerModal}
             >
-              <AppText style={styles.dateTimeText}>
+              <AppText style={[styles.dateTimeText]}>
                 {formatRelativeDateTimeForDisplay(editedDateTime.toISOString())}
               </AppText>
             </Pressable>
@@ -408,24 +438,6 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
             >
               {remainingChars} characters remaining
             </AppText>
-          </View>
-
-          {/* Edit Mode Buttons */}
-          <View style={styles.editActions}>
-            <AppButton
-              label="Cancel"
-              variant="outline"
-              size="xs"
-              onPress={handleCancel}
-              containerStyle={styles.cancelButton}
-            />
-            <AppButton
-              label="Save"
-              variant="primary"
-              size="xs"
-              onPress={handleSave}
-              containerStyle={styles.saveButton}
-            />
           </View>
 
           {/* Date Time Picker */}
@@ -471,7 +483,11 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
             </Pressable>
           </View>
         </View>
-        <AppText variant="caption" tone="secondary">
+        <AppText
+          variant="caption"
+          tone="primary"
+          style={[styles.dateTimeDisplay, { marginTop: SPACING.lg }]}
+        >
           {formattedDate}
         </AppText>
         <Pressable
@@ -543,7 +559,6 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textMuted,
     fontStyle: 'italic',
   },
-  // Edit mode styles
   editHeader: {
     marginBottom: SPACING.md,
   },
@@ -586,7 +601,9 @@ const styles = StyleSheet.create({
     ...TEXT_STYLES.dropdownItemTextSelected,
   },
   dateTimeButton: {
-    ...getSurfaceVariant('interactive'),
+    borderBottomWidth: 1,
+    borderBottomColor: BRAND_COLORS.cream,
+    borderStyle: 'dashed',
   },
   dateTimeText: {
     color: COLOR_PALETTE.textPrimary,
@@ -601,18 +618,10 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xs,
     textAlign: 'right',
   },
-  editActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: SPACING.lg,
-    gap: SPACING.md,
-  },
-  cancelButton: {
-    flex: 1,
-    borderRadius: BORDER_RADIUS.large,
-  },
-  saveButton: {
-    flex: 1,
-    borderRadius: BORDER_RADIUS.large,
+  dateTimeDisplay: {
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR_PALETTE.textMuted,
+    borderStyle: 'dashed',
+    paddingBottom: 2,
   },
 });

@@ -95,11 +95,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xs,
   },
   label: {
-    color: COLOR_PALETTE.textSecondary,
+    color: COLOR_PALETTE.textPrimary,
   },
   labelActive: {
     color: COLOR_PALETTE.textPrimary,
-    fontWeight: '600',
   },
   indicatorWrapper: {
     height: 6,

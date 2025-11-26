@@ -1,11 +1,11 @@
 import AuthService from '../auth/authService';
-import { clearAuthState, getTokens } from '../auth/authState';
+import { clearAuthState, getTokens, setTokens } from '../auth/authState';
+import { AuthTokens } from '../auth/types';
 
 /**
  * Configuration for authenticated API requests
  */
 export interface ApiRequestConfig extends RequestInit {
-  useSessionToken?: boolean; // Use session_token instead of JWT
   requiresAuth?: boolean; // Whether this request requires authentication (default: true)
 }
 
@@ -49,12 +49,7 @@ class ApiClient {
   private setupDefaultInterceptors() {
     // Default request interceptor for headers and auth
     this.addRequestInterceptor(async (url, config) => {
-      const {
-        headers = {},
-        useSessionToken = false,
-        requiresAuth = true,
-        ...restConfig
-      } = config;
+      const { headers = {}, requiresAuth = true, ...restConfig } = config;
 
       // Prepare headers
       const requestHeaders = new Headers(headers);
@@ -74,14 +69,12 @@ class ApiClient {
           );
         }
 
-        // Use session_token or JWT based on preference
-        const tokenToUse = useSessionToken
-          ? tokens.sessionToken
-          : tokens.sessionJwt;
-
-        const authHeader = `Bearer ${tokenToUse}`;
-
+        // Always send JWT token as Authorization Bearer
+        const authHeader = `Bearer ${tokens.sessionJwt}`;
         requestHeaders.set('Authorization', authHeader);
+
+        // Always send session token as X-Session-Token header
+        requestHeaders.set('X-Session-Token', tokens.sessionToken);
         requestHeaders.set('X-User-ID', tokens.userId);
       }
 
@@ -97,6 +90,17 @@ class ApiClient {
     // Default request logging interceptor
     this.addRequestInterceptor((url, config) => {
       const method = config.method || 'GET';
+
+      // Log outgoing headers
+      console.log(`[API Request] ${method} ${url}`);
+      if (config.headers) {
+        const headers =
+          config.headers instanceof Headers
+            ? Object.fromEntries(config.headers.entries())
+            : config.headers;
+        console.log('[API Request Headers]:', headers);
+      }
+
       return { url, config };
     });
 
@@ -105,6 +109,43 @@ class ApiClient {
       const method = config.method || 'GET';
       const status = response.status;
       const statusText = status >= 400 ? ` (${response.statusText})` : '';
+
+      // Log incoming response headers
+      console.log(`[API Response] ${method} ${url} - ${status}${statusText}`);
+      const responseHeaders = Object.fromEntries(response.headers.entries());
+      console.log('[API Response Headers]:', responseHeaders);
+
+      return response;
+    });
+
+    // Token refresh interceptor - check for new tokens in response headers
+    this.addResponseInterceptor(async (response, url, config) => {
+      const sessionToken = response.headers.get('X-Session-Token');
+      const sessionJwt = response.headers.get('X-Session-JWT');
+
+      // If either header is present, update the tokens
+      if (sessionToken || sessionJwt) {
+        const currentTokens = getTokens();
+        if (currentTokens) {
+          // Create updated token object
+          const updatedTokens: AuthTokens = {
+            ...currentTokens,
+            ...(sessionToken && { sessionToken }),
+            ...(sessionJwt && { sessionJwt }),
+          };
+
+          try {
+            // Update both storage and in-memory state
+            await AuthService.storeTokens(updatedTokens);
+            setTokens(updatedTokens);
+            console.log('[TokenRefresh] Updated tokens from response headers');
+          } catch (error) {
+            console.error('[TokenRefresh] Failed to update tokens:', error);
+            // Continue with the response even if token update fails
+          }
+        }
+      }
+
       return response;
     });
 

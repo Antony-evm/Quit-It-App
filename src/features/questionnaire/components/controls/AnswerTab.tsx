@@ -64,7 +64,6 @@ export const AnswerTab = ({
         variant="body"
         tone={isSelected ? 'inverse' : 'primary'}
         style={[
-          styles.tabLabel,
           isSelected && { color: COLOR_PALETTE.backgroundMuted },
           !isSelected && { color: COLOR_PALETTE.backgroundCream },
         ]}
@@ -108,7 +107,7 @@ const styles = StyleSheet.create({
     flexBasis: '20%',
   },
   multipleManyTab: {
-    borderRadius: BORDER_RADIUS.round,
+    borderRadius: BORDER_RADIUS.medium,
     minHeight: 70,
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
@@ -127,9 +126,5 @@ const styles = StyleSheet.create({
   },
   tabPressed: {
     opacity: 0.9,
-  },
-  tabLabel: {
-    textAlign: 'center',
-    letterSpacing: 0.4,
   },
 });

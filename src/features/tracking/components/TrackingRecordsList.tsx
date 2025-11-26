@@ -31,7 +31,7 @@ export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <AppText variant="body" tone="secondary" style={styles.loadingText}>
+        <AppText variant="body" tone="primary" style={styles.loadingText}>
           Bringing your notes together...
         </AppText>
       </View>

@@ -274,7 +274,11 @@ export const QuestionnaireScreen = ({
         ) : question?.subOptions &&
           question.subOptions.length > 0 &&
           question.subCombination !== 'N:N' ? (
-          <AppText variant="body" style={{ marginTop: SPACING.lg }}>
+          <AppText
+            variant="body"
+            tone="primary"
+            style={{ marginTop: SPACING.lg }}
+          >
             Sub-options with combination "{question.subCombination}" - UI not
             implemented yet
           </AppText>
