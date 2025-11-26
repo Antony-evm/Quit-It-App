@@ -6,11 +6,14 @@ import {
   AppSurface,
   AppText,
   AppTextInput,
+  Logo,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 import { useAuth } from '@/shared/auth';
 import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
+import { TriggersList } from '@/features/questionnaire/components/TriggersList';
+import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
 import { fetchQuitDate } from '../api/fetchQuitDate';
 import { updateQuitDate } from '../api/updateQuitDate';
 import type { QuitDate } from '../types';
@@ -147,15 +150,9 @@ export const AccountScreen = () => {
       >
         <View style={styles.header}>
           <AppText tone="primary" variant="title" style={styles.headerTitle}>
-            Account Overview
+            Your Quit It Profile Simplified!
           </AppText>
-          <AppText
-            tone="primary"
-            variant="heading"
-            style={styles.headerSubTitle}
-          >
-            Targets and personal profile, simplified.
-          </AppText>
+          <Logo size="medium" style={styles.logo} />
         </View>
         <View style={styles.emailContainer}>
           <AppText tone="primary">
@@ -167,6 +164,10 @@ export const AccountScreen = () => {
         </View>
 
         <QuittingPlanDetails />
+
+        <TriggersList style={styles.triggersCard} />
+
+        <FrequencyData style={styles.frequencyCard} />
 
         {error ? <AppText style={styles.globalError}>{error}</AppText> : null}
       </ScrollView>
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.xxl,
   },
   header: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.xxl,
   },
   planCard: {
     marginBottom: SPACING.xl,
@@ -194,6 +195,15 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   headerSubTitle: {
+    marginBottom: SPACING.xl,
+  },
+  logo: {
+    marginTop: SPACING.lg,
+  },
+  triggersCard: {
+    marginBottom: SPACING.xl,
+  },
+  frequencyCard: {
     marginBottom: SPACING.xl,
   },
   emailText: {
