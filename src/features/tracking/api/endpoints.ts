@@ -6,6 +6,8 @@ export const TRACKING_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
 
 export const CRAVINGS_ANALYTICS_ENDPOINT = `${API_BASE_URL}/api/v1/tracking/cravings/analytics`;
 
+export const SMOKES_ANALYTICS_ENDPOINT = `${API_BASE_URL}/api/v1/tracking/smokes/analytics`;
+
 export const TRACKING_DEFAULT_PARAMS = {
   offset: 0,
   trackingTypeId: null as number | null,

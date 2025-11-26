@@ -9,7 +9,13 @@ export class TriggersService {
   /**
    * Initialize the triggers by fetching from cache or network
    */
-  static async initialize({ forceRefresh = false } = {}): Promise<void> {
+  static async initialize({
+    userId,
+    forceRefresh = false,
+  }: {
+    userId: number;
+    forceRefresh?: boolean;
+  }): Promise<void> {
     if (this.triggers && !forceRefresh) {
       return;
     }
@@ -22,14 +28,14 @@ export class TriggersService {
       ) {
         this.triggers = cachedTriggers.data;
         // Keep cache fresh in background without blocking
-        void this.refreshFromNetwork().catch(error => {
+        void this.refreshFromNetwork(userId).catch(error => {
           console.warn('[TriggersService] Background refresh failed:', error);
         });
         return;
       }
     }
 
-    await this.refreshFromNetwork();
+    await this.refreshFromNetwork(userId);
   }
 
   /**
@@ -42,14 +48,14 @@ export class TriggersService {
   /**
    * Force refresh the triggers from network
    */
-  static async refresh(): Promise<string[]> {
-    await this.refreshFromNetwork();
+  static async refresh(userId: number): Promise<string[]> {
+    await this.refreshFromNetwork(userId);
     return this.triggers!;
   }
 
-  private static async refreshFromNetwork(): Promise<void> {
+  private static async refreshFromNetwork(userId: number): Promise<void> {
     try {
-      const triggers = await fetchTriggers();
+      const triggers = await fetchTriggers(userId);
       this.triggers = triggers;
       await this.persistCache(triggers);
     } catch (error) {

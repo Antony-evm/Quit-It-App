@@ -9,8 +9,19 @@ export interface FetchQuittingPlanResponse {
 /**
  * Fetch the user's quitting plan from the questionnaire endpoint
  */
-export const fetchQuittingPlan = async (): Promise<QuittingPlan> => {
-  const response = await authenticatedGet(QUESTIONNAIRE_PLAN_ENDPOINT);
+export const fetchQuittingPlan = async (
+  userId: number,
+): Promise<QuittingPlan> => {
+  if (!userId) {
+    throw new Error('User ID not available');
+  }
+
+  const queryParams = new URLSearchParams({
+    user_id: userId.toString(),
+  });
+  const url = `${QUESTIONNAIRE_PLAN_ENDPOINT}?${queryParams}`;
+
+  const response = await authenticatedGet(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch quitting plan: ${response.status}`);

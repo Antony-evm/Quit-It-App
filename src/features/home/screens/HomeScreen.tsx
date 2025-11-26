@@ -12,8 +12,9 @@ import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
-import { useCravingAnalytics, CravingChart } from '@/features/tracking';
+import { useCravingAnalytics, useSmokingAnalytics, CravingChart } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
+import { useQuittingPlan } from '@/features/questionnaire';
 import { NotesScreen } from './NotesScreen';
 import {
   HomeEntriesPlaceholder,
@@ -61,6 +62,12 @@ export const HomeScreen = () => {
 
   // Add craving analytics hook at the top with other hooks
   const { data: cravingAnalytics, isLoading, error } = useCravingAnalytics();
+  
+  // Add smoking analytics hook
+  const { data: smokingAnalytics } = useSmokingAnalytics();
+  
+  // Add quitting plan hook to check status
+  const { plan: quittingPlan } = useQuittingPlan();
 
   // Add some debugging
   console.log('HomeScreen - Craving Analytics Data:', {
@@ -88,11 +95,33 @@ export const HomeScreen = () => {
       value: cravingAnalytics?.total_cravings?.toString() || '0',
       accentColor: '#C7D2FE',
     },
-    { label: 'Cigarettes', value: '0', accentColor: '#FDBA74' },
-    { label: 'Money Saved', value: '$18.50', accentColor: '#A7F3D0' },
+    { 
+      label: 'Skipped Cigarettes', 
+      value: smokingAnalytics?.skipped_smokes?.toString() || '0', 
+      accentColor: '#FDBA74' 
+    },
+    { 
+      label: 'Money Saved', 
+      value: smokingAnalytics?.savings ? `$${smokingAnalytics.savings.toFixed(2)}` : '$0.00', 
+      accentColor: '#A7F3D0' 
+    },
   ];
 
   const entries = PLACEHOLDER_ENTRIES;
+
+  // Helper function to calculate days since last smoking day
+  const calculateDaysSmokeFree = (): number => {
+    if (!smokingAnalytics?.last_smoking_day) return 0;
+    const lastSmokingDate = new Date(smokingAnalytics.last_smoking_day);
+    const today = new Date();
+    const diffTime = today.getTime() - lastSmokingDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, diffDays);
+  };
+
+  // Check if we should show smoke-free message
+  const shouldShowSmokeFreeMessage = quittingPlan?.status !== 'Cut down first';
+  const daysSmokeFree = calculateDaysSmokeFree();
 
   useEffect(() => {
     const showSub = Keyboard.addListener('keyboardDidShow', () => {
@@ -117,6 +146,14 @@ export const HomeScreen = () => {
         <AppText tone="secondary" style={styles.subtitle}>
           Here&apos;s how you&apos;ve been doing today.
         </AppText>
+        {shouldShowSmokeFreeMessage && daysSmokeFree > 0 && (
+          <AppText 
+            variant="body" 
+            style={[styles.congratsMessage, { color: '#22C55E' }]}
+          >
+            🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree} {daysSmokeFree === 1 ? 'day' : 'days'}!
+          </AppText>
+        )}
       </View>
       <QuittingPlanCard style={styles.planCard} />
       <HomeStatsRow stats={stats} style={styles.statsRow} />
@@ -188,10 +225,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   subtitle: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.lg,
+  },
+  congratsMessage: {
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.md,
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   planCard: {
     marginBottom: SPACING.xl,

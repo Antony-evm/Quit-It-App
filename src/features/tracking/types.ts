@@ -29,3 +29,12 @@ export type CravingAnalyticsResponse = {
   days_with_cravings: number;
   cravings_by_day: Record<string, number>; // { "2025-11-25": 1, "2025-11-26": 3 }
 };
+
+export type SmokingAnalyticsResponse = {
+  last_smoking_day: string; // date as string
+  total_smokes: number;
+  skipped_smokes: number;
+  skipped_smokes_per_day: number;
+  savings_per_day: number;
+  savings: number;
+};

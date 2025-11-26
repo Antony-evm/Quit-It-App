@@ -12,8 +12,19 @@ export interface FetchFrequencyResponse {
 /**
  * Fetch the user's frequency data from the questionnaire endpoint
  */
-export const fetchFrequency = async (): Promise<FrequencyApiData> => {
-  const response = await authenticatedGet(QUESTIONNAIRE_FREQUENCY_ENDPOINT);
+export const fetchFrequency = async (
+  userId: number,
+): Promise<FrequencyApiData> => {
+  if (!userId) {
+    throw new Error('User ID not available');
+  }
+
+  const queryParams = new URLSearchParams({
+    user_id: userId.toString(),
+  });
+  const url = `${QUESTIONNAIRE_FREQUENCY_ENDPOINT}?${queryParams}`;
+
+  const response = await authenticatedGet(url);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch frequency data: ${response.status}`);

@@ -48,7 +48,7 @@ function App(): React.ReactElement {
                       />
                       <AppNavigator />
                       <ToastContainer />
-                      {__DEV__ && <DeveloperMenuTrigger />}
+                      {<DeveloperMenuTrigger />}
                     </SafeAreaProvider>
                   </ErrorHandlerProvider>
                 </ToastProvider>

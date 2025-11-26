@@ -10,7 +10,13 @@ export class QuittingPlanService {
   /**
    * Initialize the quitting plan by fetching from cache or network
    */
-  static async initialize({ forceRefresh = false } = {}): Promise<void> {
+  static async initialize({
+    userId,
+    forceRefresh = false,
+  }: {
+    userId: number;
+    forceRefresh?: boolean;
+  }): Promise<void> {
     if (this.plan && !forceRefresh) {
       return;
     }
@@ -20,7 +26,7 @@ export class QuittingPlanService {
       if (cachedPlan && !this.isCacheExpired(cachedPlan.cacheTimestamp)) {
         this.plan = cachedPlan.data;
         // Keep cache fresh in background without blocking
-        void this.refreshFromNetwork().catch(error => {
+        void this.refreshFromNetwork(userId).catch(error => {
           console.warn(
             '[QuittingPlanService] Background refresh failed:',
             error,
@@ -30,7 +36,7 @@ export class QuittingPlanService {
       }
     }
 
-    await this.refreshFromNetwork();
+    await this.refreshFromNetwork(userId);
   }
 
   /**
@@ -43,14 +49,14 @@ export class QuittingPlanService {
   /**
    * Force refresh the plan from network
    */
-  static async refresh(): Promise<QuittingPlan> {
-    await this.refreshFromNetwork();
+  static async refresh(userId: number): Promise<QuittingPlan> {
+    await this.refreshFromNetwork(userId);
     return this.plan!;
   }
 
-  private static async refreshFromNetwork(): Promise<void> {
+  private static async refreshFromNetwork(userId: number): Promise<void> {
     try {
-      const plan = await fetchQuittingPlan();
+      const plan = await fetchQuittingPlan(userId);
       this.plan = plan;
       await this.persistCache(plan);
     } catch (error) {

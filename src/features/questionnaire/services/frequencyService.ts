@@ -9,7 +9,13 @@ export class FrequencyService {
   /**
    * Initialize the frequency data by fetching from cache or network
    */
-  static async initialize({ forceRefresh = false } = {}): Promise<void> {
+  static async initialize({
+    userId,
+    forceRefresh = false,
+  }: {
+    userId: number;
+    forceRefresh?: boolean;
+  }): Promise<void> {
     if (this.frequency && !forceRefresh) {
       return;
     }
@@ -22,14 +28,14 @@ export class FrequencyService {
       ) {
         this.frequency = cachedFrequency.data;
         // Keep cache fresh in background without blocking
-        void this.refreshFromNetwork().catch(error => {
+        void this.refreshFromNetwork(userId).catch(error => {
           console.warn('[FrequencyService] Background refresh failed:', error);
         });
         return;
       }
     }
 
-    await this.refreshFromNetwork();
+    await this.refreshFromNetwork(userId);
   }
 
   /**
@@ -42,14 +48,14 @@ export class FrequencyService {
   /**
    * Force refresh the frequency data from network
    */
-  static async refresh(): Promise<FrequencyApiData> {
-    await this.refreshFromNetwork();
+  static async refresh(userId: number): Promise<FrequencyApiData> {
+    await this.refreshFromNetwork(userId);
     return this.frequency!;
   }
 
-  private static async refreshFromNetwork(): Promise<void> {
+  private static async refreshFromNetwork(userId: number): Promise<void> {
     try {
-      const frequency = await fetchFrequency();
+      const frequency = await fetchFrequency(userId);
       this.frequency = frequency;
       await this.persistCache(frequency);
     } catch (error) {

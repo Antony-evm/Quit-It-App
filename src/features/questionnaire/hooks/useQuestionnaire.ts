@@ -44,7 +44,7 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
   const unique = Array.from(new Set(normalized));
 
   if (unique.length > 1) {
-    }
+  }
 
   return unique[0];
 };
@@ -151,8 +151,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setIsReviewing(true);
     };
 
-    loadHistory().catch(storageError => {
-      });
+    loadHistory().catch(storageError => {});
 
     return () => {
       isMounted = false;
@@ -219,7 +218,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setSubmitError(null);
 
         if (!question.questionCode) {
-          }
+        }
 
         const payload = {
           user_id: userId,
@@ -287,7 +286,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setOrderId(nextOrderId);
         setVariationId(nextVariationId);
         setIsReviewing(false);
-        } catch (caughtError) {
+      } catch (caughtError) {
         setSubmitError(caughtError as Error);
       } finally {
         setIsSubmitting(false);
@@ -302,7 +301,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setIsCompleting(true);
         setSubmitError(null);
 
-        const response = await completeQuestionnaire();
+        const response = await completeQuestionnaire(userId);
         setCompletionData(response);
 
         return response;
@@ -312,7 +311,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       } finally {
         setIsCompleting(false);
       }
-    }, []);
+    }, [userId]);
 
   const refresh = useCallback(() => {
     return refetch();
@@ -357,8 +356,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       questionnaireStorage
         .removeByQuestionId(popped.questionId)
-        .catch(storageError => {
-          });
+        .catch(storageError => {});
 
       return nextStack;
     });
