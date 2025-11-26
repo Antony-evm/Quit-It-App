@@ -14,6 +14,7 @@ import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
 import { FrequencyGrid } from '../components/FrequencyGrid';
 import { SubOptionDatePicker } from '../components/SubOptionDatePicker';
 import { UserStatusService } from '@/shared/services/userStatusService';
+import { useUserStatusUpdate } from '@/shared/hooks';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
 const REVIEW_TITLE = 'Summary';
@@ -24,6 +25,7 @@ const QUESTIONNAIRE_SUBMIT_LABEL = 'Submit';
 export const QuestionnaireScreen = ({
   navigation,
 }: RootStackScreenProps<'Questionnaire'>) => {
+  const { handleUserStatusUpdateWithNavigation } = useUserStatusUpdate();
   const [activeSelection, setActiveSelection] = useState<
     SelectedAnswerOption[]
   >([]);
@@ -176,19 +178,14 @@ export const QuestionnaireScreen = ({
         const completionResponse = await completeQuestionnaireFlow();
 
         if (completionResponse) {
-          const { user_status_id } = completionResponse.data;
-
-          // Initialize UserStatusService if not already done
-          await UserStatusService.initialize();
+          // Update user status and handle navigation using the centralized hook
+          await handleUserStatusUpdateWithNavigation(
+            completionResponse,
+            navigation,
+          );
 
           // Clear questionnaire storage
           await questionnaireStorage.clear();
-
-          // Execute navigation based on user status
-          UserStatusService.executeStatusAction(
-            user_status_id,
-            navigation as any,
-          );
         } else {
           // If completion failed, fallback to home navigation
           navigation.reset({

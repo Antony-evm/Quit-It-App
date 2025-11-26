@@ -112,6 +112,8 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.sm,
     flexBasis: '40%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   multipleFewTab: {
     borderRadius: BORDER_RADIUS.xlarge,

@@ -31,6 +31,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshAuthState: () => Promise<void>;
   getBackendUserId: () => number | null;
+  updateUserStatus: (newUserStatusId: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const stytch = useStytch();
 
   const initializeFromBootstrap = useCallback(
-    ({ tokens: bootstrapTokens, user: bootstrapUser }) => {
+    ({ tokens: bootstrapTokens, user: bootstrapUser }: { tokens: AuthTokens | null; user: UserData | null }) => {
       setTokens(bootstrapTokens);
       setUser(bootstrapUser);
       setAuthState(bootstrapTokens, bootstrapUser);
@@ -272,6 +273,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return user?.backendUserId ?? null;
   }, [user]);
 
+  /**
+   * Update user status when new status data arrives from backend
+   */
+  const updateUserStatus = useCallback(async (newUserStatusId: number) => {
+    if (!user) {
+      console.warn('[Auth] Cannot update user status - no user data');
+      return;
+    }
+
+    try {
+      const updatedUserData = {
+        ...user,
+        userStatusId: newUserStatusId,
+      };
+
+      // Update stored user data
+      await AuthService.storeUserData(updatedUserData);
+      
+      // Update in-memory state
+      setUser(updatedUserData);
+      
+      // Update auth state
+      if (tokens) {
+        setAuthState(tokens, updatedUserData);
+      }
+
+      console.log('[Auth] User status updated to:', newUserStatusId);
+    } catch (error) {
+      console.error('[Auth] Failed to update user status:', error);
+    }
+  }, [user, tokens]);
+
   const value: AuthContextType = {
     isAuthenticated,
     isLoading,
@@ -283,6 +316,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     refreshAuthState,
     getBackendUserId,
+    updateUserStatus,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

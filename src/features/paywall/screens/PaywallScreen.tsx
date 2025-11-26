@@ -7,10 +7,12 @@ import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AppButton, AppText } from '@/shared/components/ui';
 import { subscribeUser } from '../api/subscriptionApi';
 import { UserStatusService } from '@/shared/services/userStatusService';
+import { useUserStatusUpdate } from '@/shared/hooks';
 
 export const PaywallScreen = ({
   navigation,
 }: RootStackScreenProps<'Paywall'>) => {
+  const { handleUserStatusUpdateWithNavigation } = useUserStatusUpdate();
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   const handleSubscribe = async () => {
@@ -19,14 +21,8 @@ export const PaywallScreen = ({
 
       const response = await subscribeUser();
 
-      // Extract user_status_id from the UserDataResponse
-      const { user_status_id } = response.data;
-
-      // Initialize UserStatusService if not already done
-      await UserStatusService.initialize();
-
-      // Execute navigation based on the new user status
-      UserStatusService.executeStatusAction(user_status_id, navigation as any);
+      // Update user status and handle navigation using the centralized hook
+      await handleUserStatusUpdateWithNavigation(response, navigation);
 
       // Show success message
       Alert.alert('Success!', response.message || 'Successfully subscribed!', [

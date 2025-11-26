@@ -408,7 +408,7 @@ const styles = StyleSheet.create({
   },
   dateTimeButton: {
     marginHorizontal: SPACING.sm,
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     borderBottomColor: BRAND_COLORS.cream,
     borderStyle: 'dashed',
   },
@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.medium,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-
     ...LAYOUT_STYLES.rowBetween,
   },
   dropdownText: {

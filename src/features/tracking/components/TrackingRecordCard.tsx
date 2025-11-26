@@ -324,38 +324,10 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     return (
       <View ref={cardRef}>
         <AppSurface style={styles.card}>
-          {/* Title Row with Action Buttons */}
           <View style={styles.titleRow}>
-            <AppText variant="heading" style={styles.trackingTypeName}>
-              {editedTrackingType?.displayName ||
-                `Type ${record.tracking_type_id}`}
-            </AppText>
-            <View style={styles.actionButtons}>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.notesQuickActionsButton,
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
-                onPress={handleSave}
-              >
-                <CheckmarkSvg width={18} height={18} />
-              </Pressable>
-              <Pressable
-                style={({ pressed }) => [
-                  styles.notesQuickActionsButton,
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
-                onPress={handleCancel}
-              >
-                <CancelSvg width={18} height={18} />
-              </Pressable>
-            </View>
-          </View>
-
-          <View style={styles.section}>
             <View style={styles.dropdownContainer}>
               <Pressable
-                style={styles.dropdown}
+                style={[styles.dropdown, styles.dropdownEdit]}
                 onPress={() => setShowDropdown(!showDropdown)}
               >
                 <AppText style={styles.dropdownText}>
@@ -375,7 +347,6 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
                   />
                 )}
               </Pressable>
-
               {showDropdown && trackingTypes && (
                 <View style={styles.dropdownList}>
                   {trackingTypes.map(type => (
@@ -405,22 +376,46 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
                 </View>
               )}
             </View>
+            <View style={styles.actionButtons}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.notesQuickActionsButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleSave}
+              >
+                <CheckmarkSvg width={22} height={22} />
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.notesQuickActionsButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleCancel}
+              >
+                <CancelSvg width={22} height={22} />
+              </Pressable>
+            </View>
           </View>
 
           {/* Date/Time Section */}
-          <View style={[styles.section, { marginTop: SPACING.lg }]}>
+          <View style={[styles.section, styles.dateTimeContainer]}>
             <Pressable
-              style={styles.dateTimeButton}
+              style={[styles.dateTimeButton, styles.dateTimeContent]}
               onPress={showDateTimePickerModal}
             >
-              <AppText style={[styles.dateTimeText]}>
+              <AppText
+                variant="caption"
+                tone="primary"
+                style={styles.dateTimeText}
+              >
                 {formatRelativeDateTimeForDisplay(editedDateTime.toISOString())}
               </AppText>
             </Pressable>
           </View>
 
           {/* Notes Section */}
-          <View style={styles.section}>
+          <View style={[styles.section, styles.notesEditSection]}>
             <AppTextInput
               style={styles.notesInput}
               placeholder="What's on your mind?"
@@ -431,13 +426,11 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
               maxLength={maxChars}
               placeholderTextColor={COLOR_PALETTE.textMuted}
             />
-            <AppText
-              variant="caption"
-              tone="secondary"
-              style={styles.charCount}
-            >
-              {remainingChars} characters remaining
-            </AppText>
+            <View style={styles.charCountContainer}>
+              <AppText variant="subcaption" tone="primary">
+                {remainingChars} characters remaining
+              </AppText>
+            </View>
           </View>
 
           {/* Date Time Picker */}
@@ -459,9 +452,13 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
     <View ref={cardRef}>
       <AppSurface style={styles.card}>
         <View style={styles.titleRow}>
-          <AppText variant="heading" style={styles.trackingTypeName}>
-            {trackingType?.displayName || `Type ${record.tracking_type_id}`}
-          </AppText>
+          <View style={styles.dropdownContainer}>
+            <View style={styles.dropdown}>
+              <AppText style={styles.dropdownText}>
+                {trackingType?.displayName || `Type ${record.tracking_type_id}`}
+              </AppText>
+            </View>
+          </View>
           <View style={styles.actionButtons}>
             <Pressable
               style={({ pressed }) => [
@@ -470,7 +467,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
               ]}
               onPress={handleEditPress}
             >
-              <EditSvg width={18} height={18} />
+              <EditSvg width={22} height={22} />
             </Pressable>
             <Pressable
               style={({ pressed }) => [
@@ -479,17 +476,19 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
               ]}
               onPress={handleDelete}
             >
-              <DeleteSvg width={18} height={18} />
+              <DeleteSvg width={22} height={22} />
             </Pressable>
           </View>
         </View>
-        <AppText
-          variant="caption"
-          tone="primary"
-          style={[styles.dateTimeDisplay, { marginTop: SPACING.lg }]}
-        >
-          {formattedDate}
-        </AppText>
+        <View style={[styles.section, styles.dateTimeContainer]}>
+          <AppText
+            variant="caption"
+            tone="primary"
+            style={[styles.dateTimeDisplay, styles.dateTimeContent]}
+          >
+            {formattedDate}
+          </AppText>
+        </View>
         <Pressable
           style={({ pressed }) => [
             styles.noteSection,
@@ -514,24 +513,26 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: SPACING.lg,
-    ...getSurfaceVariant('card'),
-  },
-  header: {
-    gap: SPACING.xs,
+    marginBottom: SPACING.md, // Reduced from xl since ScrollView has content padding
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.md,
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: SPACING.md,
+  },
+  header: {
+    gap: SPACING.xs,
   },
   trackingTypeName: {
     color: COLOR_PALETTE.textPrimary,
     flex: 1,
   },
   notesQuickActionsButton: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     borderRadius: BORDER_RADIUS.large,
     backgroundColor: BRAND_COLORS.cream,
     justifyContent: 'center',
@@ -546,8 +547,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.large,
   },
   noteSection: {
-    marginTop: SPACING.md,
     paddingTop: SPACING.md,
+    marginHorizontal: SPACING.sm,
     borderTopWidth: 2,
     borderTopColor: COLOR_PALETTE.borderDefault,
   },
@@ -567,26 +568,45 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   section: {
-    marginBottom: SPACING.md,
+    marginBottom: 0,
   },
   sectionLabel: {
     color: COLOR_PALETTE.textPrimary,
     marginBottom: SPACING.sm,
     fontWeight: '500',
   },
+  notesEditSection: {
+    marginTop: SPACING.xs,
+    marginBottom: SPACING.xs,
+  },
   dropdownContainer: {
     ...LAYOUT_STYLES.dropdownContainer,
+    flex: 1,
+    marginRight: SPACING.md,
   },
   dropdown: {
-    ...getSurfaceVariant('interactive'),
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: BORDER_RADIUS.medium,
     ...LAYOUT_STYLES.rowBetween,
+  },
+  dropdownEdit: {
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
   },
   dropdownText: {
     ...TEXT_STYLES.dropdownText,
   },
   dropdownList: {
-    ...getSurfaceVariant('elevated'),
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
     ...LAYOUT_STYLES.dropdownList,
+  },
+  headerDropdownText: {
+    ...TEXT_STYLES.dropdownText,
   },
   dropdownItem: {
     ...LAYOUT_STYLES.dropdownItem,
@@ -600,28 +620,39 @@ const styles = StyleSheet.create({
   dropdownItemTextSelected: {
     ...TEXT_STYLES.dropdownItemTextSelected,
   },
+  dateTimeContainer: {
+    marginTop: 0,
+    marginBottom: SPACING.sm,
+  },
+  charCountContainer: {
+    alignItems: 'flex-end',
+  },
   dateTimeButton: {
-    borderBottomWidth: 1,
+    marginHorizontal: SPACING.sm,
+    borderBottomWidth: 2,
     borderBottomColor: BRAND_COLORS.cream,
     borderStyle: 'dashed',
+  },
+  dateTimeContent: {
+    marginHorizontal: SPACING.sm,
+    paddingVertical: 0,
   },
   dateTimeText: {
     color: COLOR_PALETTE.textPrimary,
   },
   notesInput: {
-    ...getSurfaceVariant('input'),
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    borderRadius: BORDER_RADIUS.medium,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     color: COLOR_PALETTE.textPrimary,
     minHeight: 80,
     textAlignVertical: 'top',
-  },
-  charCount: {
-    marginTop: SPACING.xs,
-    textAlign: 'right',
+    marginBottom: SPACING.xs,
   },
   dateTimeDisplay: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.textMuted,
-    borderStyle: 'dashed',
-    paddingBottom: 2,
+    color: COLOR_PALETTE.textPrimary,
   },
 });
