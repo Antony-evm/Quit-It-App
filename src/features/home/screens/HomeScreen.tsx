@@ -12,6 +12,8 @@ import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
+import { useCravingAnalytics, CravingChart } from '@/features/tracking';
+import { DailyCravingData } from '@/features/tracking/types';
 import { NotesScreen } from './NotesScreen';
 import {
   HomeEntriesPlaceholder,
@@ -25,7 +27,7 @@ import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
-  { label: 'Cigarettes', value: '0', accentColor: '#FDBA74' },
+  { label: 'Cigarettes', value: '0', accentColor: '#cf1515ff' },
   { label: 'Money Saved', value: '$18.50', accentColor: '#A7F3D0' },
 ];
 
@@ -56,7 +58,40 @@ const PLACEHOLDER_ENTRIES: HomeEntry[] = [
 export const HomeScreen = () => {
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const stats = STAT_CARDS;
+
+  // Add craving analytics hook at the top with other hooks
+  const { data: cravingAnalytics, isLoading, error } = useCravingAnalytics();
+
+  // Add some debugging
+  console.log('HomeScreen - Craving Analytics Data:', {
+    data: cravingAnalytics,
+    isLoading,
+    error: error?.message,
+    totalCravings: cravingAnalytics?.total_cravings,
+    cravingsByDay: cravingAnalytics?.cravings_by_day,
+  });
+
+  // Convert cravings_by_day to daily_data format for the chart
+  const dailyData: DailyCravingData[] = cravingAnalytics?.cravings_by_day
+    ? Object.entries(cravingAnalytics.cravings_by_day)
+        .map(([date, count]) => ({
+          date,
+          count,
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date))
+    : [];
+
+  // Calculate dynamic stats based on analytics data
+  const stats: HomeStat[] = [
+    {
+      label: 'Cravings',
+      value: cravingAnalytics?.total_cravings?.toString() || '0',
+      accentColor: '#C7D2FE',
+    },
+    { label: 'Cigarettes', value: '0', accentColor: '#FDBA74' },
+    { label: 'Money Saved', value: '$18.50', accentColor: '#A7F3D0' },
+  ];
+
   const entries = PLACEHOLDER_ENTRIES;
 
   useEffect(() => {
@@ -85,6 +120,9 @@ export const HomeScreen = () => {
       </View>
       <QuittingPlanCard style={styles.planCard} />
       <HomeStatsRow stats={stats} style={styles.statsRow} />
+      {dailyData && dailyData.length > 0 && (
+        <CravingChart data={dailyData} style={styles.chartCard} />
+      )}
       <HomeEntriesPlaceholder entries={entries} style={styles.entriesCard} />
     </>
   );
@@ -159,6 +197,9 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   statsRow: {
+    marginBottom: SPACING.xl,
+  },
+  chartCard: {
     marginBottom: SPACING.xl,
   },
   entriesCard: {
