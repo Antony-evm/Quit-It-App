@@ -9,6 +9,7 @@ import { COLOR_PALETTE } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
 import { TrackingTypesProvider } from '@/features/tracking/components/TrackingTypesProvider';
+import { QuestionnaireAccountProvider } from '@/features/questionnaire';
 import { ToastProvider, ToastContainer } from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
 import { ErrorHandlerProvider } from '@/shared/error';
@@ -37,19 +38,21 @@ function App(): React.ReactElement {
         <NavigationReadyProvider>
           <AuthProvider>
             <TrackingTypesProvider>
-              <ToastProvider>
-                <ErrorHandlerProvider preferToast={true}>
-                  <SafeAreaProvider>
-                    <StatusBar
-                      barStyle="light-content"
-                      backgroundColor={COLOR_PALETTE.backgroundMuted}
-                    />
-                    <AppNavigator />
-                    <ToastContainer />
-                    {__DEV__ && <DeveloperMenuTrigger />}
-                  </SafeAreaProvider>
-                </ErrorHandlerProvider>
-              </ToastProvider>
+              <QuestionnaireAccountProvider>
+                <ToastProvider>
+                  <ErrorHandlerProvider preferToast={true}>
+                    <SafeAreaProvider>
+                      <StatusBar
+                        barStyle="light-content"
+                        backgroundColor={COLOR_PALETTE.backgroundMuted}
+                      />
+                      <AppNavigator />
+                      <ToastContainer />
+                      {__DEV__ && <DeveloperMenuTrigger />}
+                    </SafeAreaProvider>
+                  </ErrorHandlerProvider>
+                </ToastProvider>
+              </QuestionnaireAccountProvider>
             </TrackingTypesProvider>
           </AuthProvider>
         </NavigationReadyProvider>

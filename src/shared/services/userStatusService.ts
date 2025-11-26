@@ -192,7 +192,9 @@ export class UserStatusService {
     navigation: NativeStackNavigationProp<RootStackParamList>,
   ): Promise<void> {
     try {
-      // TODO: Implement actual placeholder call
+      // Placeholder call implementation
+      // The actual questionnaire account data fetching is handled by QuestionnaireAccountProvider
+      // when user is authenticated and should navigate to home
 
       navigation.navigate('Home');
     } catch (error) {

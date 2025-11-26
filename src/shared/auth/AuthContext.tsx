@@ -32,6 +32,13 @@ interface AuthContextType {
   refreshAuthState: () => Promise<void>;
   getBackendUserId: () => number | null;
   updateUserStatus: (newUserStatusId: number) => Promise<void>;
+  updateUserData: (userData: {
+    user_status_id: number;
+    first_name?: string | null;
+    last_name?: string | null;
+    user_id?: number;
+    user_type_id?: number;
+  }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,7 +56,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const stytch = useStytch();
 
   const initializeFromBootstrap = useCallback(
-    ({ tokens: bootstrapTokens, user: bootstrapUser }: { tokens: AuthTokens | null; user: UserData | null }) => {
+    ({
+      tokens: bootstrapTokens,
+      user: bootstrapUser,
+    }: {
+      tokens: AuthTokens | null;
+      user: UserData | null;
+    }) => {
       setTokens(bootstrapTokens);
       setUser(bootstrapUser);
       setAuthState(bootstrapTokens, bootstrapUser);
@@ -170,6 +183,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             id: user_id,
             email: user.emails?.[0]?.email || email,
             name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+            firstName: firstName.trim() || null,
+            lastName: lastName.trim() || null,
             phoneNumber: user.phone_numbers?.[0]?.phone_number,
           };
 
@@ -205,6 +220,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 ...userData,
                 backendUserId: backendResponse.data.user_id,
                 userStatusId: userStatusId,
+                // Update with backend's version of the names (they might be different)
+                firstName: backendResponse.data.first_name,
+                lastName: backendResponse.data.last_name,
+                // Update combined name if we have names from backend
+                ...(backendResponse.data.first_name ||
+                backendResponse.data.last_name
+                  ? {
+                      name: [
+                        backendResponse.data.first_name,
+                        backendResponse.data.last_name,
+                      ]
+                        .filter(Boolean)
+                        .join(' '),
+                    }
+                  : {}),
               };
 
               await AuthService.storeUserData(updatedUserData);
@@ -276,34 +306,94 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   /**
    * Update user status when new status data arrives from backend
    */
-  const updateUserStatus = useCallback(async (newUserStatusId: number) => {
-    if (!user) {
-      console.warn('[Auth] Cannot update user status - no user data');
-      return;
-    }
-
-    try {
-      const updatedUserData = {
-        ...user,
-        userStatusId: newUserStatusId,
-      };
-
-      // Update stored user data
-      await AuthService.storeUserData(updatedUserData);
-      
-      // Update in-memory state
-      setUser(updatedUserData);
-      
-      // Update auth state
-      if (tokens) {
-        setAuthState(tokens, updatedUserData);
+  const updateUserStatus = useCallback(
+    async (newUserStatusId: number) => {
+      if (!user) {
+        console.warn('[Auth] Cannot update user status - no user data');
+        return;
       }
 
-      console.log('[Auth] User status updated to:', newUserStatusId);
-    } catch (error) {
-      console.error('[Auth] Failed to update user status:', error);
-    }
-  }, [user, tokens]);
+      try {
+        const updatedUserData = {
+          ...user,
+          userStatusId: newUserStatusId,
+        };
+
+        // Update stored user data
+        await AuthService.storeUserData(updatedUserData);
+
+        // Update in-memory state
+        setUser(updatedUserData);
+
+        // Update auth state
+        if (tokens) {
+          setAuthState(tokens, updatedUserData);
+        }
+
+        console.log('[Auth] User status updated to:', newUserStatusId);
+      } catch (error) {
+        console.error('[Auth] Failed to update user status:', error);
+      }
+    },
+    [user, tokens],
+  );
+
+  /**
+   * Update user data with complete information from backend API response
+   */
+  const updateUserData = useCallback(
+    async (userData: {
+      user_status_id: number;
+      first_name?: string | null;
+      last_name?: string | null;
+      user_id?: number;
+      user_type_id?: number;
+    }) => {
+      if (!user) {
+        console.warn('[Auth] Cannot update user data - no user data');
+        return;
+      }
+
+      try {
+        const updatedUserData = {
+          ...user,
+          userStatusId: userData.user_status_id,
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+          // Update combined name field if we have first/last names
+          ...(userData.first_name || userData.last_name
+            ? {
+                name: [userData.first_name, userData.last_name]
+                  .filter(Boolean)
+                  .join(' '),
+              }
+            : {}),
+          // Update backend user ID if provided
+          ...(userData.user_id ? { backendUserId: userData.user_id } : {}),
+        };
+
+        // Update stored user data
+        await AuthService.storeUserData(updatedUserData);
+
+        // Update in-memory state
+        setUser(updatedUserData);
+
+        // Update auth state
+        if (tokens) {
+          setAuthState(tokens, updatedUserData);
+        }
+
+        console.log('[Auth] User data updated:', {
+          userStatusId: userData.user_status_id,
+          firstName: userData.first_name,
+          lastName: userData.last_name,
+        });
+      } catch (error) {
+        console.error('[Auth] Failed to update user data:', error);
+      }
+    },
+    [user, tokens],
+  );
 
   const value: AuthContextType = {
     isAuthenticated,
@@ -317,6 +407,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshAuthState,
     getBackendUserId,
     updateUserStatus,
+    updateUserData,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

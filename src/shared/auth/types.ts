@@ -11,5 +11,7 @@ export interface UserData {
   email?: string;
   phoneNumber?: string;
   name?: string;
+  firstName?: string | null; // Individual first name field
+  lastName?: string | null; // Individual last name field
   [key: string]: any;
 }

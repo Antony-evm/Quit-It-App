@@ -8,7 +8,7 @@ import type { UserDataResponse } from '@/shared/types/api';
  * This ensures user data and status cache are properly synchronized
  */
 export const useUserStatusUpdate = () => {
-  const { updateUserStatus } = useAuth();
+  const { updateUserData } = useAuth();
 
   /**
    * Handle user status update from API response
@@ -17,23 +17,29 @@ export const useUserStatusUpdate = () => {
   const handleUserStatusUpdate = useCallback(
     async (response: UserDataResponse): Promise<void> => {
       try {
-        const { user_status_id } = response.data;
+        const responseData = response.data;
 
-        console.log('[UserStatusUpdate] Processing status update:', user_status_id);
+        console.log('[UserStatusUpdate] Processing user data update:', {
+          user_status_id: responseData.user_status_id,
+          first_name: responseData.first_name,
+          last_name: responseData.last_name,
+        });
 
-        // Step 1: Update user status in AuthContext to keep user data fresh
-        await updateUserStatus(user_status_id);
+        // Step 1: Update complete user data in AuthContext including firstName/lastName
+        await updateUserData(responseData);
 
         // Step 2: Force refresh UserStatusService cache to ensure latest status mappings
         await UserStatusService.initialize({ forceRefresh: true });
 
-        console.log('[UserStatusUpdate] User status update completed successfully');
+        console.log(
+          '[UserStatusUpdate] User data update completed successfully',
+        );
       } catch (error) {
-        console.error('[UserStatusUpdate] Failed to update user status:', error);
+        console.error('[UserStatusUpdate] Failed to update user data:', error);
         throw error;
       }
     },
-    [updateUserStatus],
+    [updateUserData],
   );
 
   /**
