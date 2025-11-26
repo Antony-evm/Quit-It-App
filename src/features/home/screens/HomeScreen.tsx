@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
+import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
 import { NotesScreen } from './NotesScreen';
 import {
   HomeEntriesPlaceholder,
@@ -82,6 +83,7 @@ export const HomeScreen = () => {
           Here&apos;s how you&apos;ve been doing today.
         </AppText>
       </View>
+      <QuittingPlanCard style={styles.planCard} />
       <HomeStatsRow stats={stats} style={styles.statsRow} />
       <HomeEntriesPlaceholder entries={entries} style={styles.entriesCard} />
     </>
@@ -151,6 +153,9 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   subtitle: {
+    marginBottom: SPACING.xl,
+  },
+  planCard: {
     marginBottom: SPACING.xl,
   },
   statsRow: {

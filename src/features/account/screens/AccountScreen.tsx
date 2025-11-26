@@ -10,6 +10,7 @@ import {
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 import { useAuth } from '@/shared/auth';
+import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
 import { fetchQuitDate } from '../api/fetchQuitDate';
 import { updateQuitDate } from '../api/updateQuitDate';
 import type { QuitDate } from '../types';
@@ -54,7 +55,6 @@ export const AccountScreen = () => {
       try {
         await bootstrap();
       } catch {
-        // Intentionally ignored, error state already set.
       } finally {
         if (isMounted) {
           setIsBootstrapping(false);
@@ -156,6 +156,8 @@ export const AccountScreen = () => {
           >
             Targets and personal profile, simplified.
           </AppText>
+        </View>
+        <View style={styles.emailContainer}>
           <AppText tone="primary">
             Email:{' '}
             <AppText tone="primary" style={styles.emailText}>
@@ -163,6 +165,8 @@ export const AccountScreen = () => {
             </AppText>
           </AppText>
         </View>
+
+        <QuittingPlanDetails />
 
         {error ? <AppText style={styles.globalError}>{error}</AppText> : null}
       </ScrollView>
@@ -179,6 +183,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: SPACING.xl,
+  },
+  planCard: {
+    marginBottom: SPACING.xl,
+  },
+  emailContainer: {
+    marginBottom: SPACING.lg,
   },
   headerTitle: {
     marginBottom: SPACING.sm,

@@ -1,5 +1,8 @@
 import type { UserDataResponse } from '@/shared/types/api';
 
+// Plan types
+export * from './types/plan';
+
 export type AnswerType =
   | 'multiple_choice'
   | 'numeric'
