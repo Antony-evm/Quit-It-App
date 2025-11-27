@@ -6,6 +6,7 @@ export * from './hooks/useTriggers';
 export * from './hooks/useFrequency';
 export * from './screens/QuestionnaireScreen';
 export * from './components/QuestionnaireTemplate';
+export * from './components/QuestionnaireProgressBar';
 export * from './components/QuestionnaireQuestion';
 export * from './components/QuestionnaireReview';
 export * from './components/QuestionnaireAccountProvider';

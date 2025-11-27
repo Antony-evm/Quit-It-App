@@ -5,9 +5,11 @@ import { AppButton, AppSurface, AppText } from '@/shared/components/ui';
 import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
+  DEVICE_WIDTH,
   QUESTIONNAIRE_HORIZONTAL_PADDING,
   QUESTIONNAIRE_MAX_CONTENT_WIDTH,
 } from '@/shared/theme/layout';
+import { QuestionnaireProgressBar } from './QuestionnaireProgressBar';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;
@@ -18,6 +20,10 @@ type QuestionnaireTemplateProps = PropsWithChildren<{
   onPrimaryActionPress?: () => void;
   footerSlot?: React.ReactNode;
   backButton?: React.ReactNode;
+  progressData?: {
+    currentQuestion: number;
+    totalQuestions: number;
+  };
 }>;
 
 export const QuestionnaireTemplate = ({
@@ -29,6 +35,7 @@ export const QuestionnaireTemplate = ({
   onPrimaryActionPress,
   footerSlot,
   backButton,
+  progressData,
   children,
 }: QuestionnaireTemplateProps) => {
   const { width } = useDeviceDimensions();
@@ -40,6 +47,24 @@ export const QuestionnaireTemplate = ({
 
   return (
     <View style={styles.wrapper}>
+      {/* Header with back button and progress bar */}
+      <View style={styles.headerContainer}>
+        <View style={styles.backButtonSection}>{backButton}</View>
+
+        {/* Progress bar - always reserve space, show when not loading and have progress data */}
+        <View style={styles.progressSection}>
+          {!isLoading && progressData ? (
+            <QuestionnaireProgressBar
+              currentQuestion={progressData.currentQuestion}
+              totalQuestions={progressData.totalQuestions}
+            />
+          ) : (
+            // Show test progress bar when no progress data (for debugging)
+            <QuestionnaireProgressBar currentQuestion={1} totalQuestions={5} />
+          )}
+        </View>
+      </View>
+
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
@@ -48,8 +73,6 @@ export const QuestionnaireTemplate = ({
         style={styles.scrollView}
         testID="questionnaire-template"
       >
-        <View style={styles.backButtonContainer}>{backButton}</View>
-
         <View style={[styles.container, { maxWidth: contentWidth }]}>
           {!isLoading ? (
             <View style={styles.hero}>
@@ -163,6 +186,32 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.lg,
     width: '100%',
     backgroundColor: BRAND_COLORS.inkDark,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'relative',
+    width: '100%',
+    marginBottom: SPACING.xxl,
+    backgroundColor: BRAND_COLORS.inkDark,
+    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
+    paddingTop: SPACING.md, // Add some top padding to position back button lower
+  },
+  backButtonSection: {
+    width: 44, // Reserve space for the absolutely positioned BackArrow
+    height: 44, // Reserve space for the absolutely positioned BackArrow
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    marginRight: SPACING.md,
+    position: 'relative', // Ensure it serves as positioning context for BackArrow
+  },
+  progressSection: {
+    width: '40%', // Back to 40% as requested
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    marginLeft: DEVICE_WIDTH / 7, // Add left margin to move it more towards center
   },
   backButtonContainer: {
     position: 'relative',

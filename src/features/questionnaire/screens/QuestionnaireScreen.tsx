@@ -304,6 +304,24 @@ export const QuestionnaireScreen = ({
     }
   };
 
+  // Calculate progress data for the progress bar
+  const progressData = useMemo(() => {
+    if (
+      question?.orderId === undefined ||
+      question?.orderId === null ||
+      !question?.maxQuestion
+    ) {
+      return undefined;
+    }
+
+    const data = {
+      currentQuestion: question.orderId + 1, // orderId is 0-based, display as 1-based
+      totalQuestions: question.maxQuestion,
+    };
+
+    return data;
+  }, [question?.orderId, question?.maxQuestion]);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -311,6 +329,7 @@ export const QuestionnaireScreen = ({
           title={headerTitle}
           subtitle={headerSubtitle}
           isLoading={isLoading}
+          progressData={progressData}
           primaryActionLabel={
             shouldShowPrimaryAction ? primaryActionLabel : undefined
           }

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+  BRAND_COLORS,
+} from '@/shared/theme';
 import { AppText } from '@/shared/components/ui';
 
 type AnswerTabVariant =
@@ -115,6 +120,11 @@ const styles = StyleSheet.create({
     flexBasis: '40%',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: BRAND_COLORS.dark,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 10,
   },
   multipleFewTab: {
     borderRadius: BORDER_RADIUS.xlarge,

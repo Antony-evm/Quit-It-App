@@ -52,11 +52,9 @@ export const NumericRangeField = ({
       <View style={styles.labels}>
         <AppText variant="caption" style={styles.rangeLabel}>
           {minimum}
-          {units && ` ${units}`}
         </AppText>
         <AppText variant="caption" style={styles.rangeLabel}>
           {maximum}
-          {units && ` ${units}`}
         </AppText>
       </View>
     </View>
