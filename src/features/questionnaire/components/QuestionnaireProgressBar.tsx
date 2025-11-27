@@ -1,20 +1,53 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Animated } from 'react-native';
 import { AppText } from '@/shared/components/ui';
 import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type QuestionnaireProgressBarProps = {
   currentQuestion: number;
   totalQuestions: number;
+  isLoading?: boolean;
+  isSubmitting?: boolean;
 };
 
 export const QuestionnaireProgressBar = ({
   currentQuestion,
   totalQuestions,
+  isLoading = false,
+  isSubmitting = false,
 }: QuestionnaireProgressBarProps) => {
   // Calculate progress percentage
   const progress = Math.min(currentQuestion / totalQuestions, 1);
   const progressPercentage = Math.round(progress * 100);
+
+  // Animation for loading/submitting state
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const isAnimating = isLoading || isSubmitting;
+
+  useEffect(() => {
+    if (isAnimating) {
+      // Start pulsing animation
+      const pulse = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.2,
+            duration: 600,
+            useNativeDriver: false,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: false,
+          }),
+        ])
+      );
+      pulse.start();
+      return () => pulse.stop();
+    } else {
+      // Reset to normal state
+      pulseAnim.setValue(1);
+    }
+  }, [isAnimating, pulseAnim]);
 
   return (
     <View style={styles.container}>
@@ -23,8 +56,14 @@ export const QuestionnaireProgressBar = ({
       </AppText>
 
       <View style={styles.progressTrack}>
-        <View
-          style={[styles.progressFill, { width: `${progressPercentage}%` }]}
+        <Animated.View
+          style={[
+            styles.progressFill,
+            {
+              width: `${progressPercentage}%`,
+              transform: [{ scaleY: pulseAnim }],
+            },
+          ]}
         />
       </View>
     </View>

@@ -15,6 +15,7 @@ type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;
   subtitle?: string;
   isLoading?: boolean;
+  isSubmitting?: boolean;
   primaryActionLabel?: string;
   primaryActionDisabled?: boolean;
   onPrimaryActionPress?: () => void;
@@ -30,6 +31,7 @@ export const QuestionnaireTemplate = ({
   title,
   subtitle,
   isLoading = false,
+  isSubmitting = false,
   primaryActionLabel,
   primaryActionDisabled = false,
   onPrimaryActionPress,
@@ -53,15 +55,14 @@ export const QuestionnaireTemplate = ({
 
         {/* Progress bar - always reserve space, show when not loading and have progress data */}
         <View style={styles.progressSection}>
-          {!isLoading && progressData ? (
+          {progressData ? (
             <QuestionnaireProgressBar
               currentQuestion={progressData.currentQuestion}
               totalQuestions={progressData.totalQuestions}
+              isLoading={isLoading}
+              isSubmitting={isSubmitting}
             />
-          ) : (
-            // Show test progress bar when no progress data (for debugging)
-            <QuestionnaireProgressBar currentQuestion={1} totalQuestions={5} />
-          )}
+          ) : null}
         </View>
       </View>
 

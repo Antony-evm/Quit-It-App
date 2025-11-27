@@ -329,6 +329,7 @@ export const QuestionnaireScreen = ({
           title={headerTitle}
           subtitle={headerSubtitle}
           isLoading={isLoading}
+          isSubmitting={isSubmitting}
           progressData={progressData}
           primaryActionLabel={
             shouldShowPrimaryAction ? primaryActionLabel : undefined
