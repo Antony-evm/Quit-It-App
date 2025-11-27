@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   },
   stackedContainer: {
     width: '100%',
-    flexDirection: 'column',
-    flexWrap: 'nowrap',
-    gap: SPACING.sm,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.md,
   },
 });

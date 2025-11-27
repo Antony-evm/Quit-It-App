@@ -344,13 +344,7 @@ export const QuestionnaireQuestion = ({
           }))}
           selectedOptionIds={selectedChoiceIds}
           selectionMode={allowMultipleChoice ? 'multiple' : 'single'}
-          variant={
-            allowMultipleChoice || allowSingleChoice
-              ? question.options.length > 5
-                ? 'multiple-many'
-                : 'multiple-few'
-              : 'default'
-          }
+          variant={'multiple-many'}
           onSelectionChange={setSelectedChoiceIds}
         />
       ) : null}

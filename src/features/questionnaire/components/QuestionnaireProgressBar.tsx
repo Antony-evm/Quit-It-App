@@ -39,7 +39,7 @@ export const QuestionnaireProgressBar = ({
             duration: 600,
             useNativeDriver: false,
           }),
-        ])
+        ]),
       );
       pulse.start();
       return () => pulse.stop();

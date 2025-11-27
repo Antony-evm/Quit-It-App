@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Slider from '@react-native-community/slider';
+import Svg, { Circle, Path } from 'react-native-svg';
 
 import type {
   AnswerOption,
@@ -15,6 +16,145 @@ import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 const FREQUENCY_ORDER = ['never', 'rarely', 'often', 'constantly'];
 
 const normalizeFrequencyValue = (value: string) => value.trim().toLowerCase();
+
+type ParsedTimeWindow = {
+  startHour: number;
+  endHour: number;
+  periodLabel: string;
+  hoursLabel: string;
+};
+
+const formatHour = (hour: number) => {
+  const normalized = ((hour % 24) + 24) % 24;
+  const suffix = normalized >= 12 ? 'PM' : 'AM';
+  const hour12 = normalized % 12 === 0 ? 12 : normalized % 12;
+  return `${hour12}${suffix}`;
+};
+
+const parseHourToken = (token: string): number | null => {
+  const match = token.trim().match(/(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i);
+  if (!match) return null;
+  const hours = Number(match[1]);
+  const minutes = Number(match[2] ?? 0);
+  const meridiem = match[3].toLowerCase();
+  let value = hours % 12;
+  value = meridiem === 'pm' ? value + 12 : value;
+  return value + minutes / 60;
+};
+
+const parseTimeWindow = (value: string): ParsedTimeWindow => {
+  // Prefer the text inside parentheses; fallback to whole string
+  const parenMatch = value.match(/\(([^)]+)\)/);
+  const rangeText = parenMatch ? parenMatch[1] : value;
+  const normalizedRange = rangeText.replace(/[\u2013\u2014]/g, ' - '); // normalize en/em dash
+  const [rawStart, rawEnd] = normalizedRange
+    .split(/ - /)
+    .map(part => part.trim());
+
+  const start = rawStart ? parseHourToken(rawStart) : null;
+  const end = rawEnd ? parseHourToken(rawEnd) : null;
+
+  const safeStart = start ?? 0;
+  let safeEnd = end ?? (start !== null ? safeStart + 3 : 24);
+
+  // If end is earlier than start, treat it as wrapping forward (e.g., 9AM - 12AM => end of day)
+  if (safeEnd <= safeStart) {
+    safeEnd = end === 0 ? 24 : safeStart + 3;
+  }
+
+  const periodLabel =
+    safeStart < 12 && safeEnd <= 12
+      ? 'AM'
+      : safeStart >= 12 && safeEnd >= 12
+      ? 'PM'
+      : 'AM-PM';
+
+  const hoursLabel = `${formatHour(safeStart)} - ${formatHour(
+    Math.min(safeEnd, 24),
+  )}`;
+  return {
+    startHour: safeStart,
+    endHour: safeEnd,
+    periodLabel,
+    hoursLabel,
+  };
+};
+
+const polarPoint = (center: number, radius: number, hour: number) => {
+  const angle = ((hour / 24) * 360 - 90) * (Math.PI / 180);
+  return {
+    x: center + radius * Math.cos(angle),
+    y: center + radius * Math.sin(angle),
+  };
+};
+
+const buildArcPath = (size: number, startHour: number, endHour: number) => {
+  const radius = size / 2 - 4;
+  const center = size / 2;
+  const clampedStart = Math.max(0, Math.min(startHour, 24));
+  const clampedEnd = Math.max(0, Math.min(endHour, 24));
+  const arcEnd = clampedEnd <= clampedStart ? clampedStart + 0.1 : clampedEnd;
+  const start = polarPoint(center, radius, clampedStart);
+  const end = polarPoint(center, radius, arcEnd);
+  const arcSpan = arcEnd - clampedStart;
+  const largeArcFlag = arcSpan > 12 ? 1 : 0;
+  return {
+    d: [
+      `M ${center} ${center}`,
+      `L ${start.x} ${start.y}`,
+      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
+      'Z',
+    ].join(' '),
+  };
+};
+
+type ClockSegmentBadgeProps = {
+  startHour: number;
+  endHour: number;
+  label: string;
+  hoursLabel: string;
+};
+
+const ClockSegmentBadge = ({
+  startHour,
+  endHour,
+  label,
+  hoursLabel,
+}: ClockSegmentBadgeProps) => {
+  const size = 60;
+  const { d } = buildArcPath(size, startHour, endHour);
+
+  return (
+    <View style={styles.badgeContainer}>
+      <Svg width={size} height={size}>
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={size / 2 - 4}
+          fill={BRAND_COLORS.inkDark}
+          stroke={COLOR_PALETTE.borderDefault}
+          strokeWidth={2}
+        />
+        <Path
+          d={d}
+          fill={COLOR_PALETTE.accentPrimary}
+          fillOpacity={0.35}
+          stroke={COLOR_PALETTE.accentPrimary}
+          strokeWidth={2}
+          strokeLinecap="round"
+        />
+      </Svg>
+      <View style={styles.badgeLabels}>
+        <AppText variant="caption" style={styles.badgeLabelText}>
+          {label}
+        </AppText>
+        <AppText variant="caption" style={styles.badgeHoursText}>
+          {hoursLabel}
+        </AppText>
+      </View>
+    </View>
+  );
+};
 
 type FrequencyGridProps = {
   options: AnswerOption[];
@@ -51,6 +191,15 @@ export const FrequencyGrid = ({
       .sort((a, b) => a.priority - b.priority)
       .map(item => item.subOption);
   }, [subOptions]);
+
+  const enrichedSubOptions = useMemo(
+    () =>
+      orderedSubOptions.map(sub => ({
+        ...sub,
+        ...parseTimeWindow(sub.value),
+      })),
+    [orderedSubOptions],
+  );
 
   useEffect(() => {
     const initialSelections: Record<number, number> = {};
@@ -100,7 +249,7 @@ export const FrequencyGrid = ({
 
   const handleSelectionChange = useCallback(
     (optionId: number, sliderIndex: number) => {
-      const subOption = orderedSubOptions[sliderIndex];
+      const subOption = enrichedSubOptions[sliderIndex];
       if (!subOption) {
         return;
       }
@@ -110,7 +259,7 @@ export const FrequencyGrid = ({
         [optionId]: subOption.id,
       }));
     },
-    [orderedSubOptions],
+    [enrichedSubOptions],
   );
 
   useEffect(() => {
@@ -138,24 +287,22 @@ export const FrequencyGrid = ({
   }, [selections, options, subOptions, onSubSelectionChange, onValidityChange]);
 
   const renderGridRow = (option: AnswerOption, index: number) => {
-    const selectedIndex = orderedSubOptions.findIndex(
+    const selectedIndex = enrichedSubOptions.findIndex(
       sub => sub.id === selections[option.id],
     );
     const sliderValue = selectedIndex >= 0 ? selectedIndex : 0;
     const edgeLabels =
-      orderedSubOptions.length >= 2
+      enrichedSubOptions.length >= 2
         ? {
-            min: orderedSubOptions[0]?.value ?? 'Never',
+            min: enrichedSubOptions[0]?.periodLabel ?? 'AM',
             max:
-              orderedSubOptions[orderedSubOptions.length - 1]?.value ??
-              'Constantly',
+              enrichedSubOptions[enrichedSubOptions.length - 1]?.periodLabel ??
+              'PM',
           }
         : null;
 
-    const currentLabel =
-      selectedIndex >= 0 && orderedSubOptions[selectedIndex]
-        ? orderedSubOptions[selectedIndex].value
-        : 'Select a frequency';
+    const currentSub =
+      selectedIndex >= 0 ? enrichedSubOptions[selectedIndex] : null;
 
     return (
       <View key={option.id} style={styles.gridRow}>
@@ -178,7 +325,7 @@ export const FrequencyGrid = ({
           <Slider
             style={styles.slider}
             minimumValue={0}
-            maximumValue={Math.max(orderedSubOptions.length - 1, 0)}
+            maximumValue={Math.max(enrichedSubOptions.length - 1, 0)}
             step={1}
             value={sliderValue}
             minimumTrackTintColor={BRAND_COLORS.cream}
@@ -188,9 +335,24 @@ export const FrequencyGrid = ({
               handleSelectionChange(option.id, Math.round(value))
             }
           />
-          <AppText variant="caption" style={styles.currentValue}>
-            {currentLabel}
-          </AppText>
+          {currentSub ? (
+            <View style={styles.currentValue}>
+              <ClockSegmentBadge
+                startHour={currentSub.startHour}
+                endHour={currentSub.endHour}
+                label={currentSub.periodLabel}
+                hoursLabel={currentSub.hoursLabel}
+              />
+            </View>
+          ) : (
+            <AppText
+              variant="caption"
+              tone="primary"
+              style={styles.currentValueText}
+            >
+              Select a time window
+            </AppText>
+          )}
         </View>
       </View>
     );
@@ -199,7 +361,7 @@ export const FrequencyGrid = ({
   if (options.length === 0 || subOptions.length === 0) {
     return (
       <View style={styles.container}>
-        <AppText variant="body" tone="secondary">
+        <AppText variant="body" tone="primary">
           No frequency options available
         </AppText>
       </View>
@@ -244,6 +406,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
   },
+  currentValue: {
+    alignItems: 'flex-end',
+  },
+  currentValueText: {
+    opacity: 0.8,
+  },
   edgeLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -257,8 +425,19 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     textTransform: 'capitalize',
   },
-  currentValue: {
-    alignSelf: 'flex-end',
+  badgeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
+  badgeLabels: {
+    gap: 2,
+  },
+  badgeLabelText: {
+    opacity: 0.9,
+    fontWeight: '700',
+  },
+  badgeHoursText: {
     opacity: 0.8,
   },
 });
