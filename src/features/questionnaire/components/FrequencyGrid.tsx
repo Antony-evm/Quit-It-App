@@ -129,7 +129,7 @@ const ClockSegmentBadge = ({
   label,
   hoursLabel,
 }: ClockSegmentBadgeProps) => {
-  const size = 60;
+  const size = 40;
   const { d } = buildArcPath(size, startHour, endHour);
 
   return (
@@ -141,7 +141,7 @@ const ClockSegmentBadge = ({
           r={size / 2 - 4}
           fill={BRAND_COLORS.inkDark}
           stroke={COLOR_PALETTE.borderDefault}
-          strokeWidth={2}
+          strokeWidth={4}
         />
         <Path
           d={d}
@@ -153,10 +153,10 @@ const ClockSegmentBadge = ({
         />
       </Svg>
       <View style={styles.badgeLabels}>
-        <AppText variant="caption" style={styles.badgeLabelText}>
+        <AppText variant="body" tone="primary">
           {label}
         </AppText>
-        <AppText variant="caption" style={styles.badgeHoursText}>
+        <AppText variant="body" style={styles.badgeHoursText}>
           {hoursLabel}
         </AppText>
       </View>
@@ -300,16 +300,20 @@ export const FrequencyGrid = ({
       sub => sub.id === selections[option.id],
     );
     const sliderValue = selectedIndex >= 0 ? selectedIndex : 0;
-    
+
     // Get the time window information from the current main option
-    const enrichedMainOption = enrichedMainOptions.find(opt => opt.id === option.id);
+    const enrichedMainOption = enrichedMainOptions.find(
+      opt => opt.id === option.id,
+    );
     const timeInfo = enrichedMainOption || parseTimeWindow(option.value);
-    
+
     const edgeLabels =
       orderedSubOptions.length >= 2
         ? {
             min: orderedSubOptions[0]?.value ?? 'Never',
-            max: orderedSubOptions[orderedSubOptions.length - 1]?.value ?? 'Always',
+            max:
+              orderedSubOptions[orderedSubOptions.length - 1]?.value ??
+              'Always',
           }
         : null;
 
@@ -319,21 +323,65 @@ export const FrequencyGrid = ({
     return (
       <View key={option.id} style={styles.gridRow}>
         <View style={styles.optionCell}>
-          <AppText variant="gridArea">{timeInfo.hoursLabel}</AppText>
+          <View style={styles.clockContainer}>
+            <Svg width={60} height={60}>
+              <Circle
+                cx={30}
+                cy={30}
+                r={22}
+                fill={BRAND_COLORS.inkDark}
+                stroke={BRAND_COLORS.ink}
+                strokeWidth={4}
+              />
+              <Path
+                d={(() => {
+                  const radius = 22;
+                  const center = 30;
+                  const clampedStart = Math.max(
+                    0,
+                    Math.min(timeInfo.startHour, 24),
+                  );
+                  const clampedEnd = Math.max(
+                    0,
+                    Math.min(timeInfo.endHour, 24),
+                  );
+                  const arcEnd =
+                    clampedEnd <= clampedStart
+                      ? clampedStart + 0.1
+                      : clampedEnd;
+                  const startAngle =
+                    ((clampedStart / 24) * 360 - 90) * (Math.PI / 180);
+                  const endAngle = ((arcEnd / 24) * 360 - 90) * (Math.PI / 180);
+                  const start = {
+                    x: center + radius * Math.cos(startAngle),
+                    y: center + radius * Math.sin(startAngle),
+                  };
+                  const end = {
+                    x: center + radius * Math.cos(endAngle),
+                    y: center + radius * Math.sin(endAngle),
+                  };
+                  const arcSpan = arcEnd - clampedStart;
+                  const largeArcFlag = arcSpan > 12 ? 1 : 0;
+                  return [
+                    `M ${center} ${center}`,
+                    `L ${start.x} ${start.y}`,
+                    `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
+                    'Z',
+                  ].join(' ');
+                })()}
+                fill={COLOR_PALETTE.accentPrimary}
+                fillOpacity={0.35}
+                stroke={COLOR_PALETTE.accentPrimary}
+                strokeWidth={2}
+                strokeLinecap="round"
+              />
+            </Svg>
+            <AppText variant="caption" style={styles.timeRangeText}>
+              {timeInfo.hoursLabel}
+            </AppText>
+          </View>
         </View>
         <View style={styles.sliderCell}>
-          {index === 0 && edgeLabels ? (
-            <View style={styles.edgeLabels}>
-              <AppText variant="caption" style={styles.edgeLabel}>
-                {edgeLabels.min}
-              </AppText>
-              <AppText variant="caption" style={styles.edgeLabel}>
-                {edgeLabels.max}
-              </AppText>
-            </View>
-          ) : (
-            <View style={styles.edgeLabelsPlaceholder} />
-          )}
           <Slider
             style={styles.slider}
             minimumValue={0}
@@ -349,12 +397,9 @@ export const FrequencyGrid = ({
           />
           {currentSub ? (
             <View style={styles.currentValue}>
-              <ClockSegmentBadge
-                startHour={timeInfo.startHour}
-                endHour={timeInfo.endHour}
-                label={currentSub.value}
-                hoursLabel={timeInfo.hoursLabel}
-              />
+              <AppText variant="caption" style={styles.currentValueText}>
+                {currentSub.value}
+              </AppText>
             </View>
           ) : (
             <AppText
@@ -410,13 +455,26 @@ const styles = StyleSheet.create({
     paddingRight: SPACING.md,
     justifyContent: 'center',
   },
+  clockContainer: {
+    alignItems: 'center',
+    gap: SPACING.xs,
+    width: 100,
+  },
+  timeRangeText: {
+    color: COLOR_PALETTE.textPrimary,
+    textAlign: 'center',
+    fontFamily: 'System',
+    fontSize: 14,
+    fontWeight: '400' as const,
+    lineHeight: 22,
+  },
   sliderCell: {
     flex: 3,
     gap: SPACING.xs,
   },
   slider: {
     width: '100%',
-    height: 40,
+    height: 20,
   },
   currentValue: {
     alignItems: 'flex-end',
