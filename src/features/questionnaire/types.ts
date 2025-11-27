@@ -37,6 +37,8 @@ export interface QuestionResponse {
   sub_answer_handling?: string | null;
   sub_default_value?: string | null;
   sub_combination?: string | null;
+  answer_units?: string | null;
+  max_question: number;
   options: Record<number, AnswerOptionRecord>;
   sub_options: Record<number, AnswerSubOptionRecord>;
 }
@@ -72,6 +74,8 @@ export interface Question {
   subOptions: AnswerSubOption[];
   subDefaultValue?: number | null;
   subCombination?: string | null;
+  units?: string | null;
+  maxQuestion: number;
 }
 
 export interface QuestionnaireAnswerOptionPayload {

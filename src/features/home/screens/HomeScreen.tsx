@@ -12,7 +12,11 @@ import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
-import { useCravingAnalytics, useSmokingAnalytics, CravingChart } from '@/features/tracking';
+import {
+  useCravingAnalytics,
+  useSmokingAnalytics,
+  CravingChart,
+} from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
 import { useQuittingPlan } from '@/features/questionnaire';
 import { NotesScreen } from './NotesScreen';
@@ -62,10 +66,10 @@ export const HomeScreen = () => {
 
   // Add craving analytics hook at the top with other hooks
   const { data: cravingAnalytics, isLoading, error } = useCravingAnalytics();
-  
+
   // Add smoking analytics hook
   const { data: smokingAnalytics } = useSmokingAnalytics();
-  
+
   // Add quitting plan hook to check status
   const { plan: quittingPlan } = useQuittingPlan();
 
@@ -95,15 +99,17 @@ export const HomeScreen = () => {
       value: cravingAnalytics?.total_cravings?.toString() || '0',
       accentColor: '#C7D2FE',
     },
-    { 
-      label: 'Skipped Cigarettes', 
-      value: smokingAnalytics?.skipped_smokes?.toString() || '0', 
-      accentColor: '#FDBA74' 
+    {
+      label: 'Skipped Cigarettes',
+      value: smokingAnalytics?.skipped_smokes?.toString() || '0',
+      accentColor: '#FDBA74',
     },
-    { 
-      label: 'Money Saved', 
-      value: smokingAnalytics?.savings ? `$${smokingAnalytics.savings.toFixed(2)}` : '$0.00', 
-      accentColor: '#A7F3D0' 
+    {
+      label: 'Money Saved',
+      value: smokingAnalytics?.savings
+        ? `$${smokingAnalytics.savings.toFixed(2)}`
+        : '$0.00',
+      accentColor: '#A7F3D0',
     },
   ];
 
@@ -147,11 +153,12 @@ export const HomeScreen = () => {
           Here&apos;s how you&apos;ve been doing today.
         </AppText>
         {shouldShowSmokeFreeMessage && daysSmokeFree > 0 && (
-          <AppText 
-            variant="body" 
+          <AppText
+            variant="body"
             style={[styles.congratsMessage, { color: '#22C55E' }]}
           >
-            🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree} {daysSmokeFree === 1 ? 'day' : 'days'}!
+            🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree}{' '}
+            {daysSmokeFree === 1 ? 'day' : 'days'}!
           </AppText>
         )}
       </View>

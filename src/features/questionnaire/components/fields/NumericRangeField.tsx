@@ -9,6 +9,7 @@ type NumericRangeFieldProps = {
   minimum: number;
   maximum: number;
   value: number | null;
+  units?: string;
   onValueChange: (value: number) => void;
 };
 
@@ -16,8 +17,10 @@ export const NumericRangeField = ({
   minimum,
   maximum,
   value,
+  units,
   onValueChange,
 }: NumericRangeFieldProps) => {
+  console.log('🎯 NumericRangeField - units prop:', units);
   const handleValueChange = (newValue: number) => {
     // If no value was set before, use the midpoint as initial value
     const roundedValue = Math.round(newValue);
@@ -30,7 +33,10 @@ export const NumericRangeField = ({
     <View style={styles.container}>
       <View style={styles.header} />
       <View style={styles.valuePill}>
-        <AppText variant="title">{displayValue}</AppText>
+        <AppText variant="title">
+          {displayValue}
+          {units && ` ${units}`}
+        </AppText>
       </View>
       <Slider
         style={styles.slider}
@@ -46,9 +52,11 @@ export const NumericRangeField = ({
       <View style={styles.labels}>
         <AppText variant="caption" style={styles.rangeLabel}>
           {minimum}
+          {units && ` ${units}`}
         </AppText>
         <AppText variant="caption" style={styles.rangeLabel}>
           {maximum}
+          {units && ` ${units}`}
         </AppText>
       </View>
     </View>

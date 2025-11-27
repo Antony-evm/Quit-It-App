@@ -356,19 +356,26 @@ export const QuestionnaireQuestion = ({
       ) : null}
 
       {isNumericRangeQuestion && firstOption && numericRange ? (
-        <NumericRangeField
-          minimum={numericRange.min}
-          maximum={numericRange.max}
-          value={
-            numericSelection ??
-            resolveNumericDefault(
-              numericRange,
-              question?.defaultValue ?? firstOption.defaultValue ?? null,
-            ) ??
-            numericRange.min
-          }
-          onValueChange={setNumericSelection}
-        />
+        <>
+          {console.log(
+            '📊 QuestionnaireQuestion - question.units:',
+            question.units,
+          )}
+          <NumericRangeField
+            minimum={numericRange.min}
+            maximum={numericRange.max}
+            value={
+              numericSelection ??
+              resolveNumericDefault(
+                numericRange,
+                question?.defaultValue ?? firstOption.defaultValue ?? null,
+              ) ??
+              numericRange.min
+            }
+            units={question.units || ''}
+            onValueChange={setNumericSelection}
+          />
+        </>
       ) : null}
 
       {isTimeRangeQuestion && firstOption ? (

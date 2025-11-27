@@ -91,6 +91,7 @@ const extractQuestionDefaultValue = (
 };
 
 const mapQuestionResponse = (data: QuestionResponse): Question => {
+  console.log('🔍 API Response - answer_units:', data.answer_units);
   const options = mapOptions(data.options);
   const subOptions = mapSubOptions(data.sub_options);
   const questionDefault = parseDefaultValue(data.default_value);
@@ -116,7 +117,11 @@ const mapQuestionResponse = (data: QuestionResponse): Question => {
     subOptions,
     subDefaultValue: subQuestionDefault,
     subCombination: data.sub_combination ?? null,
+    units: data.answer_units ?? null,
+    maxQuestion: data.max_question,
   };
+
+  console.log('✅ Mapped Question - units:', data.answer_units ?? null);
 };
 
 export const fetchQuestion = async (
@@ -135,7 +140,6 @@ export const fetchQuestion = async (
   const response = await authenticatedGet(requestUrl);
 
   if (response.status === 404 || response.status === 204) {
-    
     return null;
   }
 

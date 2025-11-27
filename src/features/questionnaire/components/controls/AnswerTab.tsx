@@ -66,6 +66,7 @@ export const AnswerTab = ({
         style={[
           isSelected && { color: COLOR_PALETTE.backgroundMuted },
           !isSelected && { color: COLOR_PALETTE.backgroundCream },
+          variant === 'multiple-many' && styles.multipleManyText,
         ]}
       >
         {label}
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.medium,
     minHeight: 70,
     paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
+    paddingHorizontal: SPACING.xl,
     flexBasis: '40%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -118,6 +119,9 @@ const styles = StyleSheet.create({
   multipleFewTab: {
     borderRadius: BORDER_RADIUS.xlarge,
     marginBottom: SPACING.sm,
+  },
+  multipleManyText: {
+    textAlign: 'center',
   },
   tabSelected: {
     backgroundColor: COLOR_PALETTE.backgroundCream,
