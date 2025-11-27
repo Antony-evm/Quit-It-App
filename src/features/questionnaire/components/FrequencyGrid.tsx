@@ -27,7 +27,8 @@ type ParsedTimeWindow = {
 const formatHour = (hour: number) => {
   const normalized = ((hour % 24) + 24) % 24;
   const suffix = normalized >= 12 ? 'PM' : 'AM';
-  const hour12 = normalized % 12 === 0 ? 12 : normalized % 12;
+  let hour12 = normalized % 12;
+  if (hour12 === 0) hour12 = 12; // Convert 0 to 12 for both midnight and noon
   return `${hour12}${suffix}`;
 };
 
@@ -46,9 +47,9 @@ const parseTimeWindow = (value: string): ParsedTimeWindow => {
   // Prefer the text inside parentheses; fallback to whole string
   const parenMatch = value.match(/\(([^)]+)\)/);
   const rangeText = parenMatch ? parenMatch[1] : value;
-  const normalizedRange = rangeText.replace(/[\u2013\u2014]/g, ' - '); // normalize en/em dash
+  const normalizedRange = rangeText.replace(/[\u2013\u2014]/g, '-'); // normalize en/em dash
   const [rawStart, rawEnd] = normalizedRange
-    .split(/ - /)
+    .split(/-/)
     .map(part => part.trim());
 
   const start = rawStart ? parseHourToken(rawStart) : null;
@@ -57,9 +58,16 @@ const parseTimeWindow = (value: string): ParsedTimeWindow => {
   const safeStart = start ?? 0;
   let safeEnd = end ?? (start !== null ? safeStart + 3 : 24);
 
-  // If end is earlier than start, treat it as wrapping forward (e.g., 9AM - 12AM => end of day)
+  // If end is earlier than start, it might be a data error (like 9AM - 12AM instead of 9AM - 12PM)
+  // or a legitimate overnight period. For morning periods, assume 12AM was meant to be 12PM.
   if (safeEnd <= safeStart) {
-    safeEnd = end === 0 ? 24 : safeStart + 3;
+    // If this looks like a morning period that should end at noon, fix it
+    if (safeStart >= 6 && safeStart <= 11 && safeEnd === 0) {
+      safeEnd = 12; // Convert 12AM to 12PM for morning periods
+    } else {
+      // For other cases, treat as wrapping to end of day or add default duration
+      safeEnd = end === 0 ? 24 : safeStart + 3;
+    }
   }
 
   const periodLabel =
@@ -192,13 +200,14 @@ export const FrequencyGrid = ({
       .map(item => item.subOption);
   }, [subOptions]);
 
-  const enrichedSubOptions = useMemo(
+  // Parse time windows from main options (which contain time periods like "Early Morning (6AM - 9AM)")
+  const enrichedMainOptions = useMemo(
     () =>
-      orderedSubOptions.map(sub => ({
-        ...sub,
-        ...parseTimeWindow(sub.value),
+      options.map(option => ({
+        ...option,
+        ...parseTimeWindow(option.value),
       })),
-    [orderedSubOptions],
+    [options],
   );
 
   useEffect(() => {
@@ -249,7 +258,7 @@ export const FrequencyGrid = ({
 
   const handleSelectionChange = useCallback(
     (optionId: number, sliderIndex: number) => {
-      const subOption = enrichedSubOptions[sliderIndex];
+      const subOption = orderedSubOptions[sliderIndex];
       if (!subOption) {
         return;
       }
@@ -259,7 +268,7 @@ export const FrequencyGrid = ({
         [optionId]: subOption.id,
       }));
     },
-    [enrichedSubOptions],
+    [orderedSubOptions],
   );
 
   useEffect(() => {
@@ -287,27 +296,30 @@ export const FrequencyGrid = ({
   }, [selections, options, subOptions, onSubSelectionChange, onValidityChange]);
 
   const renderGridRow = (option: AnswerOption, index: number) => {
-    const selectedIndex = enrichedSubOptions.findIndex(
+    const selectedIndex = orderedSubOptions.findIndex(
       sub => sub.id === selections[option.id],
     );
     const sliderValue = selectedIndex >= 0 ? selectedIndex : 0;
+    
+    // Get the time window information from the current main option
+    const enrichedMainOption = enrichedMainOptions.find(opt => opt.id === option.id);
+    const timeInfo = enrichedMainOption || parseTimeWindow(option.value);
+    
     const edgeLabels =
-      enrichedSubOptions.length >= 2
+      orderedSubOptions.length >= 2
         ? {
-            min: enrichedSubOptions[0]?.periodLabel ?? 'AM',
-            max:
-              enrichedSubOptions[enrichedSubOptions.length - 1]?.periodLabel ??
-              'PM',
+            min: orderedSubOptions[0]?.value ?? 'Never',
+            max: orderedSubOptions[orderedSubOptions.length - 1]?.value ?? 'Always',
           }
         : null;
 
     const currentSub =
-      selectedIndex >= 0 ? enrichedSubOptions[selectedIndex] : null;
+      selectedIndex >= 0 ? orderedSubOptions[selectedIndex] : null;
 
     return (
       <View key={option.id} style={styles.gridRow}>
         <View style={styles.optionCell}>
-          <AppText variant="gridArea">{option.value}</AppText>
+          <AppText variant="gridArea">{timeInfo.hoursLabel}</AppText>
         </View>
         <View style={styles.sliderCell}>
           {index === 0 && edgeLabels ? (
@@ -325,7 +337,7 @@ export const FrequencyGrid = ({
           <Slider
             style={styles.slider}
             minimumValue={0}
-            maximumValue={Math.max(enrichedSubOptions.length - 1, 0)}
+            maximumValue={Math.max(orderedSubOptions.length - 1, 0)}
             step={1}
             value={sliderValue}
             minimumTrackTintColor={BRAND_COLORS.cream}
@@ -338,10 +350,10 @@ export const FrequencyGrid = ({
           {currentSub ? (
             <View style={styles.currentValue}>
               <ClockSegmentBadge
-                startHour={currentSub.startHour}
-                endHour={currentSub.endHour}
-                label={currentSub.periodLabel}
-                hoursLabel={currentSub.hoursLabel}
+                startHour={timeInfo.startHour}
+                endHour={timeInfo.endHour}
+                label={currentSub.value}
+                hoursLabel={timeInfo.hoursLabel}
               />
             </View>
           ) : (
@@ -350,7 +362,7 @@ export const FrequencyGrid = ({
               tone="primary"
               style={styles.currentValueText}
             >
-              Select a time window
+              Select a frequency
             </AppText>
           )}
         </View>
