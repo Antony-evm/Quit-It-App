@@ -9,6 +9,7 @@ import {
   Logo,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import EmailSvg from '@/assets/email.svg';
 
 import { useAuth } from '@/shared/auth';
 import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
@@ -17,11 +18,15 @@ import { FrequencyData } from '@/features/questionnaire/components/FrequencyData
 import { fetchQuitDate } from '../api/fetchQuitDate';
 import { updateQuitDate } from '../api/updateQuitDate';
 import type { QuitDate } from '../types';
+import { AccountSectionItem } from '../components/AccountSectionItem';
+import { BottomDrawer } from '../components/BottomDrawer';
 
 type FieldStatus = {
   tone: 'success' | 'error';
   message: string;
 } | null;
+
+type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
   const { user } = useAuth();
@@ -35,6 +40,7 @@ export const AccountScreen = () => {
   const [isSavingQuitDate, setIsSavingQuitDate] = useState(false);
 
   const [quitDateStatus, setQuitDateStatus] = useState<FieldStatus>(null);
+  const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
   const bootstrap = useCallback(async () => {
     try {
@@ -134,6 +140,49 @@ export const AccountScreen = () => {
     );
   };
 
+  const renderDrawerContent = () => {
+    switch (activeSection) {
+      case 'details':
+        return (
+          <View style={styles.emailContainer}>
+            <View style={styles.emailRow}>
+              <EmailSvg
+                width={24}
+                height={24}
+                fill={COLOR_PALETTE.textPrimary}
+              />
+              <AppText tone="primary" style={styles.emailText}>
+                {user?.email ?? 'Not available'}
+              </AppText>
+            </View>
+          </View>
+        );
+      case 'plan':
+        return <QuittingPlanDetails />;
+      case 'triggers':
+        return <TriggersList style={styles.triggersCard} />;
+      case 'habits':
+        return <FrequencyData style={styles.frequencyCard} />;
+      default:
+        return null;
+    }
+  };
+
+  const getDrawerTitle = () => {
+    switch (activeSection) {
+      case 'details':
+        return 'Your Details';
+      case 'plan':
+        return 'Your Plan';
+      case 'triggers':
+        return 'Your Triggers';
+      case 'habits':
+        return 'Your Habits';
+      default:
+        return '';
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -150,27 +199,38 @@ export const AccountScreen = () => {
       >
         <View style={styles.header}>
           <AppText tone="primary" variant="title" style={styles.headerTitle}>
-            Your Quit It Profile Simplified!
+            Your Quit It Profile
           </AppText>
           <Logo size="medium" style={styles.logo} />
         </View>
-        <View style={styles.emailContainer}>
-          <AppText tone="primary">
-            Email:{' '}
-            <AppText tone="primary" style={styles.emailText}>
-              {user?.email ?? 'Not available'}
-            </AppText>
-          </AppText>
-        </View>
 
-        <QuittingPlanDetails />
-
-        <TriggersList style={styles.triggersCard} />
-
-        <FrequencyData style={styles.frequencyCard} />
+        <AccountSectionItem
+          title="Your Details"
+          onPress={() => setActiveSection('details')}
+        />
+        <AccountSectionItem
+          title="Your Plan"
+          onPress={() => setActiveSection('plan')}
+        />
+        <AccountSectionItem
+          title="Your Triggers"
+          onPress={() => setActiveSection('triggers')}
+        />
+        <AccountSectionItem
+          title="Your Habits"
+          onPress={() => setActiveSection('habits')}
+        />
 
         {error ? <AppText style={styles.globalError}>{error}</AppText> : null}
       </ScrollView>
+
+      <BottomDrawer
+        visible={!!activeSection}
+        onClose={() => setActiveSection(null)}
+        title={getDrawerTitle()}
+      >
+        {renderDrawerContent()}
+      </BottomDrawer>
     </View>
   );
 };
@@ -191,8 +251,14 @@ const styles = StyleSheet.create({
   emailContainer: {
     marginBottom: SPACING.lg,
   },
+  emailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
+  },
   headerTitle: {
     marginBottom: SPACING.sm,
+    textAlign: 'center',
   },
   headerSubTitle: {
     marginBottom: SPACING.xl,
