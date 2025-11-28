@@ -8,7 +8,7 @@ import {
   AppTextInput,
   Logo,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
 import { useAuth } from '@/shared/auth';
@@ -144,7 +144,7 @@ export const AccountScreen = () => {
     switch (activeSection) {
       case 'details':
         return (
-          <View style={styles.emailContainer}>
+          <View style={styles.emailSection}>
             <View style={styles.emailRow}>
               <EmailSvg
                 width={24}
@@ -248,7 +248,10 @@ const styles = StyleSheet.create({
   planCard: {
     marginBottom: SPACING.xl,
   },
-  emailContainer: {
+  emailSection: {
+    backgroundColor: BRAND_COLORS.ink,
+    padding: SPACING.lg,
+    borderRadius: 8,
     marginBottom: SPACING.lg,
   },
   emailRow: {

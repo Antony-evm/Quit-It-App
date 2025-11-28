@@ -1,8 +1,12 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText, AppSurface } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
+import AimSvg from '@/assets/aim.svg';
+import CalendarSvg from '@/assets/calendar.svg';
+import StopSvg from '@/assets/stop.svg';
+import GoalSvg from '@/assets/goal.svg';
 
 interface QuittingPlanDetailsProps {
   style?: any;
@@ -15,17 +19,23 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
   if (isLoading) {
     return (
-      <AppText tone="secondary" style={styles.loadingText}>
-        Loading plan details...
-      </AppText>
+      <View style={styles.container}>
+        <AppText tone="secondary" style={styles.loadingText}>
+          Loading plan details...
+        </AppText>
+      </View>
     );
   }
 
   if (error) {
     return (
-      <AppText style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}>
-        Unable to load plan details
-      </AppText>
+      <View style={styles.container}>
+        <AppText
+          style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
+        >
+          Unable to load plan details
+        </AppText>
+      </View>
     );
   }
 
@@ -42,61 +52,67 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   };
 
   return (
-    <AppSurface style={[styles.card, style]}>
-      <View style={styles.detailRow}>
-        <AppText style={styles.label}>Aim: </AppText>
-        <AppText tone="primary" variant="body" style={styles.detailsText}>
-          {plan.status}
-        </AppText>
+    <View style={[styles.container, style]}>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <AimSvg width={24} height={24} fill={COLOR_PALETTE.textPrimary} />
+          <AppText tone="primary" variant="body" style={styles.detailsText}>
+            {plan.status}
+          </AppText>
+        </View>
       </View>
 
-      <View style={styles.detailRow}>
-        <AppText style={styles.label}>When: </AppText>
-        <AppText tone="primary" variant="body" style={styles.detailsText}>
-          {formatDate(plan.date)}
-        </AppText>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <CalendarSvg
+            width={24}
+            height={24}
+            stroke={COLOR_PALETTE.textPrimary}
+          />
+          <AppText tone="primary" variant="body" style={styles.detailsText}>
+            {formatDate(plan.date)}
+          </AppText>
+        </View>
       </View>
 
-      <View style={styles.detailRow}>
-        <AppText style={styles.label}>Starting: </AppText>
-        <AppText tone="primary" variant="body" style={styles.detailsText}>
-          {plan.current} cigarettes/day
-        </AppText>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <StopSvg width={24} height={24} fill={COLOR_PALETTE.textPrimary} />
+          <AppText tone="primary" variant="body" style={styles.detailsText}>
+            {plan.current} cigarettes/day
+          </AppText>
+        </View>
       </View>
 
-      <View style={styles.detailRow}>
-        <AppText style={styles.label}>Goal: </AppText>
-        <AppText tone="primary" variant="body" style={styles.detailsText}>
-          {plan.target} cigarettes/day!
-        </AppText>
+      <View style={styles.section}>
+        <View style={styles.row}>
+          <GoalSvg width={24} height={24} stroke={COLOR_PALETTE.textPrimary} />
+          <AppText tone="primary" variant="body" style={styles.detailsText}>
+            {plan.target} cigarettes/day!
+          </AppText>
+        </View>
       </View>
-    </AppSurface>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 0,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 0,
-    margin: 0,
+  container: {
+    backgroundColor: BRAND_COLORS.ink,
+    borderRadius: 8,
+    padding: SPACING.lg,
+  },
+  section: {
+    marginBottom: SPACING.lg,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: SPACING.sm,
   },
   detailsText: {
     textDecorationLine: 'underline',
     fontStyle: 'italic',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  label: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '500',
-  },
-  value: {
-    color: COLOR_PALETTE.textSecondary,
   },
   loadingText: {
     textAlign: 'center',

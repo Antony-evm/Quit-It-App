@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { BRAND_COLORS, SPACING, COLOR_PALETTE } from '@/shared/theme';
 import { AppText } from '@/shared/components/ui';
+import CancelSvg from '@/assets/cancel.svg';
 
 type BottomDrawerProps = {
   visible: boolean;
@@ -96,15 +97,14 @@ export const BottomDrawer = ({
             </View>
             <View style={styles.headerContent}>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <AppText tone="primary">Close</AppText>
+                <CancelSvg width={24} height={24} fill={BRAND_COLORS.cream} />
               </TouchableOpacity>
-              <View style={styles.titleContainer}>
-                <AppText variant="heading" tone="primary">
-                  {title}
-                </AppText>
-              </View>
-              <View style={styles.placeholderButton} />
             </View>
+          </View>
+          <View style={styles.titleContainer}>
+            <AppText variant="heading" tone="primary">
+              {title}
+            </AppText>
           </View>
           <ScrollView style={styles.content}>{children}</ScrollView>
         </Animated.View>
@@ -120,20 +120,30 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: BRAND_COLORS.dark,
-    opacity: 0.5,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   drawer: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: BRAND_COLORS.inkDark,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '100%',
+    height: '90%',
     overflow: 'hidden',
   },
   headerContainer: {
     backgroundColor: BRAND_COLORS.dark,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: BRAND_COLORS.ink,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 10,
+    zIndex: 10,
   },
   indicatorContainer: {
     alignItems: 'center',
@@ -149,21 +159,27 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     paddingHorizontal: SPACING.lg,
   },
   closeButton: {
-    zIndex: 1,
     padding: SPACING.xs,
   },
   titleContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
+    backgroundColor: BRAND_COLORS.inkDark,
+    paddingVertical: SPACING.md,
     alignItems: 'center',
-  },
-  placeholderButton: {
-    width: 40, // Approximate width of "Close" button to balance layout if needed, though absolute positioning handles title centering
+    borderBottomWidth: 1,
+    borderBottomColor: BRAND_COLORS.ink,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 5,
+    zIndex: 5,
   },
   content: {
     flex: 1,
