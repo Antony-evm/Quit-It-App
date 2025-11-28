@@ -13,10 +13,10 @@ type TrackingRecordCardProps = {
   onPress?: (record: TrackingRecordApiResponse) => void;
 };
 
-export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
+export const TrackingRecordCard = React.memo(({
   record,
   onPress,
-}) => {
+}: TrackingRecordCardProps) => {
   const { data: trackingTypes } = useTrackingTypes();
 
   const trackingType = trackingTypes?.find(
@@ -60,7 +60,7 @@ export const TrackingRecordCard: React.FC<TrackingRecordCardProps> = ({
       </AppSurface>
     </Pressable>
   );
-};
+});
 
 const styles = StyleSheet.create({
   card: {

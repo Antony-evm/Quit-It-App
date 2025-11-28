@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { StyleSheet, ScrollView, View, Pressable } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -36,17 +36,17 @@ export const JournalScreen = () => {
     queryClient.resetQueries({ queryKey });
   }, [queryClient, currentUserId]);
 
-  const handleRecordPress = (record: TrackingRecordApiResponse) => {
+  const handleRecordPress = useCallback((record: TrackingRecordApiResponse) => {
     setSelectedRecord(record);
     setIsDirty(false);
     setIsEditModalVisible(true);
-  };
+  }, []);
 
-  const handleEditSuccess = () => {
+  const handleEditSuccess = useCallback(() => {
     setIsEditModalVisible(false);
     setSelectedRecord(null);
     setIsDirty(false);
-  };
+  }, []);
 
   const initialValues = useMemo(() => {
     if (!selectedRecord) return undefined;
@@ -57,7 +57,7 @@ export const JournalScreen = () => {
     };
   }, [selectedRecord]);
 
-  const renderHeaderContent = () => (
+  const headerContent = useMemo(() => (
     <View style={styles.modalHeaderContent}>
       <Pressable
         onPress={() => setIsEditModalVisible(false)}
@@ -87,7 +87,7 @@ export const JournalScreen = () => {
         </Pressable>
       )}
     </View>
-  );
+  ), [isDirty]);
 
   return (
     <View style={styles.container}>
@@ -116,7 +116,7 @@ export const JournalScreen = () => {
       <DraggableModal
         visible={isEditModalVisible}
         onClose={() => setIsEditModalVisible(false)}
-        headerContent={renderHeaderContent()}
+        headerContent={headerContent}
       >
         <View style={styles.modalInnerContainer}>
           <ScrollView

@@ -12,10 +12,10 @@ type TrackingRecordsListProps = {
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
 };
 
-export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
+export const TrackingRecordsList = React.memo(({
   scrollViewRef,
   onRecordPress,
-}) => {
+}: TrackingRecordsListProps) => {
   const {
     flatRecords: trackingRecords,
     isLoading,
@@ -99,7 +99,7 @@ export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
       )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
