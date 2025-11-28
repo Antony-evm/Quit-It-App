@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Modal,
   StyleSheet,
@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   Pressable,
+  InteractionManager,
 } from 'react-native';
 import { BRAND_COLORS, SPACING, COLOR_PALETTE } from '@/shared/theme';
 
@@ -27,18 +28,7 @@ export const DraggableModal = ({
   const screenHeight = Dimensions.get('window').height;
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const panY = useRef(new Animated.Value(0)).current;
-
-  const resetPosition = Animated.timing(panY, {
-    toValue: 0,
-    duration: 200,
-    useNativeDriver: true,
-  });
-
-  const closeAnimation = Animated.timing(slideAnim, {
-    toValue: screenHeight,
-    duration: 300,
-    useNativeDriver: true,
-  });
+  const [isContentVisible, setIsContentVisible] = useState(visible);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -55,7 +45,11 @@ export const DraggableModal = ({
         if (gestureState.dy > 100) {
           onClose();
         } else {
-          resetPosition.start();
+          Animated.timing(panY, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+          }).start();
         }
       },
     }),
@@ -64,15 +58,30 @@ export const DraggableModal = ({
   useEffect(() => {
     if (visible) {
       panY.setValue(0);
+      // Start animation immediately
       Animated.spring(slideAnim, {
         toValue: 0,
         useNativeDriver: true,
         bounciness: 0,
       }).start();
+
+      // Defer content rendering to ensure animation starts smoothly
+      const task = InteractionManager.runAfterInteractions(() => {
+        setIsContentVisible(true);
+      });
+
+      return () => task.cancel();
     } else {
-      closeAnimation.start();
+      Animated.timing(slideAnim, {
+        toValue: screenHeight,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        // Only hide content after animation completes
+        setIsContentVisible(false);
+      });
     }
-  }, [visible, slideAnim, panY, closeAnimation]);
+  }, [visible, slideAnim, panY, screenHeight]);
 
   const translateY = Animated.add(slideAnim, panY);
 
@@ -96,7 +105,9 @@ export const DraggableModal = ({
               <View style={styles.headerContent}>{headerContent}</View>
             )}
           </View>
-          <View style={styles.content}>{children}</View>
+          <View style={styles.content}>
+            {isContentVisible ? children : null}
+          </View>
         </Animated.View>
       </View>
     </Modal>

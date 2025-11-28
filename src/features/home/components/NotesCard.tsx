@@ -120,12 +120,16 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
     React.useEffect(() => {
       if (!initialValues) return;
 
-      const isDirty =
-        selectedTrackingTypeId !== initialValues.trackingTypeId ||
-        selectedDateTime.getTime() !== initialValues.dateTime.getTime() ||
-        notes !== initialValues.notes;
+      const timer = setTimeout(() => {
+        const isDirty =
+          selectedTrackingTypeId !== initialValues.trackingTypeId ||
+          selectedDateTime.getTime() !== initialValues.dateTime.getTime() ||
+          notes !== initialValues.notes;
 
-      onDirtyChange?.(isDirty);
+        onDirtyChange?.(isDirty);
+      }, 300);
+
+      return () => clearTimeout(timer);
     }, [
       selectedTrackingTypeId,
       selectedDateTime,
