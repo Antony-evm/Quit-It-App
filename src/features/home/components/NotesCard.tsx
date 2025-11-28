@@ -17,7 +17,12 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import { useMutation } from '@tanstack/react-query';
 
-import { AppSurface, AppText, AppTextInput } from '@/shared/components/ui';
+import {
+  AppSurface,
+  AppText,
+  AppTextInput,
+  AppButton,
+} from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
   SPACING,
@@ -33,6 +38,7 @@ import {
   CreateTrackingRecordPayload,
 } from '@/features/tracking/api/createTrackingRecord';
 import { updateTrackingRecord } from '@/features/tracking/api/updateTrackingRecord';
+import { deleteTrackingRecord } from '@/features/tracking/api/deleteTrackingRecord';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
@@ -42,6 +48,7 @@ import ScrollManager from '@/utils/scrollManager';
 
 export type NotesCardHandle = {
   save: () => void;
+  delete: () => void;
 };
 
 type NotesCardProps = {
@@ -58,20 +65,35 @@ type NotesCardProps = {
     notes: string;
   }) => void;
   onSaveSuccess?: () => void;
+  onDirtyChange?: (isDirty: boolean) => void;
+  onDeleteSuccess?: () => void;
   scrollViewRef?: RefObject<ScrollView | null>;
 };
 
 export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
   (
-    { userId, recordId, initialValues, onSave, onSaveSuccess, scrollViewRef },
+    {
+      userId,
+      recordId,
+      initialValues,
+      onSave,
+      onSaveSuccess,
+      onDirtyChange,
+      onDeleteSuccess,
+      scrollViewRef,
+    },
     ref,
   ) => {
     const currentUserId = useCurrentUserId();
     const actualUserId = userId ?? currentUserId;
     const { data: trackingTypes } = useTrackingTypes();
     const { showToast } = useToast();
-    const { addRecordToCache, replaceOptimisticRecord, updateRecordInCache } =
-      useInfiniteTrackingRecords();
+    const {
+      addRecordToCache,
+      replaceOptimisticRecord,
+      updateRecordInCache,
+      removeRecordFromCache,
+    } = useInfiniteTrackingRecords();
     const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
       number | null
     >(initialValues?.trackingTypeId ?? null);
@@ -93,6 +115,24 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         setNotes(initialValues.notes);
       }
     }, [initialValues]);
+
+    // Check for dirty state
+    React.useEffect(() => {
+      if (!initialValues) return;
+
+      const isDirty =
+        selectedTrackingTypeId !== initialValues.trackingTypeId ||
+        selectedDateTime.getTime() !== initialValues.dateTime.getTime() ||
+        notes !== initialValues.notes;
+
+      onDirtyChange?.(isDirty);
+    }, [
+      selectedTrackingTypeId,
+      selectedDateTime,
+      notes,
+      initialValues,
+      onDirtyChange,
+    ]);
 
     // Cleanup scroll operations when component unmounts
     React.useEffect(() => {
@@ -156,17 +196,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       mutationFn: ({ recordId, payload }: { recordId: number; payload: any }) =>
         updateTrackingRecord(recordId, payload),
       onMutate: async ({ recordId, payload }) => {
-        // Optimistically update the record in the cache
-        // We need the original record to construct the full object, but we don't have it here easily.
-        // However, updateRecordInCache only needs the ID and the updated fields if we were merging,
-        // but the implementation replaces the record if ID matches.
-        // Wait, updateRecordInCache implementation:
-        // record.record_id === updatedRecord.record_id ? updatedRecord : record
-        // So we need the FULL record.
-        // We can construct a partial one, but that might break things if fields are missing.
-        // But we have all fields: user_id, tracking_type_id, event_at, note.
-        // We just need to make sure we have user_id.
-
         const updatedRecord: TrackingRecordApiResponse = {
           record_id: recordId,
           user_id: actualUserId!, // We assume user is logged in
@@ -186,6 +215,27 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
           error instanceof Error
             ? error.message
             : 'Failed to update tracking entry',
+          'error',
+        );
+      },
+    });
+
+    // Mutation for deleting tracking record
+    const deleteRecordMutation = useMutation({
+      mutationFn: deleteTrackingRecord,
+      onMutate: async recordId => {
+        removeRecordFromCache(recordId);
+        return { recordId };
+      },
+      onSuccess: () => {
+        onDeleteSuccess?.();
+        showToast('Tracking entry has been deleted!', 'success');
+      },
+      onError: (error, _variables, _context) => {
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete tracking entry',
           'error',
         );
       },
@@ -334,9 +384,16 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       }
     };
 
+    const handleDelete = () => {
+      if (recordId) {
+        deleteRecordMutation.mutate(recordId);
+      }
+    };
+
     // Expose the save method to the parent component
     useImperativeHandle(ref, () => ({
       save: handleSave,
+      delete: handleDelete,
     }));
 
     if (!sortedTrackingTypes || sortedTrackingTypes.length === 0) {
@@ -390,7 +447,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               <CalendarIcon
                 width={20}
                 height={20}
-                // fill={BRAND_COLORS.cream}
+                color={BRAND_COLORS.cream}
                 style={styles.calendarIcon}
               />
               <AppText
@@ -414,7 +471,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               value={notes}
               onChangeText={handleNotesChange}
               onFocus={handleNotesFocus}
-              placeholder="How are you feeling? What triggered this?"
+              placeholder="Every check-in counts. How are you feeling?"
               multiline
               numberOfLines={6}
               style={styles.notesInput}
@@ -530,5 +587,22 @@ const styles = StyleSheet.create({
   },
   charCountContainer: {
     alignItems: 'flex-end',
+    marginTop: SPACING.md,
+  },
+  deleteContainer: {
+    marginTop: SPACING.xxl,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: COLOR_PALETTE.borderDefault,
+    paddingTop: SPACING.xl,
+  },
+  deleteButton: {
+    borderColor: COLOR_PALETTE.systemError,
+    backgroundColor: 'transparent',
+    width: '100%',
+  },
+  deleteButtonText: {
+    color: COLOR_PALETTE.systemError,
+    fontWeight: '600',
   },
 });

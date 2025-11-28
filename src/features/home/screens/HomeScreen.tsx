@@ -251,6 +251,16 @@ export const HomeScreen = () => {
           contentContainerStyle={styles.modalContent}
           keyboardShouldPersistTaps="handled"
         >
+          <View style={styles.modalTextContainer}>
+            <AppText
+              variant="body"
+              tone="primary"
+              style={styles.modalDescription}
+            >
+              Reflect, reset, and track your journey. Every entry is a step
+              forward.
+            </AppText>
+          </View>
           <NotesCard
             ref={notesCardRef}
             scrollViewRef={noteDrawerScrollRef}
@@ -323,5 +333,15 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     padding: SPACING.md,
+  },
+  modalTextContainer: {
+    marginBottom: SPACING.xl,
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+  },
+  modalDescription: {
+    textAlign: 'center',
+    lineHeight: 26,
+    fontSize: 18,
   },
 });
