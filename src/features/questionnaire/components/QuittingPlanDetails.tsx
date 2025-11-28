@@ -79,7 +79,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
         <View style={styles.row}>
           <StopSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
-            {plan.current} cigarettes/day
+            {plan.current} cigarettes per day
           </AppText>
         </View>
       </View>
@@ -88,7 +88,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
         <View style={styles.row}>
           <GoalSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
-            {plan.target} cigarettes/day!
+            {plan.target} cigarettes per day
           </AppText>
         </View>
       </View>
@@ -101,9 +101,9 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   box: {
-    backgroundColor: BRAND_COLORS.ink,
-    borderRadius: 8,
-    padding: SPACING.lg,
+    // backgroundColor: BRAND_COLORS.ink,
+    // borderRadius: 8,
+    // padding: SPACING.lg,
   },
   row: {
     flexDirection: 'row',

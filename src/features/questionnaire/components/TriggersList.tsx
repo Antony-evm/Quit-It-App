@@ -85,8 +85,9 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
 
 const styles = StyleSheet.create({
   card: {
-    padding: SPACING.md,
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: BRAND_COLORS.inkDark,
+    borderWidth: 0,
+    padding: 0,
   },
   loadingText: {
     textAlign: 'center',

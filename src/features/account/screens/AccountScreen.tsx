@@ -16,6 +16,7 @@ import { QuittingPlanDetails } from '@/features/questionnaire/components/Quittin
 import { TriggersList } from '@/features/questionnaire/components/TriggersList';
 import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
+import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
 import { fetchQuitDate } from '../api/fetchQuitDate';
 import { updateQuitDate } from '../api/updateQuitDate';
 import type { QuitDate } from '../types';
@@ -45,6 +46,7 @@ export const AccountScreen = () => {
 
   // Pre-fetch the smoking triggers question
   useSmokingTriggersQuestion();
+  useSmokingFrequencyQuestion();
 
   const bootstrap = useCallback(async () => {
     try {
