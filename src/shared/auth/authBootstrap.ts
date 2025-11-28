@@ -21,7 +21,12 @@ export async function bootstrapAuthState(
     readStoredTokens(),
     readStoredUserData(),
   ]);
-  console.log('[AuthBootstrap] Loaded from storage - tokens:', !!tokens, 'user:', !!user);
+  console.log(
+    '[AuthBootstrap] Loaded from storage - tokens:',
+    !!tokens,
+    'user:',
+    !!user,
+  );
 
   if (!tokens || !user) {
     console.log('[AuthBootstrap] No tokens/user found - not authenticated');
@@ -51,7 +56,10 @@ export async function bootstrapAuthState(
       session_token: tokens.sessionToken,
       session_duration_minutes: 600,
     });
-    console.log('[AuthBootstrap] Session response status:', sessionResponse.status_code);
+    console.log(
+      '[AuthBootstrap] Session response status:',
+      sessionResponse.status_code,
+    );
     isSessionValid = sessionResponse.status_code === 200;
   } catch (error) {
     console.log('[AuthBootstrap] Session validation error:', error);
@@ -69,17 +77,20 @@ export async function bootstrapAuthState(
   }
 
   console.log('[AuthBootstrap] Session valid - returning success');
-  
+
   // Initialize user status service with valid session
   try {
     console.log('[AuthBootstrap] Initializing user status service...');
     await UserStatusService.initialize();
     console.log('[AuthBootstrap] User status service initialized');
   } catch (error) {
-    console.log('[AuthBootstrap] Failed to initialize user status service:', error);
+    console.log(
+      '[AuthBootstrap] Failed to initialize user status service:',
+      error,
+    );
     // Don't fail the bootstrap if status service initialization fails
   }
-  
+
   return {
     tokens,
     user,

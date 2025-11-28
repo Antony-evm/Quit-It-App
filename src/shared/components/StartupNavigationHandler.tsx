@@ -94,7 +94,9 @@ export const StartupNavigationHandler: React.FC<
         authResult.isSessionValid &&
         authResult.user
       ) {
-        console.log('[StartupNavigation] Valid tokens found, navigating based on user status...');
+        console.log(
+          '[StartupNavigation] Valid tokens found, navigating based on user status...',
+        );
         const userStatusId = authResult.user.userStatusId;
 
         if (!userStatusId) {
@@ -105,7 +107,10 @@ export const StartupNavigationHandler: React.FC<
         // Get user status action (service should be initialized in authBootstrap)
         try {
           // Execute navigation based on user status
-          console.log('[StartupNavigation] Executing status-based navigation for status:', userStatusId);
+          console.log(
+            '[StartupNavigation] Executing status-based navigation for status:',
+            userStatusId,
+          );
           // Get the action to determine the navigation target
           const action = UserStatusService.getStatusAction(userStatusId);
 
@@ -179,7 +184,10 @@ export const StartupNavigationHandler: React.FC<
     } else {
       console.log('[StartupNavigation] Navigation failed, retrying...');
       // Retry with a slight delay
-      const retry = setTimeout(() => setNavigationAttempt(prev => prev + 1), 100);
+      const retry = setTimeout(
+        () => setNavigationAttempt(prev => prev + 1),
+        100,
+      );
       return () => clearTimeout(retry);
     }
   }, [pendingRoute, isNavReady, hasNavigated, safeNavigate, navigationAttempt]);

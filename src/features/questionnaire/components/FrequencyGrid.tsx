@@ -446,8 +446,8 @@ const styles = StyleSheet.create({
   gridRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
     gap: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
@@ -474,13 +474,13 @@ const styles = StyleSheet.create({
     flex: 3,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: SPACING.xs,
+    position: 'relative',
   },
   frequencyDisplay: {
+    position: 'absolute',
+    top: '35%',
     width: '90%',
-    alignSelf: 'center',
     alignItems: 'flex-end',
-    paddingTop: SPACING.xs,
   },
   slider: {
     width: '90%',
