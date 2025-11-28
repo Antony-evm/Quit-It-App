@@ -15,6 +15,7 @@ import { useAuth } from '@/shared/auth';
 import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
 import { TriggersList } from '@/features/questionnaire/components/TriggersList';
 import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
+import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
 import { fetchQuitDate } from '../api/fetchQuitDate';
 import { updateQuitDate } from '../api/updateQuitDate';
 import type { QuitDate } from '../types';
@@ -41,6 +42,9 @@ export const AccountScreen = () => {
 
   const [quitDateStatus, setQuitDateStatus] = useState<FieldStatus>(null);
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
+
+  // Pre-fetch the smoking triggers question
+  useSmokingTriggersQuestion();
 
   const bootstrap = useCallback(async () => {
     try {
@@ -149,7 +153,7 @@ export const AccountScreen = () => {
               <EmailSvg
                 width={24}
                 height={24}
-                fill={COLOR_PALETTE.textPrimary}
+                color={COLOR_PALETTE.textPrimary}
               />
               <AppText tone="primary" style={styles.emailText}>
                 {user?.email ?? 'Not available'}

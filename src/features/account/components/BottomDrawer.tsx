@@ -97,7 +97,11 @@ export const BottomDrawer = ({
             </View>
             <View style={styles.headerContent}>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <CancelSvg width={24} height={24} fill={BRAND_COLORS.cream} />
+                <CancelSvg
+                  width={24}
+                  height={24}
+                  color={COLOR_PALETTE.textPrimary}
+                />
               </TouchableOpacity>
             </View>
           </View>

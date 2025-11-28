@@ -1,23 +1,58 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet } from 'react-native';
 import { AppText, AppSurface } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { useTriggers } from '@/features/questionnaire/hooks/useTriggers';
+import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
+import { QuestionnaireQuestion } from '@/features/questionnaire/components/QuestionnaireQuestion';
+import type { SelectedAnswerOption } from '@/features/questionnaire/types';
 
 interface TriggersListProps {
   style?: any;
 }
 
 export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
-  const { triggers, isLoading, error } = useTriggers();
+  const {
+    triggers,
+    isLoading: isTriggersLoading,
+    error: triggersError,
+  } = useTriggers();
+  const {
+    question,
+    isLoading: isQuestionLoading,
+    error: questionError,
+  } = useSmokingTriggersQuestion();
+
+  const initialSelection = useMemo(() => {
+    if (!question || !triggers) {
+      return [];
+    }
+
+    const selection: SelectedAnswerOption[] = [];
+
+    // Map triggers (strings) to options
+    triggers.forEach(triggerValue => {
+      const option = question.options.find(opt => opt.value === triggerValue);
+      if (option) {
+        selection.push({
+          optionId: option.id,
+          value: option.value,
+          answerType: question.answerType,
+          nextVariationId: option.nextVariationId,
+        });
+      }
+    });
+
+    return selection;
+  }, [question, triggers]);
+
+  const isLoading = isTriggersLoading || isQuestionLoading;
+  const error = triggersError || questionError;
 
   if (isLoading) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText variant="heading" style={styles.title}>
-          Triggers
-        </AppText>
-        <AppText tone="secondary" style={styles.loadingText}>
+        <AppText tone="primary" style={styles.loadingText}>
           Loading triggers...
         </AppText>
       </AppSurface>
@@ -27,9 +62,6 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
   if (error) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText variant="heading" style={styles.title}>
-          Triggers
-        </AppText>
         <AppText
           style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
         >
@@ -39,32 +71,14 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
     );
   }
 
-  if (!triggers || triggers.length === 0) {
-    return (
-      <AppSurface style={[styles.card, style]}>
-        <AppText variant="heading" style={styles.title}>
-          Triggers
-        </AppText>
-        <AppText tone="secondary" style={styles.emptyText}>
-          No triggers available
-        </AppText>
-      </AppSurface>
-    );
-  }
-
   return (
     <AppSurface style={[styles.card, style]}>
-      <AppText variant="heading" style={styles.title}>
-        Triggers
-      </AppText>
-      <View style={styles.triggersList}>
-        {triggers.map((trigger, index) => (
-          <View key={index} style={styles.triggerItem}>
-            <View style={styles.bullet} />
-            <AppText style={styles.triggerText}>{trigger}</AppText>
-          </View>
-        ))}
-      </View>
+      <QuestionnaireQuestion
+        question={question}
+        initialSelection={initialSelection}
+        onSelectionChange={() => {}}
+        onValidityChange={() => {}}
+      />
     </AppSurface>
   );
 };
@@ -72,43 +86,13 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
 const styles = StyleSheet.create({
   card: {
     padding: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundCream,
-  },
-  title: {
-    color: COLOR_PALETTE.textSecondary,
-    marginBottom: SPACING.md,
-  },
-  triggersList: {
-    gap: SPACING.xs,
-  },
-  triggerItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingVertical: SPACING.xs,
-  },
-  bullet: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: COLOR_PALETTE.accentPrimary,
-    marginTop: 8,
-    marginRight: SPACING.sm,
-    flexShrink: 0,
-  },
-  triggerText: {
-    color: COLOR_PALETTE.textSecondary,
-    flex: 1,
-    lineHeight: 22,
+    backgroundColor: BRAND_COLORS.ink,
   },
   loadingText: {
     textAlign: 'center',
     fontStyle: 'italic',
   },
   errorText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  emptyText: {
     textAlign: 'center',
     fontStyle: 'italic',
   },

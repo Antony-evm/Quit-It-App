@@ -19,7 +19,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <View style={styles.wrapper}>
         <AppText tone="secondary" style={styles.loadingText}>
           Loading plan details...
         </AppText>
@@ -29,7 +29,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
   if (error) {
     return (
-      <View style={styles.container}>
+      <View style={styles.wrapper}>
         <AppText
           style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
         >
@@ -52,22 +52,22 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.section}>
+    <View style={[styles.wrapper, style]}>
+      <View style={styles.box}>
         <View style={styles.row}>
-          <AimSvg width={24} height={24} fill={COLOR_PALETTE.textPrimary} />
+          <AimSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
             {plan.status}
           </AppText>
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.box}>
         <View style={styles.row}>
           <CalendarSvg
             width={24}
             height={24}
-            stroke={COLOR_PALETTE.textPrimary}
+            color={COLOR_PALETTE.textPrimary}
           />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
             {formatDate(plan.date)}
@@ -75,18 +75,18 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.box}>
         <View style={styles.row}>
-          <StopSvg width={24} height={24} fill={COLOR_PALETTE.textPrimary} />
+          <StopSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
             {plan.current} cigarettes/day
           </AppText>
         </View>
       </View>
 
-      <View style={styles.section}>
+      <View style={styles.box}>
         <View style={styles.row}>
-          <GoalSvg width={24} height={24} stroke={COLOR_PALETTE.textPrimary} />
+          <GoalSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body" style={styles.detailsText}>
             {plan.target} cigarettes/day!
           </AppText>
@@ -97,13 +97,13 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
+    gap: SPACING.md,
+  },
+  box: {
     backgroundColor: BRAND_COLORS.ink,
     borderRadius: 8,
     padding: SPACING.lg,
-  },
-  section: {
-    marginBottom: SPACING.lg,
   },
   row: {
     flexDirection: 'row',

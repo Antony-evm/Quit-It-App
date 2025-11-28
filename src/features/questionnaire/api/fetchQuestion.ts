@@ -15,10 +15,19 @@ import {
 export type QuestionnaireRequestOptions = {
   orderId?: number;
   variationId?: number;
+  questionCode?: string;
 };
 
-const createQueryString = (orderId: number, variationId: number) =>
-  `order_id=${orderId}&variation_id=${variationId}`;
+const createQueryString = (
+  orderId: number,
+  variationId: number,
+  questionCode?: string,
+) => {
+  if (questionCode) {
+    return `question_code=${questionCode}`;
+  }
+  return `order_id=${orderId}&variation_id=${variationId}`;
+};
 
 const parseAnswerType = (value: string): AnswerType => {
   switch (value) {
@@ -127,11 +136,13 @@ export const fetchQuestion = async (
   const {
     orderId = QUESTIONNAIRE_DEFAULT_PARAMS.orderId,
     variationId = QUESTIONNAIRE_DEFAULT_PARAMS.variationId,
+    questionCode,
   } = options;
 
   const requestUrl = `${QUESTIONNAIRE_ENDPOINT}?${createQueryString(
     orderId,
     variationId,
+    questionCode,
   )}`;
 
   const response = await authenticatedGet(requestUrl);
