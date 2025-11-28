@@ -12,94 +12,89 @@ type TrackingRecordsListProps = {
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
 };
 
-export const TrackingRecordsList = React.memo(({
-  scrollViewRef,
-  onRecordPress,
-}: TrackingRecordsListProps) => {
-  const {
-    flatRecords: trackingRecords,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    isFetchingNextPage,
-  } = useInfiniteTrackingRecords();
+export const TrackingRecordsList = React.memo(
+  ({ scrollViewRef, onRecordPress }: TrackingRecordsListProps) => {
+    const {
+      flatRecords: trackingRecords,
+      isLoading,
+      isError,
+      error,
+      fetchNextPage,
+      isFetchingNextPage,
+    } = useInfiniteTrackingRecords();
 
-  const handleLoadMore = () => {
-    if (!isFetchingNextPage) {
-      fetchNextPage();
+    const handleLoadMore = () => {
+      if (!isFetchingNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    if (isLoading) {
+      return (
+        <View style={styles.container}>
+          <AppText variant="body" tone="primary" style={styles.loadingText}>
+            Bringing your notes together...
+          </AppText>
+        </View>
+      );
     }
-  };
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <AppText variant="body" tone="primary" style={styles.loadingText}>
-          Bringing your notes together...
-        </AppText>
-      </View>
-    );
-  }
-
-  if (isError) {
-    return (
-      <View style={styles.container}>
-        <AppText variant="body" style={styles.errorText}>
-          Failed to load tracking records: {error?.message || 'Unknown error'}
-        </AppText>
-      </View>
-    );
-  }
-
-  if (!trackingRecords || trackingRecords.length === 0) {
-    return (
-      <View style={styles.container}>
-        <AppText variant="body" tone="secondary" style={styles.emptyText}>
-          Your notes help you understand your habits. Start with just one.
-        </AppText>
-      </View>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <AppText variant="heading" style={styles.sectionTitle}>
-        Your Journey So Far
-      </AppText>
-
-      <View style={styles.recordsList}>
-        {trackingRecords.map(record => (
-          <TrackingRecordCard
-            key={record.record_id}
-            record={record}
-            onPress={onRecordPress}
-          />
-        ))}
-      </View>
-
-      {isFetchingNextPage && (
-        <View style={styles.loadingFooter}>
-          <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />
-          <AppText variant="body" tone="secondary" style={styles.loadingText}>
-            Loading more records...
+    if (isError) {
+      return (
+        <View style={styles.container}>
+          <AppText variant="body" style={styles.errorText}>
+            Failed to load tracking records: {error?.message || 'Unknown error'}
           </AppText>
         </View>
-      )}
+      );
+    }
 
-      {!isFetchingNextPage && trackingRecords.length > 0 && (
-        <View style={styles.loadMoreContainer}>
-          <AppText
-            variant="body"
-            style={styles.loadMoreButton}
-            onPress={handleLoadMore}
-          >
-            Load More
+    if (!trackingRecords || trackingRecords.length === 0) {
+      return (
+        <View style={styles.container}>
+          <AppText variant="body" tone="primary" style={styles.emptyText}>
+            Your notes help you understand your habits. Start with just one.
           </AppText>
         </View>
-      )}
-    </View>
-  );
-});
+      );
+    }
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.recordsList}>
+          {trackingRecords.map(record => (
+            <TrackingRecordCard
+              key={record.record_id}
+              record={record}
+              onPress={onRecordPress}
+            />
+          ))}
+        </View>
+
+        {isFetchingNextPage && (
+          <View style={styles.loadingFooter}>
+            <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />
+            <AppText variant="body" tone="primary" style={styles.loadingText}>
+              Loading more records...
+            </AppText>
+          </View>
+        )}
+
+        {!isFetchingNextPage && trackingRecords.length > 0 && (
+          <View style={styles.loadMoreContainer}>
+            <AppText
+              variant="body"
+              style={styles.loadMoreButton}
+              onPress={handleLoadMore}
+            >
+              Load More
+            </AppText>
+          </View>
+        )}
+      </View>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {

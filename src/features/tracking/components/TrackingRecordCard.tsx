@@ -13,54 +13,54 @@ type TrackingRecordCardProps = {
   onPress?: (record: TrackingRecordApiResponse) => void;
 };
 
-export const TrackingRecordCard = React.memo(({
-  record,
-  onPress,
-}: TrackingRecordCardProps) => {
-  const { data: trackingTypes } = useTrackingTypes();
+export const TrackingRecordCard = React.memo(
+  ({ record, onPress }: TrackingRecordCardProps) => {
+    const { data: trackingTypes } = useTrackingTypes();
 
-  const trackingType = trackingTypes?.find(
-    type => type.id === record.tracking_type_id,
-  );
+    const trackingType = trackingTypes?.find(
+      type => type.id === record.tracking_type_id,
+    );
 
-  const formattedDate = formatRelativeDateTimeForDisplay(record.event_at);
+    const formattedDate = formatRelativeDateTimeForDisplay(record.event_at);
 
-  return (
-    <Pressable onPress={() => onPress?.(record)}>
-      <AppSurface style={styles.card}>
-        <View style={styles.titleRow}>
-          <View style={styles.dropdownContainer}>
-            <View style={styles.dropdown}>
-              <AppText style={styles.dropdownText}>
-                {trackingType?.displayName || `Type ${record.tracking_type_id}`}
-              </AppText>
+    return (
+      <Pressable onPress={() => onPress?.(record)}>
+        <AppSurface style={styles.card}>
+          <View style={styles.titleRow}>
+            <View style={styles.dropdownContainer}>
+              <View style={styles.dropdown}>
+                <AppText style={styles.dropdownText}>
+                  {trackingType?.displayName ||
+                    `Type ${record.tracking_type_id}`}
+                </AppText>
+              </View>
             </View>
           </View>
-        </View>
-        <View style={[styles.section, styles.dateTimeContainer]}>
-          <AppText
-            variant="caption"
-            tone="primary"
-            style={[styles.dateTimeDisplay, styles.dateTimeContent]}
-          >
-            {formattedDate}
-          </AppText>
-        </View>
-        <View style={styles.noteSection}>
-          {record.note ? (
-            <AppText variant="body" style={styles.noteText}>
-              {record.note}
+          <View style={[styles.section, styles.dateTimeContainer]}>
+            <AppText
+              variant="caption"
+              tone="primary"
+              style={[styles.dateTimeDisplay, styles.dateTimeContent]}
+            >
+              {formattedDate}
             </AppText>
-          ) : (
-            <AppText variant="body" style={styles.notePlaceholder}>
-              Add a thought about this moment…
-            </AppText>
-          )}
-        </View>
-      </AppSurface>
-    </Pressable>
-  );
-});
+          </View>
+          <View style={styles.noteSection}>
+            {record.note ? (
+              <AppText variant="body" style={styles.noteText}>
+                {record.note}
+              </AppText>
+            ) : (
+              <AppText variant="body" style={styles.notePlaceholder}>
+                Add a thought about this moment…
+              </AppText>
+            )}
+          </View>
+        </AppSurface>
+      </Pressable>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   card: {

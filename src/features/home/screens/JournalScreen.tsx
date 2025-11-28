@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import { StyleSheet, ScrollView, View, Pressable } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -57,37 +63,40 @@ export const JournalScreen = () => {
     };
   }, [selectedRecord]);
 
-  const headerContent = useMemo(() => (
-    <View style={styles.modalHeaderContent}>
-      <Pressable
-        onPress={() => setIsEditModalVisible(false)}
-        style={({ pressed }) => [
-          styles.headerButton,
-          pressed && { opacity: 0.7 },
-        ]}
-        hitSlop={10}
-      >
-        <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
-      </Pressable>
-
-      {isDirty && (
+  const headerContent = useMemo(
+    () => (
+      <View style={styles.modalHeaderContent}>
         <Pressable
-          onPress={() => editCardRef.current?.save()}
-          style={styles.headerButton}
+          onPress={() => setIsEditModalVisible(false)}
+          style={({ pressed }) => [
+            styles.headerButton,
+            pressed && { opacity: 0.7 },
+          ]}
           hitSlop={10}
         >
-          {({ pressed }) => (
-            <AppText
-              variant="body"
-              style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
-            >
-              Save
-            </AppText>
-          )}
+          <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
         </Pressable>
-      )}
-    </View>
-  ), [isDirty]);
+
+        {isDirty && (
+          <Pressable
+            onPress={() => editCardRef.current?.save()}
+            style={styles.headerButton}
+            hitSlop={10}
+          >
+            {({ pressed }) => (
+              <AppText
+                variant="body"
+                style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
+              >
+                Save
+              </AppText>
+            )}
+          </Pressable>
+        )}
+      </View>
+    ),
+    [isDirty],
+  );
 
   return (
     <View style={styles.container}>
@@ -101,11 +110,7 @@ export const JournalScreen = () => {
           <AppText variant="title" style={styles.title}>
             Your Quit Journal
           </AppText>
-          <AppText tone="primary">
-            Reflect, reset, and strengthen the smoke-free version of you.
-            Logging cravings shows you how far you've come and what strengthens
-            you.
-          </AppText>
+          <AppText tone="primary">A clear view of how far you've come.</AppText>
         </View>
         <TrackingRecordsList
           scrollViewRef={scrollViewRef}
@@ -177,7 +182,7 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
   },
   header: {
-    marginBottom: SPACING.xl,
+    marginBottom: SPACING.sm,
   },
   title: {
     marginBottom: SPACING.sm,
