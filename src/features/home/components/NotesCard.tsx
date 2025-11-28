@@ -191,22 +191,29 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       },
     });
 
+    const sortedTrackingTypes = React.useMemo(() => {
+      if (!trackingTypes) return [];
+      return [...trackingTypes].sort((a, b) =>
+        a.displayName.localeCompare(b.displayName),
+      );
+    }, [trackingTypes]);
+
     React.useEffect(() => {
       if (
-        trackingTypes &&
-        trackingTypes.length > 0 &&
+        sortedTrackingTypes &&
+        sortedTrackingTypes.length > 0 &&
         selectedTrackingTypeId === null
       ) {
-        const defaultType = trackingTypes.find(type => type.is_default);
+        const defaultType = sortedTrackingTypes.find(type => type.is_default);
         if (defaultType) {
           setSelectedTrackingTypeId(defaultType.id);
         } else {
-          setSelectedTrackingTypeId(trackingTypes[0].id);
+          setSelectedTrackingTypeId(sortedTrackingTypes[0].id);
         }
       }
-    }, [trackingTypes, selectedTrackingTypeId]);
+    }, [sortedTrackingTypes, selectedTrackingTypeId]);
 
-    const selectedTrackingType = trackingTypes?.find(
+    const selectedTrackingType = sortedTrackingTypes?.find(
       type => type.id === selectedTrackingTypeId,
     );
 
@@ -332,7 +339,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       save: handleSave,
     }));
 
-    if (!trackingTypes || trackingTypes.length === 0) {
+    if (!sortedTrackingTypes || sortedTrackingTypes.length === 0) {
       return null;
     }
 
@@ -345,7 +352,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               I am logging a...
             </AppText>
             <View style={styles.chipContainer}>
-              {trackingTypes.map(type => {
+              {sortedTrackingTypes.map(type => {
                 const isSelected = selectedTrackingTypeId === type.id;
                 return (
                   <Pressable
@@ -395,11 +402,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                   selectedDateTime.toISOString(),
                 )}
               </AppText>
-              <View style={styles.editIndicator}>
-                <AppText variant="subcaption" style={styles.editIndicatorText}>
-                  EDIT
-                </AppText>
-              </View>
             </Pressable>
           </View>
 
@@ -462,9 +464,9 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   chip: {
-    paddingHorizontal: SPACING.lg,
+    paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.full,
+    borderRadius: BORDER_RADIUS.medium,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundMuted,

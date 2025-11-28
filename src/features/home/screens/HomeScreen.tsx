@@ -5,13 +5,12 @@ import {
   Platform,
   StyleSheet,
   View,
-  Modal,
   Pressable,
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, DraggableModal } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
@@ -34,7 +33,6 @@ import {
 } from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
 import CancelIcon from '@/assets/cancel.svg';
-import CheckmarkIcon from '@/assets/checkmark.svg';
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
@@ -203,6 +201,28 @@ export const HomeScreen = () => {
 
   const shouldHideFooter = isKeyboardVisible;
 
+  const renderHeaderContent = () => (
+    <View style={styles.modalHeaderContent}>
+      <Pressable
+        onPress={() => setIsNoteDrawerVisible(false)}
+        style={styles.headerButton}
+        hitSlop={10}
+      >
+        <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
+      </Pressable>
+
+      <Pressable
+        onPress={() => notesCardRef.current?.save()}
+        style={styles.headerButton}
+        hitSlop={10}
+      >
+        <AppText variant="body" style={styles.saveButtonText}>
+          Save
+        </AppText>
+      </Pressable>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View
@@ -221,50 +241,23 @@ export const HomeScreen = () => {
         />
       ) : null}
 
-      <Modal
+      <DraggableModal
         visible={isNoteDrawerVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={() => setIsNoteDrawerVisible(false)}
+        onClose={() => setIsNoteDrawerVisible(false)}
+        headerContent={renderHeaderContent()}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <View style={styles.dragIndicator} />
-            <View style={styles.modalHeaderContent}>
-              <Pressable
-                onPress={() => setIsNoteDrawerVisible(false)}
-                style={styles.headerButton}
-                hitSlop={10}
-              >
-                <CancelIcon width={24} height={24} fill={BRAND_COLORS.cream} />
-              </Pressable>
-
-              <Pressable
-                onPress={() => notesCardRef.current?.save()}
-                style={styles.headerButton}
-                hitSlop={10}
-              >
-                <CheckmarkIcon
-                  width={24}
-                  height={24}
-                  fill={BRAND_COLORS.cream}
-                />
-              </Pressable>
-            </View>
-          </View>
-          <ScrollView
-            ref={noteDrawerScrollRef}
-            contentContainerStyle={styles.modalContent}
-            keyboardShouldPersistTaps="handled"
-          >
-            <NotesCard
-              ref={notesCardRef}
-              scrollViewRef={noteDrawerScrollRef}
-              onSaveSuccess={() => setIsNoteDrawerVisible(false)}
-            />
-          </ScrollView>
-        </View>
-      </Modal>
+        <ScrollView
+          ref={noteDrawerScrollRef}
+          contentContainerStyle={styles.modalContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <NotesCard
+            ref={notesCardRef}
+            scrollViewRef={noteDrawerScrollRef}
+            onSaveSuccess={() => setIsNoteDrawerVisible(false)}
+          />
+        </ScrollView>
+      </DraggableModal>
     </SafeAreaView>
   );
 };
@@ -316,26 +309,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginBottom: SPACING.xl,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  modalHeader: {
-    backgroundColor: BRAND_COLORS.dark,
-    paddingTop: SPACING.sm,
-    paddingBottom: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
-  },
-  dragIndicator: {
-    width: 40,
-    height: 4,
-    backgroundColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: SPACING.md,
-  },
   modalHeaderContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -343,6 +316,10 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: SPACING.xs,
+  },
+  saveButtonText: {
+    color: BRAND_COLORS.cream,
+    fontWeight: '600',
   },
   modalContent: {
     padding: SPACING.md,
