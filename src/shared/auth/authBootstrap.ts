@@ -1,5 +1,6 @@
 import { readStoredTokens, readStoredUserData } from './authStorage';
 import { AuthTokens, UserData } from './types';
+import { UserStatusService } from '@/shared/services/userStatusService';
 
 export interface BootstrapAuthResult {
   tokens: AuthTokens | null;
@@ -68,6 +69,17 @@ export async function bootstrapAuthState(
   }
 
   console.log('[AuthBootstrap] Session valid - returning success');
+  
+  // Initialize user status service with valid session
+  try {
+    console.log('[AuthBootstrap] Initializing user status service...');
+    await UserStatusService.initialize();
+    console.log('[AuthBootstrap] User status service initialized');
+  } catch (error) {
+    console.log('[AuthBootstrap] Failed to initialize user status service:', error);
+    // Don't fail the bootstrap if status service initialization fails
+  }
+  
   return {
     tokens,
     user,

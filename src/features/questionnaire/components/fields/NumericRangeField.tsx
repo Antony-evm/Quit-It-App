@@ -20,7 +20,6 @@ export const NumericRangeField = ({
   units,
   onValueChange,
 }: NumericRangeFieldProps) => {
-  console.log('🎯 NumericRangeField - units prop:', units);
   const handleValueChange = (newValue: number) => {
     // If no value was set before, use the midpoint as initial value
     const roundedValue = Math.round(newValue);

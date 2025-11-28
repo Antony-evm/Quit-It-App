@@ -333,6 +333,7 @@ export const FrequencyGrid = ({
                 stroke={BRAND_COLORS.ink}
                 strokeWidth={4}
               />
+
               <Path
                 d={(() => {
                   const radius = 22;
@@ -370,7 +371,7 @@ export const FrequencyGrid = ({
                   ].join(' ');
                 })()}
                 fill={COLOR_PALETTE.accentPrimary}
-                fillOpacity={0.35}
+                fillOpacity={0.75}
                 stroke={COLOR_PALETTE.accentPrimary}
                 strokeWidth={2}
                 strokeLinecap="round"
@@ -395,21 +396,21 @@ export const FrequencyGrid = ({
               handleSelectionChange(option.id, Math.round(value))
             }
           />
-          {currentSub ? (
-            <View style={styles.currentValue}>
+          <View style={styles.frequencyDisplay}>
+            {currentSub ? (
               <AppText variant="caption" style={styles.currentValueText}>
                 {currentSub.value}
               </AppText>
-            </View>
-          ) : (
-            <AppText
-              variant="caption"
-              tone="primary"
-              style={styles.currentValueText}
-            >
-              Select a frequency
-            </AppText>
-          )}
+            ) : (
+              <AppText
+                variant="caption"
+                tone="primary"
+                style={styles.currentValueText}
+              >
+                Select a frequency
+              </AppText>
+            )}
+          </View>
         </View>
       </View>
     );
@@ -446,14 +447,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
     gap: SPACING.md,
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
   },
   optionCell: {
     flex: 1,
-    paddingRight: SPACING.md,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   clockContainer: {
     alignItems: 'center',
@@ -470,14 +472,20 @@ const styles = StyleSheet.create({
   },
   sliderCell: {
     flex: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: SPACING.xs,
   },
-  slider: {
-    width: '100%',
-    height: 20,
-  },
-  currentValue: {
+  frequencyDisplay: {
+    width: '90%',
+    alignSelf: 'center',
     alignItems: 'flex-end',
+    paddingTop: SPACING.xs,
+  },
+  slider: {
+    width: '90%',
+    alignSelf: 'center',
+    height: 40,
   },
   currentValueText: {
     opacity: 0.8,

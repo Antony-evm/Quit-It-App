@@ -351,10 +351,6 @@ export const QuestionnaireQuestion = ({
 
       {isNumericRangeQuestion && firstOption && numericRange ? (
         <>
-          {console.log(
-            '📊 QuestionnaireQuestion - question.units:',
-            question.units,
-          )}
           <NumericRangeField
             minimum={numericRange.min}
             maximum={numericRange.max}

@@ -158,22 +158,13 @@ export class UserStatusService {
   }
 
   /**
-   * Fetch questionnaire data and navigate to questionnaire screen
+   * Navigate to questionnaire screen
+   * Note: The screen will handle its own data fetching on mount
    */
   private static async fetchQuestionnaireDataAndNavigate(
     navigation: NativeStackNavigationProp<RootStackParamList>,
   ): Promise<void> {
-    try {
-      // TODO: Implement actual questionnaire data fetching
-      // For now, just navigate to the questionnaire screen
-      // This would be the actual API call:
-      // const questionnaireData = await fetchQuestionnaireData();
-
-      navigation.navigate('Questionnaire');
-    } catch (error) {
-      // Handle error - maybe show error screen or navigate to home
-      navigation.navigate('Home');
-    }
+    navigation.navigate('Questionnaire');
   }
 
   /**

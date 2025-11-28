@@ -15,10 +15,17 @@ import { AuthProvider } from '@/shared/auth';
 import { ErrorHandlerProvider } from '@/shared/error';
 import { DeveloperMenuTrigger } from '@/shared/components/dev';
 
-// Initialize Stytch client
-const stytchClient = new StytchClient(
-  'public-token-test-bff8e9c7-cb62-4afd-8e6d-1dbce527efdd',
-);
+// Initialize Stytch client once at module level
+console.log('[App] Config object:', Config);
+console.log('[App] STYTCH_PUBLIC_TOKEN:', Config.STYTCH_PUBLIC_TOKEN);
+
+if (!Config.STYTCH_PUBLIC_TOKEN) {
+  throw new Error(
+    'STYTCH_PUBLIC_TOKEN is not configured. Please add it to your .env file.',
+  );
+}
+
+const stytchClient = new StytchClient(Config.STYTCH_PUBLIC_TOKEN);
 
 const queryClient = new QueryClient({
   defaultOptions: {

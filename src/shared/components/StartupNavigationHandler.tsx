@@ -102,12 +102,8 @@ export const StartupNavigationHandler: React.FC<
           return;
         }
 
-        // Initialize user status service if needed
+        // Get user status action (service should be initialized in authBootstrap)
         try {
-          if (!UserStatusService.getStatus(userStatusId)) {
-            await UserStatusService.initialize();
-          }
-
           // Execute navigation based on user status
           console.log('[StartupNavigation] Executing status-based navigation for status:', userStatusId);
           // Get the action to determine the navigation target
