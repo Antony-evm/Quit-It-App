@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   View,
+  Modal,
+  Pressable,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
 import {
@@ -19,7 +22,8 @@ import {
 } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
 import { useQuittingPlan } from '@/features/questionnaire';
-import { NotesScreen } from './NotesScreen';
+import { JournalScreen } from './JournalScreen';
+import { NotesCard, NotesCardHandle } from '../components/NotesCard';
 import {
   HomeEntriesPlaceholder,
   HomeEntry,
@@ -29,6 +33,8 @@ import {
   HomeFooterTab,
 } from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
+import CancelIcon from '@/assets/cancel.svg';
+import CheckmarkIcon from '@/assets/checkmark.svg';
 
 const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
@@ -72,6 +78,10 @@ export const HomeScreen = () => {
 
   // Add quitting plan hook to check status
   const { plan: quittingPlan } = useQuittingPlan();
+
+  const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
+  const noteDrawerScrollRef = useRef<ScrollView>(null);
+  const notesCardRef = useRef<NotesCardHandle>(null);
 
   // Add some debugging
   console.log('HomeScreen - Craving Analytics Data:', {
@@ -179,10 +189,10 @@ export const HomeScreen = () => {
             <AccountScreen />
           </View>
         );
-      case 'notes':
+      case 'journal':
         return (
           <View style={styles.notesWrapper}>
-            <NotesScreen />
+            <JournalScreen />
           </View>
         );
       case 'home':
@@ -204,8 +214,57 @@ export const HomeScreen = () => {
         {renderContent()}
       </View>
       {!shouldHideFooter ? (
-        <HomeFooterNavigator activeTab={activeTab} onTabChange={setActiveTab} />
+        <HomeFooterNavigator
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onFabPress={() => setIsNoteDrawerVisible(true)}
+        />
       ) : null}
+
+      <Modal
+        visible={isNoteDrawerVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsNoteDrawerVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <View style={styles.dragIndicator} />
+            <View style={styles.modalHeaderContent}>
+              <Pressable
+                onPress={() => setIsNoteDrawerVisible(false)}
+                style={styles.headerButton}
+                hitSlop={10}
+              >
+                <CancelIcon width={24} height={24} fill={BRAND_COLORS.cream} />
+              </Pressable>
+
+              <Pressable
+                onPress={() => notesCardRef.current?.save()}
+                style={styles.headerButton}
+                hitSlop={10}
+              >
+                <CheckmarkIcon
+                  width={24}
+                  height={24}
+                  fill={BRAND_COLORS.cream}
+                />
+              </Pressable>
+            </View>
+          </View>
+          <ScrollView
+            ref={noteDrawerScrollRef}
+            contentContainerStyle={styles.modalContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <NotesCard
+              ref={notesCardRef}
+              scrollViewRef={noteDrawerScrollRef}
+              onSaveSuccess={() => setIsNoteDrawerVisible(false)}
+            />
+          </ScrollView>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -256,5 +315,36 @@ const styles = StyleSheet.create({
   entriesCard: {
     flex: 1,
     marginBottom: SPACING.xl,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+  },
+  modalHeader: {
+    backgroundColor: BRAND_COLORS.dark,
+    paddingTop: SPACING.sm,
+    paddingBottom: SPACING.md,
+    paddingHorizontal: SPACING.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
+  },
+  dragIndicator: {
+    width: 40,
+    height: 4,
+    backgroundColor: COLOR_PALETTE.borderDefault,
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: SPACING.md,
+  },
+  modalHeaderContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerButton: {
+    padding: SPACING.xs,
+  },
+  modalContent: {
+    padding: SPACING.md,
   },
 });

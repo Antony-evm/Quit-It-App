@@ -1,11 +1,16 @@
-import React, { useState, useRef, RefObject } from 'react';
+import React, {
+  useState,
+  useRef,
+  RefObject,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import {
   StyleSheet,
   View,
   Pressable,
   Platform,
   ScrollView,
-  Dimensions,
 } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
@@ -20,29 +25,33 @@ import {
   BORDER_RADIUS,
 } from '@/shared/theme';
 import {
-  SURFACE_VARIANTS,
-  LAYOUT_STYLES,
-  TEXT_STYLES,
-  getSurfaceVariant,
-  SHADOWS,
-} from '@/shared/styles/commonStyles';
-import { useTrackingTypes } from '@/features/tracking';
-import { useInfiniteTrackingRecords } from '@/features/tracking';
+  useTrackingTypes,
+  useInfiniteTrackingRecords,
+} from '@/features/tracking';
 import {
   createTrackingRecord,
   CreateTrackingRecordPayload,
 } from '@/features/tracking/api/createTrackingRecord';
+import { updateTrackingRecord } from '@/features/tracking/api/updateTrackingRecord';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import ArrowDownSvg from '@/assets/arrowDown.svg';
-import ArrowUpSvg from '@/assets/arrowUp.svg';
-import CheckmarkSvg from '@/assets/checkmark.svg';
+import CalendarIcon from '@/assets/calendar.svg';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 import ScrollManager from '@/utils/scrollManager';
 
+export type NotesCardHandle = {
+  save: () => void;
+};
+
 type NotesCardProps = {
   userId?: number;
+  recordId?: number;
+  initialValues?: {
+    trackingTypeId: number;
+    dateTime: Date;
+    notes: string;
+  };
   onSave?: (data: {
     trackingTypeId: number;
     dateTime: Date;
@@ -52,420 +61,457 @@ type NotesCardProps = {
   scrollViewRef?: RefObject<ScrollView | null>;
 };
 
-export const NotesCard: React.FC<NotesCardProps> = ({
-  userId,
-  onSave,
-  onSaveSuccess,
-  scrollViewRef,
-}) => {
-  const currentUserId = useCurrentUserId();
-  const actualUserId = userId ?? currentUserId;
-  const { data: trackingTypes } = useTrackingTypes();
-  const { showToast } = useToast();
-  const { addRecordToCache, replaceOptimisticRecord } =
-    useInfiniteTrackingRecords();
-  const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
-    number | null
-  >(null);
-  const [selectedDateTime, setSelectedDateTime] = useState(new Date());
-  const [notes, setNotes] = useState('');
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showDateTimePicker, setShowDateTimePicker] = useState(false);
-  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
-
-  // Add ref for the NotesCard component
-  const cardRef = useRef<View>(null);
-
-  // Cleanup scroll operations when component unmounts
-  React.useEffect(() => {
-    return () => {
-      ScrollManager.cancelCurrent();
-    };
-  }, []);
-
-  // Mutation for creating tracking record
-  const createRecordMutation = useMutation({
-    mutationFn: createTrackingRecord,
-    onMutate: async (variables: CreateTrackingRecordPayload) => {
-      // Generate a temporary ID for the optimistic update
-      const tempId = Date.now(); // Use timestamp as temp ID
-
-      // Create optimistic record that matches API response format
-      const optimisticRecord: TrackingRecordApiResponse = {
-        record_id: tempId,
-        user_id: variables.user_id,
-        tracking_type_id: variables.tracking_type_id,
-        event_at: variables.event_at,
-        note: variables.note || null,
-      };
-
-      // Optimistically add the record to the cache
-      addRecordToCache(optimisticRecord);
-
-      return { optimisticRecord, tempId };
-    },
-    onSuccess: (realRecord, _variables, context) => {
-      // Replace the optimistic record with the real record from server
-      if (context?.tempId) {
-        replaceOptimisticRecord(context.tempId, realRecord);
-      }
-
-      // Reset form
-      setNotes('');
-      setSelectedDateTime(new Date());
-      setShowDateTimePicker(false);
-      setShowDropdown(false);
-
-      // Call success callback
-      onSaveSuccess?.();
-
-      // Show success message
-      showToast('Your tracking entry has been saved!', 'success');
-    },
-    onError: (error, _variables, _context) => {
-      // On error, the optimistic update will be automatically reverted
-      // No need to manually invalidate queries
-      showToast(
-        error instanceof Error
-          ? error.message
-          : 'Failed to save tracking entry',
-        'error',
-      );
-    },
-  });
-
-  React.useEffect(() => {
-    if (
-      trackingTypes &&
-      trackingTypes.length > 0 &&
-      selectedTrackingTypeId === null
-    ) {
-      const defaultType = trackingTypes.find(type => type.is_default);
-      if (defaultType) {
-        setSelectedTrackingTypeId(defaultType.id);
-      } else {
-        setSelectedTrackingTypeId(trackingTypes[0].id);
-      }
-    }
-  }, [trackingTypes, selectedTrackingTypeId]);
-
-  const selectedTrackingType = trackingTypes?.find(
-    type => type.id === selectedTrackingTypeId,
-  );
-
-  const maxChars = 500;
-  const remainingChars = maxChars - notes.length;
-
-  const formatDateTime = (date: Date): string => {
-    return date.toLocaleString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  };
-
-  const handleDateTimePress = () => {
-    setShowDropdown(false); // Close dropdown when interacting with date/time
-    setPickerMode('date'); // Always start with date selection
-    setShowDateTimePicker(true);
-  };
-
-  const handleDateTimeChange = (
-    event: DateTimePickerEvent,
-    selectedDate?: Date,
+export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
+  (
+    { userId, recordId, initialValues, onSave, onSaveSuccess, scrollViewRef },
+    ref,
   ) => {
-    if (selectedDate) {
-      if (pickerMode === 'date') {
-        // Update the date part
-        const newDateTime = new Date(selectedDateTime);
-        newDateTime.setFullYear(
-          selectedDate.getFullYear(),
-          selectedDate.getMonth(),
-          selectedDate.getDate(),
-        );
-        setSelectedDateTime(newDateTime);
+    const currentUserId = useCurrentUserId();
+    const actualUserId = userId ?? currentUserId;
+    const { data: trackingTypes } = useTrackingTypes();
+    const { showToast } = useToast();
+    const { addRecordToCache, replaceOptimisticRecord, updateRecordInCache } =
+      useInfiniteTrackingRecords();
+    const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
+      number | null
+    >(initialValues?.trackingTypeId ?? null);
+    const [selectedDateTime, setSelectedDateTime] = useState(
+      initialValues?.dateTime ?? new Date(),
+    );
+    const [notes, setNotes] = useState(initialValues?.notes ?? '');
+    const [showDateTimePicker, setShowDateTimePicker] = useState(false);
+    const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
 
-        // On Android, after date selection, switch to time
-        if (Platform.OS === 'android') {
-          setPickerMode('time');
-          return; // Keep picker open for time selection
+    // Add ref for the NotesCard component
+    const cardRef = useRef<View>(null);
+
+    // Update state when initialValues change
+    React.useEffect(() => {
+      if (initialValues) {
+        setSelectedTrackingTypeId(initialValues.trackingTypeId);
+        setSelectedDateTime(initialValues.dateTime);
+        setNotes(initialValues.notes);
+      }
+    }, [initialValues]);
+
+    // Cleanup scroll operations when component unmounts
+    React.useEffect(() => {
+      return () => {
+        ScrollManager.cancelCurrent();
+      };
+    }, []);
+
+    // Mutation for creating tracking record
+    const createRecordMutation = useMutation({
+      mutationFn: createTrackingRecord,
+      onMutate: async (variables: CreateTrackingRecordPayload) => {
+        // Generate a temporary ID for the optimistic update
+        const tempId = Date.now(); // Use timestamp as temp ID
+
+        // Create optimistic record that matches API response format
+        const optimisticRecord: TrackingRecordApiResponse = {
+          record_id: tempId,
+          user_id: variables.user_id,
+          tracking_type_id: variables.tracking_type_id,
+          event_at: variables.event_at,
+          note: variables.note || null,
+        };
+
+        // Optimistically add the record to the cache
+        addRecordToCache(optimisticRecord);
+
+        return { optimisticRecord, tempId };
+      },
+      onSuccess: (realRecord, _variables, context) => {
+        // Replace the optimistic record with the real record from server
+        if (context?.tempId) {
+          replaceOptimisticRecord(context.tempId, realRecord);
+        }
+
+        // Reset form
+        setNotes('');
+        setSelectedDateTime(new Date());
+        setShowDateTimePicker(false);
+
+        // Call success callback
+        onSaveSuccess?.();
+
+        // Show success message
+        showToast('Your tracking entry has been saved!', 'success');
+      },
+      onError: (error, _variables, _context) => {
+        // On error, the optimistic update will be automatically reverted
+        // No need to manually invalidate queries
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'Failed to save tracking entry',
+          'error',
+        );
+      },
+    });
+
+    // Mutation for updating tracking record
+    const updateRecordMutation = useMutation({
+      mutationFn: ({ recordId, payload }: { recordId: number; payload: any }) =>
+        updateTrackingRecord(recordId, payload),
+      onMutate: async ({ recordId, payload }) => {
+        // Optimistically update the record in the cache
+        // We need the original record to construct the full object, but we don't have it here easily.
+        // However, updateRecordInCache only needs the ID and the updated fields if we were merging,
+        // but the implementation replaces the record if ID matches.
+        // Wait, updateRecordInCache implementation:
+        // record.record_id === updatedRecord.record_id ? updatedRecord : record
+        // So we need the FULL record.
+        // We can construct a partial one, but that might break things if fields are missing.
+        // But we have all fields: user_id, tracking_type_id, event_at, note.
+        // We just need to make sure we have user_id.
+
+        const updatedRecord: TrackingRecordApiResponse = {
+          record_id: recordId,
+          user_id: actualUserId!, // We assume user is logged in
+          tracking_type_id: payload.tracking_type_id,
+          event_at: payload.event_at,
+          note: payload.note || null,
+        };
+        updateRecordInCache(updatedRecord);
+        return { recordId };
+      },
+      onSuccess: () => {
+        onSaveSuccess?.();
+        showToast('Your tracking entry has been updated!', 'success');
+      },
+      onError: (error, _variables, _context) => {
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'Failed to update tracking entry',
+          'error',
+        );
+      },
+    });
+
+    React.useEffect(() => {
+      if (
+        trackingTypes &&
+        trackingTypes.length > 0 &&
+        selectedTrackingTypeId === null
+      ) {
+        const defaultType = trackingTypes.find(type => type.is_default);
+        if (defaultType) {
+          setSelectedTrackingTypeId(defaultType.id);
         } else {
-          // On iOS, show time picker after date
-          setPickerMode('time');
+          setSelectedTrackingTypeId(trackingTypes[0].id);
         }
-      } else if (pickerMode === 'time') {
-        // Update the time part
-        const newDateTime = new Date(selectedDateTime);
-        newDateTime.setHours(
-          selectedDate.getHours(),
-          selectedDate.getMinutes(),
-          0,
-          0,
-        );
+      }
+    }, [trackingTypes, selectedTrackingTypeId]);
 
-        // Check if the selected time is in the future for today's date
-        const now = new Date();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const selectedDateOnly = new Date(newDateTime);
-        selectedDateOnly.setHours(0, 0, 0, 0);
+    const selectedTrackingType = trackingTypes?.find(
+      type => type.id === selectedTrackingTypeId,
+    );
 
-        if (
-          selectedDateOnly.getTime() === today.getTime() &&
-          newDateTime > now
-        ) {
-          // If it's today and the time is in the future, don't update and show a warning
-          showToast('Cannot select a future time for today', 'error');
-          return;
+    const maxChars = 500;
+    const remainingChars = maxChars - notes.length;
+
+    const handleDateTimePress = () => {
+      setPickerMode('date'); // Always start with date selection
+      setShowDateTimePicker(true);
+    };
+
+    const handleDateTimeChange = (
+      event: DateTimePickerEvent,
+      selectedDate?: Date,
+    ) => {
+      if (selectedDate) {
+        if (pickerMode === 'date') {
+          // Update the date part
+          const newDateTime = new Date(selectedDateTime);
+          newDateTime.setFullYear(
+            selectedDate.getFullYear(),
+            selectedDate.getMonth(),
+            selectedDate.getDate(),
+          );
+          setSelectedDateTime(newDateTime);
+
+          // On Android, after date selection, switch to time
+          if (Platform.OS === 'android') {
+            setPickerMode('time');
+            return; // Keep picker open for time selection
+          } else {
+            // On iOS, show time picker after date
+            setPickerMode('time');
+          }
+        } else if (pickerMode === 'time') {
+          // Update the time part
+          const newDateTime = new Date(selectedDateTime);
+          newDateTime.setHours(
+            selectedDate.getHours(),
+            selectedDate.getMinutes(),
+            0,
+            0,
+          );
+
+          // Check if the selected time is in the future for today's date
+          const now = new Date();
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const selectedDateOnly = new Date(newDateTime);
+          selectedDateOnly.setHours(0, 0, 0, 0);
+
+          if (
+            selectedDateOnly.getTime() === today.getTime() &&
+            newDateTime > now
+          ) {
+            // If it's today and the time is in the future, don't update and show a warning
+            showToast('Cannot select a future time for today', 'error');
+            return;
+          }
+
+          setSelectedDateTime(newDateTime);
+
+          // Close picker after time selection
+          setShowDateTimePicker(false);
         }
-
-        setSelectedDateTime(newDateTime);
-
-        // Close picker after time selection
+      } else {
+        // User cancelled
         setShowDateTimePicker(false);
       }
-    } else {
-      // User cancelled
-      setShowDateTimePicker(false);
+    };
+
+    const handleNotesChange = (text: string) => {
+      if (text.length <= maxChars) {
+        setNotes(text);
+      }
+    };
+
+    const handleNotesFocus = () => {
+      // Use ScrollManager to ensure only one scroll operation at a time
+      ScrollManager.scheduleScroll(() => {
+        ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
+      }, 50); // Shorter delay for focus events
+    };
+
+    const handleTrackingTypeSelect = (trackingTypeId: number) => {
+      setSelectedTrackingTypeId(trackingTypeId);
+    };
+
+    const handleSave = () => {
+      if (selectedTrackingType) {
+        const payload = {
+          user_id: actualUserId,
+          tracking_type_id: selectedTrackingType.id,
+          event_at: selectedDateTime.toISOString(),
+          note: notes.trim() || null, // Send null if notes is empty
+        };
+
+        // Call the legacy callback if provided
+        onSave?.({
+          trackingTypeId: selectedTrackingType.id,
+          dateTime: selectedDateTime,
+          notes: notes.trim(),
+        });
+
+        if (recordId) {
+          updateRecordMutation.mutate({
+            recordId,
+            payload: {
+              tracking_type_id: selectedTrackingType.id,
+              event_at: selectedDateTime.toISOString(),
+              note: notes.trim() || undefined,
+            },
+          });
+        } else {
+          // Make the API call
+          createRecordMutation.mutate(payload);
+        }
+      }
+    };
+
+    // Expose the save method to the parent component
+    useImperativeHandle(ref, () => ({
+      save: handleSave,
+    }));
+
+    if (!trackingTypes || trackingTypes.length === 0) {
+      return null;
     }
-  };
 
-  const handleNotesChange = (text: string) => {
-    setShowDropdown(false); // Close dropdown when typing in notes
-    if (text.length <= maxChars) {
-      setNotes(text);
-    }
-  };
-
-  // Helper function to scroll card to 20% from top of screen
-  const scrollCardToPosition = () => {
-    ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
-  };
-
-  const handleNotesFocus = () => {
-    // Use ScrollManager to ensure only one scroll operation at a time
-    ScrollManager.scheduleScroll(() => {
-      ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
-    }, 50); // Shorter delay for focus events
-  };
-
-  const handleTrackingTypeSelect = (trackingTypeId: number) => {
-    setSelectedTrackingTypeId(trackingTypeId);
-    setShowDropdown(false);
-  };
-
-  const handleSave = () => {
-    if (selectedTrackingType) {
-      const payload: CreateTrackingRecordPayload = {
-        user_id: actualUserId,
-        tracking_type_id: selectedTrackingType.id,
-        event_at: selectedDateTime.toISOString(),
-        note: notes.trim() || null, // Send null if notes is empty
-      };
-
-      // Call the legacy callback if provided
-      onSave?.({
-        trackingTypeId: selectedTrackingType.id,
-        dateTime: selectedDateTime,
-        notes: notes.trim(),
-      });
-
-      // Make the API call
-      createRecordMutation.mutate(payload);
-    }
-  };
-
-  if (!trackingTypes || trackingTypes.length === 0) {
-    return null;
-  }
-
-  return (
-    <View ref={cardRef}>
-      <AppSurface style={styles.card}>
-        <View style={styles.headerContainer}>
-          <View style={styles.dropdownContainer}>
-            <Pressable
-              style={[styles.dropdown]}
-              onPress={() => setShowDropdown(!showDropdown)}
-            >
-              <AppText style={[styles.dropdownText, styles.headerDropdownText]}>
-                {selectedTrackingType?.displayName || 'Select tracking type'}
-              </AppText>
-              {showDropdown ? (
-                <ArrowUpSvg width={16} height={16} fill={BRAND_COLORS.cream} />
-              ) : (
-                <ArrowDownSvg
-                  width={16}
-                  height={16}
-                  fill={BRAND_COLORS.cream}
-                />
-              )}
-            </Pressable>
-            {showDropdown && trackingTypes && (
-              <View style={styles.dropdownList}>
-                {trackingTypes.map(type => (
+    return (
+      <View ref={cardRef}>
+        <AppSurface style={styles.card}>
+          {/* Tracking Type Selector - Chips/Segmented Control Style */}
+          <View style={styles.typeSelectorContainer}>
+            <AppText variant="caption" style={styles.sectionLabel}>
+              I am logging a...
+            </AppText>
+            <View style={styles.chipContainer}>
+              {trackingTypes.map(type => {
+                const isSelected = selectedTrackingTypeId === type.id;
+                return (
                   <Pressable
                     key={type.id}
-                    style={[
-                      styles.dropdownItem,
-                      selectedTrackingTypeId === type.id &&
-                        styles.dropdownItemSelected,
-                    ]}
+                    style={[styles.chip, isSelected && styles.chipSelected]}
                     onPress={() => handleTrackingTypeSelect(type.id)}
                   >
                     <AppText
                       style={[
-                        styles.dropdownItemText,
-                        selectedTrackingTypeId === type.id &&
-                          styles.dropdownItemTextSelected,
+                        styles.chipText,
+                        isSelected && styles.chipTextSelected,
                       ]}
                     >
                       {type.displayName}
                     </AppText>
                   </Pressable>
-                ))}
-              </View>
-            )}
+                );
+              })}
+            </View>
           </View>
-          <View>
+
+          {/* Date Time Selector */}
+          <View style={styles.dateTimeSection}>
+            <AppText variant="caption" style={styles.sectionLabel}>
+              When did it happen?
+            </AppText>
             <Pressable
-              style={({ pressed }) => [
-                styles.saveButton,
-                { opacity: pressed ? 0.7 : 1 },
-              ]}
-              onPress={handleSave}
-              disabled={createRecordMutation.isPending}
+              style={styles.dateTimeButton}
+              onPress={
+                showDateTimePicker
+                  ? () => setShowDateTimePicker(false)
+                  : handleDateTimePress
+              }
             >
-              <CheckmarkSvg width={24} height={24} />
+              <CalendarIcon
+                width={20}
+                height={20}
+                // fill={BRAND_COLORS.cream}
+                style={styles.calendarIcon}
+              />
+              <AppText
+                variant="body"
+                tone="primary"
+                style={styles.dateTimeText}
+              >
+                {formatRelativeDateTimeForDisplay(
+                  selectedDateTime.toISOString(),
+                )}
+              </AppText>
+              <View style={styles.editIndicator}>
+                <AppText variant="subcaption" style={styles.editIndicatorText}>
+                  EDIT
+                </AppText>
+              </View>
             </Pressable>
           </View>
-        </View>
 
-        <View style={[styles.dateTimeSection]}>
-          <Pressable
-            style={styles.dateTimeButton}
-            onPress={
-              showDateTimePicker
-                ? () => setShowDateTimePicker(false)
-                : handleDateTimePress
-            }
-          >
-            <AppText variant="caption" tone="primary">
-              {formatRelativeDateTimeForDisplay(selectedDateTime.toISOString())}
+          {/* Notes Input */}
+          <View style={styles.notesContainer}>
+            <AppText variant="caption" style={styles.sectionLabel}>
+              Notes (Optional)
             </AppText>
-          </Pressable>
-        </View>
-
-        <View style={styles.notesContainer}>
-          <AppTextInput
-            value={notes}
-            onChangeText={handleNotesChange}
-            onFocus={handleNotesFocus}
-            placeholder="What's on your mind?"
-            multiline
-            numberOfLines={4}
-            style={styles.notesInput}
-            textAlignVertical="top"
-          />
-          <View style={styles.charCountContainer}>
-            <AppText variant="subcaption" tone="primary">
-              {remainingChars} characters remaining
-            </AppText>
+            <AppTextInput
+              value={notes}
+              onChangeText={handleNotesChange}
+              onFocus={handleNotesFocus}
+              placeholder="How are you feeling? What triggered this?"
+              multiline
+              numberOfLines={6}
+              style={styles.notesInput}
+              textAlignVertical="top"
+            />
+            <View style={styles.charCountContainer}>
+              <AppText variant="subcaption" tone="primary">
+                {remainingChars} characters remaining
+              </AppText>
+            </View>
           </View>
-        </View>
 
-        {showDateTimePicker && (
-          <DateTimePicker
-            value={selectedDateTime}
-            mode={pickerMode}
-            is24Hour={false}
-            maximumDate={new Date()}
-            onChange={handleDateTimeChange}
-          />
-        )}
-      </AppSurface>
-    </View>
-  );
-};
+          {showDateTimePicker && (
+            <DateTimePicker
+              value={selectedDateTime}
+              mode={pickerMode}
+              is24Hour={false}
+              maximumDate={new Date()}
+              onChange={handleDateTimeChange}
+            />
+          )}
+        </AppSurface>
+      </View>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: SPACING.md, // Reduced from xl since ScrollView has content padding
+    marginBottom: SPACING.md,
+    borderRadius: BORDER_RADIUS.medium,
+    padding: SPACING.lg, // Increased padding
+  },
+  sectionLabel: {
+    marginBottom: SPACING.sm,
+    color: COLOR_PALETTE.textMuted,
+    textTransform: 'uppercase',
+    fontSize: 11,
+    letterSpacing: 0.5,
+  },
+  typeSelectorContainer: {
+    marginBottom: SPACING.xl,
+  },
+  chipContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+  },
+  chip: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm,
+    borderRadius: BORDER_RADIUS.full,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+  },
+  chipSelected: {
+    backgroundColor: BRAND_COLORS.cream,
+    borderColor: BRAND_COLORS.cream,
+  },
+  chipText: {
+    color: COLOR_PALETTE.textPrimary,
+    fontWeight: '500',
+  },
+  chipTextSelected: {
+    color: BRAND_COLORS.ink,
+    fontWeight: '600',
+  },
+  dateTimeSection: {
+    marginBottom: SPACING.xl,
+  },
+  dateTimeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.medium,
     padding: SPACING.md,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.md,
+  calendarIcon: {
+    marginRight: SPACING.sm,
   },
-  trackingTypeLabel: {
-    fontSize: 12,
-    marginBottom: SPACING.xs,
-  },
-  dateTimeButton: {
-    marginHorizontal: SPACING.sm,
-    borderBottomWidth: 2,
-    borderBottomColor: BRAND_COLORS.cream,
-    borderStyle: 'dashed',
-  },
-  dropdownContainer: {
-    ...LAYOUT_STYLES.dropdownContainer,
+  dateTimeText: {
     flex: 1,
-    marginRight: SPACING.md,
   },
-  dropdown: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: BORDER_RADIUS.medium,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    ...LAYOUT_STYLES.rowBetween,
+  editIndicator: {
+    backgroundColor: COLOR_PALETTE.accentMuted,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
-  dropdownText: {
-    ...TEXT_STYLES.dropdownText,
-  },
-  headerDropdownText: {
-    ...TEXT_STYLES.dropdownText,
-  },
-  dropdownList: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: BORDER_RADIUS.medium,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    ...LAYOUT_STYLES.dropdownList,
-  },
-  dropdownItem: {
-    ...LAYOUT_STYLES.dropdownItem,
-  },
-  dropdownItemSelected: {
-    ...LAYOUT_STYLES.dropdownItemSelected,
-  },
-  dropdownItemText: {
-    ...TEXT_STYLES.dropdownItemText,
-  },
-  dropdownItemTextSelected: {
-    ...TEXT_STYLES.dropdownItemTextSelected,
-  },
-  trackingType: {
-    color: COLOR_PALETTE.textPrimary,
-  },
-  dateTimeSection: {
-    marginBottom: SPACING.sm,
-  },
-  dateTimeRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    gap: SPACING.md,
+  editIndicatorText: {
+    color: BRAND_COLORS.cream,
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   notesContainer: {
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.xs,
+    marginBottom: SPACING.sm,
   },
   notesInput: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
@@ -473,24 +519,14 @@ const styles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.medium,
     paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingVertical: SPACING.md,
     color: COLOR_PALETTE.textPrimary,
-    minHeight: 80,
+    minHeight: 120, // Increased height
     textAlignVertical: 'top',
     marginBottom: SPACING.xs,
+    fontSize: 16, // Slightly larger text
   },
   charCountContainer: {
     alignItems: 'flex-end',
-  },
-  saveButton: {
-    width: 42,
-    height: 42,
-    borderRadius: BORDER_RADIUS.large,
-    backgroundColor: BRAND_COLORS.cream,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
   },
 });

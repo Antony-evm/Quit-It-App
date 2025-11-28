@@ -4,14 +4,17 @@ import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
+import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
 
 type TrackingRecordsListProps = {
   scrollViewRef?: RefObject<ScrollView | null>;
+  onRecordPress?: (record: TrackingRecordApiResponse) => void;
 };
 
 export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
   scrollViewRef,
+  onRecordPress,
 }) => {
   const {
     flatRecords: trackingRecords,
@@ -69,7 +72,7 @@ export const TrackingRecordsList: React.FC<TrackingRecordsListProps> = ({
           <TrackingRecordCard
             key={record.record_id}
             record={record}
-            scrollViewRef={scrollViewRef}
+            onPress={onRecordPress}
           />
         ))}
       </View>
