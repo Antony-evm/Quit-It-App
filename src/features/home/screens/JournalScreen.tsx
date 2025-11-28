@@ -73,15 +73,17 @@ export const JournalScreen = () => {
       {isDirty && (
         <Pressable
           onPress={() => editCardRef.current?.save()}
-          style={({ pressed }) => [
-            styles.headerButton,
-            pressed && { opacity: 0.7 },
-          ]}
+          style={styles.headerButton}
           hitSlop={10}
         >
-          <AppText variant="body" style={styles.saveButtonText}>
-            Save
-          </AppText>
+          {({ pressed }) => (
+            <AppText
+              variant="body"
+              style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
+            >
+              Save
+            </AppText>
+          )}
         </Pressable>
       )}
     </View>
@@ -146,12 +148,15 @@ export const JournalScreen = () => {
           </ScrollView>
           {selectedRecord && (
             <View style={styles.deleteButtonContainer}>
-              <AppButton
-                label="Delete"
+              <Pressable
                 onPress={() => editCardRef.current?.delete()}
-                style={styles.deleteButton}
-                textStyle={styles.deleteButtonText}
-              />
+                style={({ pressed }) => [
+                  styles.deleteButton,
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <AppText style={styles.deleteButtonText}>Delete</AppText>
+              </Pressable>
             </View>
           )}
         </View>
@@ -220,6 +225,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.medium,
     width: '50%',
     paddingVertical: SPACING.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   deleteButtonText: {
     color: COLOR_PALETTE.systemError,

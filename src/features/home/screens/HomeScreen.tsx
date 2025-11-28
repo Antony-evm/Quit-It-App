@@ -216,9 +216,14 @@ export const HomeScreen = () => {
         style={styles.headerButton}
         hitSlop={10}
       >
-        <AppText variant="body" style={styles.saveButtonText}>
-          Save
-        </AppText>
+        {({ pressed }) => (
+          <AppText
+            variant="body"
+            style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
+          >
+            Save
+          </AppText>
+        )}
       </Pressable>
     </View>
   );
