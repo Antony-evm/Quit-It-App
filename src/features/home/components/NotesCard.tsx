@@ -267,6 +267,19 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       type => type.id === selectedTrackingTypeId,
     );
 
+    const isCraving = selectedTrackingType?.displayName
+      .toLowerCase()
+      .includes('craving');
+    const isSmoke =
+      selectedTrackingType?.displayName.toLowerCase().includes('smoke') ||
+      selectedTrackingType?.displayName.toLowerCase().includes('cigarette');
+
+    const accentColor = isCraving
+      ? COLOR_PALETTE.craving
+      : isSmoke
+      ? COLOR_PALETTE.cigarette
+      : COLOR_PALETTE.borderDefault;
+
     const maxChars = 500;
     const remainingChars = maxChars - notes.length;
 
@@ -402,7 +415,12 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
     return (
       <View ref={cardRef}>
-        <AppSurface style={styles.card}>
+        <AppSurface
+          style={[
+            styles.card,
+            { borderLeftColor: accentColor, borderLeftWidth: 4 },
+          ]}
+        >
           {/* Tracking Type Selector - Chips/Segmented Control Style */}
           <View style={styles.typeSelectorContainer}>
             <AppText variant="caption" style={styles.sectionLabel}>

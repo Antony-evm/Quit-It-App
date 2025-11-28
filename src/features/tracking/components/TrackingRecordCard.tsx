@@ -2,7 +2,12 @@ import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
 
 import { AppSurface, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+  BRAND_COLORS,
+} from '@/shared/theme';
 import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -21,30 +26,80 @@ export const TrackingRecordCard = React.memo(
       type => type.id === record.tracking_type_id,
     );
 
-    const formattedDate = formatRelativeDateTimeForDisplay(record.event_at);
+    const isCraving = trackingType?.displayName
+      .toLowerCase()
+      .includes('craving');
+    const isSmoke =
+      trackingType?.displayName.toLowerCase().includes('smoke') ||
+      trackingType?.displayName.toLowerCase().includes('cigarette');
+
+    const accentColor = isCraving
+      ? COLOR_PALETTE.craving
+      : isSmoke
+      ? COLOR_PALETTE.cigarette
+      : COLOR_PALETTE.borderDefault;
+
+    const badgeBackgroundColor = isCraving
+      ? 'rgba(122, 62, 177, 0.1)'
+      : isSmoke
+      ? 'rgba(214, 106, 61, 0.1)'
+      : 'rgba(59, 101, 93, 0.1)';
+
+    // Date formatting logic
+    const date = new Date(record.event_at);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const recordDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
+
+    const diffTime = today.getTime() - recordDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let dateLabel = '';
+    if (diffDays === 0) {
+      dateLabel = 'Today';
+    } else if (diffDays === 1) {
+      dateLabel = 'Yesterday';
+    } else {
+      dateLabel = date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+      });
+    }
+
+    const timeLabel = date.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
 
     return (
       <Pressable onPress={() => onPress?.(record)}>
-        <AppSurface style={styles.card}>
-          <View style={styles.titleRow}>
-            <View style={styles.dropdownContainer}>
-              <View style={styles.dropdown}>
-                <AppText style={styles.dropdownText}>
-                  {trackingType?.displayName ||
-                    `Type ${record.tracking_type_id}`}
-                </AppText>
-              </View>
+        <AppSurface
+          style={[
+            styles.card,
+            { borderLeftColor: accentColor, borderLeftWidth: 4 },
+          ]}
+        >
+          <View style={styles.headerRow}>
+            <View
+              style={[styles.badge, { backgroundColor: badgeBackgroundColor }]}
+            >
+              <AppText
+                style={[styles.badgeText, { color: BRAND_COLORS.cream }]}
+              >
+                {trackingType?.displayName || `Type ${record.tracking_type_id}`}
+              </AppText>
+            </View>
+            <View style={styles.dateTimeContainer}>
+              <AppText style={styles.timeText}>{timeLabel}</AppText>
+              <AppText style={styles.dateText}>{dateLabel}</AppText>
             </View>
           </View>
-          <View style={[styles.section, styles.dateTimeContainer]}>
-            <AppText
-              variant="caption"
-              tone="primary"
-              style={[styles.dateTimeDisplay, styles.dateTimeContent]}
-            >
-              {formattedDate}
-            </AppText>
-          </View>
+
           <View style={styles.noteSection}>
             {record.note ? (
               <AppText variant="body" style={styles.noteText}>
@@ -66,55 +121,55 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.md,
     borderRadius: BORDER_RADIUS.medium,
+    overflow: 'hidden',
     padding: SPACING.md,
   },
-  titleRow: {
+  headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginBottom: SPACING.md,
+  },
+  badge: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.full,
+    alignSelf: 'flex-start',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  dateTimeContainer: {
+    alignItems: 'flex-end',
+  },
+  timeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLOR_PALETTE.textPrimary,
+    marginBottom: 2,
+  },
+  dateText: {
+    fontSize: 12,
+    color: COLOR_PALETTE.textMuted,
   },
   noteSection: {
-    paddingTop: SPACING.md,
-    marginHorizontal: SPACING.sm,
-    borderTopWidth: 2,
-    borderTopColor: COLOR_PALETTE.borderDefault,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    marginTop: SPACING.md,
+    borderTopWidth: 1,
+    borderWidth: 1,
+    borderColor: COLOR_PALETTE.borderDefault,
+    borderRadius: BORDER_RADIUS.medium,
   },
   noteText: {
     color: COLOR_PALETTE.textPrimary,
-    fontStyle: 'italic',
+    lineHeight: 22,
   },
   notePlaceholder: {
     color: COLOR_PALETTE.textMuted,
     fontStyle: 'italic',
-  },
-  section: {
-    marginBottom: 0,
-  },
-  dropdownContainer: {
-    ...LAYOUT_STYLES.dropdownContainer,
-    flex: 1,
-    marginRight: SPACING.md,
-  },
-  dropdown: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: BORDER_RADIUS.medium,
-    ...LAYOUT_STYLES.rowBetween,
-  },
-  dropdownText: {
-    ...TEXT_STYLES.dropdownText,
-  },
-  dateTimeContainer: {
-    marginTop: 0,
-    marginBottom: SPACING.sm,
-  },
-  dateTimeContent: {
-    marginHorizontal: SPACING.sm,
-    paddingVertical: 0,
-  },
-  dateTimeDisplay: {
-    color: COLOR_PALETTE.textPrimary,
   },
 });
