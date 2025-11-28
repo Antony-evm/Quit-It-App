@@ -56,6 +56,7 @@ export const QuestionnaireScreen = ({
     selectedSubOptions,
     resumeFromReview,
     canResumeReview,
+    generatedPlan,
   } = useQuestionnaire();
 
   useEffect(() => {
@@ -229,7 +230,12 @@ export const QuestionnaireScreen = ({
     }
 
     if (isReviewing) {
-      return <QuestionnaireReview responses={history} />;
+      return (
+        <QuestionnaireReview
+          responses={history}
+          planText={generatedPlan?.text}
+        />
+      );
     }
 
     return (

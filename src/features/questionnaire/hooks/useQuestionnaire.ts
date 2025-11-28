@@ -13,10 +13,12 @@ import type {
 import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
 import { completeQuestionnaire } from '../api/completeQuestionnaire';
+import { generateQuittingPlan } from '../api/fetchQuittingPlan';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../data/questionnaireStorage';
 import { useBackendUserIdSafe } from '@/shared/hooks';
 import { UserStatusService } from '@/shared/services/userStatusService';
+import type { QuittingPlan } from '../types/plan';
 
 type UseQuestionnaireOptions = {
   userId?: number;
@@ -73,6 +75,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     useState<QuestionnaireCompleteResponse | null>(null);
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
+  const [generatedPlan, setGeneratedPlan] = useState<QuittingPlan | null>(null);
   const [selections, setSelections] = useState<
     Record<
       number,
@@ -278,6 +281,17 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         if (nextVariationId === -1) {
           const historyRecords = await questionnaireStorage.all();
           setHistory(historyRecords);
+
+          try {
+            const plan = await generateQuittingPlan(userId);
+            setGeneratedPlan(plan);
+          } catch (planError) {
+            console.error('Failed to generate quitting plan:', planError);
+            // Continue to review even if plan generation fails?
+            // Or maybe show error? For now, let's log and continue,
+            // but maybe the review page will handle missing plan.
+          }
+
           setIsReviewing(true);
           return;
         }
@@ -419,6 +433,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     isReviewing,
     history,
     completionData,
+    generatedPlan,
     ...derived,
     refresh,
     submitAnswers,
