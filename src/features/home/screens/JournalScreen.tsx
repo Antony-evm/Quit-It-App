@@ -33,7 +33,6 @@ export const JournalScreen = () => {
   const [selectedRecord, setSelectedRecord] =
     useState<TrackingRecordApiResponse | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const [isDirty, setIsDirty] = useState(false);
   const editCardRef = useRef<NotesCardHandle>(null);
   const editDrawerScrollRef = useRef<ScrollView>(null);
 
@@ -44,14 +43,12 @@ export const JournalScreen = () => {
 
   const handleRecordPress = useCallback((record: TrackingRecordApiResponse) => {
     setSelectedRecord(record);
-    setIsDirty(false);
     setIsEditModalVisible(true);
   }, []);
 
   const handleEditSuccess = useCallback(() => {
     setIsEditModalVisible(false);
     setSelectedRecord(null);
-    setIsDirty(false);
   }, []);
 
   const initialValues = useMemo(() => {
@@ -77,25 +74,23 @@ export const JournalScreen = () => {
           <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
         </Pressable>
 
-        {isDirty && (
-          <Pressable
-            onPress={() => editCardRef.current?.save()}
-            style={styles.headerButton}
-            hitSlop={10}
-          >
-            {({ pressed }) => (
-              <AppText
-                variant="body"
-                style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
-              >
-                Save
-              </AppText>
-            )}
-          </Pressable>
-        )}
+        <Pressable
+          onPress={() => editCardRef.current?.save()}
+          style={styles.headerButton}
+          hitSlop={10}
+        >
+          {({ pressed }) => (
+            <AppText
+              variant="body"
+              style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
+            >
+              Save
+            </AppText>
+          )}
+        </Pressable>
       </View>
     ),
-    [isDirty],
+    [],
   );
 
   return (
@@ -147,7 +142,6 @@ export const JournalScreen = () => {
                 scrollViewRef={editDrawerScrollRef}
                 onSaveSuccess={handleEditSuccess}
                 onDeleteSuccess={handleEditSuccess}
-                onDirtyChange={setIsDirty}
               />
             )}
           </ScrollView>

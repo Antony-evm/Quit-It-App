@@ -65,7 +65,6 @@ type NotesCardProps = {
     notes: string;
   }) => void;
   onSaveSuccess?: () => void;
-  onDirtyChange?: (isDirty: boolean) => void;
   onDeleteSuccess?: () => void;
   scrollViewRef?: RefObject<ScrollView | null>;
 };
@@ -78,7 +77,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       initialValues,
       onSave,
       onSaveSuccess,
-      onDirtyChange,
       onDeleteSuccess,
       scrollViewRef,
     },
@@ -115,28 +113,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         setNotes(initialValues.notes);
       }
     }, [initialValues]);
-
-    // Check for dirty state
-    React.useEffect(() => {
-      if (!initialValues) return;
-
-      const timer = setTimeout(() => {
-        const isDirty =
-          selectedTrackingTypeId !== initialValues.trackingTypeId ||
-          selectedDateTime.getTime() !== initialValues.dateTime.getTime() ||
-          notes !== initialValues.notes;
-
-        onDirtyChange?.(isDirty);
-      }, 300);
-
-      return () => clearTimeout(timer);
-    }, [
-      selectedTrackingTypeId,
-      selectedDateTime,
-      notes,
-      initialValues,
-      onDirtyChange,
-    ]);
 
     // Cleanup scroll operations when component unmounts
     React.useEffect(() => {
@@ -371,6 +347,18 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
     const handleSave = () => {
       if (selectedTrackingType) {
+        if (initialValues) {
+          const isSame =
+            selectedTrackingTypeId === initialValues.trackingTypeId &&
+            selectedDateTime.getTime() === initialValues.dateTime.getTime() &&
+            notes === initialValues.notes;
+
+          if (isSame) {
+            onSaveSuccess?.();
+            return;
+          }
+        }
+
         const payload = {
           user_id: actualUserId,
           tracking_type_id: selectedTrackingType.id,
