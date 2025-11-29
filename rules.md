@@ -1,56 +1,107 @@
-# Development Rules
+# Development Rules & Principles
 
-These are the strict rules that must be followed when contributing to this codebase.
+These rules define the architectural and coding standards for the Quit-It-App. They are designed to ensure scalability, maintainability, and a high-quality user experience in React Native.
 
-## 1. Strict TypeScript & No `any`
+## 1. Architecture & Organization
 
-- **Rule:** The `tsconfig.json` must have `"strict": true`.
-- **Rule:** The `any` type is strictly forbidden. Use `unknown` for dynamic types and narrow them, or define proper interfaces.
-- **Rule:** All functions and hooks must have explicit return types.
+**Principle:** Code should be organized by **feature**, not file type, and logic must be separated from UI.
 
-## 2. Global Error Handling
+- **Feature-Based Structure:** Organize code into `src/features/auth`, `src/features/profile`, etc.
+- **Public API:** Each feature must expose its public interface via an `index.ts` file. Keep internals private.
+- **Separation of Concerns:**
+  - **Logic:** Business logic, state management, and side effects belong in **Custom Hooks** (e.g., `useLogin`).
+  - **UI:** Components must be pure, presentational, and receive data via props.
+  - **Screens:** Act as orchestrators connecting Hooks to UI components. Avoid implementing logic directly in screens.
 
-- **Rule:** The application must be wrapped in a Global Error Boundary to catch render-phase errors.
-- **Rule:** Do not allow "White Screen of Death" scenarios; always provide a fallback UI.
+## 2. TypeScript & Code Quality
 
-## 3. Type-Safe Navigation
+**Principle:** Rely on the type system to catch errors early and enforce code cleanliness.
 
-- **Rule:** All navigation must be typed using `RootStackParamList`.
-- **Rule:** Never use `navigation: any` or `route: any`.
-- **Rule:** Use typed hooks (e.g., `useAppNavigation`) instead of raw `useNavigation`.
+- **Strict Mode:** `tsconfig.json` must have `"strict": true`.
+- **No `any`:** The `any` type is forbidden. Use `unknown` and narrow it, or define strict interfaces.
+- **Explicit Returns:** All functions, hooks, and components must have explicit return types.
+- **Clean Code:** No unused imports, variables, or `console.log` in production. CI must enforce linting (ESLint) and formatting (Prettier).
 
-## 4. Centralized & Typed Design System
+## 3. Component Design System (Atomic & Shadcn-Inspired)
 
-- **Rule:** Use the centralized `theme` object for all styling.
-- **Rule:** No hardcoded colors or magic numbers in styles.
-- **Rule:** Use semantic tokens (e.g., `colors.background`) instead of raw values.
+**Principle:** Build complex UIs by composing small, unopinionated, and reusable primitives.
 
-## 5. Feature-Based Architecture
+- **Atomic Composition:** Build from the bottom up:
+  - **Primitives:** Simple, styled RN elements (`Box`, `Text`, `Button`) wrapping `View`/`Text`.
+  - **Components:** Reusable UI patterns (`Card`, `Input`) composed of primitives.
+  - **Screens:** Compositions of components.
+- **Centralized Theme:** All styles must use the centralized `theme` object. No magic numbers or hardcoded hex codes.
+- **Composition over Configuration:** Prefer passing `children` to components rather than creating massive configuration props objects.
+- **No God Components:** A component should do one thing. If it handles logic, layout, and data fetching, break it apart.
 
-- **Rule:** Code must be organized by feature (e.g., `src/features/auth`), not by file type.
-- **Rule:** Each feature must have a public API (`index.ts`) and keep internals private.
+## 4. State Management & API
 
-## 6. Separation of Concerns
+**Principle:** Server state and UI state are distinct and should be managed differently.
 
-- **Rule:** Business logic must be extracted into custom hooks.
-- **Rule:** UI components should be presentational and logic-free where possible.
+- **Server State:** Use **React Query** for all async data. Do not manually manage `isLoading`/`error` flags in components.
+- **Centralized API:** All API calls live in `src/api/` or feature-specific `api/` folders.
+- **Data Transformation:** API modules must return domain models, not raw backend JSON. Use DTOs/adapters where necessary.
 
-## 7. Centralized API Management
+## 5. Navigation
 
-- **Rule:** All API calls must be defined in the `api` folder.
-- **Rule:** Use React Query for server state management; do not manage loading/error states manually in components.
+**Principle:** Navigation must be fully type-safe to prevent runtime crashes.
 
-## 8. Atomic Components
+- **Type Safety:** All routes must be defined in `RootStackParamList`.
+- **No `any` in Navigation:** Never use `navigation: any`. Use typed hooks (`useAppNavigation`, `useAppRoute`).
+- **Compile-Time Validation:** Route parameters must be validated by TypeScript.
 
-- **Rule:** Break large components into smaller, reusable atoms, molecules, and organisms.
-- **Rule:** Define strict interfaces for all component props.
+## 6. React Native Best Practices
 
-## 9. Automated Testing
+**Principle:** Optimize for the mobile platform's unique performance and interaction constraints.
 
-- **Rule:** Critical logic must be unit tested.
-- **Rule:** Complex user flows should have integration or E2E tests.
+### 6.1 Lists & Rendering
 
-## 10. Code Quality Enforcement
+- **Rule:** Use `FlatList` or `SectionList` for rendering any meaningful list of items.
+- **Rule:** Never map arrays directly inside a `ScrollView` for long or dynamic lists.
 
-- **Rule:** Code must pass all linting and formatting rules (ESLint/Prettier).
-- **Rule:** No unused imports or variables.
+### 6.2 Avoid Unnecessary Re-renders
+
+- **Rule:** Memoize heavy or frequently-rerendered components using `React.memo`.
+- **Rule:** Use `useCallback` and `useMemo` for stable function references where appropriate.
+- **Rule:** Screens and components must avoid inline object or array creation in render when possible.
+
+### 6.3 Touch Feedback & Interactions
+
+- **Rule:** Prefer proper interaction components:
+  - `Pressable` for generic interactions
+  - `TouchableOpacity` for opacity feedback
+  - `TouchableWithoutFeedback` only when intentional
+- **Rule:** Do not reimplement touch feedback manually unless absolutely necessary.
+
+### 6.4 Platform Correctness
+
+- **Rule:** Use platform splitting (`Component.ios.tsx` / `Component.android.tsx`) when the logic diverges meaningfully.
+- **Rule:** Avoid large conditional blocks like `if (Platform.OS === 'ios')` in components unless trivial.
+
+### 6.5 Accessibility First
+
+- **Rule:** All interactive components must have proper accessibility labels.
+- **Rule:** Use `accessibilityRole` and `accessible` for meaningful components.
+- **Rule:** Accessibility must not be treated as optional.
+
+### 6.6 Skeleton Loading States
+
+- **Rule:** Prefer skeleton loaders over spinners for large or content-heavy screens.
+- **Rule:** Skeletons must be reusable and part of the UI primitives.
+- **Rule:** Use skeletons for lists, cards, profile screens, and dashboards while data loads.
+- **Rule:** Only use spinners for short-duration or button-level operations.
+
+## 7. Error Handling & Resilience
+
+**Principle:** The app should never crash completely; it should degrade gracefully.
+
+- **Global Boundary:** The app root must be wrapped in a Global Error Boundary.
+- **Fallback UI:** Never show a "White Screen of Death". Always display a user-friendly error message with a retry mechanism.
+
+## 8. Testing
+
+**Principle:** Test behavior and critical paths, not implementation details.
+
+- **Unit Tests:** Required for all business logic (hooks, utils).
+- **Integration Tests:** Validate key user flows (e.g., Login, Sign Up).
+- **Smoke Tests:** Ensure basic UI components render without crashing.
