@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
 
 import { AppButton, AppSurface, AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
   DEVICE_WIDTH,
@@ -118,11 +118,11 @@ export const QuestionnaireTemplate = ({
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   scrollContent: {
     flexGrow: 1,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xl,
     borderWidth: 0,
     borderColor: 'transparent',
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     shadowColor: 'transparent',
     shadowOpacity: 0,
     shadowOffset: { width: 0, height: 0 },
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
     paddingBottom: SPACING.lg,
     width: '100%',
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     marginBottom: SPACING.xxl,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
     paddingTop: SPACING.md, // Add some top padding to position back button lower
   },

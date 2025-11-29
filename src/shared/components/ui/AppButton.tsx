@@ -9,12 +9,7 @@ import {
 } from 'react-native';
 
 import { AppText } from './AppText';
-import {
-  BRAND_COLORS,
-  COLOR_PALETTE,
-  SPACING,
-  BORDER_RADIUS,
-} from '../../theme';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../../theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
@@ -51,7 +46,7 @@ const variantToStyles: Record<
     container: {
       backgroundColor: 'transparent',
       borderWidth: 1,
-      borderColor: BRAND_COLORS.cream,
+      borderColor: COLOR_PALETTE.textPrimary,
     },
     textColor: COLOR_PALETTE.textPrimary,
   },

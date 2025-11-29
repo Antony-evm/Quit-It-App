@@ -10,7 +10,7 @@ import {
   Pressable,
   InteractionManager,
 } from 'react-native';
-import { BRAND_COLORS, SPACING, COLOR_PALETTE } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE } from '@/shared/theme';
 
 type DraggableModalProps = {
   visible: boolean;
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   headerContainer: {
-    backgroundColor: BRAND_COLORS.dark,
+    backgroundColor: COLOR_PALETTE.backgroundOverlay,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: BRAND_COLORS.mint,
+    backgroundColor: COLOR_PALETTE.brandPrimary,
   },
   headerContent: {
     paddingHorizontal: SPACING.lg,

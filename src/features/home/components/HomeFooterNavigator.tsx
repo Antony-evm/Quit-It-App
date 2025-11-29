@@ -17,12 +17,7 @@ import {
 } from 'react-native-svg';
 
 import { AppText } from '@/shared/components/ui';
-import {
-  COLOR_PALETTE,
-  SPACING,
-  BRAND_COLORS,
-  FOOTER_LAYOUT,
-} from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
@@ -118,9 +113,11 @@ export const HomeFooterNavigator = ({
           width={FOOTER_LAYOUT.ICON_SIZE}
           height={FOOTER_LAYOUT.ICON_SIZE}
           style={styles.icon}
-          fill={isActive ? COLOR_PALETTE.accentPrimary : BRAND_COLORS.cream}
+          fill={
+            isActive ? COLOR_PALETTE.accentPrimary : COLOR_PALETTE.textPrimary
+          }
           fillOpacity={isActive ? 1 : 0.5}
-          stroke={BRAND_COLORS.ink}
+          stroke={COLOR_PALETTE.backgroundPrimary}
         />
       </Pressable>
     );
@@ -167,7 +164,7 @@ export const HomeFooterNavigator = ({
                     <Stop offset="0" stopColor="#3DDC97" stopOpacity="1" />
                     <Stop
                       offset="1"
-                      stopColor={BRAND_COLORS.ink}
+                      stopColor={COLOR_PALETTE.backgroundPrimary}
                       stopOpacity="1"
                     />
                   </RadialGradient>
@@ -178,7 +175,7 @@ export const HomeFooterNavigator = ({
             <PlusIcon
               width={FOOTER_LAYOUT.PLUS_ICON_SIZE}
               height={FOOTER_LAYOUT.PLUS_ICON_SIZE}
-              fill={BRAND_COLORS.cream}
+              fill={COLOR_PALETTE.textPrimary}
             />
           </Animated.View>
         </Pressable>
@@ -250,7 +247,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 12,
     overflow: 'hidden', // Ensure gradient respects border radius
-    backgroundColor: BRAND_COLORS.mint,
+    backgroundColor: COLOR_PALETTE.brandPrimary,
   },
   fabGradientContainer: {
     ...StyleSheet.absoluteFillObject,

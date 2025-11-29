@@ -17,12 +17,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 
 import { AppSurface, AppText, AppTextInput } from '@/shared/components/ui';
-import {
-  COLOR_PALETTE,
-  SPACING,
-  BRAND_COLORS,
-  BORDER_RADIUS,
-} from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useTrackingTypes,
@@ -491,7 +486,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               <CalendarIcon
                 width={20}
                 height={20}
-                color={BRAND_COLORS.cream}
+                color={COLOR_PALETTE.textPrimary}
                 style={styles.calendarIcon}
               />
               <AppText
@@ -573,15 +568,15 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   chipSelected: {
-    backgroundColor: BRAND_COLORS.cream,
-    borderColor: BRAND_COLORS.cream,
+    backgroundColor: COLOR_PALETTE.textPrimary,
+    borderColor: COLOR_PALETTE.textPrimary,
   },
   chipText: {
     color: COLOR_PALETTE.textPrimary,
     fontWeight: '500',
   },
   chipTextSelected: {
-    color: BRAND_COLORS.ink,
+    color: COLOR_PALETTE.textSecondary,
     fontWeight: '600',
   },
   dateTimeSection: {
@@ -609,7 +604,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   editIndicatorText: {
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     fontSize: 10,
     fontWeight: 'bold',
   },

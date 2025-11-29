@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewStyle, Image } from 'react-native';
-import { BRAND_COLORS, SPACING } from '../../theme';
+import { COLOR_PALETTE, SPACING } from '../../theme';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large';
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoImage: {
-    shadowColor: BRAND_COLORS.ink,
+    shadowColor: COLOR_PALETTE.textSecondary,
     shadowOffset: {
       width: 0,
       height: 4,

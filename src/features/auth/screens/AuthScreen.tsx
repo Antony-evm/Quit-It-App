@@ -20,7 +20,7 @@ import { EmailField } from '../components/EmailField';
 import { NameFieldsGroup } from '../components/NameFieldsGroup';
 import { WelcomeText } from '../components/WelcomeText';
 import { useAuthForm } from '../hooks/useAuthForm';
-import { BRAND_COLORS, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
@@ -189,7 +189,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   keyboardView: {
     flex: 1,
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.lg,
   },
   inkDarkContainer: {
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.xl,
     flex: 1,
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
   bottomButtonContainer: {
     paddingHorizontal: SPACING.xxl,
     paddingVertical: SPACING.xxl,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   bottomButtonContainerKeyboardVisible: {
     paddingVertical: SPACING.sm, // Smaller padding when keyboard is visible for stability

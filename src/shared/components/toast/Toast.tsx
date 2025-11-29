@@ -10,7 +10,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Toast as ToastType, useToast } from './ToastContext';
-import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface ToastItemProps {
   toast: ToastType;

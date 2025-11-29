@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Slider from '@react-native-community/slider';
 
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type NumericRangeFieldProps = {
   minimum: number;
@@ -42,9 +42,9 @@ export const NumericRangeField = ({
         minimumValue={minimum}
         maximumValue={maximum}
         step={1}
-        minimumTrackTintColor={BRAND_COLORS.cream}
+        minimumTrackTintColor={COLOR_PALETTE.textPrimary}
         maximumTrackTintColor={COLOR_PALETTE.borderDefault}
-        thumbTintColor={BRAND_COLORS.cream}
+        thumbTintColor={COLOR_PALETTE.textPrimary}
         value={displayValue}
         onValueChange={handleValueChange}
       />
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   rangeLabel: {
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     opacity: 0.6,
   },
 });

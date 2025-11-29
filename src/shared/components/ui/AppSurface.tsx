@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
 
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '../../theme';
+import { COLOR_PALETTE, SPACING } from '../../theme';
 
 export type AppSurfaceProps = PropsWithChildren<ViewProps>;
 
@@ -17,7 +17,7 @@ export const AppSurface = ({
 
 const styles = StyleSheet.create({
   surface: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,

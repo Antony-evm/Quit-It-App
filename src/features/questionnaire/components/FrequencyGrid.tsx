@@ -11,7 +11,7 @@ import type {
   AnswerType,
 } from '../types';
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 const FREQUENCY_ORDER = ['never', 'rarely', 'often', 'constantly'];
 
@@ -139,7 +139,7 @@ const ClockSegmentBadge = ({
           cx={size / 2}
           cy={size / 2}
           r={size / 2 - 4}
-          fill={BRAND_COLORS.inkDark}
+          fill={COLOR_PALETTE.backgroundMuted}
           stroke={COLOR_PALETTE.borderDefault}
           strokeWidth={4}
         />
@@ -329,8 +329,8 @@ export const FrequencyGrid = ({
                 cx={30}
                 cy={30}
                 r={22}
-                fill={BRAND_COLORS.inkDark}
-                stroke={BRAND_COLORS.ink}
+                fill={COLOR_PALETTE.backgroundMuted}
+                stroke={COLOR_PALETTE.backgroundPrimary}
                 strokeWidth={4}
               />
 
@@ -389,9 +389,9 @@ export const FrequencyGrid = ({
             maximumValue={Math.max(orderedSubOptions.length - 1, 0)}
             step={1}
             value={sliderValue}
-            minimumTrackTintColor={BRAND_COLORS.cream}
+            minimumTrackTintColor={COLOR_PALETTE.textPrimary}
             maximumTrackTintColor={COLOR_PALETTE.borderDefault}
-            thumbTintColor={BRAND_COLORS.cream}
+            thumbTintColor={COLOR_PALETTE.textPrimary}
             onValueChange={value =>
               handleSelectionChange(option.id, Math.round(value))
             }
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
     height: 16,
   },
   edgeLabel: {
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     opacity: 0.7,
     textTransform: 'capitalize',
   },

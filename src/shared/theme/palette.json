@@ -21,6 +21,10 @@
     "systemError": "#F87171",
     "cigarette": "#D66A3D",
     "craving": "#7A3EB1",
-    "wealth": "#10B981"
+    "wealth": "#10B981",
+    "backgroundNav": "#000807",
+    "backgroundOverlay": "#000000",
+    "shadowDefault": "#000000",
+    "brandPrimary": "#3DDC97"
   }
 }

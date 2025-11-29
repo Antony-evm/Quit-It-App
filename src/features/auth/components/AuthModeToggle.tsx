@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, SPACING, TYPOGRAPHY } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, TYPOGRAPHY } from '@/shared/theme';
 
 interface AuthModeToggleProps {
   isLoginMode: boolean;
@@ -46,11 +46,11 @@ const styles = StyleSheet.create({
   modeToggleText: {
     textAlign: 'center',
     ...TYPOGRAPHY.caption,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
   },
   underlinedText: {
     textDecorationLine: 'underline',
     ...TYPOGRAPHY.caption,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
   },
 });

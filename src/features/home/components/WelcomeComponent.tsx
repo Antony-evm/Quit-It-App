@@ -7,12 +7,7 @@ import { useAuth } from '@/shared/auth/AuthContext';
 import { useQuittingPlan } from '@/features/questionnaire';
 import { useSmokingAnalytics } from '@/features/tracking';
 import { getFormattedTimeDifference } from '@/utils/dateUtils';
-import {
-  SPACING,
-  COLOR_PALETTE,
-  BRAND_COLORS,
-  DEVICE_HEIGHT,
-} from '@/shared/theme';
+import { SPACING, COLOR_PALETTE, DEVICE_HEIGHT } from '@/shared/theme';
 
 export const WelcomeComponent = () => {
   const { height } = useWindowDimensions();
@@ -130,7 +125,7 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: SPACING.sm,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     padding: SPACING.md,
     paddingVertical: '10%',
     borderRadius: 8,
@@ -147,11 +142,11 @@ const styles = StyleSheet.create({
   },
   message: {
     marginBottom: SPACING.xs,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     fontSize: 24,
   },
   timeDifference: {
-    color: BRAND_COLORS.mint,
+    color: COLOR_PALETTE.brandPrimary,
     fontSize: 40,
     fontWeight: 'bold',
     marginTop: 0,

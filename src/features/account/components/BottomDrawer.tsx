@@ -10,7 +10,7 @@ import {
   ScrollView,
   PanResponder,
 } from 'react-native';
-import { BRAND_COLORS, SPACING, COLOR_PALETTE } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE } from '@/shared/theme';
 import { AppText } from '@/shared/components/ui';
 import CancelSvg from '@/assets/cancel.svg';
 
@@ -127,18 +127,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   drawer: {
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     height: '85%',
     overflow: 'hidden',
   },
   headerContainer: {
-    backgroundColor: BRAND_COLORS.dark,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: BRAND_COLORS.ink,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: BRAND_COLORS.mint,
+    backgroundColor: COLOR_PALETTE.accentPrimary,
   },
   headerContent: {
     flexDirection: 'row',
@@ -169,11 +169,11 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   titleContainer: {
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingVertical: SPACING.md,
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: BRAND_COLORS.ink,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

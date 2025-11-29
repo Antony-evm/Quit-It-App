@@ -3,7 +3,7 @@ import { StyleSheet, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '@/types/navigation';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AppButton, AppText } from '@/shared/components/ui';
 import { subscribeUser } from '../api/subscriptionApi';
 import { UserStatusService } from '@/shared/services/userStatusService';

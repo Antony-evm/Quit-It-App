@@ -11,7 +11,6 @@ import { LineChart, BarChart } from 'react-native-chart-kit';
 
 import { AppText } from '@/shared/components/ui';
 import {
-  BRAND_COLORS,
   COLOR_PALETTE,
   DEVICE_HEIGHT,
   SPACING,
@@ -255,7 +254,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: 12,
     padding: SPACING.md,
     borderWidth: 2,
@@ -297,7 +296,7 @@ const styles = StyleSheet.create({
   chartContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderRadius: 8,
   },
   chart: {
@@ -323,11 +322,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
   },
   footerText: {
     fontStyle: 'italic',
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     marginTop: SPACING.md,
     textAlign: 'center',
     fontSize: 14,

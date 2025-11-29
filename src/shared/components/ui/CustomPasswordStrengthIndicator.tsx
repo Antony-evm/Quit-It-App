@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AppText } from './AppText';
 import { SPACING } from '@/shared/theme/spacing';
-import { COLOR_PALETTE, BRAND_COLORS } from '@/shared/theme/colors';
+import { COLOR_PALETTE } from '@/shared/theme/colors';
 import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordValidation';
 
 interface CustomPasswordStrengthIndicatorProps {

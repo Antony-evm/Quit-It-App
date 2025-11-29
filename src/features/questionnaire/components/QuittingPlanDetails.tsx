@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText, AppSurface } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
 import CalendarSvg from '@/assets/calendar.svg';
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   box: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: 8,
     padding: SPACING.lg,
   },

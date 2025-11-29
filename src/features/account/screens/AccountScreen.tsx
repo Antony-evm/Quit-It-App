@@ -9,7 +9,6 @@ import {
   Logo,
 } from '@/shared/components/ui';
 import {
-  BRAND_COLORS,
   COLOR_PALETTE,
   DEVICE_HEIGHT,
   SPACING,
@@ -201,7 +200,7 @@ export const AccountScreen = () => {
           <RefreshControl
             tintColor={COLOR_PALETTE.textPrimary}
             colors={[COLOR_PALETTE.textPrimary]}
-            progressBackgroundColor={BRAND_COLORS.cream}
+            progressBackgroundColor={COLOR_PALETTE.backgroundCream}
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
           />
@@ -260,7 +259,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   emailSection: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     padding: SPACING.lg,
     borderRadius: 8,
     marginBottom: SPACING.lg,

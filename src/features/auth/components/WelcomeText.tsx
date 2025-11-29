@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { SPACING, BRAND_COLORS, TYPOGRAPHY } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE, TYPOGRAPHY } from '@/shared/theme';
 
 interface WelcomeTextProps {
   isSignup: boolean;
@@ -28,19 +28,19 @@ export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     paddingTop: SPACING.xxl,
   },
   title: {
     textAlign: 'center',
     marginBottom: SPACING.sm,
     ...TYPOGRAPHY.title,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
   },
   subtitle: {
     textAlign: 'center',
     marginBottom: SPACING.lg,
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     ...TYPOGRAPHY.caption,
   },
 });

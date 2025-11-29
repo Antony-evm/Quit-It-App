@@ -12,7 +12,6 @@ import { AppText, DraggableModal, AppButton } from '@/shared/components/ui';
 import {
   SPACING,
   COLOR_PALETTE,
-  BRAND_COLORS,
   BORDER_RADIUS,
   DEVICE_HEIGHT,
   FOOTER_LAYOUT,
@@ -73,7 +72,11 @@ export const JournalScreen = () => {
           ]}
           hitSlop={10}
         >
-          <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
+          <CancelIcon
+            width={24}
+            height={24}
+            color={COLOR_PALETTE.textPrimary}
+          />
         </Pressable>
 
         <Pressable
@@ -194,7 +197,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   saveButtonText: {
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     fontWeight: '600',
   },
   modalContent: {

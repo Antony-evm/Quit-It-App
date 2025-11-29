@@ -2,12 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
 
 import { AppSurface, AppText } from '@/shared/components/ui';
-import {
-  COLOR_PALETTE,
-  SPACING,
-  BORDER_RADIUS,
-  BRAND_COLORS,
-} from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -89,7 +84,7 @@ export const TrackingRecordCard = React.memo(
               style={[styles.badge, { backgroundColor: badgeBackgroundColor }]}
             >
               <AppText
-                style={[styles.badgeText, { color: BRAND_COLORS.cream }]}
+                style={[styles.badgeText, { color: COLOR_PALETTE.textPrimary }]}
               >
                 {trackingType?.displayName || `Type ${record.tracking_type_id}`}
               </AppText>

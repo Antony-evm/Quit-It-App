@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Logo } from '@/shared/components/ui';
-import { BRAND_COLORS } from '@/shared/theme';
+import { COLOR_PALETTE } from '@/shared/theme';
 
 export const AuthHeader = () => {
   return (
@@ -16,6 +16,6 @@ const styles = StyleSheet.create({
     height: '15%',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
 });

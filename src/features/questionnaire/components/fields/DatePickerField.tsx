@@ -3,12 +3,7 @@ import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { AppText } from '@/shared/components/ui';
-import {
-  BORDER_RADIUS,
-  BRAND_COLORS,
-  COLOR_PALETTE,
-  SPACING,
-} from '@/shared/theme';
+import { BORDER_RADIUS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { formatDisplayDate } from '../../utils/dateFormatting';
 import CalendarIcon from '@/assets/calendar.svg';
 
@@ -79,7 +74,7 @@ export const DatePickerField = ({
         <CalendarIcon
           width={24}
           height={24}
-          color={BRAND_COLORS.cream}
+          color={COLOR_PALETTE.textPrimary}
           style={styles.icon}
         />
         <AppText variant="body" tone="primary" style={styles.text}>
@@ -99,7 +94,7 @@ export const DatePickerField = ({
             onChange={handleDateChange}
             style={styles.datePicker}
             themeVariant="dark"
-            accentColor={BRAND_COLORS.mint}
+            accentColor={COLOR_PALETTE.brandPrimary}
           />
         </View>
       )}
@@ -115,7 +110,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.large,
@@ -135,12 +130,12 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     marginTop: SPACING.sm,
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: BORDER_RADIUS.medium,
     overflow: 'hidden',
   },
   datePicker: {
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     height: 320,
   },
 });

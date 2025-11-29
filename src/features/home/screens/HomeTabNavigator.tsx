@@ -11,12 +11,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, DraggableModal } from '@/shared/components/ui';
-import {
-  COLOR_PALETTE,
-  SPACING,
-  BRAND_COLORS,
-  FOOTER_LAYOUT,
-} from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from './JournalScreen';
 import { HomeDashboardScreen } from './HomeDashboardScreen';
@@ -45,7 +40,7 @@ export const HomeTabNavigator = () => {
         ]}
         hitSlop={10}
       >
-        <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />
+        <CancelIcon width={24} height={24} color={COLOR_PALETTE.textPrimary} />
       </Pressable>
 
       <Pressable
@@ -139,7 +134,7 @@ const styles = StyleSheet.create({
     padding: SPACING.xs,
   },
   saveButtonText: {
-    color: BRAND_COLORS.cream,
+    color: COLOR_PALETTE.textPrimary,
     fontWeight: '600',
   },
   modalContent: {
@@ -156,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   footerContainer: {
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
     paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type QuestionnaireProgressBarProps = {
   currentQuestion: number;
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: SPACING.xs / 2,
     alignItems: 'center',
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingVertical: SPACING.xs,
     borderRadius: 4,
   },
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: BRAND_COLORS.cream,
+    backgroundColor: COLOR_PALETTE.textPrimary,
     borderRadius: 2,
   },
 });

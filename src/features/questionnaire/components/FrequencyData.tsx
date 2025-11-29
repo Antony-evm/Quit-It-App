@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { AppText, AppSurface } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
 import { FrequencyGrid } from '@/features/questionnaire/components/FrequencyGrid';
@@ -101,7 +101,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
     padding: 0,
   },

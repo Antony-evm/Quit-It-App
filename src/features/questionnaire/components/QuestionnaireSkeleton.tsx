@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { AppSurface } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 export const SkeletonItem = ({
   width,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   },
   optionCard: {
     padding: SPACING.lg,
-    backgroundColor: BRAND_COLORS.ink,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },

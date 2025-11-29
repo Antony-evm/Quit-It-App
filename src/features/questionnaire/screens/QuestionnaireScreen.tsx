@@ -6,7 +6,7 @@ import { useQuestionnaire } from '../hooks/useQuestionnaire';
 import { questionnaireStorage } from '../data/questionnaireStorage';
 import type { SelectedAnswerOption, SelectedAnswerSubOption } from '../types';
 import type { RootStackScreenProps } from '@/types/navigation';
-import { BRAND_COLORS, SPACING } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE } from '@/shared/theme';
 import { AppButton, AppText, BackArrow } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
@@ -373,11 +373,11 @@ export const QuestionnaireScreen = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   safeArea: {
     flex: 1,
-    backgroundColor: BRAND_COLORS.inkDark,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   errorState: {
     alignItems: 'center',
