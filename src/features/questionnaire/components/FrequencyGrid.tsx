@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
-import Svg, { Circle, Path } from 'react-native-svg';
 
 import type {
   AnswerOption,
@@ -12,6 +11,7 @@ import type {
 } from '../types';
 import { AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { TimePeriodClock } from './TimePeriodClock';
 
 const FREQUENCY_ORDER = ['never', 'rarely', 'often', 'constantly'];
 
@@ -88,34 +88,6 @@ const parseTimeWindow = (value: string): ParsedTimeWindow => {
   };
 };
 
-const polarPoint = (center: number, radius: number, hour: number) => {
-  const angle = ((hour / 24) * 360 - 90) * (Math.PI / 180);
-  return {
-    x: center + radius * Math.cos(angle),
-    y: center + radius * Math.sin(angle),
-  };
-};
-
-const buildArcPath = (size: number, startHour: number, endHour: number) => {
-  const radius = size / 2 - 4;
-  const center = size / 2;
-  const clampedStart = Math.max(0, Math.min(startHour, 24));
-  const clampedEnd = Math.max(0, Math.min(endHour, 24));
-  const arcEnd = clampedEnd <= clampedStart ? clampedStart + 0.1 : clampedEnd;
-  const start = polarPoint(center, radius, clampedStart);
-  const end = polarPoint(center, radius, arcEnd);
-  const arcSpan = arcEnd - clampedStart;
-  const largeArcFlag = arcSpan > 12 ? 1 : 0;
-  return {
-    d: [
-      `M ${center} ${center}`,
-      `L ${start.x} ${start.y}`,
-      `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
-      'Z',
-    ].join(' '),
-  };
-};
-
 type ClockSegmentBadgeProps = {
   startHour: number;
   endHour: number;
@@ -129,29 +101,15 @@ const ClockSegmentBadge = ({
   label,
   hoursLabel,
 }: ClockSegmentBadgeProps) => {
-  const size = 40;
-  const { d } = buildArcPath(size, startHour, endHour);
-
   return (
     <Box flexDirection="row" alignItems="center" gap="sm">
-      <Svg width={size} height={size}>
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={size / 2 - 4}
-          fill={COLOR_PALETTE.backgroundMuted}
-          stroke={COLOR_PALETTE.borderDefault}
-          strokeWidth={4}
-        />
-        <Path
-          d={d}
-          fill={COLOR_PALETTE.accentPrimary}
-          fillOpacity={0.35}
-          stroke={COLOR_PALETTE.accentPrimary}
-          strokeWidth={2}
-          strokeLinecap="round"
-        />
-      </Svg>
+      <TimePeriodClock
+        startHour={startHour}
+        endHour={endHour}
+        size={40}
+        circleStroke={COLOR_PALETTE.borderDefault}
+        fillOpacity={0.35}
+      />
       <Box style={styles.badgeLabels}>
         <AppText variant="body" tone="primary">
           {label}
@@ -332,59 +290,12 @@ export const FrequencyGrid = ({
       >
         <Box flex={1} justifyContent="center" alignItems="center">
           <Box alignItems="center" gap="xs" style={styles.clockContainer}>
-            <Svg width={60} height={60}>
-              <Circle
-                cx={30}
-                cy={30}
-                r={22}
-                fill={COLOR_PALETTE.backgroundMuted}
-                stroke={COLOR_PALETTE.backgroundPrimary}
-                strokeWidth={4}
-              />
-
-              <Path
-                d={(() => {
-                  const radius = 22;
-                  const center = 30;
-                  const clampedStart = Math.max(
-                    0,
-                    Math.min(timeInfo.startHour, 24),
-                  );
-                  const clampedEnd = Math.max(
-                    0,
-                    Math.min(timeInfo.endHour, 24),
-                  );
-                  const arcEnd =
-                    clampedEnd <= clampedStart
-                      ? clampedStart + 0.1
-                      : clampedEnd;
-                  const startAngle =
-                    ((clampedStart / 24) * 360 - 90) * (Math.PI / 180);
-                  const endAngle = ((arcEnd / 24) * 360 - 90) * (Math.PI / 180);
-                  const start = {
-                    x: center + radius * Math.cos(startAngle),
-                    y: center + radius * Math.sin(startAngle),
-                  };
-                  const end = {
-                    x: center + radius * Math.cos(endAngle),
-                    y: center + radius * Math.sin(endAngle),
-                  };
-                  const arcSpan = arcEnd - clampedStart;
-                  const largeArcFlag = arcSpan > 12 ? 1 : 0;
-                  return [
-                    `M ${center} ${center}`,
-                    `L ${start.x} ${start.y}`,
-                    `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`,
-                    'Z',
-                  ].join(' ');
-                })()}
-                fill={COLOR_PALETTE.accentPrimary}
-                fillOpacity={0.75}
-                stroke={COLOR_PALETTE.accentPrimary}
-                strokeWidth={2}
-                strokeLinecap="round"
-              />
-            </Svg>
+            <TimePeriodClock
+              startHour={timeInfo.startHour}
+              endHour={timeInfo.endHour}
+              size={60}
+              padding={8}
+            />
             <AppText variant="caption" style={styles.timeRangeText}>
               {timeInfo.hoursLabel}
             </AppText>
