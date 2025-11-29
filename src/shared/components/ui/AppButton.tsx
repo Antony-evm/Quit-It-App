@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Pressable,
   PressableProps,
   StyleSheet,
   ViewStyle,
@@ -9,9 +8,25 @@ import {
 } from 'react-native';
 
 import { AppText } from './AppText';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../../theme';
+import { AppPressable } from './AppPressable';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+  BORDER_WIDTH,
+  TypographyVariant,
+} from '../../theme';
 
-type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+const DISABLED_OPACITY = 0.5;
+const PRESSED_OPACITY = 0.7;
+
+type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger'
+  | 'brand';
 type ButtonSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export type AppButtonProps = PressableProps & {
@@ -30,22 +45,22 @@ const variantToStyles: Record<
 > = {
   primary: {
     container: {
-      backgroundColor: COLOR_PALETTE.backgroundCream, // CREAM
-      borderWidth: 0,
+      backgroundColor: COLOR_PALETTE.backgroundCream,
+      borderWidth: BORDER_WIDTH.none,
     },
-    textColor: COLOR_PALETTE.textSecondary, // BRAND INK
+    textColor: COLOR_PALETTE.textSecondary,
   },
   secondary: {
     container: {
-      backgroundColor: COLOR_PALETTE.backgroundMuted,
-      borderWidth: 0,
+      backgroundColor: COLOR_PALETTE.backgroundDark,
+      borderWidth: BORDER_WIDTH.none,
     },
     textColor: COLOR_PALETTE.textPrimary,
   },
   outline: {
     container: {
       backgroundColor: 'transparent',
-      borderWidth: 1,
+      borderWidth: BORDER_WIDTH.sm,
       borderColor: COLOR_PALETTE.textPrimary,
     },
     textColor: COLOR_PALETTE.textPrimary,
@@ -53,9 +68,23 @@ const variantToStyles: Record<
   ghost: {
     container: {
       backgroundColor: 'transparent',
-      borderWidth: 0,
+      borderWidth: BORDER_WIDTH.none,
     },
     textColor: COLOR_PALETTE.textPrimary,
+  },
+  danger: {
+    container: {
+      backgroundColor: COLOR_PALETTE.systemError,
+      borderWidth: BORDER_WIDTH.none,
+    },
+    textColor: COLOR_PALETTE.textSecondary,
+  },
+  brand: {
+    container: {
+      backgroundColor: COLOR_PALETTE.brandPrimary,
+      borderWidth: BORDER_WIDTH.none,
+    },
+    textColor: COLOR_PALETTE.textSecondary,
   },
 };
 
@@ -78,6 +107,13 @@ const sizeToStyles: Record<ButtonSize, ViewStyle> = {
   },
 };
 
+const sizeToTextVariant: Record<ButtonSize, TypographyVariant> = {
+  xs: 'subcaption',
+  sm: 'caption',
+  md: 'body',
+  lg: 'heading',
+};
+
 export const AppButton = ({
   label,
   variant = 'primary',
@@ -86,33 +122,34 @@ export const AppButton = ({
   containerStyle,
   textStyle,
   loading = false,
+  style, // Destructure style to avoid passing it to AppPressable via spread if it's a function
   ...pressableProps
 }: AppButtonProps) => {
   const variantStyles = variantToStyles[variant] ?? variantToStyles.primary;
   const sizeStyles = sizeToStyles[size] ?? sizeToStyles.md;
+  const textVariant = sizeToTextVariant[size] ?? 'body';
   const isDisabled = pressableProps.disabled || loading;
 
   return (
-    <Pressable
+    <AppPressable
       accessibilityRole="button"
-      style={({ pressed }) => [
+      style={[
         styles.base,
         variantStyles.container,
         sizeStyles,
         fullWidth && styles.fullWidth,
-        {
-          opacity: isDisabled && !loading ? 0.5 : pressed ? 0.7 : 1,
-        },
         containerStyle,
       ]}
       disabled={isDisabled}
+      disabledOpacity={loading ? 1 : DISABLED_OPACITY}
+      activeOpacity={PRESSED_OPACITY}
       {...pressableProps}
     >
       {loading ? (
         <ActivityIndicator color={variantStyles.textColor} />
       ) : (
         <AppText
-          variant="heading"
+          variant={textVariant}
           style={[
             styles.text,
             {
@@ -124,7 +161,7 @@ export const AppButton = ({
           {label}
         </AppText>
       )}
-    </Pressable>
+    </AppPressable>
   );
 };
 
@@ -132,7 +169,7 @@ const styles = StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 24,
+    borderRadius: BORDER_RADIUS.xlarge,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
   },

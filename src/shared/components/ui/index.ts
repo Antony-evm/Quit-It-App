@@ -1,4 +1,5 @@
 export * from './AppButton';
+export * from './AppPressable';
 export * from './AppSurface';
 export * from './AppText';
 export * from './AppTextInput';

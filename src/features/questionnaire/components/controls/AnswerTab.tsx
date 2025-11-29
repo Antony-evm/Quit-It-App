@@ -1,8 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
-import { AppText } from '@/shared/components/ui';
+import { AppText, AppPressable } from '@/shared/components/ui';
 
 type AnswerTabVariant =
   | 'timeslot'
@@ -46,19 +46,21 @@ export const AnswerTab = ({
     return styles.tab;
   };
 
+  const pressableVariant = variant === 'timeslot' ? 'chip' : 'card';
+
   return (
-    <Pressable
-      accessibilityRole="tab"
-      accessibilityState={{ selected: isSelected, disabled }}
-      style={({ pressed }) => [
+    <AppPressable
+      variant={pressableVariant}
+      selected={isSelected}
+      style={[
         getBaseStyles(),
         getVariantStyles(),
         isSelected && styles.tabSelected,
         disabled && styles.tabDisabled,
-        pressed && !disabled && styles.tabPressed,
       ]}
       onPress={onPress}
       disabled={disabled}
+      activeOpacity={0.9}
     >
       <AppText
         variant="body"
@@ -71,7 +73,7 @@ export const AnswerTab = ({
       >
         {label}
       </AppText>
-    </Pressable>
+    </AppPressable>
   );
 };
 

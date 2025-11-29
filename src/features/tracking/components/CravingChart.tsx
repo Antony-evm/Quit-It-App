@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  ViewStyle,
-  Dimensions,
-  Pressable,
-} from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle, Dimensions } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 
-import { AppText, Box } from '@/shared/components/ui';
+import { AppText, Box, AppPressable } from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
   DEVICE_HEIGHT,
@@ -111,7 +105,9 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
           borderRadius="small"
           p="xs"
         >
-          <Pressable
+          <AppPressable
+            variant="chip"
+            selected={period === 'daily'}
             style={[
               styles.toggleButton,
               period === 'daily' && styles.activeToggle,
@@ -127,8 +123,10 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             >
               Daily
             </AppText>
-          </Pressable>
-          <Pressable
+          </AppPressable>
+          <AppPressable
+            variant="chip"
+            selected={period === 'weekly'}
             style={[
               styles.toggleButton,
               period === 'weekly' && styles.activeToggle,
@@ -144,7 +142,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             >
               Weekly
             </AppText>
-          </Pressable>
+          </AppPressable>
         </Box>
       </Box>
 
@@ -213,6 +211,7 @@ const styles = StyleSheet.create({
   },
   activeToggle: {
     backgroundColor: COLOR_PALETTE.craving,
+    borderColor: COLOR_PALETTE.craving,
   },
   toggleText: {
     color: COLOR_PALETTE.textMuted,

@@ -5,18 +5,17 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import { StyleSheet, View, Platform, ScrollView } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 
-import { AppSurface, AppText, AppTextInput } from '@/shared/components/ui';
+import {
+  AppSurface,
+  AppText,
+  AppTextInput,
+  AppPressable,
+} from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -451,9 +450,10 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               {sortedTrackingTypes.map(type => {
                 const isSelected = selectedTrackingTypeId === type.id;
                 return (
-                  <Pressable
+                  <AppPressable
                     key={type.id}
-                    style={[styles.chip, isSelected && styles.chipSelected]}
+                    variant="chip"
+                    selected={isSelected}
                     onPress={() => handleTrackingTypeSelect(type.id)}
                   >
                     <AppText
@@ -464,7 +464,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                     >
                       {type.displayName}
                     </AppText>
-                  </Pressable>
+                  </AppPressable>
                 );
               })}
             </View>
@@ -475,8 +475,8 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
             <AppText variant="caption" style={styles.sectionLabel}>
               When did it happen?
             </AppText>
-            <Pressable
-              style={styles.dateTimeButton}
+            <AppPressable
+              variant="input"
               onPress={
                 showDateTimePicker
                   ? () => setShowDateTimePicker(false)
@@ -498,7 +498,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                   selectedDateTime.toISOString(),
                 )}
               </AppText>
-            </Pressable>
+            </AppPressable>
           </View>
 
           {/* Notes Input */}
@@ -507,6 +507,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               Notes (Optional)
             </AppText>
             <AppTextInput
+              variant="primary"
               value={notes}
               onChangeText={handleNotesChange}
               onFocus={handleNotesFocus}
@@ -559,18 +560,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: SPACING.sm,
   },
-  chip: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: BORDER_RADIUS.medium,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  chipSelected: {
-    backgroundColor: COLOR_PALETTE.textPrimary,
-    borderColor: COLOR_PALETTE.textPrimary,
-  },
   chipText: {
     color: COLOR_PALETTE.textPrimary,
     fontWeight: '500',
@@ -581,15 +570,6 @@ const styles = StyleSheet.create({
   },
   dateTimeSection: {
     marginBottom: SPACING.xl,
-  },
-  dateTimeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: BORDER_RADIUS.medium,
-    padding: SPACING.md,
   },
   calendarIcon: {
     marginRight: SPACING.sm,
@@ -613,16 +593,8 @@ const styles = StyleSheet.create({
   },
   notesInput: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: BORDER_RADIUS.medium,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    color: COLOR_PALETTE.textPrimary,
     minHeight: 120, // Increased height
-    textAlignVertical: 'top',
     marginBottom: SPACING.xs,
-    fontSize: 16, // Slightly larger text
   },
   charCountContainer: {
     alignItems: 'flex-end',

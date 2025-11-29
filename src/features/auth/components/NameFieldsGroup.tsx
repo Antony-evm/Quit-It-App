@@ -43,7 +43,6 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           hasError={firstName.length > 0 && !firstNameValidation.isValid}
           returnKeyType="next"
           onSubmitEditing={() => lastNameRef.current?.focus()}
-          blurOnSubmit={false}
         />
         {firstName.length > 0 && !firstNameValidation.isValid && (
           <AppText variant="caption" style={styles.errorText}>

@@ -7,7 +7,6 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   PanResponder,
-  Pressable,
   InteractionManager,
 } from 'react-native';
 import { SPACING, COLOR_PALETTE } from '@/shared/theme';
@@ -120,7 +119,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   backdrop: {
-    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   drawer: {

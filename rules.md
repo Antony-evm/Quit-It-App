@@ -27,7 +27,7 @@ These rules define the architectural and coding standards for the Quit-It-App. T
 **Principle:** Build complex UIs by composing small, unopinionated, and reusable primitives.
 
 - **Atomic Composition:** Build from the bottom up:
-  - **Primitives:** Simple, styled RN elements (`Box`, `Text`, `Button`) wrapping `View`/`Text`.
+  - **Primitives:** Simple, styled RN elements (`Box`, `AppText`, `AppButton`) wrapping `View`/`Text`.
   - **Components:** Reusable UI patterns (`Card`, `Input`) composed of primitives.
   - **Screens:** Compositions of components.
 - **Centralized Theme:** All styles must use the centralized `theme` object. No magic numbers or hardcoded hex codes.

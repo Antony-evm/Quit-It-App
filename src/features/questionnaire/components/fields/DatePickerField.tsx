@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { AppText, Box } from '@/shared/components/ui';
+import { AppText, Box, AppPressable } from '@/shared/components/ui';
 import { BORDER_RADIUS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { formatDisplayDate } from '../../utils/dateFormatting';
 import CalendarIcon from '@/assets/calendar.svg';
@@ -64,13 +64,7 @@ export const DatePickerField = ({
 
   return (
     <Box gap="md" style={{ width: '100%' }}>
-      <Pressable
-        style={({ pressed }) => [
-          styles.button,
-          pressed && styles.buttonPressed,
-        ]}
-        onPress={handlePress}
-      >
+      <AppPressable variant="input" onPress={handlePress}>
         <CalendarIcon
           width={24}
           height={24}
@@ -80,7 +74,7 @@ export const DatePickerField = ({
         <AppText variant="body" tone="primary" style={styles.text}>
           {value ? formatDisplayDate(value) : 'Select a date'}
         </AppText>
-      </Pressable>
+      </AppPressable>
 
       {/* Date picker */}
       {showPicker && (
@@ -108,20 +102,6 @@ export const DatePickerField = ({
 };
 
 const styles = StyleSheet.create({
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: BORDER_RADIUS.large,
-    padding: SPACING.lg,
-    minHeight: 64,
-  },
-  buttonPressed: {
-    opacity: 0.8,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
   icon: {
     marginRight: SPACING.md,
   },

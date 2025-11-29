@@ -5,10 +5,15 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { StyleSheet, ScrollView, Pressable } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { AppText, DraggableModal, Box } from '@/shared/components/ui';
+import {
+  AppText,
+  DraggableModal,
+  Box,
+  AppPressable,
+} from '@/shared/components/ui';
 import {
   SPACING,
   COLOR_PALETTE,
@@ -67,12 +72,9 @@ export const JournalScreen = () => {
         justifyContent="space-between"
         alignItems="center"
       >
-        <Pressable
+        <AppPressable
           onPress={() => setIsEditModalVisible(false)}
-          style={({ pressed }) => [
-            styles.headerButton,
-            pressed && { opacity: 0.7 },
-          ]}
+          variant="icon"
           hitSlop={10}
         >
           <CancelIcon
@@ -80,22 +82,17 @@ export const JournalScreen = () => {
             height={24}
             color={COLOR_PALETTE.textPrimary}
           />
-        </Pressable>
+        </AppPressable>
 
-        <Pressable
+        <AppPressable
           onPress={() => editCardRef.current?.save()}
-          style={styles.headerButton}
+          variant="icon"
           hitSlop={10}
         >
-          {({ pressed }) => (
-            <AppText
-              variant="body"
-              style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
-            >
-              Save
-            </AppText>
-          )}
-        </Pressable>
+          <AppText variant="body" style={styles.saveButtonText}>
+            Save
+          </AppText>
+        </AppPressable>
       </Box>
     ),
     [],
@@ -161,15 +158,12 @@ export const JournalScreen = () => {
               alignItems="center"
               style={styles.deleteButtonContainer}
             >
-              <Pressable
+              <AppPressable
                 onPress={() => editCardRef.current?.delete()}
-                style={({ pressed }) => [
-                  styles.deleteButton,
-                  pressed && { opacity: 0.7 },
-                ]}
+                style={styles.deleteButton}
               >
                 <AppText style={styles.deleteButtonText}>Delete</AppText>
-              </Pressable>
+              </AppPressable>
             </Box>
           )}
         </Box>
@@ -187,9 +181,6 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: SPACING.sm,
-  },
-  headerButton: {
-    padding: SPACING.xs,
   },
   saveButtonText: {
     color: COLOR_PALETTE.textPrimary,

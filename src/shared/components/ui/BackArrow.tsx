@@ -1,7 +1,8 @@
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import BackArrowSvg from '@/assets/backArrow.svg';
 import { COLOR_PALETTE } from '@/shared/theme';
+import { AppPressable } from './AppPressable';
 
 type BackArrowProps = {
   onPress: () => void;
@@ -9,13 +10,11 @@ type BackArrowProps = {
 };
 
 export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
-  <Pressable
-    style={({ pressed }) => [
-      styles.container,
-      { opacity: disabled ? 0.7 : pressed ? 1 : 0.7 },
-    ]}
+  <AppPressable
+    style={styles.container}
     onPress={onPress}
     disabled={disabled}
+    variant="scale"
   >
     <BackArrowSvg
       width={20}
@@ -24,7 +23,7 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
         disabled ? COLOR_PALETTE.textSecondary : COLOR_PALETTE.backgroundPrimary
       }
     />
-  </Pressable>
+  </AppPressable>
 );
 
 const styles = StyleSheet.create({

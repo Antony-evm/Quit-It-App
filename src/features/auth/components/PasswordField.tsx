@@ -65,9 +65,19 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
             disabled={isLoading}
           >
             {isPasswordVisible ? (
-              <ShowPasswordSvg width={20} height={20} fill="none" />
+              <ShowPasswordSvg
+                width={20}
+                height={20}
+                fill="none"
+                stroke={COLOR_PALETTE.textPrimary}
+              />
             ) : (
-              <HidePasswordSvg width={20} height={20} fill="none" />
+              <HidePasswordSvg
+                width={20}
+                height={20}
+                fill="none"
+                stroke={COLOR_PALETTE.textPrimary}
+              />
             )}
           </TouchableOpacity>
         </Box>

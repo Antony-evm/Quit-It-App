@@ -1,12 +1,5 @@
 import React, { useRef } from 'react';
-import {
-  Pressable,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-  Animated,
-} from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle, Animated } from 'react-native';
 import {
   SvgProps,
   Svg,
@@ -16,7 +9,7 @@ import {
   Rect,
 } from 'react-native-svg';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, AppPressable } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
@@ -92,17 +85,18 @@ export const HomeFooterNavigator = ({
     showBorderRight: boolean = false,
   ) => {
     if (tabKey === FOOTER_TABS.PLACEHOLDER) {
-      return <View key={tabKey} style={styles.tab} />;
+      return <View key={tabKey} style={{ flex: 1 }} />;
     }
 
     const isActive = tabKey === activeTab;
     const Icon = TAB_ICONS[tabKey];
 
     return (
-      <Pressable
+      <AppPressable
         key={tabKey}
+        variant="tab"
+        separator={showBorderRight}
         android_ripple={{ color: COLOR_PALETTE.accentMuted }}
-        style={[styles.tab, showBorderRight && styles.tabBorderRight]}
         onPress={() => {
           if (tabKey !== activeTab) {
             onTabChange?.(tabKey);
@@ -119,7 +113,7 @@ export const HomeFooterNavigator = ({
           fillOpacity={isActive ? 1 : 0.5}
           stroke={COLOR_PALETTE.backgroundPrimary}
         />
-      </Pressable>
+      </AppPressable>
     );
   };
 
@@ -135,10 +129,11 @@ export const HomeFooterNavigator = ({
       </View>
 
       <View style={styles.fabAbsoluteContainer}>
-        <Pressable
+        <AppPressable
           onPress={onFabPress}
           onPressIn={handleFabPressIn}
           onPressOut={handleFabPressOut}
+          interaction="none"
         >
           <Animated.View
             style={[
@@ -182,7 +177,7 @@ export const HomeFooterNavigator = ({
               fill={COLOR_PALETTE.textPrimary}
             />
           </Animated.View>
-        </Pressable>
+        </AppPressable>
       </View>
     </View>
   );
@@ -213,16 +208,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 8,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.xs,
-  },
-  tabBorderRight: {
-    borderRightWidth: 1,
-    borderRightColor: COLOR_PALETTE.borderDefault,
   },
   fabPlaceholder: {
     width: FOOTER_LAYOUT.FAB_SIZE, // Approximate width of FAB + margins

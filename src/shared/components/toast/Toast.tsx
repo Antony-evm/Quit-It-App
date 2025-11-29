@@ -1,16 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Pressable,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Toast as ToastType, useToast } from './ToastContext';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { AppPressable } from '../ui';
 
 interface ToastItemProps {
   toast: ToastType;
@@ -91,10 +85,10 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
         },
       ]}
     >
-      <Pressable style={styles.toastContent} onPress={handleDismiss}>
+      <AppPressable style={styles.toastContent} onPress={handleDismiss}>
         <Text style={styles.toastText}>{toast.message}</Text>
         <Text style={styles.dismissHint}>Tap to dismiss</Text>
-      </Pressable>
+      </AppPressable>
     </Animated.View>
   );
 };

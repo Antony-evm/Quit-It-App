@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-import { AppSurface, AppText, Box } from '@/shared/components/ui';
+import { AppSurface, AppText, Box, AppPressable } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
@@ -72,18 +72,19 @@ export const TrackingRecordCard = React.memo(
     });
 
     return (
-      <Pressable onPress={() => onPress?.(record)}>
-        <AppSurface
-          style={[
-            styles.card,
-            { borderLeftColor: accentColor, borderLeftWidth: 4 },
-          ]}
+      <AppPressable
+        variant="card"
+        onPress={() => onPress?.(record)}
+        style={[
+          styles.card,
+          { borderLeftColor: accentColor, borderLeftWidth: 4 },
+        ]}
+      >
+        <Box
+          flexDirection="row"
+          alignItems="flex-start"
+          justifyContent="space-between"
         >
-          <Box
-            flexDirection="row"
-            alignItems="flex-start"
-            justifyContent="space-between"
-          >
             <Box
               px="md"
               py="xs"
@@ -123,8 +124,7 @@ export const TrackingRecordCard = React.memo(
               </AppText>
             )}
           </Box>
-        </AppSurface>
-      </Pressable>
+      </AppPressable>
     );
   },
 );
@@ -132,7 +132,6 @@ export const TrackingRecordCard = React.memo(
 const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.md,
-    borderRadius: BORDER_RADIUS.medium,
     overflow: 'hidden',
     padding: SPACING.md,
   },

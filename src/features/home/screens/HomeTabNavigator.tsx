@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import {
   StyleSheet,
   View,
-  Pressable,
   ScrollView,
   Keyboard,
   Platform,
@@ -10,7 +9,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, DraggableModal } from '@/shared/components/ui';
+import { AppText, DraggableModal, AppPressable } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from './JournalScreen';
@@ -32,31 +31,23 @@ export const HomeTabNavigator = () => {
 
   const renderHeaderContent = () => (
     <View style={styles.modalHeaderContent}>
-      <Pressable
+      <AppPressable
         onPress={() => setIsNoteDrawerVisible(false)}
-        style={({ pressed }) => [
-          styles.headerButton,
-          pressed && { opacity: 0.7 },
-        ]}
+        variant="icon"
         hitSlop={10}
       >
         <CancelIcon width={24} height={24} color={COLOR_PALETTE.textPrimary} />
-      </Pressable>
+      </AppPressable>
 
-      <Pressable
+      <AppPressable
         onPress={() => notesCardRef.current?.save()}
-        style={styles.headerButton}
+        variant="icon"
         hitSlop={10}
       >
-        {({ pressed }) => (
-          <AppText
-            variant="body"
-            style={[styles.saveButtonText, pressed && { opacity: 0.7 }]}
-          >
-            Save
-          </AppText>
-        )}
-      </Pressable>
+        <AppText variant="body" style={styles.saveButtonText}>
+          Save
+        </AppText>
+      </AppPressable>
     </View>
   );
 
@@ -129,9 +120,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  headerButton: {
-    padding: SPACING.xs,
   },
   saveButtonText: {
     color: COLOR_PALETTE.textPrimary,
