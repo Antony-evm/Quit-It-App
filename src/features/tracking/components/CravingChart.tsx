@@ -10,7 +10,13 @@ import {
 import { LineChart, BarChart } from 'react-native-chart-kit';
 
 import { AppText } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import {
+  BRAND_COLORS,
+  COLOR_PALETTE,
+  DEVICE_HEIGHT,
+  SPACING,
+  BORDER_RADIUS,
+} from '@/shared/theme';
 import { DailyCravingData } from '@/features/tracking';
 
 type CravingChartProps = {
@@ -20,7 +26,7 @@ type CravingChartProps = {
 
 const screenWidth = Dimensions.get('window').width;
 // Calculate width based on screen padding (SPACING.xl * 2) and container padding (SPACING.lg * 2)
-const chartWidth = screenWidth - SPACING.xl * 2 - SPACING.lg * 2;
+const chartWidth = screenWidth - SPACING.md * 6;
 
 export const CravingChart = ({ data, style }: CravingChartProps) => {
   const [period, setPeriod] = useState<'daily' | 'weekly'>('daily');
@@ -165,9 +171,9 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
   return (
     <View style={[styles.container, style]}>
       <View style={styles.header}>
-        <AppText variant="heading" style={styles.title}>
-          Cravings
-        </AppText>
+        <View style={styles.titleBadge}>
+          <AppText style={styles.titleBadgeText}>Cravings Resisted</AppText>
+        </View>
         <View style={styles.toggleContainer}>
           <TouchableOpacity
             style={[
@@ -209,7 +215,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
           <BarChart
             data={barChartData}
             width={chartWidth}
-            height={220}
+            height={DEVICE_HEIGHT * 0.35}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
@@ -225,11 +231,11 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
           <LineChart
             data={chartData}
             width={chartWidth}
-            height={220}
+            height={DEVICE_HEIGHT * 0.35}
             chartConfig={chartConfig}
             bezier
             style={styles.chart}
-            withInnerLines={false}
+            withInnerLines={true}
             withOuterLines={false}
             withVerticalLines={true}
             withVerticalLabels={true}
@@ -239,6 +245,10 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
           />
         )}
       </View>
+      <AppText style={styles.footerText}>
+        Did you know most cravings peak for 3 minutes.? Focus on your breath and
+        a small movement to help you stay calm.
+      </AppText>
     </View>
   );
 };
@@ -247,9 +257,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: BRAND_COLORS.ink,
     borderRadius: 12,
-    padding: SPACING.lg,
+    padding: SPACING.md,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
+    borderLeftColor: COLOR_PALETTE.craving,
+    borderLeftWidth: 4,
   },
   header: {
     flexDirection: 'row',
@@ -291,10 +303,33 @@ const styles = StyleSheet.create({
   chart: {
     marginVertical: 8,
     borderRadius: 8,
+    paddingRight: SPACING.xl * 1.5,
+    paddingLeft: SPACING.xl * 1.5,
   },
   noDataText: {
     textAlign: 'center',
     fontStyle: 'italic',
     paddingVertical: SPACING.xl,
+  },
+  titleBadge: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.full,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(122, 62, 177, 0.1)',
+  },
+  titleBadgeText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    color: BRAND_COLORS.cream,
+  },
+  footerText: {
+    fontStyle: 'italic',
+    color: BRAND_COLORS.cream,
+    marginTop: SPACING.md,
+    textAlign: 'center',
+    fontSize: 12,
   },
 });
