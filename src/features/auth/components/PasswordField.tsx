@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { AppTextInput, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
@@ -13,61 +13,73 @@ interface PasswordFieldProps {
   hasError?: boolean;
   errorMessage?: string;
   isLoading?: boolean;
+  onSubmitEditing?: () => void;
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
 }
 
-export const PasswordField: React.FC<PasswordFieldProps> = ({
-  value,
-  onChangeText,
-  placeholder = 'Password',
-  autoComplete = 'password',
-  hasError = false,
-  errorMessage,
-  isLoading = false,
-}) => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
+  (
+    {
+      value,
+      onChangeText,
+      placeholder = 'Password',
+      autoComplete = 'password',
+      hasError = false,
+      errorMessage,
+      isLoading = false,
+      onSubmitEditing,
+      returnKeyType,
+    },
+    ref,
+  ) => {
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
-  return (
-    <Box mb="lg">
-      <Box
-        flexDirection="row"
-        alignItems="center"
-        bg="backgroundPrimary"
-        borderRadius="medium"
-        style={[
-          styles.passwordContainer,
-          hasError && styles.passwordContainerError,
-        ]}
-      >
-        <AppTextInput
-          variant="ghost"
-          style={styles.passwordInput}
-          placeholder={placeholder}
-          value={value}
-          onChangeText={onChangeText}
-          secureTextEntry={!isPasswordVisible}
-          autoComplete={autoComplete}
-          editable={!isLoading}
-        />
-        <TouchableOpacity
-          style={styles.passwordToggle}
-          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-          disabled={isLoading}
+    return (
+      <Box mb="lg">
+        <Box
+          flexDirection="row"
+          alignItems="center"
+          bg="backgroundPrimary"
+          borderRadius="medium"
+          style={[
+            styles.passwordContainer,
+            hasError && styles.passwordContainerError,
+          ]}
         >
-          {isPasswordVisible ? (
-            <ShowPasswordSvg width={20} height={20} fill="none" />
-          ) : (
-            <HidePasswordSvg width={20} height={20} fill="none" />
-          )}
-        </TouchableOpacity>
+          <AppTextInput
+            ref={ref}
+            variant="ghost"
+            style={styles.passwordInput}
+            placeholder={placeholder}
+            value={value}
+            onChangeText={onChangeText}
+            secureTextEntry={!isPasswordVisible}
+            autoComplete={autoComplete}
+            editable={!isLoading}
+            onSubmitEditing={onSubmitEditing}
+            returnKeyType={returnKeyType}
+          />
+          <TouchableOpacity
+            style={styles.passwordToggle}
+            onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+            disabled={isLoading}
+          >
+            {isPasswordVisible ? (
+              <ShowPasswordSvg width={20} height={20} fill="none" />
+            ) : (
+              <HidePasswordSvg width={20} height={20} fill="none" />
+            )}
+          </TouchableOpacity>
+        </Box>
+        {errorMessage && (
+          <AppText variant="caption" style={styles.errorText}>
+            {errorMessage}
+          </AppText>
+        )}
       </Box>
-      {errorMessage && (
-        <AppText variant="caption" style={styles.errorText}>
-          {errorMessage}
-        </AppText>
-      )}
-    </Box>
-  );
-};
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   passwordContainer: {

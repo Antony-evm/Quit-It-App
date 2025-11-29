@@ -16,23 +16,24 @@ export type AppTextInputProps = TextInputProps & {
   variant?: AppTextInputVariant;
 };
 
-export const AppTextInput = ({
-  style,
-  hasError = false,
-  variant = 'primary',
-  ...textInputProps
-}: AppTextInputProps) => (
-  <TextInput
-    style={[
-      styles.base,
-      variant === 'primary' && styles.primary,
-      variant === 'ghost' && styles.ghost,
-      hasError && styles.inputError,
-      style,
-    ]}
-    placeholderTextColor={COLOR_PALETTE.textMuted}
-    {...textInputProps}
-  />
+export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
+  (
+    { style, hasError = false, variant = 'primary', ...textInputProps },
+    ref,
+  ) => (
+    <TextInput
+      ref={ref}
+      style={[
+        styles.base,
+        variant === 'primary' && styles.primary,
+        variant === 'ghost' && styles.ghost,
+        hasError && styles.inputError,
+        style,
+      ]}
+      placeholderTextColor={COLOR_PALETTE.textMuted}
+      {...textInputProps}
+    />
+  ),
 );
 
 const styles = StyleSheet.create({

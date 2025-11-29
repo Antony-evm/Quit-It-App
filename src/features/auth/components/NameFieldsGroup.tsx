@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
 import { AppTextInput, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
@@ -27,6 +27,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   lastNameValidation,
   isLoading = false,
 }) => {
+  const lastNameRef = useRef<TextInput>(null);
+
   return (
     <Box>
       {/* First Name Field */}
@@ -39,6 +41,9 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           autoComplete="given-name"
           editable={!isLoading}
           hasError={firstName.length > 0 && !firstNameValidation.isValid}
+          returnKeyType="next"
+          onSubmitEditing={() => lastNameRef.current?.focus()}
+          blurOnSubmit={false}
         />
         {firstName.length > 0 && !firstNameValidation.isValid && (
           <AppText variant="caption" style={styles.errorText}>
@@ -50,6 +55,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
       {/* Last Name Field */}
       <Box mb="lg">
         <AppTextInput
+          ref={lastNameRef}
           placeholder="Last name"
           value={lastName}
           onChangeText={onLastNameChange}
