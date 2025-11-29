@@ -8,7 +8,12 @@ import {
   AppTextInput,
   Logo,
 } from '@/shared/components/ui';
-import { BRAND_COLORS, COLOR_PALETTE, SPACING } from '@/shared/theme';
+import {
+  BRAND_COLORS,
+  COLOR_PALETTE,
+  DEVICE_HEIGHT,
+  SPACING,
+} from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
 import { useAuth } from '@/shared/auth';
@@ -205,7 +210,6 @@ export const AccountScreen = () => {
           <AppText tone="primary" variant="title" style={styles.headerTitle}>
             Your Quit It Profile
           </AppText>
-          <Logo size="medium" style={styles.logo} />
         </View>
 
         <AccountSectionItem
@@ -244,7 +248,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: SPACING.xxl,
+    paddingBottom: SPACING.xl,
+    marginTop: DEVICE_HEIGHT * 0.05,
   },
   header: {
     marginBottom: SPACING.xxl,
@@ -265,7 +270,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     marginBottom: SPACING.sm,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   headerSubTitle: {
     marginBottom: SPACING.xl,

@@ -170,10 +170,10 @@ export const useInfiniteTrackingRecords = (
 
   const addRecordToCache = (newRecord: TrackingRecordApiResponse) => {
     queryClient.setQueryData(queryKey, (oldData: any) => {
-      if (!oldData?.pages?.length) return oldData;
+      const pages = oldData?.pages ? [...oldData.pages] : [[]];
+      const pageParams = oldData?.pageParams ? [...oldData.pageParams] : [0];
 
-      const newPages = [...oldData.pages];
-      const firstPage = [...newPages[0]];
+      const firstPage = [...pages[0]];
 
       // Find correct insertion position based on date (newest first)
       const newRecordTime = new Date(newRecord.event_at).getTime();
@@ -186,12 +186,13 @@ export const useInfiniteTrackingRecords = (
       }
 
       firstPage.splice(insertIndex, 0, newRecord);
-      newPages[0] = firstPage;
+      pages[0] = firstPage;
 
       // Preserve all infinite query metadata
       return {
         ...oldData,
-        pages: newPages,
+        pages,
+        pageParams,
       };
     });
   };

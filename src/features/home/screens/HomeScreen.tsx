@@ -11,7 +11,7 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText, DraggableModal, AppSurface } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
@@ -31,16 +31,39 @@ import {
   HomeFooterTab,
 } from '../components/HomeFooterNavigator';
 import { HomeStat, HomeStatsRow } from '../components/HomeStatsRow';
+import { WelcomeComponent } from '../components/WelcomeComponent';
 import CancelIcon from '@/assets/cancel.svg';
 
 const STAT_CARDS: HomeStat[] = [
-  { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
-  { label: 'Cigarettes', value: '0', accentColor: '#cf1515ff' },
-  { label: 'Money Saved', value: '$18.50', accentColor: '#A7F3D0' },
+  {
+    label: 'Cravings',
+    value: '3',
+    accentColor: COLOR_PALETTE.craving,
+    tagLabel: 'Cravings',
+    tagBackgroundColor: 'rgba(122, 62, 177, 0.1)',
+    bottomLabel: 'Resisted',
+  },
+  {
+    label: 'Cigarettes',
+    value: '0',
+    accentColor: COLOR_PALETTE.cigarette,
+    tagLabel: 'Smokes',
+    tagBackgroundColor: 'rgba(214, 106, 61, 0.1)',
+    bottomLabel: 'Skipped',
+  },
+  {
+    label: 'Money Saved',
+    value: '$18.50',
+    accentColor: COLOR_PALETTE.wealth,
+    tagLabel: 'Money',
+    tagBackgroundColor: 'rgba(16, 185, 129, 0.1)',
+    bottomLabel: 'Saved',
+  },
 ];
 
 export const HomeScreen = () => {
   const { width: screenWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const mainScrollViewRef = useRef<ScrollView>(null);
   const noteDrawerScrollRef = useRef<ScrollView>(null);
   const notesCardRef = useRef<NotesCardHandle>(null);
@@ -79,19 +102,28 @@ export const HomeScreen = () => {
     {
       label: 'Cravings',
       value: cravingAnalytics?.total_cravings?.toString() || '0',
-      accentColor: '#C7D2FE',
+      accentColor: COLOR_PALETTE.craving,
+      tagLabel: 'Cravings',
+      tagBackgroundColor: 'rgba(122, 62, 177, 0.1)',
+      bottomLabel: 'Resisted',
     },
     {
       label: 'Skipped Cigarettes',
       value: smokingAnalytics?.skipped_smokes?.toString() || '0',
-      accentColor: '#FDBA74',
+      accentColor: COLOR_PALETTE.cigarette,
+      tagLabel: 'Smokes',
+      tagBackgroundColor: 'rgba(214, 106, 61, 0.1)',
+      bottomLabel: 'Skipped',
     },
     {
       label: 'Money Saved',
       value: smokingAnalytics?.savings
         ? `$${smokingAnalytics.savings.toFixed(2)}`
         : '$0.00',
-      accentColor: '#A7F3D0',
+      accentColor: COLOR_PALETTE.wealth,
+      tagLabel: 'Money',
+      tagBackgroundColor: 'rgba(16, 185, 129, 0.1)',
+      bottomLabel: 'Saved',
     },
   ];
 
@@ -157,41 +189,25 @@ export const HomeScreen = () => {
   const renderHomeTab = () => (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 120 }}
+      contentContainerStyle={{ flexGrow: 1 }}
     >
-      <View>
-        <AppText variant="title" style={styles.title}>
-          Keep the streak going
-        </AppText>
-        <AppText tone="secondary" style={styles.subtitle}>
-          Here&apos;s how you&apos;ve been doing today.
-        </AppText>
-        {shouldShowSmokeFreeMessage && daysSmokeFree > 0 && (
-          <View style={styles.congratsContainer}>
-            <AppText
-              variant="body"
-              style={[styles.congratsMessage, { color: '#22C55E' }]}
-            >
-              🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree}{' '}
-              {daysSmokeFree === 1 ? 'day' : 'days'}!
-            </AppText>
-          </View>
+      <WelcomeComponent />
+
+      <View style={styles.homeContentContainer}>
+        <HomeStatsRow stats={stats} style={styles.statsRow} />
+
+        {dailyData && dailyData.length > 0 && (
+          <CravingChart data={dailyData} style={styles.chartCard} />
         )}
-      </View>
 
-      <HomeStatsRow stats={stats} style={styles.statsRow} />
-
-      {dailyData && dailyData.length > 0 && (
-        <CravingChart data={dailyData} style={styles.chartCard} />
-      )}
-
-      <View style={styles.planSection}>
-        <AppText variant="heading" style={styles.sectionTitle}>
-          Your Plan
-        </AppText>
-        <AppSurface style={styles.planCard}>
-          <QuittingPlanCard />
-        </AppSurface>
+        <View style={styles.planSection}>
+          <AppText variant="heading" style={styles.sectionTitle}>
+            Your Plan
+          </AppText>
+          <AppSurface style={styles.planCard}>
+            <QuittingPlanCard />
+          </AppSurface>
+        </View>
       </View>
     </ScrollView>
   );
@@ -229,7 +245,7 @@ export const HomeScreen = () => {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: 0 }]}>
       <ScrollView
         ref={mainScrollViewRef}
         horizontal
@@ -243,15 +259,30 @@ export const HomeScreen = () => {
         contentContainerStyle={{ width: screenWidth * 3 }}
         scrollEnabled={!shouldHideFooter} // Disable swipe when keyboard is open
       >
-        <View style={[styles.page, { width: screenWidth }]}>
+        <View
+          style={[
+            styles.page,
+            { width: screenWidth, paddingTop: insets.top + SPACING.lg },
+          ]}
+        >
           <View style={styles.accountWrapper}>
             <AccountScreen />
           </View>
         </View>
-        <View style={[styles.page, { width: screenWidth }]}>
+        <View
+          style={[
+            styles.page,
+            { width: screenWidth, paddingHorizontal: 0, paddingTop: 0 },
+          ]}
+        >
           {renderHomeTab()}
         </View>
-        <View style={[styles.page, { width: screenWidth }]}>
+        <View
+          style={[
+            styles.page,
+            { width: screenWidth, paddingTop: insets.top + SPACING.lg },
+          ]}
+        >
           <View style={styles.notesWrapper}>
             <JournalScreen />
           </View>
@@ -293,7 +324,7 @@ export const HomeScreen = () => {
           />
         </ScrollView>
       </DraggableModal>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -310,15 +341,21 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.lg,
+    height: '100%',
   },
   contentExpanded: {
     paddingBottom: SPACING.md,
   },
+  homeContentContainer: {
+    paddingHorizontal: SPACING.xl,
+  },
   accountWrapper: {
     flex: 1,
+    height: '100%',
   },
   notesWrapper: {
     flex: 1,
+    height: '100%',
   },
   title: {
     marginBottom: SPACING.xs,

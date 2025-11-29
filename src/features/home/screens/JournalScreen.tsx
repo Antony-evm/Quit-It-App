@@ -14,6 +14,7 @@ import {
   COLOR_PALETTE,
   BRAND_COLORS,
   BORDER_RADIUS,
+  DEVICE_HEIGHT,
 } from '@/shared/theme';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: SPACING.md,
+    marginTop: DEVICE_HEIGHT * 0.05,
   },
   header: {
     marginBottom: SPACING.sm,

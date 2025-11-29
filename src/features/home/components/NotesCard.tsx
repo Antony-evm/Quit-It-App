@@ -23,6 +23,7 @@ import {
   BRAND_COLORS,
   BORDER_RADIUS,
 } from '@/shared/theme';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useTrackingTypes,
   useInfiniteTrackingRecords,
@@ -71,6 +72,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
     },
     ref,
   ) => {
+    const queryClient = useQueryClient();
     const currentUserId = useCurrentUserId();
     const actualUserId = userId ?? currentUserId;
     const { data: trackingTypes } = useTrackingTypes();
@@ -279,6 +281,17 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               }
             : undefined;
 
+          const updatedRecord: TrackingRecordApiResponse = {
+            record_id: recordId,
+            user_id: actualUserId!, // We assume user is logged in
+            tracking_type_id: selectedTrackingType.id,
+            event_at: selectedDateTime.toISOString(),
+            note: notes.trim() || null,
+          };
+
+          // Optimistic update
+          updateRecordInCache(updatedRecord);
+
           update.mutate(
             {
               record_id: recordId,
@@ -290,21 +303,21 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               oldRecord,
             },
             {
-              onMutate: async () => {
-                const updatedRecord: TrackingRecordApiResponse = {
-                  record_id: recordId,
-                  user_id: actualUserId!, // We assume user is logged in
-                  tracking_type_id: selectedTrackingType.id,
-                  event_at: selectedDateTime.toISOString(),
-                  note: notes.trim() || null,
-                };
-                updateRecordInCache(updatedRecord);
-              },
               onSuccess: () => {
                 onSaveSuccess?.();
                 showToast('Your tracking entry has been updated!', 'success');
+                queryClient.invalidateQueries({
+                  queryKey: ['cravingAnalytics', actualUserId],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ['smokingAnalytics', actualUserId],
+                });
               },
               onError: error => {
+                // Rollback
+                if (oldRecord) {
+                  updateRecordInCache(oldRecord);
+                }
                 showToast(
                   error instanceof Error
                     ? error.message
@@ -316,30 +329,25 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
           );
         } else {
           // Make the API call
+          // Generate a temporary ID for the optimistic update
+          const tempId = Date.now(); // Use timestamp as temp ID
+
+          // Create optimistic record that matches API response format
+          const optimisticRecord: TrackingRecordApiResponse = {
+            record_id: tempId,
+            user_id: payload.user_id,
+            tracking_type_id: payload.tracking_type_id,
+            event_at: payload.event_at,
+            note: payload.note || null,
+          };
+
+          // Optimistically add the record to the cache
+          addRecordToCache(optimisticRecord);
+
           create.mutate(payload, {
-            onMutate: async variables => {
-              // Generate a temporary ID for the optimistic update
-              const tempId = Date.now(); // Use timestamp as temp ID
-
-              // Create optimistic record that matches API response format
-              const optimisticRecord: TrackingRecordApiResponse = {
-                record_id: tempId,
-                user_id: variables.user_id,
-                tracking_type_id: variables.tracking_type_id,
-                event_at: variables.event_at,
-                note: variables.note || null,
-              };
-
-              // Optimistically add the record to the cache
-              addRecordToCache(optimisticRecord);
-
-              return { optimisticRecord, tempId };
-            },
-            onSuccess: (realRecord, _variables, context) => {
+            onSuccess: realRecord => {
               // Replace the optimistic record with the real record from server
-              if (context?.tempId) {
-                replaceOptimisticRecord(context.tempId, realRecord);
-              }
+              replaceOptimisticRecord(tempId, realRecord);
 
               // Reset form
               setNotes('');
@@ -351,10 +359,18 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
               // Show success message
               showToast('Your tracking entry has been saved!', 'success');
+
+              queryClient.invalidateQueries({
+                queryKey: ['cravingAnalytics', actualUserId],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ['smokingAnalytics', actualUserId],
+              });
             },
             onError: error => {
-              // On error, the optimistic update will be automatically reverted
-              // No need to manually invalidate queries
+              // On error, revert the optimistic update
+              removeRecordFromCache(tempId);
+
               showToast(
                 error instanceof Error
                   ? error.message
@@ -380,17 +396,27 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               }
             : undefined;
 
+        // Optimistic update
+        removeRecordFromCache(recordId);
+
         deleteMutation.mutate(
           { recordId, record: recordToDelete },
           {
-            onMutate: async () => {
-              removeRecordFromCache(recordId);
-            },
             onSuccess: () => {
               onDeleteSuccess?.();
               showToast('Tracking entry has been deleted!', 'success');
+              queryClient.invalidateQueries({
+                queryKey: ['cravingAnalytics', actualUserId],
+              });
+              queryClient.invalidateQueries({
+                queryKey: ['smokingAnalytics', actualUserId],
+              });
             },
             onError: error => {
+              // Rollback
+              if (recordToDelete) {
+                addRecordToCache(recordToDelete);
+              }
               showToast(
                 error instanceof Error
                   ? error.message

@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '95%', // Slightly less than full height to show it's a sheet
+    height: '85%', // Slightly less than full height to show it's a sheet
     overflow: 'hidden',
   },
   headerContainer: {
