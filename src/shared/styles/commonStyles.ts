@@ -1,31 +1,19 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+  SHADOWS as THEME_SHADOWS,
+  BORDER_WIDTH,
+} from '../theme';
 
 /**
  * Common shadow/elevation styles to reduce repetition
  */
 export const SHADOWS = {
-  small: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
-  },
-  medium: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 5,
-  },
-  large: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 8,
-  },
+  small: THEME_SHADOWS.sm,
+  medium: THEME_SHADOWS.md,
+  large: THEME_SHADOWS.softLg,
 } as const;
 
 /**
@@ -38,7 +26,7 @@ export const SURFACE_VARIANTS = {
     paddingVertical: SPACING.sm,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: BORDER_RADIUS.xlarge,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
   },
 
@@ -52,7 +40,7 @@ export const SURFACE_VARIANTS = {
   elevated: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderRadius: BORDER_RADIUS.large,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.medium,
   },
@@ -60,7 +48,7 @@ export const SURFACE_VARIANTS = {
   // Input surfaces
   input: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.large,
     paddingHorizontal: SPACING.md,
@@ -97,7 +85,7 @@ export const LAYOUT_STYLES = StyleSheet.create({
   dropdownItem: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    borderBottomWidth: 1,
+    borderBottomWidth: BORDER_WIDTH.sm,
     borderBottomColor: COLOR_PALETTE.borderDefault,
   } as ViewStyle,
 

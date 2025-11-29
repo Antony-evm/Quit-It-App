@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import { AppTextInput, AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
 import HidePasswordSvg from '@/assets/hidePassword.svg';
 
@@ -27,19 +27,19 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
-    <Box>
+    <Box mb="lg">
       <Box
         flexDirection="row"
         alignItems="center"
         bg="backgroundPrimary"
         borderRadius="medium"
-        mb="lg"
         style={[
           styles.passwordContainer,
           hasError && styles.passwordContainerError,
         ]}
       >
         <AppTextInput
+          variant="ghost"
           style={styles.passwordInput}
           placeholder={placeholder}
           value={value}
@@ -71,7 +71,7 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
 
 const styles = StyleSheet.create({
   passwordContainer: {
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
   },
   passwordContainerError: {
@@ -79,12 +79,6 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     flex: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
-    color: COLOR_PALETTE.textPrimary,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    marginBottom: 0,
   },
   passwordToggle: {
     paddingHorizontal: SPACING.md,
@@ -94,8 +88,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: COLOR_PALETTE.systemError,
-    marginTop: -SPACING.lg + SPACING.xs,
-    marginBottom: SPACING.lg,
+    marginTop: SPACING.xs,
     marginLeft: SPACING.sm,
   },
 });

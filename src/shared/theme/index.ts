@@ -3,3 +3,5 @@ export * from './spacing';
 export * from './typography';
 export * from './layout';
 export * from './borderRadius';
+export * from './shadows';
+export * from './borderWidth';

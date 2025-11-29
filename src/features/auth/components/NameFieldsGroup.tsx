@@ -30,7 +30,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   return (
     <Box>
       {/* First Name Field */}
-      <Box>
+      <Box mb="lg">
         <AppTextInput
           placeholder="First name"
           value={firstName}
@@ -48,7 +48,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
       </Box>
 
       {/* Last Name Field */}
-      <Box>
+      <Box mb="lg">
         <AppTextInput
           placeholder="Last name"
           value={lastName}
@@ -71,8 +71,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
 const styles = StyleSheet.create({
   errorText: {
     color: COLOR_PALETTE.systemError,
-    marginTop: -SPACING.lg + SPACING.xs,
+    marginTop: SPACING.xs,
     marginLeft: SPACING.sm,
-    marginBottom: SPACING.lg,
   },
 });
