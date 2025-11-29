@@ -18,7 +18,6 @@ type DraggableModalProps = {
   onClose: () => void;
   children: React.ReactNode;
   headerContent?: React.ReactNode;
-  headerStyle?: StyleProp<ViewStyle>;
   indicatorStyle?: StyleProp<ViewStyle>;
 };
 
@@ -27,7 +26,6 @@ export const DraggableModal = ({
   onClose,
   children,
   headerContent,
-  headerStyle,
   indicatorStyle,
 }: DraggableModalProps) => {
   const screenHeight = Dimensions.get('window').height;
@@ -102,10 +100,7 @@ export const DraggableModal = ({
           <View style={styles.backdrop} />
         </TouchableWithoutFeedback>
         <Animated.View style={[styles.drawer, { transform: [{ translateY }] }]}>
-          <View
-            {...panResponder.panHandlers}
-            style={[styles.headerContainer, headerStyle]}
-          >
+          <View {...panResponder.panHandlers} style={styles.headerContainer}>
             <View style={styles.indicatorContainer}>
               <View style={[styles.indicator, indicatorStyle]} />
             </View>
@@ -128,13 +123,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   backdrop: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: COLOR_PALETTE.backgroundNav,
   },
   drawer: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '85%', // Slightly less than full height to show it's a sheet
+    height: '85%',
     overflow: 'hidden',
   },
   headerContainer: {
