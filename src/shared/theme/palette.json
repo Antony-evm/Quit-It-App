@@ -22,6 +22,9 @@
     "backgroundNav": "#000807",
     "backgroundOverlay": "#000000",
     "shadowDefault": "#000000",
-    "brandPrimary": "#3DDC97"
+    "brandPrimary": "#3DDC97",
+    "cigaretteLight": "#D66A3D1A",
+    "cravingLight": "#7A3EB11A",
+    "wealthLight": "#10B9811A"
   }
 }

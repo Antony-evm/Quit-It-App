@@ -1,20 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
-import {
-  AppButton,
-  AppSurface,
-  AppText,
-  AppTextInput,
-  Logo,
-  Box,
-} from '@/shared/components/ui';
-import {
-  COLOR_PALETTE,
-  DEVICE_HEIGHT,
-  SPACING,
-  FOOTER_LAYOUT,
-} from '@/shared/theme';
+import { AppText, Logo, Box } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
 import { useAuth } from '@/shared/auth';
@@ -23,97 +11,21 @@ import { TriggersList } from '@/features/questionnaire/components/TriggersList';
 import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
-import { useQuitDate } from '../hooks/useQuitDate';
-import { useUpdateQuitDateMutation } from '../hooks/useAccountMutations';
-import type { QuitDate } from '../types';
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
-
-type FieldStatus = {
-  tone: 'success' | 'error';
-  message: string;
-} | null;
+import { useQuitDateLogic } from '../hooks/useQuitDateLogic';
 
 type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
   const { user } = useAuth();
-  const {
-    quitDate,
-    isLoading: isQuitDateLoading,
-    error: quitDateError,
-    refresh: refreshQuitDate,
-    isRefetching,
-  } = useQuitDate();
-  const updateQuitDateMutation = useUpdateQuitDateMutation();
+  const { handleRefresh, isRefetching, error } = useQuitDateLogic();
 
-  const [quitDateInput, setQuitDateInput] = useState('');
-  const [quitDateStatus, setQuitDateStatus] = useState<FieldStatus>(null);
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
   // Pre-fetch the smoking triggers question
   useSmokingTriggersQuestion();
   useSmokingFrequencyQuestion();
-
-  useEffect(() => {
-    if (quitDate) {
-      setQuitDateInput(quitDate.isoDate);
-    }
-  }, [quitDate]);
-
-  const handleRefresh = useCallback(() => {
-    refreshQuitDate();
-  }, [refreshQuitDate]);
-
-  const handleSaveQuitDate = useCallback(async () => {
-    setQuitDateStatus(null);
-    const trimmed = quitDateInput.trim();
-    const isIsoDate = /^\d{4}-\d{2}-\d{2}$/.test(trimmed);
-
-    if (!isIsoDate || Number.isNaN(new Date(trimmed).getTime())) {
-      setQuitDateStatus({
-        tone: 'error',
-        message: 'Use the YYYY-MM-DD format for your quit date.',
-      });
-      return;
-    }
-
-    try {
-      await updateQuitDateMutation.mutateAsync({ isoDate: trimmed });
-      setQuitDateStatus({
-        tone: 'success',
-        message: 'Quit date saved.',
-      });
-    } catch {
-      setQuitDateStatus({
-        tone: 'error',
-        message: 'Unable to save quit date right now.',
-      });
-    }
-  }, [quitDateInput, updateQuitDateMutation]);
-
-  const isLoading = isQuitDateLoading && !isRefetching;
-  const error = quitDateError;
-
-  const renderStatus = (status: FieldStatus) => {
-    if (!status) {
-      return null;
-    }
-
-    return (
-      <AppText
-        variant="caption"
-        style={[
-          styles.statusText,
-          status.tone === 'error'
-            ? styles.statusTextError
-            : styles.statusTextSuccess,
-        ]}
-      >
-        {status.message}
-      </AppText>
-    );
-  };
 
   const renderDrawerContent = () => {
     switch (activeSection) {
@@ -209,22 +121,13 @@ export const AccountScreen = () => {
 
 const styles = StyleSheet.create({
   scrollContent: {
-    marginTop: DEVICE_HEIGHT * 0.05,
+    marginTop: SPACING.xxl,
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  planCard: {
-    marginBottom: SPACING.xl,
   },
   headerTitle: {
     marginBottom: SPACING.sm,
     textAlign: 'left',
-  },
-  headerSubTitle: {
-    marginBottom: SPACING.xl,
-  },
-  logo: {
-    marginTop: SPACING.lg,
   },
   triggersCard: {
     marginBottom: SPACING.xl,
@@ -235,29 +138,5 @@ const styles = StyleSheet.create({
   globalError: {
     color: COLOR_PALETTE.systemError,
     marginBottom: SPACING.lg,
-  },
-  card: {
-    marginBottom: SPACING.xl,
-  },
-  cardTitle: {
-    marginBottom: SPACING.xs,
-  },
-  cardDescription: {
-    marginBottom: SPACING.md,
-  },
-  textInput: {
-    marginBottom: SPACING.md,
-  },
-  metaText: {
-    marginBottom: SPACING.md,
-  },
-  statusText: {
-    marginTop: SPACING.sm,
-  },
-  statusTextError: {
-    color: COLOR_PALETTE.systemError,
-  },
-  statusTextSuccess: {
-    color: COLOR_PALETTE.textSecondary,
   },
 });

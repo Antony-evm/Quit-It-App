@@ -1,19 +1,17 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { AppText } from './AppText';
-import { Box } from './Box';
+import { AppText, Box } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme/spacing';
 import { COLOR_PALETTE } from '@/shared/theme/colors';
-import { BORDER_RADIUS } from '@/shared/theme/borderRadius';
 import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordValidation';
 
-interface CustomPasswordStrengthIndicatorProps {
+interface PasswordStrengthIndicatorProps {
   validation: CustomPasswordValidation;
   style?: StyleProp<ViewStyle>;
 }
 
-export const CustomPasswordStrengthIndicator: React.FC<
-  CustomPasswordStrengthIndicatorProps
+export const PasswordStrengthIndicator: React.FC<
+  PasswordStrengthIndicatorProps
 > = ({ validation, style }) => {
   if (!validation.password) {
     return (

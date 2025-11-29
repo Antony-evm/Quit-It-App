@@ -1,15 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import {
   StyleProp,
   StyleSheet,
-  View,
   ViewStyle,
   Dimensions,
-  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
   DEVICE_HEIGHT,
@@ -17,6 +16,7 @@ import {
   BORDER_RADIUS,
 } from '@/shared/theme';
 import { DailyCravingData } from '@/features/tracking';
+import { useCravingChartData } from '../hooks/useCravingChartData';
 
 type CravingChartProps = {
   data: DailyCravingData[];
@@ -28,114 +28,30 @@ const screenWidth = Dimensions.get('window').width;
 const chartWidth = screenWidth - SPACING.md * 6;
 
 export const CravingChart = ({ data, style }: CravingChartProps) => {
-  const [period, setPeriod] = useState<'daily' | 'weekly'>('daily');
-
-  const chartData = useMemo(() => {
-    if (!data || data.length === 0) return { labels: [], datasets: [] };
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // Find the earliest date in the data
-    const minDate = new Date(
-      Math.min(...data.map(d => new Date(d.date).getTime())),
-    );
-    minDate.setHours(0, 0, 0, 0);
-
-    if (period === 'daily') {
-      const labels = [];
-      const counts = [];
-
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date(today);
-        d.setDate(today.getDate() - i);
-        d.setHours(0, 0, 0, 0);
-
-        if (d < minDate) continue;
-
-        const dateStr = d.toISOString().split('T')[0];
-        const record = data.find(item => item.date === dateStr);
-
-        labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
-        counts.push(record ? record.count : 0);
-      }
-
-      return {
-        labels,
-        datasets: [
-          {
-            data: counts,
-            color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`,
-            strokeWidth: 3,
-          },
-        ],
-      };
-    } else {
-      // Weekly: Last 4 weeks (rolling 7-day windows)
-      const labels = [];
-      const counts = [];
-
-      for (let i = 3; i >= 0; i--) {
-        const endDate = new Date(today);
-        endDate.setDate(today.getDate() - i * 7);
-        endDate.setHours(0, 0, 0, 0);
-
-        if (endDate < minDate) continue;
-
-        const startDate = new Date(endDate);
-        startDate.setDate(endDate.getDate() - 6);
-        startDate.setHours(0, 0, 0, 0);
-
-        let weekCount = 0;
-
-        data.forEach(item => {
-          const itemDate = new Date(item.date);
-          itemDate.setHours(0, 0, 0, 0);
-
-          if (itemDate >= startDate && itemDate <= endDate) {
-            weekCount += item.count;
-          }
-        });
-
-        labels.push(
-          endDate.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-          }),
-        );
-        counts.push(weekCount);
-      }
-
-      return {
-        labels,
-        datasets: [
-          {
-            data: counts,
-            color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`,
-            strokeWidth: 3,
-          },
-        ],
-      };
-    }
-  }, [data, period]);
+  const { period, setPeriod, chartData } = useCravingChartData(data);
 
   if (!data || data.length === 0) {
     return (
-      <View style={[styles.container, style]}>
+      <Box
+        bg="backgroundPrimary"
+        borderRadius="medium"
+        p="md"
+        style={[styles.container, style]}
+      >
         <AppText variant="heading" style={styles.title}>
           Cravings
         </AppText>
         <AppText variant="body" tone="secondary" style={styles.noDataText}>
           No craving data available
         </AppText>
-      </View>
+      </Box>
     );
   }
 
   const chartConfig = {
     backgroundGradientFrom: COLOR_PALETTE.backgroundMuted,
     backgroundGradientTo: COLOR_PALETTE.backgroundMuted,
-    color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`,
+    color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`, // Matches COLOR_PALETTE.craving
     labelColor: (opacity = 1) => COLOR_PALETTE.textMuted,
     strokeWidth: 3,
     barPercentage: 0.5,
@@ -168,13 +84,34 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <View style={styles.header}>
-        <View style={styles.titleBadge}>
+    <Box
+      bg="backgroundPrimary"
+      borderRadius="medium"
+      p="md"
+      style={[styles.container, style]}
+    >
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb="md"
+      >
+        <Box
+          px="md"
+          py="xs"
+          borderRadius="full"
+          bg="cravingLight"
+          style={{ alignSelf: 'flex-start' }}
+        >
           <AppText style={styles.titleBadgeText}>Cravings Resisted</AppText>
-        </View>
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity
+        </Box>
+        <Box
+          flexDirection="row"
+          bg="backgroundMuted"
+          borderRadius="small"
+          p="xs"
+        >
+          <Pressable
             style={[
               styles.toggleButton,
               period === 'daily' && styles.activeToggle,
@@ -182,6 +119,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             onPress={() => setPeriod('daily')}
           >
             <AppText
+              variant="gridArea"
               style={[
                 styles.toggleText,
                 period === 'daily' && styles.activeToggleText,
@@ -189,8 +127,8 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             >
               Daily
             </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[
               styles.toggleButton,
               period === 'weekly' && styles.activeToggle,
@@ -198,6 +136,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             onPress={() => setPeriod('weekly')}
           >
             <AppText
+              variant="gridArea"
               style={[
                 styles.toggleText,
                 period === 'weekly' && styles.activeToggleText,
@@ -205,11 +144,16 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             >
               Weekly
             </AppText>
-          </TouchableOpacity>
-        </View>
-      </View>
+          </Pressable>
+        </Box>
+      </Box>
 
-      <View style={styles.chartContainer}>
+      <Box
+        alignItems="center"
+        justifyContent="center"
+        bg="backgroundMuted"
+        borderRadius="small"
+      >
         {chartData.labels.length < 4 ? (
           <BarChart
             data={barChartData}
@@ -243,39 +187,24 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
             fromZero={true}
           />
         )}
-      </View>
-      <AppText style={styles.footerText}>
+      </Box>
+      <AppText variant="subcaption" style={styles.footerText}>
         Did you know most cravings peak for 3 minutes.? Focus on your breath and
         a small movement to help you stay calm.
       </AppText>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 12,
-    padding: SPACING.md,
     borderWidth: 2,
     borderColor: COLOR_PALETTE.borderDefault,
     borderLeftColor: COLOR_PALETTE.craving,
     borderLeftWidth: 4,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: SPACING.md,
-  },
   title: {
     // marginBottom: SPACING.md, // Moved to header
-  },
-  toggleContainer: {
-    flexDirection: 'row',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
-    padding: 2,
   },
   toggleButton: {
     paddingVertical: 4,
@@ -286,18 +215,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.craving,
   },
   toggleText: {
-    fontSize: 12,
     color: COLOR_PALETTE.textMuted,
   },
   activeToggleText: {
     color: COLOR_PALETTE.textInverse,
     fontWeight: 'bold',
-  },
-  chartContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
   },
   chart: {
     marginVertical: 8,
@@ -309,13 +231,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     paddingVertical: SPACING.xl,
-  },
-  titleBadge: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.full,
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(122, 62, 177, 0.1)',
   },
   titleBadgeText: {
     fontSize: 16,
@@ -329,6 +244,5 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textPrimary,
     marginTop: SPACING.md,
     textAlign: 'center',
-    fontSize: 14,
   },
 });

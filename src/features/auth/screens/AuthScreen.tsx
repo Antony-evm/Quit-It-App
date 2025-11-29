@@ -1,25 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  View,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  CustomPasswordStrengthIndicator,
-  AppButton,
-  AppText,
-} from '@/shared/components/ui';
+import { AppButton, Box } from '@/shared/components/ui';
 import { AuthHeader } from '../components/AuthHeader';
 import { AuthModeToggle } from '../components/AuthModeToggle';
 import { PasswordField } from '../components/PasswordField';
 import { EmailField } from '../components/EmailField';
 import { NameFieldsGroup } from '../components/NameFieldsGroup';
+import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { WelcomeText } from '../components/WelcomeText';
 import { useAuthForm } from '../hooks/useAuthForm';
+import { useKeyboardVisibility } from '@/shared/hooks/useKeyboardVisibility';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
@@ -29,7 +25,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
   navigation,
   route,
 }) => {
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const isKeyboardVisible = useKeyboardVisibility();
 
   // Get initial mode from route params, default to signup if no tokens, login if invalid tokens
   const initialMode = route.params?.mode || 'signup';
@@ -62,20 +58,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     confirmPasswordValidation,
   } = useAuthForm({ initialMode });
 
-  useEffect(() => {
-    const showSub = Keyboard.addListener('keyboardDidShow', () => {
-      setIsKeyboardVisible(true);
-    });
-    const hideSub = Keyboard.addListener('keyboardDidHide', () => {
-      setIsKeyboardVisible(false);
-    });
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -92,9 +74,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         >
           <WelcomeText isSignup={!isLoginMode} />
 
-          <View style={styles.inkDarkContainer}>
+          <Box bg="backgroundMuted" px="xxl" py="xl" flex={1}>
             {/* Auth form */}
-            <View style={styles.formContainer}>
+            <Box style={{ width: '100%' }}>
               {/* Name fields - Only in signup mode */}
               {!isLoginMode && (
                 <NameFieldsGroup
@@ -148,12 +130,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
               {/* Show password strength indicator always in signup mode */}
               {!isLoginMode && (
-                <CustomPasswordStrengthIndicator
+                <PasswordStrengthIndicator
                   validation={passwordValidation}
-                  style={styles.passwordStrength}
+                  style={{ marginTop: SPACING.xs, marginBottom: SPACING.lg }}
                 />
               )}
-            </View>
+            </Box>
 
             {/* Mode toggle */}
             <AuthModeToggle
@@ -161,15 +143,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
               onToggle={handleModeToggle}
               isLoading={isLoading}
             />
-          </View>
+          </Box>
         </ScrollView>
 
         {/* Submit button - back at the bottom but with stable positioning */}
-        <View
-          style={[
-            styles.bottomButtonContainer,
-            isKeyboardVisible && styles.bottomButtonContainerKeyboardVisible,
-          ]}
+        <Box
+          px="xxl"
+          py={isKeyboardVisible ? 'sm' : 'xxl'}
+          bg="backgroundMuted"
         >
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
@@ -180,7 +161,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             disabled={!isFormReady}
             onPress={handleSubmit}
           />
-        </View>
+        </Box>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -197,26 +178,5 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingBottom: SPACING.lg,
-  },
-  inkDarkContainer: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xl,
-    flex: 1,
-  },
-  formContainer: {
-    width: '100%',
-  },
-  passwordStrength: {
-    marginTop: SPACING.xs,
-    marginBottom: SPACING.lg,
-  },
-  bottomButtonContainer: {
-    paddingHorizontal: SPACING.xxl,
-    paddingVertical: SPACING.xxl,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  bottomButtonContainerKeyboardVisible: {
-    paddingVertical: SPACING.sm, // Smaller padding when keyboard is visible for stability
   },
 });

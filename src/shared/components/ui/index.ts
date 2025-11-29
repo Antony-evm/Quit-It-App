@@ -4,6 +4,5 @@ export * from './AppText';
 export * from './AppTextInput';
 export * from './BackArrow';
 export * from './Box';
-export * from './CustomPasswordStrengthIndicator';
 export * from './DraggableModal';
 export * from './Logo';
