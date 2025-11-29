@@ -1,4 +1,8 @@
-import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useQueryClient,
+  InfiniteData,
+} from '@tanstack/react-query';
 import { useAuth } from '@/shared/auth';
 import {
   fetchTrackingRecords,
@@ -52,36 +56,39 @@ export const useInfiniteTrackingRecords = (
 
       // After receiving new data, update the cache to handle duplicates across all pages
       setTimeout(() => {
-        queryClient.setQueryData(queryKey, (oldData: any) => {
-          if (!oldData?.pages) return oldData;
+        queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+          queryKey,
+          oldData => {
+            if (!oldData?.pages) return oldData;
 
-          // Flatten all existing records
-          const allExistingRecords = oldData.pages.flat();
+            // Flatten all existing records
+            const allExistingRecords = oldData.pages.flat();
 
-          // Merge with new records to remove duplicates
-          const mergedRecords = mergeRecordsById(
-            allExistingRecords,
-            newRecords,
-          );
-
-          // Redistribute records back into pages
-          const newPages: TrackingRecordApiResponse[][] = [];
-          for (
-            let i = 0;
-            i < mergedRecords.length;
-            i += TRACKING_RECORDS_PAGE_SIZE
-          ) {
-            newPages.push(
-              mergedRecords.slice(i, i + TRACKING_RECORDS_PAGE_SIZE),
+            // Merge with new records to remove duplicates
+            const mergedRecords = mergeRecordsById(
+              allExistingRecords,
+              newRecords,
             );
-          }
 
-          // Preserve all infinite query metadata
-          return {
-            ...oldData,
-            pages: newPages.length > 0 ? newPages : [[]],
-          };
-        });
+            // Redistribute records back into pages
+            const newPages: TrackingRecordApiResponse[][] = [];
+            for (
+              let i = 0;
+              i < mergedRecords.length;
+              i += TRACKING_RECORDS_PAGE_SIZE
+            ) {
+              newPages.push(
+                mergedRecords.slice(i, i + TRACKING_RECORDS_PAGE_SIZE),
+              );
+            }
+
+            // Preserve all infinite query metadata
+            return {
+              ...oldData,
+              pages: newPages.length > 0 ? newPages : [[]],
+            };
+          },
+        );
       }, 0);
 
       return newRecords;
@@ -119,87 +126,99 @@ export const useInfiniteTrackingRecords = (
   // Cache update utilities for optimistic updates
   // These preserve the infinite query structure while updating data
   const updateRecordInCache = (updatedRecord: TrackingRecordApiResponse) => {
-    queryClient.setQueryData(queryKey, (oldData: any) => {
-      if (!oldData?.pages) return oldData;
+    queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+      queryKey,
+      oldData => {
+        if (!oldData?.pages) return oldData;
 
-      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
-        page.map((record: TrackingRecordApiResponse) =>
-          record.record_id === updatedRecord.record_id ? updatedRecord : record,
-        ),
-      );
+        const newPages = oldData.pages.map(page =>
+          page.map(record =>
+            record.record_id === updatedRecord.record_id
+              ? updatedRecord
+              : record,
+          ),
+        );
 
-      // Preserve all infinite query metadata (pageParams, etc.)
-      return {
-        ...oldData,
-        pages: newPages,
-      };
-    });
+        // Preserve all infinite query metadata (pageParams, etc.)
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      },
+    );
   };
 
   const removeRecordFromCache = (recordId: number) => {
-    queryClient.setQueryData(queryKey, (oldData: any) => {
-      if (!oldData?.pages) return oldData;
+    queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+      queryKey,
+      oldData => {
+        if (!oldData?.pages) return oldData;
 
-      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
-        page.filter(
-          (record: TrackingRecordApiResponse) => record.record_id !== recordId,
-        ),
-      );
+        const newPages = oldData.pages.map(page =>
+          page.filter(record => record.record_id !== recordId),
+        );
 
-      // Preserve all infinite query metadata (pageParams, etc.)
-      return {
-        ...oldData,
-        pages: newPages,
-      };
-    });
+        // Preserve all infinite query metadata (pageParams, etc.)
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      },
+    );
   };
 
   // Override cache with new records, using record_id as the key for deduplication
   const overrideCacheWithRecords = (
     newRecords: TrackingRecordApiResponse[],
   ) => {
-    queryClient.setQueryData(queryKey, (oldData: any) => {
-      if (!oldData?.pages) return oldData;
+    queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+      queryKey,
+      oldData => {
+        if (!oldData?.pages) return oldData;
 
-      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
-        mergeRecordsById(page, newRecords),
-      );
+        const newPages = oldData.pages.map(page =>
+          mergeRecordsById(page, newRecords),
+        );
 
-      // Preserve all infinite query metadata (pageParams, etc.)
-      return {
-        ...oldData,
-        pages: newPages,
-      };
-    });
+        // Preserve all infinite query metadata (pageParams, etc.)
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      },
+    );
   };
 
   const addRecordToCache = (newRecord: TrackingRecordApiResponse) => {
-    queryClient.setQueryData(queryKey, (oldData: any) => {
-      const pages = oldData?.pages ? [...oldData.pages] : [[]];
-      const pageParams = oldData?.pageParams ? [...oldData.pageParams] : [0];
+    queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+      queryKey,
+      oldData => {
+        const pages = oldData?.pages ? [...oldData.pages] : [[]];
+        const pageParams = oldData?.pageParams ? [...oldData.pageParams] : [0];
 
-      const firstPage = [...pages[0]];
+        const firstPage = [...pages[0]];
 
-      // Find correct insertion position based on date (newest first)
-      const newRecordTime = new Date(newRecord.event_at).getTime();
-      let insertIndex = firstPage.findIndex(
-        record => new Date(record.event_at).getTime() < newRecordTime,
-      );
+        // Find correct insertion position based on date (newest first)
+        const newRecordTime = new Date(newRecord.event_at).getTime();
+        let insertIndex = firstPage.findIndex(
+          record => new Date(record.event_at).getTime() < newRecordTime,
+        );
 
-      if (insertIndex === -1) {
-        insertIndex = firstPage.length;
-      }
+        if (insertIndex === -1) {
+          insertIndex = firstPage.length;
+        }
 
-      firstPage.splice(insertIndex, 0, newRecord);
-      pages[0] = firstPage;
+        firstPage.splice(insertIndex, 0, newRecord);
+        pages[0] = firstPage;
 
-      // Preserve all infinite query metadata
-      return {
-        ...oldData,
-        pages,
-        pageParams,
-      };
-    });
+        // Preserve all infinite query metadata
+        return {
+          ...oldData,
+          pages,
+          pageParams,
+        };
+      },
+    );
   };
 
   // Replace optimistic record (temp ID) with real record from server
@@ -207,21 +226,24 @@ export const useInfiniteTrackingRecords = (
     tempId: number,
     realRecord: TrackingRecordApiResponse,
   ) => {
-    queryClient.setQueryData(queryKey, (oldData: any) => {
-      if (!oldData?.pages?.length) return oldData;
+    queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
+      queryKey,
+      oldData => {
+        if (!oldData?.pages?.length) return oldData;
 
-      const newPages = oldData.pages.map((page: TrackingRecordApiResponse[]) =>
-        page.map((record: TrackingRecordApiResponse) =>
-          record.record_id === tempId ? realRecord : record,
-        ),
-      );
+        const newPages = oldData.pages.map(page =>
+          page.map(record =>
+            record.record_id === tempId ? realRecord : record,
+          ),
+        );
 
-      // Preserve all infinite query metadata
-      return {
-        ...oldData,
-        pages: newPages,
-      };
-    });
+        // Preserve all infinite query metadata
+        return {
+          ...oldData,
+          pages: newPages,
+        };
+      },
+    );
   };
 
   return {

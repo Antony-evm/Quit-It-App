@@ -1,4 +1,5 @@
-import { ScrollView, Dimensions } from 'react-native';
+import { ScrollView, Dimensions, View } from 'react-native';
+import { RefObject } from 'react';
 
 /**
  * Global scroll manager to ensure only one scroll operation at a time
@@ -48,8 +49,8 @@ class ScrollManager {
    * @param targetPercentFromTop Target position as percentage from top (0.2 = 20%)
    */
   static scrollCardToPosition(
-    cardRef: any,
-    scrollViewRef: any,
+    cardRef: RefObject<View | null>,
+    scrollViewRef: RefObject<ScrollView | null> | undefined,
     targetPercentFromTop: number = 0.2,
   ) {
     if (!scrollViewRef?.current || !cardRef?.current) {
@@ -61,8 +62,9 @@ class ScrollManager {
       // First, let's try to use measureLayout with the ScrollView's content container
       const scrollViewInstance = scrollViewRef.current;
 
+      // @ts-ignore - measureLayout expects a number but works with component instance in some versions
       cardRef.current.measureLayout(
-        scrollViewInstance,
+        scrollViewInstance as unknown as number,
         (x: number, y: number, width: number, height: number) => {
           // y is now the position within the ScrollView content
           const screenHeight = Dimensions.get('window').height;
@@ -98,13 +100,15 @@ class ScrollManager {
    * Fallback scroll method using measureInWindow
    */
   private static fallbackScrollToPosition(
-    cardRef: any,
-    scrollViewRef: any,
+    cardRef: RefObject<View | null>,
+    scrollViewRef: RefObject<ScrollView | null> | undefined,
     targetPercentFromTop: number = 0.2,
   ) {
+    if (!cardRef.current || !scrollViewRef?.current) return;
+
     cardRef.current.measureInWindow(
       (cardX: number, cardY: number, cardWidth: number, cardHeight: number) => {
-        scrollViewRef.current.measureInWindow(
+        (scrollViewRef.current as unknown as View).measureInWindow(
           (
             scrollX: number,
             scrollY: number,
@@ -115,7 +119,7 @@ class ScrollManager {
             const desiredPosition = scrollHeight * targetPercentFromTop;
             const targetScrollY = cardTopRelativeToScrollView - desiredPosition;
 
-            scrollViewRef.current.scrollTo({
+            scrollViewRef.current?.scrollTo({
               y: Math.max(0, targetScrollY),
               animated: true,
             });

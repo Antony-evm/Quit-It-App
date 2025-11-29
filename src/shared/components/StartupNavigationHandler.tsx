@@ -14,6 +14,13 @@ interface StartupNavigationHandlerProps {
   children: React.ReactNode;
 }
 
+type PendingRoute = {
+  [K in keyof RootStackParamList]: {
+    route: K;
+    params?: RootStackParamList[K];
+  };
+}[keyof RootStackParamList];
+
 /**
  * Component that handles startup navigation logic based on authentication state and token validation
  */
@@ -27,15 +34,15 @@ export const StartupNavigationHandler: React.FC<
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasNavigated, setHasNavigated] = useState(false);
   const [bootstrapDone, setBootstrapDone] = useState(false);
-  const [pendingRoute, setPendingRoute] = useState<{
-    route: keyof RootStackParamList;
-    params?: any;
-  } | null>(null);
+  const [pendingRoute, setPendingRoute] = useState<PendingRoute | null>(null);
   const [navigationAttempt, setNavigationAttempt] = useState(0);
 
   // Safe navigation helper
   const safeNavigate = useCallback(
-    (routeName: keyof RootStackParamList, params?: any) => {
+    <RouteName extends keyof RootStackParamList>(
+      routeName: RouteName,
+      params?: RootStackParamList[RouteName],
+    ) => {
       try {
         if (!isNavReady) {
           return false;

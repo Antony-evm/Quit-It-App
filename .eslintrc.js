@@ -24,6 +24,12 @@ module.exports = {
         sourceType: 'module',
       },
     },
+    {
+      files: ['*.ts', '*.tsx'],
+      rules: {
+        '@typescript-eslint/no-explicit-any': 'error',
+      },
+    },
   ],
   ignorePatterns: ['babel.config.js', 'metro.config.js', 'jest.config.js'],
 };
