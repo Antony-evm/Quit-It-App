@@ -12,7 +12,7 @@ import { TrackingTypesProvider } from '@/features/tracking/components/TrackingTy
 import { QuestionnaireAccountProvider } from '@/features/questionnaire';
 import { ToastProvider, ToastContainer } from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
-import { ErrorHandlerProvider } from '@/shared/error';
+import { ErrorHandlerProvider, GlobalErrorBoundary } from '@/shared/error';
 import { DeveloperMenuTrigger } from '@/shared/components/dev';
 
 // Initialize Stytch client once at module level
@@ -48,15 +48,17 @@ function App(): React.ReactElement {
               <QuestionnaireAccountProvider>
                 <ToastProvider>
                   <ErrorHandlerProvider preferToast={true}>
-                    <SafeAreaProvider>
-                      <StatusBar
-                        barStyle="light-content"
-                        backgroundColor={COLOR_PALETTE.backgroundMuted}
-                      />
-                      <AppNavigator />
-                      <ToastContainer />
-                      {__DEV__ && <DeveloperMenuTrigger />}
-                    </SafeAreaProvider>
+                    <GlobalErrorBoundary>
+                      <SafeAreaProvider>
+                        <StatusBar
+                          barStyle="light-content"
+                          backgroundColor={COLOR_PALETTE.backgroundMuted}
+                        />
+                        <AppNavigator />
+                        <ToastContainer />
+                        {__DEV__ && <DeveloperMenuTrigger />}
+                      </SafeAreaProvider>
+                    </GlobalErrorBoundary>
                   </ErrorHandlerProvider>
                 </ToastProvider>
               </QuestionnaireAccountProvider>

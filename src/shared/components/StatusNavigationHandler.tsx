@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation } from '@/navigation/hooks';
 import { useAuth } from '@/shared/auth';
 import { UserStatusService } from '@/shared/services/userStatusService';
-import type { RootStackParamList } from '@/types/navigation';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface StatusNavigationHandlerProps {
   children: React.ReactNode;
@@ -18,7 +14,7 @@ export const StatusNavigationHandler: React.FC<
   StatusNavigationHandlerProps
 > = ({ children }) => {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useAppNavigation();
 
   useEffect(() => {
     const handleStatusBasedNavigation = async () => {

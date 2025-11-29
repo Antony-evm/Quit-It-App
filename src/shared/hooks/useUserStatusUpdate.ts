@@ -1,7 +1,9 @@
 import { useCallback } from 'react';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '@/shared/auth';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import type { UserDataResponse } from '@/shared/types/api';
+import { RootStackParamList } from '@/types/navigation';
 
 /**
  * Custom hook for handling user status updates when new data arrives from backend
@@ -49,7 +51,7 @@ export const useUserStatusUpdate = () => {
   const handleUserStatusUpdateWithNavigation = useCallback(
     async (
       response: UserDataResponse,
-      navigation: any, // Navigation prop
+      navigation: NativeStackNavigationProp<RootStackParamList>,
     ): Promise<void> => {
       try {
         const { user_status_id } = response.data;

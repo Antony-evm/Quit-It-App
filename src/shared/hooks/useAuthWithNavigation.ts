@@ -1,11 +1,7 @@
 import { useCallback } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAppNavigation } from '@/navigation/hooks';
 import { useAuth } from '@/shared/auth';
 import { UserStatusService } from '@/shared/services/userStatusService';
-import type { RootStackParamList } from '@/types/navigation';
-
-type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 /**
  * Hook that provides login and signup functions with automatic navigation
@@ -13,7 +9,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
  */
 export const useAuthWithNavigation = () => {
   const { login: authLogin, signup: authSignup, ...authRest } = useAuth();
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useAppNavigation();
 
   const loginWithNavigation = useCallback(
     async (email: string, password: string) => {

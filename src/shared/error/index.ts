@@ -3,6 +3,7 @@ export { ErrorHandlerService } from './ErrorHandlerService';
 export { ErrorFactory } from './ErrorFactory';
 export { ErrorLogger } from './ErrorLogger';
 export { ErrorHandlerProvider, useErrorHandler } from './ErrorContext';
+export { GlobalErrorBoundary } from './GlobalErrorBoundary';
 
 // Types
 export type { AppErrorDetails, ErrorSeverity, ErrorCategory } from './types';
