@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: SPACING.xl,
+    paddingBottom: 120,
     marginTop: DEVICE_HEIGHT * 0.05,
   },
   header: {

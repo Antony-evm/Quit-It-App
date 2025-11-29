@@ -55,12 +55,7 @@ export const WelcomeComponent = () => {
   const showSpecificMessage = message !== '';
 
   return (
-    <View
-      style={[
-        styles.container,
-        { minHeight: height * 0.4, paddingTop: insets.top + SPACING.lg },
-      ]}
-    >
+    <View style={[styles.container, { minHeight: height * 0.4 }]}>
       <View style={styles.content}>
         <View style={styles.titleContainer}>
           <AppText variant="title" style={styles.title}>
