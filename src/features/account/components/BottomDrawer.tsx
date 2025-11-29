@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: COLOR_PALETTE.borderDefault,
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 2,

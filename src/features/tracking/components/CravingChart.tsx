@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textMuted,
   },
   activeToggleText: {
-    color: '#FFFFFF',
+    color: COLOR_PALETTE.textInverse,
     fontWeight: 'bold',
   },
   chartContainer: {

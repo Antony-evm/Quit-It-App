@@ -161,7 +161,11 @@ export const HomeFooterNavigator = ({
                     fx="50%"
                     fy="50%"
                   >
-                    <Stop offset="0" stopColor="#3DDC97" stopOpacity="1" />
+                    <Stop
+                      offset="0"
+                      stopColor={COLOR_PALETTE.brandPrimary}
+                      stopOpacity="1"
+                    />
                     <Stop
                       offset="1"
                       stopColor={COLOR_PALETTE.backgroundPrimary}
@@ -201,7 +205,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '95%',
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -238,7 +242,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: FOOTER_LAYOUT.FAB_BORDER_WIDTH,
     borderColor: COLOR_PALETTE.borderDefault,
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 6,

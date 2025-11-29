@@ -57,17 +57,8 @@ export const StartupNavigationHandler: React.FC<
   );
 
   const handleStartupNavigation = useCallback(async () => {
-    console.log('[StartupNavigation] Starting authentication check...');
-
     try {
-      console.log('[StartupNavigation] Starting bootstrap auth state');
       const authResult = await bootstrapAuthState(stytch);
-      console.log('[StartupNavigation] Auth check result:', {
-        isAuthenticated: authResult.isAuthenticated,
-        isSessionValid: authResult.isSessionValid,
-        hasUser: !!authResult.user,
-        userStatusId: authResult.user?.userStatusId,
-      });
 
       initializeFromBootstrap({
         tokens: authResult.tokens,
@@ -76,17 +67,12 @@ export const StartupNavigationHandler: React.FC<
 
       // Case 1: No tokens found - navigate to signup
       if (!authResult.isAuthenticated) {
-        console.log('[StartupNavigation] No auth - navigating to signup');
         setPendingRoute({ route: 'Auth', params: { mode: 'signup' } });
         return;
       }
 
       // Case 2: Tokens exist but are invalid - navigate to login
       if (authResult.isAuthenticated && !authResult.isSessionValid) {
-        console.log(
-          '[StartupNavigation] Invalid session - navigating to login',
-        );
-
         // Clear invalid tokens
         await AuthService.clearAuth();
         await refreshAuthState();
@@ -101,9 +87,6 @@ export const StartupNavigationHandler: React.FC<
         authResult.isSessionValid &&
         authResult.user
       ) {
-        console.log(
-          '[StartupNavigation] Valid tokens found, navigating based on user status...',
-        );
         const userStatusId = authResult.user.userStatusId;
 
         if (!userStatusId) {
@@ -113,11 +96,6 @@ export const StartupNavigationHandler: React.FC<
 
         // Get user status action (service should be initialized in authBootstrap)
         try {
-          // Execute navigation based on user status
-          console.log(
-            '[StartupNavigation] Executing status-based navigation for status:',
-            userStatusId,
-          );
           // Get the action to determine the navigation target
           const action = UserStatusService.getStatusAction(userStatusId);
 
@@ -157,7 +135,6 @@ export const StartupNavigationHandler: React.FC<
   // Run startup navigation only once on mount
   useEffect(() => {
     if (!bootstrapDone) {
-      console.log('[StartupNavigation] Running startup navigation...');
       setBootstrapDone(true);
       void handleStartupNavigation();
     }
@@ -169,27 +146,12 @@ export const StartupNavigationHandler: React.FC<
       return;
     }
 
-    console.log(
-      '[StartupNavigation] Attempting navigation',
-      pendingRoute.route,
-      pendingRoute.params || '',
-      'attempt:',
-      navigationAttempt,
-    );
-
-    console.log(
-      '[StartupNavigation] Navigating to:',
-      pendingRoute.route,
-      pendingRoute.params || '',
-    );
     const success = safeNavigate(pendingRoute.route, pendingRoute.params);
 
     if (success) {
-      console.log('[StartupNavigation] Navigation succeeded');
       setHasNavigated(true);
       setIsInitializing(false);
     } else {
-      console.log('[StartupNavigation] Navigation failed, retrying...');
       // Retry with a slight delay
       const retry = setTimeout(
         () => setNavigationAttempt(prev => prev + 1),

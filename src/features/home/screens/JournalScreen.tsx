@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButton: {
-    backgroundColor: '#2A2A2A', // Dark gray for button background
+    backgroundColor: COLOR_PALETTE.backgroundDark,
     borderWidth: 0,
     borderRadius: BORDER_RADIUS.medium,
     width: '50%',

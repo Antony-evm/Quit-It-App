@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
     padding: SPACING.xl,
-    shadowColor: '#000000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 12,

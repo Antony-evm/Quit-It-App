@@ -64,13 +64,13 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
     switch (toast.type) {
       case 'success':
         return {
-          backgroundColor: '#059669', // Green-600
-          borderColor: '#065f46', // Green-800
+          backgroundColor: COLOR_PALETTE.systemSuccess,
+          borderColor: COLOR_PALETTE.systemSuccessDark,
         };
       case 'error':
         return {
-          backgroundColor: '#dc2626', // Red-600
-          borderColor: '#991b1b', // Red-800
+          backgroundColor: COLOR_PALETTE.systemError,
+          borderColor: COLOR_PALETTE.systemErrorDark,
         };
       default:
         return {
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: SPACING.xs,
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -142,14 +142,14 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
   },
   toastText: {
-    color: '#ffffff',
+    color: COLOR_PALETTE.textInverse,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: SPACING.xs,
   },
   dismissHint: {
-    color: '#ffffff',
+    color: COLOR_PALETTE.textInverse,
     fontSize: 12,
     opacity: 0.8,
     textAlign: 'center',

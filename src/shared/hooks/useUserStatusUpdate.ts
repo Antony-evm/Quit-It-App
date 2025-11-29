@@ -18,28 +18,13 @@ export const useUserStatusUpdate = () => {
    */
   const handleUserStatusUpdate = useCallback(
     async (response: UserDataResponse): Promise<void> => {
-      try {
-        const responseData = response.data;
+      const responseData = response.data;
 
-        console.log('[UserStatusUpdate] Processing user data update:', {
-          user_status_id: responseData.user_status_id,
-          first_name: responseData.first_name,
-          last_name: responseData.last_name,
-        });
+      // Step 1: Update complete user data in AuthContext including firstName/lastName
+      await updateUserData(responseData);
 
-        // Step 1: Update complete user data in AuthContext including firstName/lastName
-        await updateUserData(responseData);
-
-        // Step 2: Force refresh UserStatusService cache to ensure latest status mappings
-        await UserStatusService.initialize({ forceRefresh: true });
-
-        console.log(
-          '[UserStatusUpdate] User data update completed successfully',
-        );
-      } catch (error) {
-        console.error('[UserStatusUpdate] Failed to update user data:', error);
-        throw error;
-      }
+      // Step 2: Force refresh UserStatusService cache to ensure latest status mappings
+      await UserStatusService.initialize({ forceRefresh: true });
     },
     [updateUserData],
   );
@@ -62,10 +47,6 @@ export const useUserStatusUpdate = () => {
         // Execute navigation based on the new user status
         UserStatusService.executeStatusAction(user_status_id, navigation);
       } catch (error) {
-        console.error(
-          '[UserStatusUpdate] Failed to update status and navigate:',
-          error,
-        );
         throw error;
       }
     },

@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   emailValidText: {
-    color: '#059669',
+    color: COLOR_PALETTE.systemSuccess,
   },
   emailInvalidText: {
     color: COLOR_PALETTE.systemError,

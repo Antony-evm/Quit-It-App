@@ -6,21 +6,21 @@ import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../theme';
  */
 export const SHADOWS = {
   small: {
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 2,
   },
   medium: {
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 5,
   },
   large: {
-    shadowColor: '#000000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 12,

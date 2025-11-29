@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textMuted,
   },
   metRequirement: {
-    color: '#10B981', // Green color for met requirements
+    color: COLOR_PALETTE.wealth,
   },
   unmetRequirement: {
     color: COLOR_PALETTE.textMuted,

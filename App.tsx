@@ -16,9 +16,6 @@ import { ErrorHandlerProvider, GlobalErrorBoundary } from '@/shared/error';
 import { DeveloperMenuTrigger } from '@/shared/components/dev';
 
 // Initialize Stytch client once at module level
-console.log('[App] Config object:', Config);
-console.log('[App] STYTCH_PUBLIC_TOKEN:', Config.STYTCH_PUBLIC_TOKEN);
-
 if (!Config.STYTCH_PUBLIC_TOKEN) {
   throw new Error(
     'STYTCH_PUBLIC_TOKEN is not configured. Please add it to your .env file.',

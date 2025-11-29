@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     paddingTop: DEVICE_HEIGHT * 0.05,
 
     // Elevation
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLOR_PALETTE.borderDefault,
     elevation: 10,
-    shadowColor: '#000',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: {
       width: 0,
       height: 4,

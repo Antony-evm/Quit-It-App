@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { AppText } from '@/shared/components/ui';
-import { SPACING } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE } from '@/shared/theme';
 
 export type HomeEntry = {
   id: string;
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 28,
     overflow: 'hidden',
-    shadowColor: '#0F172A',
+    shadowColor: COLOR_PALETTE.shadowDefault,
     shadowOffset: { width: 0, height: 18 },
     shadowOpacity: 0.16,
     shadowRadius: 24,
