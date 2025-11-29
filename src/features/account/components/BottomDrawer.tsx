@@ -157,8 +157,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: COLOR_PALETTE.textMuted,
-    opacity: 0.5,
+    backgroundColor: BRAND_COLORS.mint,
   },
   headerContent: {
     flexDirection: 'row',

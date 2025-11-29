@@ -195,7 +195,7 @@ export const AccountScreen = () => {
           <RefreshControl
             tintColor={COLOR_PALETTE.textPrimary}
             colors={[COLOR_PALETTE.textPrimary]}
-            progressBackgroundColor={COLOR_PALETTE.backgroundMuted}
+            progressBackgroundColor={BRAND_COLORS.cream}
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
           />

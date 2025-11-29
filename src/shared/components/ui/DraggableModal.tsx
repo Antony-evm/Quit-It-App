@@ -144,9 +144,9 @@ const styles = StyleSheet.create({
   },
   indicator: {
     width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: COLOR_PALETTE.borderDefault,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: BRAND_COLORS.mint,
   },
   headerContent: {
     paddingHorizontal: SPACING.lg,
