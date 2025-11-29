@@ -67,11 +67,11 @@ export const HomeDashboardScreen = () => {
       <WelcomeComponent />
 
       <View style={styles.homeContentContainer}>
-        <HomeStatsRow stats={stats} style={styles.statsRow} />
-
         {dailyData && dailyData.length > 0 && (
           <CravingChart data={dailyData} style={styles.chartCard} />
         )}
+
+        <HomeStatsRow stats={stats} style={styles.statsRow} />
 
         <View style={styles.planSection}>
           <AppText variant="heading" style={styles.sectionTitle}>
