@@ -11,7 +11,7 @@ export const useCravingAnalytics = () => {
     queryFn: () => fetchCravingAnalytics({ user_id: userId }),
     enabled: !!userId && userId > 0,
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 60 * 1000, // 1 hour
     retry: 3,
     retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
   });

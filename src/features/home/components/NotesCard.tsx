@@ -15,14 +15,8 @@ import {
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import { useMutation } from '@tanstack/react-query';
 
-import {
-  AppSurface,
-  AppText,
-  AppTextInput,
-  AppButton,
-} from '@/shared/components/ui';
+import { AppSurface, AppText, AppTextInput } from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
   SPACING,
@@ -33,12 +27,7 @@ import {
   useTrackingTypes,
   useInfiniteTrackingRecords,
 } from '@/features/tracking';
-import {
-  createTrackingRecord,
-  CreateTrackingRecordPayload,
-} from '@/features/tracking/api/createTrackingRecord';
-import { updateTrackingRecord } from '@/features/tracking/api/updateTrackingRecord';
-import { deleteTrackingRecord } from '@/features/tracking/api/deleteTrackingRecord';
+import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutations';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
@@ -92,6 +81,12 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       updateRecordInCache,
       removeRecordFromCache,
     } = useInfiniteTrackingRecords();
+    const {
+      create,
+      update,
+      delete: deleteMutation,
+    } = useTrackingMutations(actualUserId);
+
     const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
       number | null
     >(initialValues?.trackingTypeId ?? null);
@@ -120,106 +115,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         ScrollManager.cancelCurrent();
       };
     }, []);
-
-    // Mutation for creating tracking record
-    const createRecordMutation = useMutation({
-      mutationFn: createTrackingRecord,
-      onMutate: async (variables: CreateTrackingRecordPayload) => {
-        // Generate a temporary ID for the optimistic update
-        const tempId = Date.now(); // Use timestamp as temp ID
-
-        // Create optimistic record that matches API response format
-        const optimisticRecord: TrackingRecordApiResponse = {
-          record_id: tempId,
-          user_id: variables.user_id,
-          tracking_type_id: variables.tracking_type_id,
-          event_at: variables.event_at,
-          note: variables.note || null,
-        };
-
-        // Optimistically add the record to the cache
-        addRecordToCache(optimisticRecord);
-
-        return { optimisticRecord, tempId };
-      },
-      onSuccess: (realRecord, _variables, context) => {
-        // Replace the optimistic record with the real record from server
-        if (context?.tempId) {
-          replaceOptimisticRecord(context.tempId, realRecord);
-        }
-
-        // Reset form
-        setNotes('');
-        setSelectedDateTime(new Date());
-        setShowDateTimePicker(false);
-
-        // Call success callback
-        onSaveSuccess?.();
-
-        // Show success message
-        showToast('Your tracking entry has been saved!', 'success');
-      },
-      onError: (error, _variables, _context) => {
-        // On error, the optimistic update will be automatically reverted
-        // No need to manually invalidate queries
-        showToast(
-          error instanceof Error
-            ? error.message
-            : 'Failed to save tracking entry',
-          'error',
-        );
-      },
-    });
-
-    // Mutation for updating tracking record
-    const updateRecordMutation = useMutation({
-      mutationFn: ({ recordId, payload }: { recordId: number; payload: any }) =>
-        updateTrackingRecord(recordId, payload),
-      onMutate: async ({ recordId, payload }) => {
-        const updatedRecord: TrackingRecordApiResponse = {
-          record_id: recordId,
-          user_id: actualUserId!, // We assume user is logged in
-          tracking_type_id: payload.tracking_type_id,
-          event_at: payload.event_at,
-          note: payload.note || null,
-        };
-        updateRecordInCache(updatedRecord);
-        return { recordId };
-      },
-      onSuccess: () => {
-        onSaveSuccess?.();
-        showToast('Your tracking entry has been updated!', 'success');
-      },
-      onError: (error, _variables, _context) => {
-        showToast(
-          error instanceof Error
-            ? error.message
-            : 'Failed to update tracking entry',
-          'error',
-        );
-      },
-    });
-
-    // Mutation for deleting tracking record
-    const deleteRecordMutation = useMutation({
-      mutationFn: deleteTrackingRecord,
-      onMutate: async recordId => {
-        removeRecordFromCache(recordId);
-        return { recordId };
-      },
-      onSuccess: () => {
-        onDeleteSuccess?.();
-        showToast('Tracking entry has been deleted!', 'success');
-      },
-      onError: (error, _variables, _context) => {
-        showToast(
-          error instanceof Error
-            ? error.message
-            : 'Failed to delete tracking entry',
-          'error',
-        );
-      },
-    });
 
     const sortedTrackingTypes = React.useMemo(() => {
       if (!trackingTypes) return [];
@@ -374,24 +269,137 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         });
 
         if (recordId) {
-          updateRecordMutation.mutate({
-            recordId,
-            payload: {
-              tracking_type_id: selectedTrackingType.id,
-              event_at: selectedDateTime.toISOString(),
-              note: notes.trim() || undefined,
+          const oldRecord: TrackingRecordApiResponse | undefined = initialValues
+            ? {
+                record_id: recordId,
+                user_id: actualUserId!,
+                tracking_type_id: initialValues.trackingTypeId,
+                event_at: initialValues.dateTime.toISOString(),
+                note: initialValues.notes || null,
+              }
+            : undefined;
+
+          update.mutate(
+            {
+              record_id: recordId,
+              data: {
+                tracking_type_id: selectedTrackingType.id,
+                event_at: selectedDateTime.toISOString(),
+                note: notes.trim() || undefined,
+              },
+              oldRecord,
             },
-          });
+            {
+              onMutate: async () => {
+                const updatedRecord: TrackingRecordApiResponse = {
+                  record_id: recordId,
+                  user_id: actualUserId!, // We assume user is logged in
+                  tracking_type_id: selectedTrackingType.id,
+                  event_at: selectedDateTime.toISOString(),
+                  note: notes.trim() || null,
+                };
+                updateRecordInCache(updatedRecord);
+              },
+              onSuccess: () => {
+                onSaveSuccess?.();
+                showToast('Your tracking entry has been updated!', 'success');
+              },
+              onError: error => {
+                showToast(
+                  error instanceof Error
+                    ? error.message
+                    : 'Failed to update tracking entry',
+                  'error',
+                );
+              },
+            },
+          );
         } else {
           // Make the API call
-          createRecordMutation.mutate(payload);
+          create.mutate(payload, {
+            onMutate: async variables => {
+              // Generate a temporary ID for the optimistic update
+              const tempId = Date.now(); // Use timestamp as temp ID
+
+              // Create optimistic record that matches API response format
+              const optimisticRecord: TrackingRecordApiResponse = {
+                record_id: tempId,
+                user_id: variables.user_id,
+                tracking_type_id: variables.tracking_type_id,
+                event_at: variables.event_at,
+                note: variables.note || null,
+              };
+
+              // Optimistically add the record to the cache
+              addRecordToCache(optimisticRecord);
+
+              return { optimisticRecord, tempId };
+            },
+            onSuccess: (realRecord, _variables, context) => {
+              // Replace the optimistic record with the real record from server
+              if (context?.tempId) {
+                replaceOptimisticRecord(context.tempId, realRecord);
+              }
+
+              // Reset form
+              setNotes('');
+              setSelectedDateTime(new Date());
+              setShowDateTimePicker(false);
+
+              // Call success callback
+              onSaveSuccess?.();
+
+              // Show success message
+              showToast('Your tracking entry has been saved!', 'success');
+            },
+            onError: error => {
+              // On error, the optimistic update will be automatically reverted
+              // No need to manually invalidate queries
+              showToast(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to save tracking entry',
+                'error',
+              );
+            },
+          });
         }
       }
     };
 
     const handleDelete = () => {
       if (recordId) {
-        deleteRecordMutation.mutate(recordId);
+        const recordToDelete: TrackingRecordApiResponse | undefined =
+          initialValues
+            ? {
+                record_id: recordId,
+                user_id: actualUserId!,
+                tracking_type_id: initialValues.trackingTypeId,
+                event_at: initialValues.dateTime.toISOString(),
+                note: initialValues.notes || null,
+              }
+            : undefined;
+
+        deleteMutation.mutate(
+          { recordId, record: recordToDelete },
+          {
+            onMutate: async () => {
+              removeRecordFromCache(recordId);
+            },
+            onSuccess: () => {
+              onDeleteSuccess?.();
+              showToast('Tracking entry has been deleted!', 'success');
+            },
+            onError: error => {
+              showToast(
+                error instanceof Error
+                  ? error.message
+                  : 'Failed to delete tracking entry',
+                'error',
+              );
+            },
+          },
+        );
       }
     };
 
