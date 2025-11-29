@@ -16,6 +16,8 @@ import {
   INPUT_MIN_HEIGHT,
 } from '@/shared/theme';
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 type PressableInteraction = 'opacity' | 'scale' | 'none';
 type PressableVariant =
   | 'default'
@@ -128,8 +130,10 @@ export const AppPressable = ({
   ...props
 }: AppPressableProps) => {
   const animatedScale = React.useRef(new Animated.Value(1)).current;
+  const [isPressed, setIsPressed] = React.useState(false);
 
   const handlePressIn = () => {
+    setIsPressed(true);
     if (interaction === 'scale') {
       Animated.spring(animatedScale, {
         toValue: scaleValue,
@@ -141,6 +145,7 @@ export const AppPressable = ({
   };
 
   const handlePressOut = () => {
+    setIsPressed(false);
     if (interaction === 'scale') {
       Animated.spring(animatedScale, {
         toValue: 1,
@@ -152,7 +157,7 @@ export const AppPressable = ({
   };
 
   return (
-    <Pressable
+    <AnimatedPressable
       disabled={disabled}
       onPressIn={e => {
         handlePressIn();
@@ -162,7 +167,7 @@ export const AppPressable = ({
         handlePressOut();
         props.onPressOut?.(e);
       }}
-      style={({ pressed }) => [
+      style={[
         variantStyles[variant],
         selected && selectedStyles[variant as keyof typeof selectedStyles],
         fullWidth && { width: '100%' },
@@ -171,13 +176,13 @@ export const AppPressable = ({
           borderRightColor: COLOR_PALETTE.borderDefault,
         },
         style,
-        interaction === 'opacity' && pressed && { opacity: activeOpacity },
+        interaction === 'opacity' && isPressed && { opacity: activeOpacity },
         disabled && { opacity: disabledOpacity },
         interaction === 'scale' && { transform: [{ scale: animatedScale }] },
       ]}
       {...props}
     >
       {children}
-    </Pressable>
+    </AnimatedPressable>
   );
 };

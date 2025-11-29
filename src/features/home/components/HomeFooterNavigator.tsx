@@ -105,14 +105,8 @@ export const HomeFooterNavigator = ({
       >
         <AppIcon
           icon={Icon}
-          width={FOOTER_LAYOUT.ICON_SIZE}
-          height={FOOTER_LAYOUT.ICON_SIZE}
-          style={styles.icon}
-          fill={
-            isActive ? COLOR_PALETTE.accentPrimary : COLOR_PALETTE.textPrimary
-          }
+          variant="inverse"
           fillOpacity={isActive ? 1 : 0.5}
-          stroke={COLOR_PALETTE.backgroundPrimary}
         />
       </AppPressable>
     );
@@ -172,12 +166,7 @@ export const HomeFooterNavigator = ({
                 <Rect width="100%" height="100%" fill="url(#grad)" />
               </Svg>
             </View>
-            <AppIcon
-              icon={PlusIcon}
-              width={FOOTER_LAYOUT.PLUS_ICON_SIZE}
-              height={FOOTER_LAYOUT.PLUS_ICON_SIZE}
-              fill={COLOR_PALETTE.textPrimary}
-            />
+            <AppIcon icon={PlusIcon} variant="fab" />
           </Animated.View>
         </AppPressable>
       </View>
@@ -243,9 +232,6 @@ const styles = StyleSheet.create({
   fabGradientContainer: {
     ...StyleSheet.absoluteFillObject,
     zIndex: -1,
-  },
-  icon: {
-    // Removed marginBottom to center vertically
   },
   indicatorWrapper: {
     height: 4,

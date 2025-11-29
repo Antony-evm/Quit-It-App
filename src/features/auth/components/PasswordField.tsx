@@ -66,9 +66,6 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           >
             <AppIcon
               icon={isPasswordVisible ? ShowPasswordSvg : HidePasswordSvg}
-              variant="default"
-              fill="none"
-              stroke={COLOR_PALETTE.textPrimary}
             />
           </TouchableOpacity>
         </Box>

@@ -78,11 +78,7 @@ export const JournalScreen = () => {
           variant="icon"
           hitSlop={10}
         >
-          <AppIcon
-            icon={CancelIcon}
-            variant="default"
-            color={COLOR_PALETTE.textPrimary}
-          />
+          <AppIcon icon={CancelIcon} />
         </AppPressable>
 
         <AppPressable

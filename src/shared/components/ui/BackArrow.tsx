@@ -13,15 +13,10 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
   <AppPressable
     onPress={onPress}
     disabled={disabled}
-    interaction="scale"
+    interaction="opacity"
     variant="backArrow"
+    disabledOpacity={1}
   >
-    <AppIcon
-      icon={BackArrowSvg}
-      variant="default"
-      fill={
-        disabled ? COLOR_PALETTE.textSecondary : COLOR_PALETTE.backgroundPrimary
-      }
-    />
+    <AppIcon icon={BackArrowSvg} variant="default" />
   </AppPressable>
 );

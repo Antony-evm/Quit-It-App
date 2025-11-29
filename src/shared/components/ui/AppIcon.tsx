@@ -9,20 +9,33 @@ export type IconVariant =
   | 'muted'
   | 'accent'
   | 'error'
+  | 'fab'
   | 'inverse';
 
 const VARIANTS = {
   default: {
     size: ICON_SIZES.medium,
+    color: COLOR_PALETTE.backgroundPrimary,
+    stroke: COLOR_PALETTE.textPrimary,
+  },
+  inverse: {
+    size: ICON_SIZES.large,
     color: COLOR_PALETTE.textPrimary,
+    stroke: COLOR_PALETTE.backgroundPrimary,
+  },
+  fab: {
+    size: ICON_SIZES.xlarge,
+    color: COLOR_PALETTE.backgroundDark,
   },
   small: {
     size: ICON_SIZES.small,
-    color: COLOR_PALETTE.textPrimary,
+    color: COLOR_PALETTE.backgroundPrimary,
+    stroke: COLOR_PALETTE.textPrimary,
   },
   large: {
     size: ICON_SIZES.large,
-    color: COLOR_PALETTE.textPrimary,
+    color: COLOR_PALETTE.backgroundPrimary,
+    stroke: COLOR_PALETTE.textPrimary,
   },
   muted: {
     size: ICON_SIZES.medium,
@@ -35,10 +48,6 @@ const VARIANTS = {
   error: {
     size: ICON_SIZES.medium,
     color: COLOR_PALETTE.systemError,
-  },
-  inverse: {
-    size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.textInverse,
   },
 } as const;
 
@@ -59,14 +68,21 @@ export const AppIcon = ({
   height,
   ...props
 }: AppIconProps) => {
-  const { size, color: defaultColor } = VARIANTS[variant];
+  const {
+    size,
+    color: defaultColor,
+    stroke: defaultStroke,
+  } = VARIANTS[variant] as { size: number; color: string; stroke?: string };
   const finalColor = color || defaultColor;
+  const finalStroke = defaultStroke || finalColor;
 
   return (
     <Icon
       width={width || size}
       height={height || size}
       fill={finalColor}
+      stroke={finalStroke}
+      color={finalStroke}
       style={style}
       {...props}
     />

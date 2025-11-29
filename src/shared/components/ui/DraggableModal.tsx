@@ -8,6 +8,8 @@ import {
   TouchableWithoutFeedback,
   PanResponder,
   InteractionManager,
+  StyleProp,
+  ViewStyle,
 } from 'react-native';
 import { SPACING, COLOR_PALETTE } from '@/shared/theme';
 
@@ -16,6 +18,8 @@ type DraggableModalProps = {
   onClose: () => void;
   children: React.ReactNode;
   headerContent?: React.ReactNode;
+  headerStyle?: StyleProp<ViewStyle>;
+  indicatorStyle?: StyleProp<ViewStyle>;
 };
 
 export const DraggableModal = ({
@@ -23,6 +27,8 @@ export const DraggableModal = ({
   onClose,
   children,
   headerContent,
+  headerStyle,
+  indicatorStyle,
 }: DraggableModalProps) => {
   const screenHeight = Dimensions.get('window').height;
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
@@ -96,9 +102,12 @@ export const DraggableModal = ({
           <View style={styles.backdrop} />
         </TouchableWithoutFeedback>
         <Animated.View style={[styles.drawer, { transform: [{ translateY }] }]}>
-          <View {...panResponder.panHandlers} style={styles.headerContainer}>
+          <View
+            {...panResponder.panHandlers}
+            style={[styles.headerContainer, headerStyle]}
+          >
             <View style={styles.indicatorContainer}>
-              <View style={styles.indicator} />
+              <View style={[styles.indicator, indicatorStyle]} />
             </View>
             {headerContent && (
               <View style={styles.headerContent}>{headerContent}</View>

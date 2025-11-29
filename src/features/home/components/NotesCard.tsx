@@ -484,12 +484,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                   : handleDateTimePress
               }
             >
-              <AppIcon
-                icon={CalendarIcon}
-                variant="default"
-                color={COLOR_PALETTE.textPrimary}
-                style={styles.calendarIcon}
-              />
+              <AppIcon icon={CalendarIcon} />
               <AppText
                 variant="body"
                 tone="primary"
@@ -508,14 +503,13 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               Notes (Optional)
             </AppText>
             <AppTextInput
-              variant="primary"
+              variant="secondary"
               value={notes}
               onChangeText={handleNotesChange}
               onFocus={handleNotesFocus}
               placeholder="Every check-in counts. How are you feeling?"
               multiline
               numberOfLines={6}
-              style={styles.notesInput}
               textAlignVertical="top"
             />
             <View style={styles.charCountContainer}>
@@ -592,11 +586,9 @@ const styles = StyleSheet.create({
   notesContainer: {
     marginBottom: SPACING.sm,
   },
-  notesInput: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    minHeight: 120, // Increased height
-    marginBottom: SPACING.xs,
-  },
+  // notesInput: {
+  //   marginBottom: SPACING.xs,
+  // },
   charCountContainer: {
     alignItems: 'flex-end',
     marginTop: SPACING.md,

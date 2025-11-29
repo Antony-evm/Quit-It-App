@@ -7,9 +7,10 @@ import {
   TYPOGRAPHY,
   BORDER_WIDTH,
   BORDER_RADIUS,
+  DEVICE_HEIGHT,
 } from '../../theme';
 
-export type AppTextInputVariant = 'primary' | 'ghost';
+export type AppTextInputVariant = 'primary' | 'ghost' | 'secondary';
 
 export type AppTextInputProps = TextInputProps & {
   hasError?: boolean;
@@ -27,6 +28,7 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
         styles.base,
         variant === 'primary' && styles.primary,
         variant === 'ghost' && styles.ghost,
+        variant === 'secondary' && styles.secondary,
         hasError && styles.inputError,
         style,
       ]}
@@ -39,15 +41,19 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
 const styles = StyleSheet.create({
   base: {
     ...TYPOGRAPHY.body,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.medium,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
     color: COLOR_PALETTE.textPrimary,
   },
   primary: {
-    borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
+  },
+  secondary: {
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    minHeight: DEVICE_HEIGHT * 0.15,
   },
   ghost: {
     borderWidth: BORDER_WIDTH.none,

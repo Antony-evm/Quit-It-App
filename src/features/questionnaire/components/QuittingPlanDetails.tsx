@@ -55,11 +55,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
     <Box gap="md" style={style}>
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon
-            icon={AimSvg}
-            variant="default"
-            color={COLOR_PALETTE.textPrimary}
-          />
+          <AppIcon icon={AimSvg} />
           <AppText tone="primary" variant="body">
             {plan.status}
           </AppText>
@@ -68,11 +64,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon
-            icon={CalendarSvg}
-            variant="default"
-            color={COLOR_PALETTE.textPrimary}
-          />
+          <AppIcon icon={CalendarSvg} />
           <AppText tone="primary" variant="body">
             {formatDate(plan.date)}
           </AppText>
@@ -81,11 +73,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon
-            icon={StopSvg}
-            variant="default"
-            color={COLOR_PALETTE.textPrimary}
-          />
+          <AppIcon icon={StopSvg} />
           <AppText tone="primary" variant="body">
             {plan.current} cigarettes per day
           </AppText>
@@ -94,11 +82,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon
-            icon={GoalSvg}
-            variant="default"
-            color={COLOR_PALETTE.textPrimary}
-          />
+          <AppIcon icon={GoalSvg} />
           <AppText tone="primary" variant="body">
             {plan.target} cigarettes per day
           </AppText>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<svg fill="currentColor" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+<svg fill="none" height="800px" width="800px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
 	 viewBox="0 0 512 512" xml:space="preserve">
 <g>
 	<g>
-		<path d="M273.86,120.686v-13.523h71.442V0H238.14v120.686L36.171,512h439.658L273.86,120.686z M273.86,35.721h35.721v35.721
+		<path fill="currentColor" d="M273.86,120.686v-13.523h71.442V0H238.14v120.686L36.171,512h439.658L273.86,120.686z M273.86,35.721h35.721v35.721
 			H273.86V35.721z M256,163.965l38.283,74.174h-76.567L256,163.965z M199.28,273.86h113.44l104.474,202.419H94.806L199.28,273.86z"
 			/>
 	</g>
