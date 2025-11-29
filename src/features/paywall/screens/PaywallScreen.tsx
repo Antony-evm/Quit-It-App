@@ -13,7 +13,8 @@ export const PaywallScreen = ({
   navigation,
 }: RootStackScreenProps<'Paywall'>) => {
   const { handleUserStatusUpdateWithNavigation } = useUserStatusUpdate();
-  const { mutateAsync: subscribe, isPending: isSubscribing } = useSubscription();
+  const { mutateAsync: subscribe, isPending: isSubscribing } =
+    useSubscription();
 
   const handleSubscribe = async () => {
     try {

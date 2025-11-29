@@ -18,7 +18,8 @@ export const useQuitDate = () => {
     quitDate: quitDate ?? null,
     isLoading,
     isRefetching,
-    error: error instanceof Error ? error.message : error ? String(error) : null,
+    error:
+      error instanceof Error ? error.message : error ? String(error) : null,
     refresh: refetch,
   };
 };
