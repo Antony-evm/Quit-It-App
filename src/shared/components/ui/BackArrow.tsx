@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import BackArrowSvg from '@/assets/backArrow.svg';
 import { COLOR_PALETTE } from '@/shared/theme';
 import { AppPressable } from './AppPressable';
@@ -12,11 +11,10 @@ type BackArrowProps = {
 
 export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
   <AppPressable
-    style={styles.container}
     onPress={onPress}
     disabled={disabled}
     interaction="scale"
-    variant="icon"
+    variant="backArrow"
   >
     <AppIcon
       icon={BackArrowSvg}
@@ -27,25 +25,3 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
     />
   </AppPressable>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: COLOR_PALETTE.backgroundCream,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-});

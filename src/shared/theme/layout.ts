@@ -46,6 +46,9 @@ export const DEVICE_ASPECT_RATIO =
 export const QUESTIONNAIRE_HORIZONTAL_PADDING = 24; // SPACING.xl equivalent
 export const QUESTIONNAIRE_MAX_CONTENT_WIDTH = 760;
 
+export const TOUCH_TARGET_SIZE = 44;
+export const INPUT_MIN_HEIGHT = 64;
+
 export const FOOTER_LAYOUT = {
   FAB_SIZE: 64,
   FAB_BORDER_RADIUS: 32,

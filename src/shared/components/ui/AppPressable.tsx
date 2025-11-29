@@ -7,10 +7,25 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import {
+  COLOR_PALETTE,
+  SPACING,
+  BORDER_RADIUS,
+  SHADOWS,
+  TOUCH_TARGET_SIZE,
+  INPUT_MIN_HEIGHT,
+} from '@/shared/theme';
 
 type PressableInteraction = 'opacity' | 'scale' | 'none';
-type PressableVariant = 'default' | 'icon' | 'tab' | 'chip' | 'input' | 'card';
+type PressableVariant =
+  | 'default'
+  | 'icon'
+  | 'tab'
+  | 'chip'
+  | 'input'
+  | 'card'
+  | 'toast'
+  | 'backArrow';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
@@ -51,7 +66,7 @@ const variantStyles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.lg,
-    minHeight: 64,
+    minHeight: INPUT_MIN_HEIGHT,
   },
   card: {
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
@@ -59,11 +74,25 @@ const variantStyles = StyleSheet.create({
     padding: SPACING.xl,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
+    ...SHADOWS.softLg,
     elevation: 2,
+  },
+  toast: {
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.md,
+  },
+  backArrow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: TOUCH_TARGET_SIZE,
+    height: TOUCH_TARGET_SIZE,
+    borderRadius: TOUCH_TARGET_SIZE / 2,
+    backgroundColor: COLOR_PALETTE.backgroundCream,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...SHADOWS.sm,
+    elevation: 5,
   },
 });
 
@@ -80,6 +109,8 @@ const selectedStyles = StyleSheet.create({
     borderColor: COLOR_PALETTE.accentPrimary,
     backgroundColor: COLOR_PALETTE.backgroundCream,
   },
+  toast: {},
+  backArrow: {},
 });
 
 export const AppPressable = ({

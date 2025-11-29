@@ -85,11 +85,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
         },
       ]}
     >
-      <AppPressable
-        style={styles.toastContent}
-        onPress={handleDismiss}
-        fullWidth
-      >
+      <AppPressable variant="toast" onPress={handleDismiss} fullWidth>
         <Text style={styles.toastText}>{toast.message}</Text>
         <Text style={styles.dismissHint}>Tap to dismiss</Text>
       </AppPressable>
@@ -134,10 +130,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-  },
-  toastContent: {
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.md,
   },
   toastText: {
     color: COLOR_PALETTE.textInverse,
