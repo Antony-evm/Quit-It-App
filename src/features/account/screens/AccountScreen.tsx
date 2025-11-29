@@ -22,8 +22,8 @@ import { TriggersList } from '@/features/questionnaire/components/TriggersList';
 import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
-import { fetchQuitDate } from '../api/fetchQuitDate';
-import { updateQuitDate } from '../api/updateQuitDate';
+import { useQuitDate } from '../hooks/useQuitDate';
+import { useUpdateQuitDateMutation } from '../hooks/useAccountMutations';
 import type { QuitDate } from '../types';
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
@@ -37,15 +37,16 @@ type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
   const { user } = useAuth();
-  const [quitDate, setQuitDate] = useState<QuitDate | null>(null);
+  const {
+    quitDate,
+    isLoading: isQuitDateLoading,
+    error: quitDateError,
+    refresh: refreshQuitDate,
+    isRefetching,
+  } = useQuitDate();
+  const updateQuitDateMutation = useUpdateQuitDateMutation();
+
   const [quitDateInput, setQuitDateInput] = useState('');
-
-  const [isBootstrapping, setIsBootstrapping] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [isSavingQuitDate, setIsSavingQuitDate] = useState(false);
-
   const [quitDateStatus, setQuitDateStatus] = useState<FieldStatus>(null);
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
@@ -53,50 +54,15 @@ export const AccountScreen = () => {
   useSmokingTriggersQuestion();
   useSmokingFrequencyQuestion();
 
-  const bootstrap = useCallback(async () => {
-    try {
-      setError(null);
-      const nextQuitDate = await fetchQuitDate();
-      setQuitDate(nextQuitDate);
-      setQuitDateInput(nextQuitDate.isoDate);
-    } catch (caughtError) {
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : 'Unable to load account information.',
-      );
-      throw caughtError;
-    }
-  }, []);
-
   useEffect(() => {
-    let isMounted = true;
-    const init = async () => {
-      try {
-        await bootstrap();
-      } catch {
-      } finally {
-        if (isMounted) {
-          setIsBootstrapping(false);
-        }
-      }
-    };
-
-    init();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [bootstrap]);
-
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await bootstrap();
-    } finally {
-      setIsRefreshing(false);
+    if (quitDate) {
+      setQuitDateInput(quitDate.isoDate);
     }
-  }, [bootstrap]);
+  }, [quitDate]);
+
+  const handleRefresh = useCallback(() => {
+    refreshQuitDate();
+  }, [refreshQuitDate]);
 
   const handleSaveQuitDate = useCallback(async () => {
     setQuitDateStatus(null);
@@ -111,10 +77,8 @@ export const AccountScreen = () => {
       return;
     }
 
-    setIsSavingQuitDate(true);
     try {
-      const updated = await updateQuitDate({ isoDate: trimmed });
-      setQuitDate(updated);
+      await updateQuitDateMutation.mutateAsync({ isoDate: trimmed });
       setQuitDateStatus({
         tone: 'success',
         message: 'Quit date saved.',
@@ -124,12 +88,11 @@ export const AccountScreen = () => {
         tone: 'error',
         message: 'Unable to save quit date right now.',
       });
-    } finally {
-      setIsSavingQuitDate(false);
     }
-  }, [quitDateInput]);
+  }, [quitDateInput, updateQuitDateMutation]);
 
-  const isLoading = isBootstrapping && !isRefreshing;
+  const isLoading = isQuitDateLoading && !isRefetching;
+  const error = quitDateError;
 
   const renderStatus = (status: FieldStatus) => {
     if (!status) {
@@ -201,7 +164,7 @@ export const AccountScreen = () => {
             tintColor={COLOR_PALETTE.textPrimary}
             colors={[COLOR_PALETTE.textPrimary]}
             progressBackgroundColor={COLOR_PALETTE.backgroundCream}
-            refreshing={isRefreshing}
+            refreshing={isRefetching}
             onRefresh={handleRefresh}
           />
         }

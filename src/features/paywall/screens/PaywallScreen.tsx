@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '@/types/navigation';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { AppButton, AppText } from '@/shared/components/ui';
-import { subscribeUser } from '../api/subscriptionApi';
+import { useSubscription } from '../hooks/useSubscription';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { useUserStatusUpdate } from '@/shared/hooks';
 
@@ -13,13 +13,11 @@ export const PaywallScreen = ({
   navigation,
 }: RootStackScreenProps<'Paywall'>) => {
   const { handleUserStatusUpdateWithNavigation } = useUserStatusUpdate();
-  const [isSubscribing, setIsSubscribing] = useState(false);
+  const { mutateAsync: subscribe, isPending: isSubscribing } = useSubscription();
 
   const handleSubscribe = async () => {
     try {
-      setIsSubscribing(true);
-
-      const response = await subscribeUser();
+      const response = await subscribe();
 
       // Update user status and handle navigation using the centralized hook
       await handleUserStatusUpdateWithNavigation(response, navigation);
@@ -36,8 +34,6 @@ export const PaywallScreen = ({
           : 'Something went wrong. Please try again.',
         [{ text: 'OK' }],
       );
-    } finally {
-      setIsSubscribing(false);
     }
   };
 
