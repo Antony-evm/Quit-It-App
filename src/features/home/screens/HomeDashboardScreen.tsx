@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 
 import { AppSurface, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
 import {
   useCravingAnalytics,
@@ -89,7 +89,7 @@ export const HomeDashboardScreen = () => {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 100, // Add padding for footer
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
   },
   homeContentContainer: {
     paddingHorizontal: SPACING.xl,
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   chartCard: {
-    marginTop: SPACING.xl,
+    marginTop: SPACING.sm,
     marginBottom: SPACING.xl,
   },
 });

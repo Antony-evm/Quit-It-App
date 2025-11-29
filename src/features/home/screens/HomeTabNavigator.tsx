@@ -156,16 +156,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   footerContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: BRAND_COLORS.inkDark,
     paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
     paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },
   footer: {
-    position: 'relative',
-    bottom: 0,
+    // Removed relative positioning as it's now part of the flex layout
   },
 });

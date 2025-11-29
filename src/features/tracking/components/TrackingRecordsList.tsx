@@ -21,10 +21,11 @@ export const TrackingRecordsList = React.memo(
       error,
       fetchNextPage,
       isFetchingNextPage,
+      hasNextPage,
     } = useInfiniteTrackingRecords();
 
     const handleLoadMore = () => {
-      if (!isFetchingNextPage) {
+      if (hasNextPage && !isFetchingNextPage) {
         fetchNextPage();
       }
     };
@@ -80,7 +81,7 @@ export const TrackingRecordsList = React.memo(
           </View>
         )}
 
-        {!isFetchingNextPage && trackingRecords.length > 0 && (
+        {!isFetchingNextPage && hasNextPage && trackingRecords.length > 0 && (
           <View style={styles.loadMoreContainer}>
             <AppText
               variant="body"

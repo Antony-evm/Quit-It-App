@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
     backgroundColor: BRAND_COLORS.ink,
     borderRadius: 12,
     padding: SPACING.md,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: COLOR_PALETTE.borderDefault,
     borderLeftColor: COLOR_PALETTE.craving,
     borderLeftWidth: 4,

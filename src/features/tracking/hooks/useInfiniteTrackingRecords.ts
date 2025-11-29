@@ -90,6 +90,11 @@ export const useInfiniteTrackingRecords = (
     staleTime: Infinity, // Never consider data stale to prevent automatic refetches
     gcTime: 5 * 60 * 1000, // 5 minutes - shorter cache time to allow fresh data
     getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer items than the page size, we've reached the end
+      if (!lastPage || lastPage.length < TRACKING_RECORDS_PAGE_SIZE) {
+        return undefined;
+      }
+
       // Calculate current offset based on total records fetched so far
       const totalRecords = allPages.flat().length;
 

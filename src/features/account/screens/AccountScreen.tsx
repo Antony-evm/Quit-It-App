@@ -13,6 +13,7 @@ import {
   COLOR_PALETTE,
   DEVICE_HEIGHT,
   SPACING,
+  FOOTER_LAYOUT,
 } from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
@@ -250,6 +251,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
   },
   header: {
     marginBottom: SPACING.xxl,

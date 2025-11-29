@@ -15,6 +15,7 @@ import {
   BRAND_COLORS,
   BORDER_RADIUS,
   DEVICE_HEIGHT,
+  FOOTER_LAYOUT,
 } from '@/shared/theme';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
   },
   header: {
     marginBottom: SPACING.sm,

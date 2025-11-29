@@ -189,8 +189,7 @@ export const HomeFooterNavigator = ({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    position: 'absolute',
-    bottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
+    // Removed absolute positioning to allow flex layout in parent
     width: '100%',
     alignItems: 'center',
   },

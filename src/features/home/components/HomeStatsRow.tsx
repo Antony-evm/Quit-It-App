@@ -34,7 +34,7 @@ export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
             },
           ]}
         >
-          <View style={styles.tagContainer}>
+          <View style={styles.contentRow}>
             <View
               style={[
                 styles.tag,
@@ -44,23 +44,14 @@ export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
                 },
               ]}
             >
-              <AppText variant="caption" style={styles.tagText}>
+              <AppText style={styles.tagText}>
                 {stat.tagLabel ?? stat.label}
               </AppText>
             </View>
-            {stat.bottomLabel && (
-              <AppText
-                variant="caption"
-                tone="primary"
-                style={styles.bottomLabelText}
-              >
-                {stat.bottomLabel}
-              </AppText>
-            )}
+            <AppText style={styles.text}>
+              {stat.bottomLabel}: {stat.value}
+            </AppText>
           </View>
-          <AppText variant="heading" style={styles.valueText}>
-            {stat.value}
-          </AppText>
         </View>
       );
     })}
@@ -69,42 +60,37 @@ export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
+    flexDirection: 'column',
   },
   statCard: {
-    flex: 1,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.medium,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    justifyContent: 'space-between',
   },
   statCardSpacing: {
-    marginLeft: SPACING.md,
+    marginTop: SPACING.md,
   },
-  tagContainer: {
-    marginBottom: SPACING.sm,
-    alignItems: 'flex-start',
+  contentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   tag: {
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 4,
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.xs,
     borderRadius: BORDER_RADIUS.full,
+    marginRight: SPACING.sm,
   },
   tagText: {
-    fontSize: 10,
+    fontSize: 16,
     fontWeight: '600',
-    textTransform: 'uppercase',
+    textAlign: 'center',
   },
-  bottomLabelText: {
-    marginTop: 4,
-    fontSize: 12,
-    paddingLeft: SPACING.sm,
-  },
-  valueText: {
-    marginTop: SPACING.xs,
+  text: {
+    fontSize: 16,
+    color: COLOR_PALETTE.textPrimary,
+    fontWeight: '600',
   },
 });
