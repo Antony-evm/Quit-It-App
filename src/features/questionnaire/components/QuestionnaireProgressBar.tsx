@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLOR_PALETTE.accentPrimary,
+    backgroundColor: BRAND_COLORS.cream,
     borderRadius: 2,
   },
 });

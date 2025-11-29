@@ -10,6 +10,7 @@ import {
   QUESTIONNAIRE_MAX_CONTENT_WIDTH,
 } from '@/shared/theme/layout';
 import { QuestionnaireProgressBar } from './QuestionnaireProgressBar';
+import { QuestionnaireSkeleton, SkeletonItem } from './QuestionnaireSkeleton';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;
@@ -62,6 +63,11 @@ export const QuestionnaireTemplate = ({
               isLoading={isLoading}
               isSubmitting={isSubmitting}
             />
+          ) : isLoading ? (
+            <View style={{ width: '100%', alignItems: 'center', gap: 4 }}>
+              <SkeletonItem width={40} height={14} />
+              <SkeletonItem width="100%" height={6} />
+            </View>
           ) : null}
         </View>
       </View>
@@ -88,19 +94,7 @@ export const QuestionnaireTemplate = ({
             </View>
           ) : null}
           <AppSurface style={styles.body}>
-            {isLoading ? (
-              <View style={styles.loading}>
-                <ActivityIndicator
-                  size="large"
-                  color={COLOR_PALETTE.accentPrimary}
-                />
-                <AppText tone="primary" style={styles.loadingLabel}>
-                  Loading your next question...
-                </AppText>
-              </View>
-            ) : (
-              children
-            )}
+            {isLoading ? <QuestionnaireSkeleton /> : children}
           </AppSurface>
         </View>
       </ScrollView>

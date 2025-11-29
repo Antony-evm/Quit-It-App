@@ -1,13 +1,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { AppButton, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { AppText } from '@/shared/components/ui';
 import {
-  formatDisplayDate,
-  getRelativeDateInfo,
-} from '../../utils/dateFormatting';
+  BORDER_RADIUS,
+  BRAND_COLORS,
+  COLOR_PALETTE,
+  SPACING,
+} from '@/shared/theme';
+import { formatDisplayDate } from '../../utils/dateFormatting';
+import CalendarIcon from '@/assets/calendar.svg';
 
 type DatePickerFieldProps = {
   value: Date | null;
@@ -40,7 +43,7 @@ export const DatePickerField = ({
 }: DatePickerFieldProps) => {
   const min = useMemo(() => toDateOnly(minimumDate), [minimumDate]);
   const max = useMemo(() => toDateOnly(maximumDate), [maximumDate]);
-  const [showPicker, setShowPicker] = useState(Platform.OS === 'ios');
+  const [showPicker, setShowPicker] = useState(false);
 
   // Use minimum date as default if no value is provided
   const currentValue = value || min;
@@ -60,51 +63,43 @@ export const DatePickerField = ({
     [max, min, onChange],
   );
 
-  const handleShowPicker = useCallback(() => {
-    if (Platform.OS === 'android') {
-      setShowPicker(true);
-    }
+  const handlePress = useCallback(() => {
+    setShowPicker(prev => !prev);
   }, []);
-
-  const relativeInfo = getRelativeDateInfo(currentValue);
 
   return (
     <View style={styles.container}>
-      {/* Visual indicator with selected date and contextual info */}
-      <View style={styles.selectedDateDisplay}>
-        <AppText variant="heading" style={styles.selectedDateText}>
-          {formatDisplayDate(currentValue)}
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          pressed && styles.buttonPressed,
+        ]}
+        onPress={handlePress}
+      >
+        <CalendarIcon
+          width={24}
+          height={24}
+          color={BRAND_COLORS.cream}
+          style={styles.icon}
+        />
+        <AppText variant="body" tone="primary" style={styles.text}>
+          {value ? formatDisplayDate(value) : 'Select a date'}
         </AppText>
-        {relativeInfo && (
-          <AppText variant="body" tone="primary" style={styles.relativeInfo}>
-            {relativeInfo}
-          </AppText>
-        )}
-      </View>
+      </Pressable>
 
-      {/* Date picker - always show on iOS, show on button press for Android */}
-      {Platform.OS === 'android' && !showPicker ? (
-        <View style={styles.buttonContainer}>
-          <AppButton
-            label="Change Date"
-            onPress={handleShowPicker}
-            variant="primary"
-            fullWidth
-          />
-        </View>
-      ) : null}
-
-      {/* Inline date picker */}
+      {/* Date picker */}
       {showPicker && (
         <View style={styles.pickerContainer}>
           <DateTimePicker
             value={currentValue}
             mode="date"
-            display={Platform.OS === 'ios' ? 'compact' : 'default'}
+            display={Platform.OS === 'ios' ? 'inline' : 'default'}
             minimumDate={min}
             maximumDate={max}
             onChange={handleDateChange}
             style={styles.datePicker}
+            themeVariant="dark"
+            accentColor={BRAND_COLORS.mint}
           />
         </View>
       )}
@@ -114,34 +109,38 @@ export const DatePickerField = ({
 
 const styles = StyleSheet.create({
   container: {
-    gap: SPACING.lg,
-  },
-  selectedDateDisplay: {
-    alignItems: 'center',
-    gap: SPACING.xs,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  selectedDateText: {
-    textAlign: 'center',
-  },
-  relativeInfo: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  buttonContainer: {
+    gap: SPACING.md,
     width: '100%',
   },
-  pickerContainer: {
+  button: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 16,
+    backgroundColor: BRAND_COLORS.ink,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.lg,
+    minHeight: 64,
+  },
+  buttonPressed: {
+    opacity: 0.8,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+  },
+  icon: {
+    marginRight: SPACING.md,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: '500',
+  },
+  pickerContainer: {
+    marginTop: SPACING.sm,
+    backgroundColor: BRAND_COLORS.ink,
+    borderRadius: BORDER_RADIUS.medium,
+    overflow: 'hidden',
   },
   datePicker: {
-    backgroundColor: 'transparent',
+    backgroundColor: BRAND_COLORS.ink,
+    height: 320,
   },
 });

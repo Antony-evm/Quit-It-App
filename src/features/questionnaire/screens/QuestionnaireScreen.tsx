@@ -56,8 +56,27 @@ export const QuestionnaireScreen = ({
     selectedSubOptions,
     resumeFromReview,
     canResumeReview,
-    generatedPlan,
+    orderId,
   } = useQuestionnaire();
+
+  const [maxQuestion, setMaxQuestion] = useState<number>(0);
+  const [lastQuestionId, setLastQuestionId] = useState<number | undefined>(
+    undefined,
+  );
+
+  if (question?.id !== lastQuestionId) {
+    setLastQuestionId(question?.id);
+    setActiveSelection([]);
+    setActiveSubSelection([]);
+    setIsSelectionValid(false);
+    setHasAttemptedSubmit(false);
+  }
+
+  useEffect(() => {
+    if (question?.maxQuestion) {
+      setMaxQuestion(question.maxQuestion);
+    }
+  }, [question?.maxQuestion]);
 
   useEffect(() => {
     setHasAttemptedSubmit(false);
@@ -165,7 +184,7 @@ export const QuestionnaireScreen = ({
       (question?.subCombination !== 'N:N' && !activeSelection.length));
 
   const shouldShowPrimaryAction =
-    isReviewing || (!!question && !isLoading && !error);
+    isReviewing || isLoading || (!!question && !error);
 
   const handlePrimaryAction = async () => {
     // Extra safeguard: don't proceed if button should be disabled
@@ -230,12 +249,7 @@ export const QuestionnaireScreen = ({
     }
 
     if (isReviewing) {
-      return (
-        <QuestionnaireReview
-          responses={history}
-          planText={generatedPlan?.text}
-        />
-      );
+      return <QuestionnaireReview responses={history} />;
     }
 
     return (
@@ -312,21 +326,19 @@ export const QuestionnaireScreen = ({
 
   // Calculate progress data for the progress bar
   const progressData = useMemo(() => {
-    if (
-      question?.orderId === undefined ||
-      question?.orderId === null ||
-      !question?.maxQuestion
-    ) {
+    const total = maxQuestion || question?.maxQuestion;
+
+    if (orderId === undefined || orderId === null || !total) {
       return undefined;
     }
 
     const data = {
-      currentQuestion: question.orderId + 1, // orderId is 0-based, display as 1-based
-      totalQuestions: question.maxQuestion,
+      currentQuestion: orderId + 1, // orderId is 0-based, display as 1-based
+      totalQuestions: total,
     };
 
     return data;
-  }, [question?.orderId, question?.maxQuestion]);
+  }, [orderId, maxQuestion, question?.maxQuestion]);
 
   return (
     <View style={styles.container}>
