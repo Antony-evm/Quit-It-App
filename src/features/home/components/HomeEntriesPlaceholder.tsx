@@ -10,10 +10,6 @@ import {
 import { AppText } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 
-const BACKGROUND_IMAGE = {
-  uri: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1200&q=80',
-};
-
 export type HomeEntry = {
   id: string;
   title: string;
@@ -27,45 +23,43 @@ type HomeEntriesPlaceholderProps = {
   style?: StyleProp<ViewStyle>;
 };
 
-export const HomeEntriesPlaceholder = ({ entries, style }: HomeEntriesPlaceholderProps) => (
+export const HomeEntriesPlaceholder = ({
+  entries,
+  style,
+}: HomeEntriesPlaceholderProps) => (
   <View style={[styles.container, style]}>
-    <ImageBackground
-      source={BACKGROUND_IMAGE}
-      style={styles.background}
-      imageStyle={styles.image}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay} />
-      <View style={styles.content}>
-        <AppText variant='heading' tone='inverse' style={styles.header}>
-          Recent activity
-        </AppText>
-        <View style={styles.entries}>
-          {entries.map((entry, index) => (
-            <View
-              key={entry.id}
-              style={[
-                styles.entry,
-                index > 0 && styles.entrySpacing,
-                entry.type === 'craving' ? styles.entryCraving : styles.entryCigarette,
-              ]}
-            >
-              <View style={styles.entryHeader}>
-                <AppText variant='body' tone='inverse' style={styles.entryTitle}>
-                  {entry.title}
-                </AppText>
-                <AppText variant='caption' tone='inverse'>
-                  {entry.timestamp}
-                </AppText>
-              </View>
-              <AppText variant='caption' tone='inverse'>
-                {entry.description}
+    <View style={styles.overlay} />
+    <View style={styles.content}>
+      <AppText variant="heading" tone="inverse" style={styles.header}>
+        Recent activity
+      </AppText>
+      <View style={styles.entries}>
+        {entries.map((entry, index) => (
+          <View
+            key={entry.id}
+            style={[
+              styles.entry,
+              index > 0 && styles.entrySpacing,
+              entry.type === 'craving'
+                ? styles.entryCraving
+                : styles.entryCigarette,
+            ]}
+          >
+            <View style={styles.entryHeader}>
+              <AppText variant="body" tone="inverse" style={styles.entryTitle}>
+                {entry.title}
+              </AppText>
+              <AppText variant="caption" tone="inverse">
+                {entry.timestamp}
               </AppText>
             </View>
-          ))}
-        </View>
+            <AppText variant="caption" tone="inverse">
+              {entry.description}
+            </AppText>
+          </View>
+        ))}
       </View>
-    </ImageBackground>
+    </View>
   </View>
 );
 
