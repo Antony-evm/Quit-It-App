@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     marginTop: DEVICE_HEIGHT * 0.05,
-    paddingBottom: 120,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
   header: {
     marginBottom: SPACING.sm,

@@ -248,8 +248,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 120,
     marginTop: DEVICE_HEIGHT * 0.05,
+    paddingHorizontal: SPACING.lg,
   },
   header: {
     marginBottom: SPACING.xxl,

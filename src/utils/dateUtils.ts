@@ -2,7 +2,7 @@
  * Calculates the difference between two dates and returns a formatted string.
  * Format: "Xd Xhrs Xmins Xs"
  * Rules:
- * - If a unit is 0, it is omitted.
+ * - Leading zero units are omitted.
  * - If the difference is more than 1 week, seconds are omitted.
  *
  * @param date1 The first date
@@ -35,18 +35,22 @@ export const getFormattedTimeDifference = (
   const seconds = Math.floor(remainingAfterMinutes / MS_PER_SECOND);
 
   const parts: string[] = [];
+  let started = false;
 
   if (days > 0) {
     parts.push(`${days}d`);
+    started = true;
   }
-  if (hours > 0) {
+  if (started || hours > 0) {
     parts.push(`${hours}hrs`);
+    started = true;
   }
-  if (minutes > 0) {
+  if (started || minutes > 0) {
     parts.push(`${minutes}mins`);
+    started = true;
   }
 
-  if (!isMoreThanOneWeek && seconds > 0) {
+  if (!isMoreThanOneWeek && (started || seconds > 0)) {
     parts.push(`${seconds}s`);
   }
 

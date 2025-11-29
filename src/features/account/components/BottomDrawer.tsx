@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: BRAND_COLORS.inkDark,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: '100%',
+    height: '85%',
     overflow: 'hidden',
   },
   headerContainer: {

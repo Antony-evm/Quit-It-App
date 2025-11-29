@@ -55,7 +55,7 @@ export const WelcomeComponent = () => {
   const showSpecificMessage = message !== '';
 
   return (
-    <View style={[styles.container, { minHeight: height * 0.4 }]}>
+    <View style={[styles.container, { minHeight: height * 0.3 }]}>
       <View style={styles.content}>
         <View style={styles.titleContainer}>
           <AppText variant="title" style={styles.title}>
@@ -92,11 +92,10 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: SPACING.lg,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    paddingHorizontal: SPACING.xl,
-    paddingBottom: SPACING.lg,
+    paddingHorizontal: SPACING.lg,
     borderBottomWidth: 3,
     borderBottomColor: COLOR_PALETTE.borderDefault,
-    marginTop: DEVICE_HEIGHT * 0.05,
+    paddingTop: DEVICE_HEIGHT * 0.05,
 
     // Elevation
     shadowColor: '#000',
@@ -131,18 +130,29 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     marginTop: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BRAND_COLORS.inkDark,
     padding: SPACING.md,
-    borderRadius: 12,
+    paddingVertical: '10%',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: COLOR_PALETTE.borderDefault,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
   message: {
     marginBottom: SPACING.xs,
-    color: COLOR_PALETTE.textMuted,
-    fontSize: 18,
+    color: BRAND_COLORS.cream,
+    fontSize: 24,
   },
   timeDifference: {
     color: BRAND_COLORS.mint,
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
     marginTop: 0,
   },
