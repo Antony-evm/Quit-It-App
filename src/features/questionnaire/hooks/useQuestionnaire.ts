@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/shared/auth';
 
 import type {
@@ -67,12 +67,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
   const [orderId, setOrderId] = useState<number>(initialOrderId);
   const [variationId, setVariationId] = useState<number>(initialVariationId);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<Error | null>(null);
   const [isReviewing, setIsReviewing] = useState(false);
-  const [isCompleting, setIsCompleting] = useState(false);
-  const [completionData, setCompletionData] =
-    useState<QuestionnaireCompleteResponse | null>(null);
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
   const [generatedPlan, setGeneratedPlan] = useState<QuittingPlan | null>(null);
@@ -99,11 +94,19 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       }),
   });
 
+  const submitMutation = useMutation({
+    mutationFn: submitQuestionAnswer,
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: completeQuestionnaire,
+  });
+
   const question: Question | null = fetchedQuestion ?? null;
   const isLoading =
     (isQueryLoading || isQueryFetching) && !question && !isReviewing;
   const loadError = (queryError as Error | null) ?? null;
-  const error = submitError ?? loadError;
+  const error = submitMutation.error ?? completeMutation.error ?? loadError;
 
   useEffect(() => {
     if (isReviewing || !question || loadError) {
@@ -217,9 +220,6 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       }
 
       try {
-        setIsSubmitting(true);
-        setSubmitError(null);
-
         if (!question.questionCode) {
         }
 
@@ -237,7 +237,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           ),
         };
 
-        await submitQuestionAnswer(payload);
+        await submitMutation.mutateAsync(payload);
+
         const record: QuestionnaireResponseRecord = {
           questionId: question.id,
           questionCode: question.questionCode,
@@ -301,31 +302,20 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         setVariationId(nextVariationId);
         setIsReviewing(false);
       } catch (caughtError) {
-        setSubmitError(caughtError as Error);
-      } finally {
-        setIsSubmitting(false);
+        // Error handled by mutation state
       }
     },
-    [question, userId],
+    [question, userId, submitMutation],
   );
 
   const completeQuestionnaireFlow =
     useCallback(async (): Promise<QuestionnaireCompleteResponse | null> => {
       try {
-        setIsCompleting(true);
-        setSubmitError(null);
-
-        const response = await completeQuestionnaire(userId);
-        setCompletionData(response);
-
-        return response;
+        return await completeMutation.mutateAsync(userId);
       } catch (caughtError) {
-        setSubmitError(caughtError as Error);
         return null;
-      } finally {
-        setIsCompleting(false);
       }
-    }, [userId]);
+    }, [userId, completeMutation]);
 
   const refresh = useCallback(() => {
     return refetch();
@@ -338,10 +328,11 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     setSelections({});
     setNavigationStack([]);
     setIsReviewing(false);
-    setSubmitError(null);
+    submitMutation.reset();
+    completeMutation.reset();
     setOrderId(initialOrderIdRef.current);
     setVariationId(initialVariationIdRef.current);
-  }, [queryClient]);
+  }, [queryClient, submitMutation, completeMutation]);
 
   const goBack = useCallback(() => {
     setNavigationStack(prev => {
@@ -356,7 +347,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setOrderId(destination.orderId);
       setVariationId(destination.variationId);
       setIsReviewing(false);
-      setSubmitError(null);
+      submitMutation.reset();
+      completeMutation.reset();
 
       setHistory(existing =>
         existing.filter(record => record.questionId !== popped.questionId),
@@ -374,7 +366,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       return nextStack;
     });
-  }, []);
+  }, [submitMutation, completeMutation]);
 
   const derived = useMemo(
     () => ({
@@ -410,7 +402,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setOrderId(lastEntry.orderId);
       setVariationId(lastEntry.variationId);
       setIsReviewing(false);
-      setSubmitError(null);
+      submitMutation.reset();
+      completeMutation.reset();
 
       return prev;
     });
@@ -418,8 +411,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     setOrderId,
     setVariationId,
     setIsReviewing,
-    setSubmitError,
     setNavigationStack,
+    submitMutation,
+    completeMutation,
   ]);
 
   return {
@@ -427,12 +421,12 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     orderId: activeOrderId,
     variationId: activeVariationId,
     isLoading,
-    isSubmitting,
-    isCompleting,
+    isSubmitting: submitMutation.isPending,
+    isCompleting: completeMutation.isPending,
     error,
     isReviewing,
     history,
-    completionData,
+    completionData: completeMutation.data ?? null,
     generatedPlan,
     ...derived,
     refresh,

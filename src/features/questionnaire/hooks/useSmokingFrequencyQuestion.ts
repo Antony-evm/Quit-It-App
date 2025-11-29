@@ -1,67 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchQuestion } from '../api/fetchQuestion';
 import { SMOKING_FREQUENCY_QUESTION_CODE } from '../constants';
-import type { Question } from '../types';
-
-let cachedQuestion: Question | null = null;
-let loadingPromise: Promise<Question | null> | null = null;
-let errorState: string | null = null;
 
 export const useSmokingFrequencyQuestion = () => {
-  const [question, setQuestion] = useState<Question | null>(cachedQuestion);
-  const [isLoading, setIsLoading] = useState(!cachedQuestion && !errorState);
-  const [error, setError] = useState<string | null>(errorState);
-
-  useEffect(() => {
-    if (cachedQuestion) {
-      setQuestion(cachedQuestion);
-      setIsLoading(false);
-      return;
-    }
-
-    if (errorState) {
-      setError(errorState);
-      setIsLoading(false);
-      return;
-    }
-
-    if (!loadingPromise) {
-      loadingPromise = fetchQuestion({
+  const {
+    data: question,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['question', SMOKING_FREQUENCY_QUESTION_CODE],
+    queryFn: () =>
+      fetchQuestion({
         questionCode: SMOKING_FREQUENCY_QUESTION_CODE,
-      })
-        .then(data => {
-          cachedQuestion = data;
-          return data;
-        })
-        .catch(err => {
-          errorState =
-            err instanceof Error ? err.message : 'Failed to load question';
-          throw err;
-        });
-    }
+      }),
+    staleTime: Infinity,
+  });
 
-    let isMounted = true;
-
-    loadingPromise
-      .then(data => {
-        if (isMounted) {
-          setQuestion(data);
-          setIsLoading(false);
-        }
-      })
-      .catch(err => {
-        if (isMounted) {
-          setError(
-            err instanceof Error ? err.message : 'Failed to load question',
-          );
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { question, isLoading, error };
+  return {
+    question: question ?? null,
+    isLoading,
+    error:
+      error instanceof Error ? error.message : error ? String(error) : null,
+  };
 };
