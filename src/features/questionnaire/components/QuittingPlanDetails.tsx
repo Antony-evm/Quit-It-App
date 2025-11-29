@@ -56,7 +56,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
       <View style={styles.box}>
         <View style={styles.row}>
           <AimSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
-          <AppText tone="primary" variant="body" style={styles.detailsText}>
+          <AppText tone="primary" variant="body">
             {plan.status}
           </AppText>
         </View>
@@ -69,7 +69,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
             height={24}
             color={COLOR_PALETTE.textPrimary}
           />
-          <AppText tone="primary" variant="body" style={styles.detailsText}>
+          <AppText tone="primary" variant="body">
             {formatDate(plan.date)}
           </AppText>
         </View>
@@ -78,7 +78,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
       <View style={styles.box}>
         <View style={styles.row}>
           <StopSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
-          <AppText tone="primary" variant="body" style={styles.detailsText}>
+          <AppText tone="primary" variant="body">
             {plan.current} cigarettes per day
           </AppText>
         </View>
@@ -87,7 +87,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
       <View style={styles.box}>
         <View style={styles.row}>
           <GoalSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
-          <AppText tone="primary" variant="body" style={styles.detailsText}>
+          <AppText tone="primary" variant="body">
             {plan.target} cigarettes per day
           </AppText>
         </View>
@@ -101,18 +101,14 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   box: {
-    // backgroundColor: BRAND_COLORS.ink,
-    // borderRadius: 8,
-    // padding: SPACING.lg,
+    backgroundColor: BRAND_COLORS.ink,
+    borderRadius: 8,
+    padding: SPACING.lg,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: SPACING.sm,
-  },
-  detailsText: {
-    textDecorationLine: 'underline',
-    fontStyle: 'italic',
   },
   loadingText: {
     textAlign: 'center',

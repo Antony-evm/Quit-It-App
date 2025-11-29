@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppText, DraggableModal } from '@/shared/components/ui';
+import { AppText, DraggableModal, AppSurface } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BRAND_COLORS } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
@@ -24,10 +24,6 @@ import { useQuittingPlan } from '@/features/questionnaire';
 import { JournalScreen } from './JournalScreen';
 import { NotesCard, NotesCardHandle } from '../components/NotesCard';
 import {
-  HomeEntriesPlaceholder,
-  HomeEntry,
-} from '../components/HomeEntriesPlaceholder';
-import {
   HomeFooterNavigator,
   HomeFooterTab,
 } from '../components/HomeFooterNavigator';
@@ -38,30 +34,6 @@ const STAT_CARDS: HomeStat[] = [
   { label: 'Cravings', value: '3', accentColor: '#C7D2FE' },
   { label: 'Cigarettes', value: '0', accentColor: '#cf1515ff' },
   { label: 'Money Saved', value: '$18.50', accentColor: '#A7F3D0' },
-];
-
-const PLACEHOLDER_ENTRIES: HomeEntry[] = [
-  {
-    id: '1',
-    title: 'Craving logged',
-    timestamp: '10:24 AM',
-    description: 'Paused for 5 minutes and had water.',
-    type: 'craving',
-  },
-  {
-    id: '2',
-    title: 'Skipped cigarette',
-    timestamp: '9:10 AM',
-    description: 'Walked instead of smoking during break.',
-    type: 'cigarette',
-  },
-  {
-    id: '3',
-    title: 'Craving logged',
-    timestamp: '8:20 AM',
-    description: 'Used breathing exercise from toolkit.',
-    type: 'craving',
-  },
 ];
 
 export const HomeScreen = () => {
@@ -121,8 +93,6 @@ export const HomeScreen = () => {
     },
   ];
 
-  const entries = PLACEHOLDER_ENTRIES;
-
   // Helper function to calculate days since last smoking day
   const calculateDaysSmokeFree = (): number => {
     if (!smokingAnalytics?.last_smoking_day) return 0;
@@ -152,7 +122,7 @@ export const HomeScreen = () => {
   }, []);
 
   const renderHomeTab = () => (
-    <>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View>
         <AppText variant="title" style={styles.title}>
           Keep the streak going
@@ -161,22 +131,33 @@ export const HomeScreen = () => {
           Here&apos;s how you&apos;ve been doing today.
         </AppText>
         {shouldShowSmokeFreeMessage && daysSmokeFree > 0 && (
-          <AppText
-            variant="body"
-            style={[styles.congratsMessage, { color: '#22C55E' }]}
-          >
-            🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree}{' '}
-            {daysSmokeFree === 1 ? 'day' : 'days'}!
-          </AppText>
+          <View style={styles.congratsContainer}>
+            <AppText
+              variant="body"
+              style={[styles.congratsMessage, { color: '#22C55E' }]}
+            >
+              🎉 Congrat&apos;s you&apos;ve been smoke free for {daysSmokeFree}{' '}
+              {daysSmokeFree === 1 ? 'day' : 'days'}!
+            </AppText>
+          </View>
         )}
       </View>
-      <QuittingPlanCard style={styles.planCard} />
+
       <HomeStatsRow stats={stats} style={styles.statsRow} />
+
       {dailyData && dailyData.length > 0 && (
         <CravingChart data={dailyData} style={styles.chartCard} />
       )}
-      <HomeEntriesPlaceholder entries={entries} style={styles.entriesCard} />
-    </>
+
+      <View style={styles.planSection}>
+        <AppText variant="heading" style={styles.sectionTitle}>
+          Your Plan
+        </AppText>
+        <AppSurface style={styles.planCard}>
+          <QuittingPlanCard />
+        </AppSurface>
+      </View>
+    </ScrollView>
   );
 
   const renderContent = () => {
@@ -305,14 +286,26 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   congratsMessage: {
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.md,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
+  congratsContainer: {
+    marginBottom: SPACING.md,
+    padding: SPACING.md,
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+  },
   planCard: {
     marginBottom: SPACING.xl,
+  },
+  planSection: {
+    marginBottom: SPACING.xl,
+  },
+  sectionTitle: {
+    marginBottom: SPACING.sm,
   },
   statsRow: {
     marginBottom: SPACING.xl,

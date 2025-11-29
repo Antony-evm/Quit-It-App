@@ -157,9 +157,7 @@ export const AccountScreen = () => {
                 height={24}
                 color={COLOR_PALETTE.textPrimary}
               />
-              <AppText tone="primary" style={styles.emailText}>
-                {user?.email ?? 'Not available'}
-              </AppText>
+              <AppText tone="primary">{user?.email ?? 'Not available'}</AppText>
             </View>
           </View>
         );
@@ -280,10 +278,6 @@ const styles = StyleSheet.create({
   },
   frequencyCard: {
     marginBottom: SPACING.xl,
-  },
-  emailText: {
-    textDecorationLine: 'underline',
-    fontStyle: 'italic',
   },
   globalError: {
     color: COLOR_PALETTE.systemError,
