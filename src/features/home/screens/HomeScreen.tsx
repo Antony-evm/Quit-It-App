@@ -7,6 +7,9 @@ import {
   View,
   Pressable,
   ScrollView,
+  useWindowDimensions,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -37,21 +40,20 @@ const STAT_CARDS: HomeStat[] = [
 ];
 
 export const HomeScreen = () => {
-  const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-
-  // Add craving analytics hook at the top with other hooks
-  const { data: cravingAnalytics, isLoading, error } = useCravingAnalytics();
-
-  // Add smoking analytics hook
-  const { data: smokingAnalytics } = useSmokingAnalytics();
-
-  // Add quitting plan hook to check status
-  const { plan: quittingPlan } = useQuittingPlan();
-
-  const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
+  const { width: screenWidth } = useWindowDimensions();
+  const mainScrollViewRef = useRef<ScrollView>(null);
   const noteDrawerScrollRef = useRef<ScrollView>(null);
   const notesCardRef = useRef<NotesCardHandle>(null);
+
+  const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
+
+  const { data: cravingAnalytics, isLoading, error } = useCravingAnalytics();
+
+  const { data: smokingAnalytics } = useSmokingAnalytics();
+
+  const { plan: quittingPlan } = useQuittingPlan();
 
   // Add some debugging
   console.log('HomeScreen - Craving Analytics Data:', {
@@ -121,8 +123,42 @@ export const HomeScreen = () => {
     };
   }, []);
 
+  // Sync activeTab with ScrollView position
+  useEffect(() => {
+    if (mainScrollViewRef.current) {
+      let index = 1; // Default to home
+      if (activeTab === 'account') index = 0;
+      if (activeTab === 'home') index = 1;
+      if (activeTab === 'journal') index = 2;
+
+      mainScrollViewRef.current.scrollTo({
+        x: index * screenWidth,
+        animated: true,
+      });
+    }
+  }, [activeTab, screenWidth]);
+
+  const handleMomentumScrollEnd = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / screenWidth);
+
+    let newTab: HomeFooterTab = 'home';
+    if (index === 0) newTab = 'account';
+    if (index === 1) newTab = 'home';
+    if (index === 2) newTab = 'journal';
+
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  };
+
   const renderHomeTab = () => (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 120 }}
+    >
       <View>
         <AppText variant="title" style={styles.title}>
           Keep the streak going
@@ -160,27 +196,7 @@ export const HomeScreen = () => {
     </ScrollView>
   );
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'account':
-        return (
-          <View style={styles.accountWrapper}>
-            <AccountScreen />
-          </View>
-        );
-      case 'journal':
-        return (
-          <View style={styles.notesWrapper}>
-            <JournalScreen />
-          </View>
-        );
-      case 'home':
-      default:
-        return renderHomeTab();
-    }
-  };
-
-  const shouldHideFooter = isKeyboardVisible;
+  const shouldHideFooter = isKeyboardVisible || isNoteDrawerVisible;
 
   const renderHeaderContent = () => (
     <View style={styles.modalHeaderContent}>
@@ -211,14 +227,34 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View
+      <ScrollView
+        ref={mainScrollViewRef}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
         style={[
-          styles.content,
+          styles.contentContainer,
           shouldHideFooter ? styles.contentExpanded : undefined,
         ]}
+        contentContainerStyle={{ width: screenWidth * 3 }}
+        scrollEnabled={!shouldHideFooter} // Disable swipe when keyboard is open
       >
-        {renderContent()}
-      </View>
+        <View style={[styles.page, { width: screenWidth }]}>
+          <View style={styles.accountWrapper}>
+            <AccountScreen />
+          </View>
+        </View>
+        <View style={[styles.page, { width: screenWidth }]}>
+          {renderHomeTab()}
+        </View>
+        <View style={[styles.page, { width: screenWidth }]}>
+          <View style={styles.notesWrapper}>
+            <JournalScreen />
+          </View>
+        </View>
+      </ScrollView>
+
       {!shouldHideFooter ? (
         <HomeFooterNavigator
           activeTab={activeTab}
@@ -264,11 +300,13 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     justifyContent: 'space-between',
   },
-  content: {
+  contentContainer: {
+    flex: 1,
+  },
+  page: {
     flex: 1,
     paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
   },
   contentExpanded: {
     paddingBottom: SPACING.md,

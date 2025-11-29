@@ -1,4 +1,5 @@
 import { Dimensions, ScaledSize } from 'react-native';
+import { SPACING } from './spacing';
 
 export type DeviceDimensions = {
   width: number;
@@ -44,3 +45,15 @@ export const DEVICE_ASPECT_RATIO =
 // Questionnaire layout constants for consistent horizontal spacing
 export const QUESTIONNAIRE_HORIZONTAL_PADDING = 24; // SPACING.xl equivalent
 export const QUESTIONNAIRE_MAX_CONTENT_WIDTH = 760;
+
+export const FOOTER_LAYOUT = {
+  FAB_SIZE: 64,
+  FAB_BORDER_RADIUS: 32,
+  FAB_OFFSET: -32,
+  FAB_BORDER_WIDTH: 4,
+  CONTAINER_BORDER_WIDTH: 2,
+  CONTAINER_BORDER_RADIUS: 30,
+  ICON_SIZE: 28,
+  PLUS_ICON_SIZE: 32,
+  BOTTOM_MARGIN: SPACING.md,
+};

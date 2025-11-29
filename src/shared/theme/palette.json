@@ -4,7 +4,8 @@
     "inkDark": "#011813",
     "cream": "#F9F6F2",
     "nav": "#000807",
-    "dark": "#000000"
+    "dark": "#000000",
+    "mint": "#3DDC97"
   },
   "tokens": {
     "backgroundPrimary": "#022C22",
