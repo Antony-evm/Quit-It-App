@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, Image } from 'react-native';
-import { COLOR_PALETTE, SPACING } from '../../theme';
+import { StyleSheet, ViewStyle, Image } from 'react-native';
+import { Box } from './Box';
+import { COLOR_PALETTE } from '../../theme';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large';
@@ -23,7 +24,7 @@ export const Logo: React.FC<LogoProps> = ({ size = 'large', style }) => {
   const config = sizeConfig[size];
 
   return (
-    <View style={[styles.container, style]}>
+    <Box alignItems="center" justifyContent="center" style={style}>
       <Image
         source={require('../../../assets/logo.png')}
         style={[
@@ -35,15 +36,11 @@ export const Logo: React.FC<LogoProps> = ({ size = 'large', style }) => {
         ]}
         resizeMode="contain"
       />
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   logoImage: {
     shadowColor: COLOR_PALETTE.textSecondary,
     shadowOffset: {

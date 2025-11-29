@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
@@ -7,7 +7,7 @@ import { questionnaireStorage } from '../data/questionnaireStorage';
 import type { SelectedAnswerOption, SelectedAnswerSubOption } from '../types';
 import type { RootStackScreenProps } from '@/types/navigation';
 import { SPACING, COLOR_PALETTE } from '@/shared/theme';
-import { AppButton, AppText, BackArrow } from '@/shared/components/ui';
+import { AppButton, AppText, BackArrow, Box } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
@@ -239,12 +239,12 @@ export const QuestionnaireScreen = ({
   const renderBody = () => {
     if (error) {
       return (
-        <View style={styles.errorState}>
+        <Box alignItems="center" gap="md">
           <AppText variant="heading" tone="secondary">
             We could not load the questionnaire.
           </AppText>
           <AppButton label="Try again" onPress={refresh} variant="secondary" />
-        </View>
+        </Box>
       );
     }
 
@@ -341,7 +341,7 @@ export const QuestionnaireScreen = ({
   }, [orderId, maxQuestion, question?.maxQuestion]);
 
   return (
-    <View style={styles.container}>
+    <Box flex={1} bg="backgroundMuted">
       <SafeAreaView style={styles.safeArea}>
         <QuestionnaireTemplate
           title={headerTitle}
@@ -366,22 +366,14 @@ export const QuestionnaireScreen = ({
           {renderBody()}
         </QuestionnaireTemplate>
       </SafeAreaView>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
   safeArea: {
     flex: 1,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  errorState: {
-    alignItems: 'center',
-    gap: SPACING.md,
   },
   validation: {
     marginTop: SPACING.sm,

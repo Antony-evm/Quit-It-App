@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Svg, { Circle, Path } from 'react-native-svg';
 
@@ -10,7 +10,7 @@ import type {
   SelectedAnswerSubOption,
   AnswerType,
 } from '../types';
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 const FREQUENCY_ORDER = ['never', 'rarely', 'often', 'constantly'];
@@ -133,7 +133,7 @@ const ClockSegmentBadge = ({
   const { d } = buildArcPath(size, startHour, endHour);
 
   return (
-    <View style={styles.badgeContainer}>
+    <Box flexDirection="row" alignItems="center" gap="sm">
       <Svg width={size} height={size}>
         <Circle
           cx={size / 2}
@@ -152,15 +152,15 @@ const ClockSegmentBadge = ({
           strokeLinecap="round"
         />
       </Svg>
-      <View style={styles.badgeLabels}>
+      <Box style={styles.badgeLabels}>
         <AppText variant="body" tone="primary">
           {label}
         </AppText>
         <AppText variant="body" style={styles.badgeHoursText}>
           {hoursLabel}
         </AppText>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 
@@ -321,9 +321,17 @@ export const FrequencyGrid = ({
       selectedIndex >= 0 ? orderedSubOptions[selectedIndex] : null;
 
     return (
-      <View key={option.id} style={styles.gridRow}>
-        <View style={styles.optionCell}>
-          <View style={styles.clockContainer}>
+      <Box
+        key={option.id}
+        style={styles.gridRow}
+        flexDirection="row"
+        alignItems="center"
+        py="sm"
+        px="sm"
+        gap="md"
+      >
+        <Box flex={1} justifyContent="center" alignItems="center">
+          <Box alignItems="center" gap="xs" style={styles.clockContainer}>
             <Svg width={60} height={60}>
               <Circle
                 cx={30}
@@ -380,9 +388,14 @@ export const FrequencyGrid = ({
             <AppText variant="caption" style={styles.timeRangeText}>
               {timeInfo.hoursLabel}
             </AppText>
-          </View>
-        </View>
-        <View style={styles.sliderCell}>
+          </Box>
+        </Box>
+        <Box
+          flex={3}
+          justifyContent="center"
+          alignItems="center"
+          style={styles.sliderCell}
+        >
           <Slider
             style={styles.slider}
             minimumValue={0}
@@ -396,7 +409,7 @@ export const FrequencyGrid = ({
               handleSelectionChange(option.id, Math.round(value))
             }
           />
-          <View style={styles.frequencyDisplay}>
+          <Box style={styles.frequencyDisplay}>
             {currentSub ? (
               <AppText variant="caption" style={styles.currentValueText}>
                 {currentSub.value}
@@ -410,28 +423,28 @@ export const FrequencyGrid = ({
                 Select a frequency
               </AppText>
             )}
-          </View>
-        </View>
-      </View>
+          </Box>
+        </Box>
+      </Box>
     );
   };
 
   if (options.length === 0 || subOptions.length === 0) {
     return (
-      <View style={styles.container}>
+      <Box my="md">
         <AppText variant="body" tone="primary">
           No frequency options available
         </AppText>
-      </View>
+      </Box>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.grid}>
+    <Box my="md">
+      <Box borderRadius="small" style={styles.grid}>
         {options.map((option, index) => renderGridRow(option, index))}
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 

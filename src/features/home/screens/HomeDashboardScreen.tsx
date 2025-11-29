@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
-import { AppSurface, AppText } from '@/shared/components/ui';
+import { AppSurface, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
 import {
@@ -66,22 +66,22 @@ export const HomeDashboardScreen = () => {
     >
       <WelcomeComponent />
 
-      <View style={styles.homeContentContainer}>
+      <Box px="xl">
         {dailyData && dailyData.length > 0 && (
           <CravingChart data={dailyData} style={styles.chartCard} />
         )}
 
         <HomeStatsRow stats={stats} style={styles.statsRow} />
 
-        <View style={styles.planSection}>
+        <Box mb="xl">
           <AppText variant="heading" style={styles.sectionTitle}>
             Your Plan
           </AppText>
           <AppSurface style={styles.planCard}>
             <QuittingPlanCard />
           </AppSurface>
-        </View>
-      </View>
+        </Box>
+      </Box>
     </ScrollView>
   );
 };
@@ -89,15 +89,9 @@ export const HomeDashboardScreen = () => {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
-  },
-  homeContentContainer: {
-    paddingHorizontal: SPACING.xl,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
   },
   planCard: {
-    marginBottom: SPACING.xl,
-  },
-  planSection: {
     marginBottom: SPACING.xl,
   },
   sectionTitle: {

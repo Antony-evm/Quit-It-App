@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { AppText } from '@/shared/components/ui';
+import { StyleSheet } from 'react-native';
+import { AppText, Box } from '@/shared/components/ui';
 import { SPACING, COLOR_PALETTE, TYPOGRAPHY } from '@/shared/theme';
 
 interface WelcomeTextProps {
@@ -14,23 +14,18 @@ export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
     : 'Continue your smoke-free journey.';
 
   return (
-    <View style={styles.container}>
+    <Box alignItems="center" bg="backgroundPrimary" pt="xxl">
       <AppText variant="title" tone="inverse" style={styles.title}>
         {title}
       </AppText>
       <AppText variant="body" tone="inverse" style={styles.subtitle}>
         {subtitle}
       </AppText>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    paddingTop: SPACING.xxl,
-  },
   title: {
     textAlign: 'center',
     marginBottom: SPACING.sm,

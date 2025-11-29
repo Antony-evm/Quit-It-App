@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type NumericRangeFieldProps = {
@@ -29,14 +29,21 @@ export const NumericRangeField = ({
   const displayValue = value ?? Math.floor((minimum + maximum) / 2);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header} />
-      <View style={styles.valuePill}>
+    <Box gap="md">
+      <Box gap="sm" />
+      <Box
+        py="sm"
+        px="lg"
+        bg="backgroundMuted"
+        alignItems="center"
+        gap="xs"
+        style={styles.valuePill}
+      >
         <AppText variant="title">
           {displayValue}
           {units && ` ${units}`}
         </AppText>
-      </View>
+      </Box>
       <Slider
         style={styles.slider}
         minimumValue={minimum}
@@ -48,51 +55,26 @@ export const NumericRangeField = ({
         value={displayValue}
         onValueChange={handleValueChange}
       />
-      <View style={styles.labels}>
+      <Box flexDirection="row" justifyContent="space-between">
         <AppText variant="caption" style={styles.rangeLabel}>
           {minimum}
         </AppText>
         <AppText variant="caption" style={styles.rangeLabel}>
           {maximum}
         </AppText>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.md,
-  },
-  header: {
-    gap: SPACING.sm,
-  },
-  helperChip: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: 999,
-    backgroundColor: COLOR_PALETTE.accentPrimary,
-  },
-  helperText: {
-    marginTop: SPACING.xs,
-  },
   valuePill: {
     borderRadius: 0,
     borderWidth: 0,
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    alignItems: 'center',
-    gap: SPACING.xs,
   },
   slider: {
     width: '100%',
     height: 60,
-  },
-  labels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   rangeLabel: {
     color: COLOR_PALETTE.textPrimary,

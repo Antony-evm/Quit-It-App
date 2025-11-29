@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { AppText, AppSurface } from '@/shared/components/ui';
+import { StyleSheet } from 'react-native';
+import { AppText, AppSurface, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';

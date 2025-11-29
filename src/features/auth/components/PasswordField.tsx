@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { AppTextInput, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { AppTextInput, AppText, Box } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
 import HidePasswordSvg from '@/assets/hidePassword.svg';
 
@@ -27,8 +27,13 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   return (
-    <View>
-      <View
+    <Box>
+      <Box
+        flexDirection="row"
+        alignItems="center"
+        bg="backgroundPrimary"
+        borderRadius="medium"
+        mb="lg"
         style={[
           styles.passwordContainer,
           hasError && styles.passwordContainerError,
@@ -54,25 +59,20 @@ export const PasswordField: React.FC<PasswordFieldProps> = ({
             <HidePasswordSvg width={20} height={20} fill="none" />
           )}
         </TouchableOpacity>
-      </View>
+      </Box>
       {errorMessage && (
         <AppText variant="caption" style={styles.errorText}>
           {errorMessage}
         </AppText>
       )}
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
   passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 12,
-    marginBottom: SPACING.lg,
   },
   passwordContainerError: {
     borderColor: COLOR_PALETTE.accentPrimary,
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textPrimary,
     backgroundColor: 'transparent',
     borderWidth: 0,
-    marginBottom: 0, // Override default margin from AppTextInput
+    marginBottom: 0,
   },
   passwordToggle: {
     paddingHorizontal: SPACING.md,

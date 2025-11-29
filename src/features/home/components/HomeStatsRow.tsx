@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 
 export type HomeStat = {
@@ -20,11 +20,15 @@ type HomeStatsRowProps = {
 };
 
 export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
-  <View style={[styles.container, style]}>
+  <Box flexDirection="column" style={style}>
     {stats.map((stat, index) => {
       return (
-        <View
+        <Box
           key={stat.label}
+          bg="backgroundPrimary"
+          borderRadius="medium"
+          py="md"
+          px="md"
           style={[
             styles.statCard,
             index > 0 && styles.statCardSpacing,
@@ -34,54 +38,38 @@ export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
             },
           ]}
         >
-          <View style={styles.contentRow}>
-            <View
-              style={[
-                styles.tag,
-                {
-                  backgroundColor:
-                    stat.tagBackgroundColor ?? COLOR_PALETTE.backgroundMuted,
-                },
-              ]}
+          <Box flexDirection="row" alignItems="center">
+            <Box
+              px="md"
+              py="xs"
+              borderRadius="full"
+              mr="sm"
+              style={{
+                backgroundColor:
+                  stat.tagBackgroundColor ?? COLOR_PALETTE.backgroundMuted,
+              }}
             >
               <AppText style={styles.tagText}>
                 {stat.tagLabel ?? stat.label}
               </AppText>
-            </View>
+            </Box>
             <AppText style={styles.text}>
               {stat.bottomLabel}: {stat.value}
             </AppText>
-          </View>
-        </View>
+          </Box>
+        </Box>
       );
     })}
-  </View>
+  </Box>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'column',
-  },
   statCard: {
     borderWidth: 2,
     borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: BORDER_RADIUS.medium,
-    paddingVertical: SPACING.md,
-    paddingHorizontal: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
   statCardSpacing: {
     marginTop: SPACING.md,
-  },
-  contentRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tag: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.full,
-    marginRight: SPACING.sm,
   },
   tagText: {
     fontSize: 16,

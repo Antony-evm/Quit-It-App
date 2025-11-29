@@ -1,21 +1,15 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Logo } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { Logo, Box } from '@/shared/components/ui';
 
 export const AuthHeader = () => {
   return (
-    <View style={styles.logoSection}>
+    <Box
+      alignItems="center"
+      justifyContent="flex-end"
+      bg="backgroundPrimary"
+      style={{ height: '15%' }}
+    >
       <Logo size="large" />
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  logoSection: {
-    height: '15%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-  },
-});

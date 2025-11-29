@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 import { useAuth } from './AuthContext';
-import { AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { AppText, Box } from '@/shared/components/ui';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -20,9 +18,15 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
   // Show loading state while checking authentication
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <Box
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        bg="backgroundPrimary"
+        p="lg"
+      >
         <AppText>Loading...</AppText>
-      </View>
+      </Box>
     );
   }
 
@@ -32,24 +36,20 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
       return <>{fallback}</>;
     }
     return (
-      <View style={styles.container}>
+      <Box
+        flex={1}
+        justifyContent="center"
+        alignItems="center"
+        bg="backgroundPrimary"
+        p="lg"
+      >
         <AppText>Please log in to continue</AppText>
-      </View>
+      </Box>
     );
   }
 
   // Render children if authenticated
   return <>{children}</>;
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    padding: SPACING.lg,
-  },
-});
 
 export default AuthGuard;

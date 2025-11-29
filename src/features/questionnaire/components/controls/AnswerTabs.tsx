@@ -1,8 +1,7 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import { AnswerTab } from './AnswerTab';
-import { SPACING } from '@/shared/theme';
+import { Box } from '@/shared/components/ui';
 
 type AnswerTabOption = {
   id: number;
@@ -58,11 +57,8 @@ export const AnswerTabs = ({
     [isMulti, onSelectionChange, selectedOptionIds],
   );
 
-  const containerStyle =
-    safeVariant === 'multiple-few' ? styles.stackedContainer : styles.container;
-
   return (
-    <View style={containerStyle}>
+    <Box flexDirection="row" flexWrap="wrap" gap="md" style={{ width: '100%' }}>
       {options.map(option => (
         <AnswerTab
           key={option.id}
@@ -73,21 +69,6 @@ export const AnswerTabs = ({
           onPress={() => handleToggle(option.id)}
         />
       ))}
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
-  },
-  stackedContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
-  },
-});

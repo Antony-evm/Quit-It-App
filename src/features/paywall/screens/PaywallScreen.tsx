@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '@/types/navigation';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import { AppButton, AppText } from '@/shared/components/ui';
+import { AppButton, AppText, Box } from '@/shared/components/ui';
 import { useSubscription } from '../hooks/useSubscription';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { useUserStatusUpdate } from '@/shared/hooks';
@@ -40,8 +40,8 @@ export const PaywallScreen = ({
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.content}>
-        <View style={styles.header}>
+      <Box flex={1} px="lg" justifyContent="space-between">
+        <Box alignItems="center" style={styles.headerMargin}>
           <AppText variant="heading" style={styles.title}>
             🎉 You're Almost Ready!
           </AppText>
@@ -49,32 +49,32 @@ export const PaywallScreen = ({
             Complete your journey with premium access to all features and
             personalized tracking.
           </AppText>
-        </View>
+        </Box>
 
-        <View style={styles.features}>
-          <View style={styles.feature}>
+        <Box flex={1} justifyContent="center" py="xl">
+          <Box mb="lg" px="sm">
             <AppText variant="body" style={styles.featureText}>
               ✨ Personalized quit plan based on your responses
             </AppText>
-          </View>
-          <View style={styles.feature}>
+          </Box>
+          <Box mb="lg" px="sm">
             <AppText variant="body" style={styles.featureText}>
               📊 Advanced progress tracking and insights
             </AppText>
-          </View>
-          <View style={styles.feature}>
+          </Box>
+          <Box mb="lg" px="sm">
             <AppText variant="body" style={styles.featureText}>
               🎯 Daily motivation and milestone celebrations
             </AppText>
-          </View>
-          <View style={styles.feature}>
+          </Box>
+          <Box mb="lg" px="sm">
             <AppText variant="body" style={styles.featureText}>
               🔒 Secure, private data with backup protection
             </AppText>
-          </View>
-        </View>
+          </Box>
+        </Box>
 
-        <View style={styles.actionSection}>
+        <Box pb="lg">
           <AppButton
             label={isSubscribing ? 'Processing...' : 'Get Premium Access'}
             onPress={handleSubscribe}
@@ -86,8 +86,8 @@ export const PaywallScreen = ({
           <AppText variant="caption" tone="secondary" style={styles.disclaimer}>
             By subscribing, you agree to our terms of service. Cancel anytime.
           </AppText>
-        </View>
-      </View>
+        </Box>
+      </Box>
     </SafeAreaView>
   );
 };
@@ -97,13 +97,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
   },
-  content: {
-    flex: 1,
-    paddingHorizontal: SPACING.lg,
-    justifyContent: 'space-between',
-  },
-  header: {
-    alignItems: 'center',
+  headerMargin: {
     marginTop: SPACING.xl * 2,
   },
   title: {
@@ -116,22 +110,10 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: SPACING.xl,
   },
-  features: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingVertical: SPACING.xl,
-  },
-  feature: {
-    marginBottom: SPACING.lg,
-    paddingHorizontal: SPACING.sm,
-  },
   featureText: {
     fontSize: 16,
     lineHeight: 24,
     color: COLOR_PALETTE.textPrimary,
-  },
-  actionSection: {
-    paddingBottom: SPACING.lg,
   },
   disclaimer: {
     textAlign: 'center',

@@ -5,10 +5,10 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { StyleSheet, ScrollView, View, Pressable } from 'react-native';
+import { StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { AppText, DraggableModal } from '@/shared/components/ui';
+import { AppText, DraggableModal, Box } from '@/shared/components/ui';
 import {
   SPACING,
   COLOR_PALETTE,
@@ -62,7 +62,11 @@ export const JournalScreen = () => {
 
   const headerContent = useMemo(
     () => (
-      <View style={styles.modalHeaderContent}>
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <Pressable
           onPress={() => setIsEditModalVisible(false)}
           style={({ pressed }) => [
@@ -92,25 +96,25 @@ export const JournalScreen = () => {
             </AppText>
           )}
         </Pressable>
-      </View>
+      </Box>
     ),
     [],
   );
 
   const ListHeaderComponent = useMemo(
     () => (
-      <View style={styles.header}>
+      <Box mb="sm">
         <AppText variant="title" style={styles.title}>
           Your Quit Journal
         </AppText>
         <AppText tone="primary">A clear view of how far you've come.</AppText>
-      </View>
+      </Box>
     ),
     [],
   );
 
   return (
-    <View style={styles.container}>
+    <Box flex={1}>
       <TrackingRecordsList
         onRecordPress={handleRecordPress}
         ListHeaderComponent={ListHeaderComponent}
@@ -122,13 +126,13 @@ export const JournalScreen = () => {
         onClose={() => setIsEditModalVisible(false)}
         headerContent={headerContent}
       >
-        <View style={styles.modalInnerContainer}>
+        <Box flex={1} justifyContent="space-between">
           <ScrollView
             ref={editDrawerScrollRef}
             contentContainerStyle={styles.modalContent}
             keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.modalTextContainer}>
+            <Box mb="xl" mt="md" px="sm">
               <AppText
                 variant="body"
                 tone="primary"
@@ -137,7 +141,7 @@ export const JournalScreen = () => {
                 Reflect, reset, and track your journey. Every entry is a step
                 forward.
               </AppText>
-            </View>
+            </Box>
             {selectedRecord && (
               <NotesCard
                 ref={editCardRef}
@@ -150,7 +154,13 @@ export const JournalScreen = () => {
             )}
           </ScrollView>
           {selectedRecord && (
-            <View style={styles.deleteButtonContainer}>
+            <Box
+              p="md"
+              pb="xs"
+              bg="backgroundMuted"
+              alignItems="center"
+              style={styles.deleteButtonContainer}
+            >
               <Pressable
                 onPress={() => editCardRef.current?.delete()}
                 style={({ pressed }) => [
@@ -160,34 +170,23 @@ export const JournalScreen = () => {
               >
                 <AppText style={styles.deleteButtonText}>Delete</AppText>
               </Pressable>
-            </View>
+            </Box>
           )}
-        </View>
+        </Box>
       </DraggableModal>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   scrollContent: {
     flexGrow: 1,
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
-  },
-  header: {
-    marginBottom: SPACING.sm,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
   },
   title: {
     marginBottom: SPACING.sm,
-  },
-  modalHeaderContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   headerButton: {
     padding: SPACING.xs,
@@ -199,27 +198,14 @@ const styles = StyleSheet.create({
   modalContent: {
     padding: SPACING.md,
   },
-  modalInnerContainer: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  modalTextContainer: {
-    marginBottom: SPACING.xl,
-    marginTop: SPACING.md,
-    paddingHorizontal: SPACING.sm,
-  },
   modalDescription: {
     textAlign: 'center',
     lineHeight: 26,
     fontSize: 18,
   },
   deleteButtonContainer: {
-    padding: SPACING.md,
-    paddingBottom: SPACING.xs,
     borderTopWidth: 1,
     borderTopColor: COLOR_PALETTE.borderDefault,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    alignItems: 'center',
   },
   deleteButton: {
     backgroundColor: COLOR_PALETTE.backgroundDark,

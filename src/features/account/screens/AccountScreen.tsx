@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
 import {
   AppButton,
@@ -7,6 +7,7 @@ import {
   AppText,
   AppTextInput,
   Logo,
+  Box,
 } from '@/shared/components/ui';
 import {
   COLOR_PALETTE,
@@ -118,16 +119,16 @@ export const AccountScreen = () => {
     switch (activeSection) {
       case 'details':
         return (
-          <View style={styles.emailSection}>
-            <View style={styles.emailRow}>
+          <Box bg="backgroundPrimary" p="lg" borderRadius="small" mb="lg">
+            <Box flexDirection="row" alignItems="center" gap="sm">
               <EmailSvg
                 width={24}
                 height={24}
                 color={COLOR_PALETTE.textPrimary}
               />
               <AppText tone="primary">{user?.email ?? 'Not available'}</AppText>
-            </View>
-          </View>
+            </Box>
+          </Box>
         );
       case 'plan':
         return <QuittingPlanDetails />;
@@ -156,7 +157,7 @@ export const AccountScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <Box flex={1}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         refreshControl={
@@ -169,11 +170,11 @@ export const AccountScreen = () => {
           />
         }
       >
-        <View style={styles.header}>
+        <Box mb="xxl">
           <AppText tone="primary" variant="title" style={styles.headerTitle}>
             Your Quit It Profile
           </AppText>
-        </View>
+        </Box>
 
         <AccountSectionItem
           title="Your Details"
@@ -202,35 +203,18 @@ export const AccountScreen = () => {
       >
         {renderDrawerContent()}
       </BottomDrawer>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   scrollContent: {
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2, // Add extra padding for FAB overlap
-  },
-  header: {
-    marginBottom: SPACING.xxl,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
   },
   planCard: {
     marginBottom: SPACING.xl,
-  },
-  emailSection: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    padding: SPACING.lg,
-    borderRadius: 8,
-    marginBottom: SPACING.lg,
-  },
-  emailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
   },
   headerTitle: {
     marginBottom: SPACING.sm,

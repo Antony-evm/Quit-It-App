@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { useAuth } from '@/shared/auth/AuthContext';
 import { useQuittingPlan } from '@/features/questionnaire';
 import { useSmokingAnalytics } from '@/features/tracking';
@@ -50,36 +50,47 @@ export const WelcomeComponent = () => {
   const showSpecificMessage = message !== '';
 
   return (
-    <View style={[styles.container, { minHeight: height * 0.3 }]}>
-      <View style={styles.content}>
-        <View style={styles.titleContainer}>
+    <Box
+      style={[styles.container, { minHeight: height * 0.3 }]}
+      mb="lg"
+      px="lg"
+      bg="backgroundPrimary"
+    >
+      <Box flex={1}>
+        <Box mb="xs">
           <AppText variant="title" style={styles.title}>
             Keep the streak going {formattedName}!
           </AppText>
-        </View>
+        </Box>
 
-        <View style={styles.centerContent}>
+        <Box flex={1} justifyContent="center">
           {showSpecificMessage ? (
             <>
               <AppText variant="body" style={styles.message}>
                 {message}
               </AppText>
-              <View style={styles.messageContainer}>
+              <Box
+                style={styles.messageContainer}
+                mt="sm"
+                p="md"
+                bg="backgroundMuted"
+                borderRadius="small"
+              >
                 <AppText variant="heading" style={styles.timeDifference}>
                   {timeDifference}
                 </AppText>
-              </View>
+              </Box>
             </>
           ) : (
-            <View style={styles.subtitleContainer}>
+            <Box mt="sm">
               <AppText tone="secondary" style={styles.subtitle}>
                 Here&apos;s how you&apos;ve been doing today.
               </AppText>
-            </View>
+            </Box>
           )}
-        </View>
-      </View>
-    </View>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import { AppTextInput, AppText } from '@/shared/components/ui';
+import { StyleSheet } from 'react-native';
+import { AppTextInput, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface EmailValidation {
@@ -43,7 +43,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
   const shouldShowInvalidHint = !validation.isValid;
 
   return (
-    <View>
+    <Box>
       <AppTextInput
         hasError={validation.hasInput && !validation.isValid}
         placeholder="Email address"
@@ -67,7 +67,7 @@ export const EmailField: React.FC<EmailFieldProps> = ({
           {validation.isValid ? '✓ Valid email' : '✗ Invalid email format'}
         </AppText>
       )}
-    </View>
+    </Box>
   );
 };
 

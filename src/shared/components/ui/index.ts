@@ -3,6 +3,7 @@ export * from './AppSurface';
 export * from './AppText';
 export * from './AppTextInput';
 export * from './BackArrow';
-export * from './Logo';
+export * from './Box';
 export * from './CustomPasswordStrengthIndicator';
 export * from './DraggableModal';
+export * from './Logo';

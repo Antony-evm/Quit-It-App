@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View } from 'react-native';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { AnswerTabs } from '../controls/AnswerTabs';
-import { SPACING } from '@/shared/theme';
 
 type TimeSlotSelectorProps = {
   range: string;
@@ -52,7 +50,7 @@ export const TimeSlotSelector = ({
   const slots = useMemo(() => generateSlotsFromRange(range), [range]);
 
   return (
-    <View style={styles.container}>
+    <Box gap="md">
       {slots.length ? (
         <AnswerTabs
           options={slots.map((slot, index) => ({ id: index, label: slot }))}
@@ -71,18 +69,6 @@ export const TimeSlotSelector = ({
       ) : (
         <AppText tone="secondary">No time slots available.</AppText>
       )}
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.md,
-  },
-  helper: {
-    borderRadius: 0,
-    borderWidth: 0,
-    paddingVertical: SPACING.xs,
-    gap: SPACING.xs,
-  },
-});

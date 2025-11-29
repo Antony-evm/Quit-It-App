@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, View, Animated } from 'react-native';
-import { AppText } from '@/shared/components/ui';
+import { StyleSheet, Animated } from 'react-native';
+import { AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type QuestionnaireProgressBarProps = {
@@ -50,12 +50,18 @@ export const QuestionnaireProgressBar = ({
   }, [isAnimating, pulseAnim]);
 
   return (
-    <View style={styles.container}>
+    <Box
+      style={styles.container}
+      alignItems="center"
+      py="xs"
+      bg="backgroundMuted"
+      borderRadius="small"
+    >
       <AppText variant="caption" tone="secondary" style={styles.progressText}>
         {currentQuestion}/{totalQuestions}
       </AppText>
 
-      <View style={styles.progressTrack}>
+      <Box style={styles.progressTrack}>
         <Animated.View
           style={[
             styles.progressFill,
@@ -65,8 +71,8 @@ export const QuestionnaireProgressBar = ({
             },
           ]}
         />
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 

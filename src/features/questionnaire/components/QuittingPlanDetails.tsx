@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { AppText, AppSurface } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { AppText, Box } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
 import CalendarSvg from '@/assets/calendar.svg';
@@ -9,7 +9,7 @@ import StopSvg from '@/assets/stop.svg';
 import GoalSvg from '@/assets/goal.svg';
 
 interface QuittingPlanDetailsProps {
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
@@ -19,23 +19,23 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
   if (isLoading) {
     return (
-      <View style={styles.wrapper}>
+      <Box gap="md">
         <AppText tone="secondary" style={styles.loadingText}>
           Loading plan details...
         </AppText>
-      </View>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.wrapper}>
+      <Box gap="md">
         <AppText
           style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
         >
           Unable to load plan details
         </AppText>
-      </View>
+      </Box>
     );
   }
 
@@ -52,18 +52,18 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   };
 
   return (
-    <View style={[styles.wrapper, style]}>
-      <View style={styles.box}>
-        <View style={styles.row}>
+    <Box gap="md" style={style}>
+      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
+        <Box flexDirection="row" alignItems="center" gap="sm">
           <AimSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body">
             {plan.status}
           </AppText>
-        </View>
-      </View>
+        </Box>
+      </Box>
 
-      <View style={styles.box}>
-        <View style={styles.row}>
+      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
+        <Box flexDirection="row" alignItems="center" gap="sm">
           <CalendarSvg
             width={24}
             height={24}
@@ -72,44 +72,31 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
           <AppText tone="primary" variant="body">
             {formatDate(plan.date)}
           </AppText>
-        </View>
-      </View>
+        </Box>
+      </Box>
 
-      <View style={styles.box}>
-        <View style={styles.row}>
+      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
+        <Box flexDirection="row" alignItems="center" gap="sm">
           <StopSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body">
             {plan.current} cigarettes per day
           </AppText>
-        </View>
-      </View>
+        </Box>
+      </Box>
 
-      <View style={styles.box}>
-        <View style={styles.row}>
+      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
+        <Box flexDirection="row" alignItems="center" gap="sm">
           <GoalSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
           <AppText tone="primary" variant="body">
             {plan.target} cigarettes per day
           </AppText>
-        </View>
-      </View>
-    </View>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    gap: SPACING.md,
-  },
-  box: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: 8,
-    padding: SPACING.lg,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
   loadingText: {
     textAlign: 'center',
     fontStyle: 'italic',

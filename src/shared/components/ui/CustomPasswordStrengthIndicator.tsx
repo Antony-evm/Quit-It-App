@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { AppText } from './AppText';
+import { Box } from './Box';
 import { SPACING } from '@/shared/theme/spacing';
 import { COLOR_PALETTE } from '@/shared/theme/colors';
+import { BORDER_RADIUS } from '@/shared/theme/borderRadius';
 import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordValidation';
 
 interface CustomPasswordStrengthIndicatorProps {
   validation: CustomPasswordValidation;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const CustomPasswordStrengthIndicator: React.FC<
@@ -15,7 +17,14 @@ export const CustomPasswordStrengthIndicator: React.FC<
 > = ({ validation, style }) => {
   if (!validation.password) {
     return (
-      <View style={[styles.container, style]}>
+      <Box
+        mt="xs"
+        px="sm"
+        py="xs"
+        bg="backgroundMuted"
+        borderRadius="small"
+        style={style}
+      >
         <AppText variant="caption" style={styles.requirementText}>
           Password must contain:
         </AppText>
@@ -34,12 +43,19 @@ export const CustomPasswordStrengthIndicator: React.FC<
         <AppText variant="caption" style={styles.requirementItem}>
           ✗ At least one special character
         </AppText>
-      </View>
+      </Box>
     );
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <Box
+      mt="xs"
+      px="sm"
+      py="xs"
+      bg="backgroundMuted"
+      borderRadius="small"
+      style={style}
+    >
       <AppText variant="caption" style={styles.requirementText}>
         Password Requirements:
       </AppText>
@@ -111,18 +127,11 @@ export const CustomPasswordStrengthIndicator: React.FC<
         {validation.requirements.hasSymbol ? '✓' : '✗'} At least one special
         character
       </AppText>
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: SPACING.xs,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.xs,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    borderRadius: 8,
-  },
   requirementText: {
     color: COLOR_PALETTE.textPrimary,
     marginBottom: SPACING.xs,

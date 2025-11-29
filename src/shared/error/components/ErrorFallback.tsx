@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
-import { AppText } from '../../components/ui/AppText';
-import { AppButton } from '../../components/ui/AppButton';
-import { COLOR_PALETTE, SPACING } from '../../theme';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { AppText, AppButton, Box } from '../../components/ui';
+import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../../theme';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -15,7 +14,7 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
 }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <Box p="xl" alignItems="center" style={styles.content}>
         <AppText variant="title" style={styles.title}>
           Oops!
         </AppText>
@@ -24,11 +23,11 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
         </AppText>
 
         {__DEV__ && (
-          <View style={styles.debugInfo}>
+          <Box p="md" mb="xl" borderRadius="small" style={styles.debugInfo}>
             <AppText variant="caption" style={styles.errorText}>
               {error.toString()}
             </AppText>
-          </View>
+          </Box>
         )}
 
         <AppButton
@@ -39,7 +38,7 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
           fullWidth
           containerStyle={styles.button}
         />
-      </View>
+      </Box>
     </SafeAreaView>
   );
 };
@@ -53,8 +52,6 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-    padding: SPACING.xl,
-    alignItems: 'center',
   },
   title: {
     marginBottom: SPACING.md,
@@ -67,9 +64,6 @@ const styles = StyleSheet.create({
   },
   debugInfo: {
     backgroundColor: 'rgba(0,0,0,0.05)',
-    padding: SPACING.md,
-    borderRadius: 8,
-    marginBottom: SPACING.xl,
     width: '100%',
   },
   errorText: {

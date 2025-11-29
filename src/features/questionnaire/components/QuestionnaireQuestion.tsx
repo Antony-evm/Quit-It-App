@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import type { Question, SelectedAnswerOption } from '../types';
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { AnswerTabs } from './controls/AnswerTabs';
 import { DatePickerField } from './fields/DatePickerField';
 import { NumericRangeField } from './fields/NumericRangeField';
 import { TimeSlotSelector } from './fields/TimeSlotSelector';
-import { SPACING } from '@/shared/theme';
 import {
   formatDateForSubmission,
   parseSubmissionDateValue,
@@ -328,14 +326,14 @@ export const QuestionnaireQuestion = ({
 
   if (!question) {
     return (
-      <View style={styles.container}>
+      <Box gap="lg">
         <AppText tone="secondary">No question to display.</AppText>
-      </View>
+      </Box>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <Box gap="lg">
       {(allowMultipleChoice || allowSingleChoice) && question.options.length ? (
         <AnswerTabs
           options={question.options.map(option => ({
@@ -390,12 +388,6 @@ export const QuestionnaireQuestion = ({
           This question does not contain answer options yet.
         </AppText>
       ) : null}
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.lg,
-  },
-});

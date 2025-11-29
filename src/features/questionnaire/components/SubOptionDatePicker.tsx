@@ -1,14 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
 
 import type {
   AnswerSubOption,
   SelectedAnswerSubOption,
   AnswerType,
 } from '../types';
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { DatePickerField } from './fields/DatePickerField';
-import { SPACING } from '@/shared/theme';
 import {
   formatDateForSubmission,
   parseSubmissionDateValue,
@@ -100,31 +98,22 @@ export const SubOptionDatePicker = ({
 
   if (!dateSubOption) {
     return (
-      <View style={styles.container}>
+      <Box gap="md">
         <AppText variant="body" tone="primary">
           No date sub-option available.
         </AppText>
-      </View>
+      </Box>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <Box gap="md">
       <DatePickerField
         value={selectedDate}
         minimumDate={dateBounds.min}
         maximumDate={dateBounds.max}
         onChange={setSelectedDate}
       />
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.md,
-  },
-  label: {
-    marginBottom: SPACING.xs,
-  },
-});

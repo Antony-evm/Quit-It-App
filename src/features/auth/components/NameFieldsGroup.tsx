@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { AppTextInput, AppText } from '@/shared/components/ui';
+import { StyleSheet } from 'react-native';
+import { AppTextInput, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface NameValidation {
@@ -28,9 +28,9 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   isLoading = false,
 }) => {
   return (
-    <View>
+    <Box>
       {/* First Name Field */}
-      <View>
+      <Box>
         <AppTextInput
           placeholder="First name"
           value={firstName}
@@ -45,10 +45,10 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
             {firstNameValidation.error}
           </AppText>
         )}
-      </View>
+      </Box>
 
       {/* Last Name Field */}
-      <View>
+      <Box>
         <AppTextInput
           placeholder="Last name"
           value={lastName}
@@ -63,8 +63,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
             {lastNameValidation.error}
           </AppText>
         )}
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 

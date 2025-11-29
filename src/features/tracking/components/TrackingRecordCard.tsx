@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { StyleSheet, Pressable } from 'react-native';
 
-import { AppSurface, AppText } from '@/shared/components/ui';
+import { AppSurface, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
@@ -79,23 +79,40 @@ export const TrackingRecordCard = React.memo(
             { borderLeftColor: accentColor, borderLeftWidth: 4 },
           ]}
         >
-          <View style={styles.headerRow}>
-            <View
-              style={[styles.badge, { backgroundColor: badgeBackgroundColor }]}
+          <Box
+            flexDirection="row"
+            alignItems="flex-start"
+            justifyContent="space-between"
+          >
+            <Box
+              px="md"
+              py="xs"
+              borderRadius="full"
+              style={[
+                styles.badgeSelf,
+                { backgroundColor: badgeBackgroundColor },
+              ]}
             >
               <AppText
                 style={[styles.badgeText, { color: COLOR_PALETTE.textPrimary }]}
               >
                 {trackingType?.displayName || `Type ${record.tracking_type_id}`}
               </AppText>
-            </View>
-            <View style={styles.dateTimeContainer}>
+            </Box>
+            <Box alignItems="flex-end">
               <AppText style={styles.timeText}>{timeLabel}</AppText>
               <AppText style={styles.dateText}>{dateLabel}</AppText>
-            </View>
-          </View>
+            </Box>
+          </Box>
 
-          <View style={styles.noteSection}>
+          <Box
+            px="md"
+            py="sm"
+            mt="md"
+            bg="backgroundMuted"
+            borderRadius="medium"
+            style={styles.noteSection}
+          >
             {record.note ? (
               <AppText variant="body" style={styles.noteText}>
                 {record.note}
@@ -105,7 +122,7 @@ export const TrackingRecordCard = React.memo(
                 Add a thought about this moment…
               </AppText>
             )}
-          </View>
+          </Box>
         </AppSurface>
       </Pressable>
     );
@@ -119,15 +136,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: SPACING.md,
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-  },
-  badge: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.xs,
-    borderRadius: BORDER_RADIUS.full,
+  badgeSelf: {
     alignSelf: 'flex-start',
   },
   badgeText: {
@@ -135,9 +144,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-  },
-  dateTimeContainer: {
-    alignItems: 'flex-end',
   },
   timeText: {
     fontSize: 14,
@@ -150,14 +156,9 @@ const styles = StyleSheet.create({
     color: COLOR_PALETTE.textMuted,
   },
   noteSection: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    marginTop: SPACING.md,
     borderTopWidth: 1,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-    borderRadius: BORDER_RADIUS.medium,
   },
   noteText: {
     color: COLOR_PALETTE.textPrimary,

@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import type { QuestionnaireResponseRecord } from '../types';
-import { AppSurface, AppText } from '@/shared/components/ui';
+import { AppSurface, AppText, Box } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 import {
   formatDisplayDate,
@@ -17,23 +17,23 @@ type QuestionnaireReviewProps = {
 export const QuestionnaireReview = ({
   responses,
 }: QuestionnaireReviewProps) => (
-  <View style={styles.container}>
-    <View style={styles.list}>
+  <Box gap="lg">
+    <Box gap="lg">
       {responses.map(response => {
         const answer = resolveAnswerDisplay(response);
         return (
           <AppSurface key={response.questionId} style={styles.card}>
             <AppText variant="body">{response.question}</AppText>
-            <View style={styles.answerBlock}>
+            <Box gap="lg">
               <AppText variant="caption" style={styles.answerText}>
                 {answer.primary}
               </AppText>
-            </View>
+            </Box>
           </AppSurface>
         );
       })}
-    </View>
-  </View>
+    </Box>
+  </Box>
 );
 
 type AnswerDisplay = {
@@ -100,19 +100,7 @@ const resolveAnswerDisplay = (
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.lg,
-  },
-  list: {
-    gap: SPACING.lg,
-  },
   card: {
-    gap: SPACING.lg,
-  },
-  textBlock: {
-    marginBottom: SPACING.xs,
-  },
-  answerBlock: {
     gap: SPACING.lg,
   },
   answerText: {

@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 
-import { AppButton, AppSurface, AppText } from '@/shared/components/ui';
+import { AppButton, AppSurface, AppText, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
@@ -49,13 +49,20 @@ export const QuestionnaireTemplate = ({
   );
 
   return (
-    <View style={styles.wrapper}>
+    <Box style={styles.wrapper} flex={1} bg="backgroundMuted">
       {/* Header with back button and progress bar */}
-      <View style={styles.headerContainer}>
-        <View style={styles.backButtonSection}>{backButton}</View>
+      <Box
+        style={styles.headerContainer}
+        flexDirection="row"
+        alignItems="center"
+        px="lg"
+        pt="md"
+        bg="backgroundMuted"
+      >
+        <Box style={styles.backButtonSection}>{backButton}</Box>
 
         {/* Progress bar - always reserve space, show when not loading and have progress data */}
-        <View style={styles.progressSection}>
+        <Box style={styles.progressSection}>
           {progressData ? (
             <QuestionnaireProgressBar
               currentQuestion={progressData.currentQuestion}
@@ -64,13 +71,13 @@ export const QuestionnaireTemplate = ({
               isSubmitting={isSubmitting}
             />
           ) : isLoading ? (
-            <View style={{ width: '100%', alignItems: 'center', gap: 4 }}>
+            <Box style={{ width: '100%' }} alignItems="center" gap="xs">
               <SkeletonItem width={40} height={14} />
               <SkeletonItem width="100%" height={6} />
-            </View>
+            </Box>
           ) : null}
-        </View>
-      </View>
+        </Box>
+      </Box>
 
       <ScrollView
         contentContainerStyle={[
@@ -80,25 +87,25 @@ export const QuestionnaireTemplate = ({
         style={styles.scrollView}
         testID="questionnaire-template"
       >
-        <View style={[styles.container, { maxWidth: contentWidth }]}>
+        <Box style={[styles.container, { maxWidth: contentWidth }]} gap="md">
           {!isLoading ? (
-            <View style={styles.hero}>
-              <View style={styles.heroText}>
+            <Box style={styles.hero} py="md" bg="backgroundMuted">
+              <Box gap="lg">
                 <AppText variant="title">{title}</AppText>
                 {subtitle ? (
                   <AppText tone="primary" style={styles.subtitle}>
                     {subtitle}
                   </AppText>
                 ) : null}
-              </View>
-            </View>
+              </Box>
+            </Box>
           ) : null}
           <AppSurface style={styles.body}>
             {isLoading ? <QuestionnaireSkeleton /> : children}
           </AppSurface>
-        </View>
+        </Box>
       </ScrollView>
-      <View style={styles.footer}>
+      <Box style={styles.footer} gap="md" pt="lg" pb="lg" bg="backgroundMuted">
         {primaryActionLabel ? (
           <AppButton
             label={primaryActionLabel}
@@ -110,8 +117,8 @@ export const QuestionnaireTemplate = ({
           />
         ) : null}
         {footerSlot}
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 

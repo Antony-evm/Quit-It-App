@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, Box } from '@/shared/components/ui';
 import { BORDER_RADIUS, COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { formatDisplayDate } from '../../utils/dateFormatting';
 import CalendarIcon from '@/assets/calendar.svg';
@@ -63,7 +63,7 @@ export const DatePickerField = ({
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Box gap="md" style={{ width: '100%' }}>
       <Pressable
         style={({ pressed }) => [
           styles.button,
@@ -84,7 +84,12 @@ export const DatePickerField = ({
 
       {/* Date picker */}
       {showPicker && (
-        <View style={styles.pickerContainer}>
+        <Box
+          mt="sm"
+          bg="backgroundPrimary"
+          borderRadius="medium"
+          style={styles.pickerOverflow}
+        >
           <DateTimePicker
             value={currentValue}
             mode="date"
@@ -96,17 +101,13 @@ export const DatePickerField = ({
             themeVariant="dark"
             accentColor={COLOR_PALETTE.brandPrimary}
           />
-        </View>
+        </Box>
       )}
-    </View>
+    </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    gap: SPACING.md,
-    width: '100%',
-  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -128,10 +129,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
   },
-  pickerContainer: {
-    marginTop: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderRadius: BORDER_RADIUS.medium,
+  pickerOverflow: {
     overflow: 'hidden',
   },
   datePicker: {

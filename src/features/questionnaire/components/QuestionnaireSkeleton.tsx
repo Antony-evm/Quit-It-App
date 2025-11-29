@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
-import { AppSurface } from '@/shared/components/ui';
+import { Animated, StyleSheet } from 'react-native';
+import { AppSurface, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 export const SkeletonItem = ({
@@ -42,7 +42,7 @@ export const SkeletonItem = ({
 
 export const QuestionnaireSkeleton = () => {
   return (
-    <View style={styles.container}>
+    <Box style={styles.container} py="md">
       {/* Question Title Skeleton */}
       <SkeletonItem
         width="80%"
@@ -68,12 +68,12 @@ export const QuestionnaireSkeleton = () => {
       />
 
       {/* Options Skeleton */}
-      <View style={styles.optionsContainer}>
+      <Box gap="md">
         <AppSurface style={[styles.optionCard, { height: 400 }]}>
           <SkeletonItem width="100%" height="100%" />
         </AppSurface>
-      </View>
-    </View>
+      </Box>
+    </Box>
   );
 };
 

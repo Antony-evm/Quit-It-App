@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { AppSurface, AppText } from '@/shared/components/ui';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+import { AppSurface, AppText, Box } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 
 type AccountSectionItemProps = {
@@ -15,12 +15,16 @@ export const AccountSectionItem = ({
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <AppSurface style={styles.container}>
-        <View style={styles.content}>
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <AppText variant="body" tone="primary">
             {title}
           </AppText>
           <AppText tone="secondary">›</AppText>
-        </View>
+        </Box>
       </AppSurface>
     </TouchableOpacity>
   );
@@ -30,10 +34,5 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: SPACING.md,
     padding: SPACING.md,
-  },
-  content: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
 });
