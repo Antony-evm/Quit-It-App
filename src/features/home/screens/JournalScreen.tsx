@@ -8,7 +8,7 @@ import React, {
 import { StyleSheet, ScrollView, View, Pressable } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
-import { AppText, DraggableModal, AppButton } from '@/shared/components/ui';
+import { AppText, DraggableModal } from '@/shared/components/ui';
 import {
   SPACING,
   COLOR_PALETTE,
@@ -28,7 +28,6 @@ import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
 
 export const JournalScreen = () => {
   const queryClient = useQueryClient();
-  const scrollViewRef = useRef<ScrollView>(null);
   const currentUserId = useCurrentUserId();
 
   const [selectedRecord, setSelectedRecord] =
@@ -98,25 +97,25 @@ export const JournalScreen = () => {
     [],
   );
 
+  const ListHeaderComponent = useMemo(
+    () => (
+      <View style={styles.header}>
+        <AppText variant="title" style={styles.title}>
+          Your Quit Journal
+        </AppText>
+        <AppText tone="primary">A clear view of how far you've come.</AppText>
+      </View>
+    ),
+    [],
+  );
+
   return (
     <View style={styles.container}>
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.scrollView}
+      <TrackingRecordsList
+        onRecordPress={handleRecordPress}
+        ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.header}>
-          <AppText variant="title" style={styles.title}>
-            Your Quit Journal
-          </AppText>
-          <AppText tone="primary">A clear view of how far you've come.</AppText>
-        </View>
-        <TrackingRecordsList
-          scrollViewRef={scrollViewRef}
-          onRecordPress={handleRecordPress}
-        />
-      </ScrollView>
+      />
 
       <DraggableModal
         visible={isEditModalVisible}
@@ -171,9 +170,6 @@ export const JournalScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  scrollView: {
     flex: 1,
   },
   scrollContent: {

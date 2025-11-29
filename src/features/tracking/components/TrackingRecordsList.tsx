@@ -1,5 +1,13 @@
-import React, { RefObject } from 'react';
-import { StyleSheet, View, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useCallback } from 'react';
+import {
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import { AppText } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
@@ -8,12 +16,17 @@ import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
 
 type TrackingRecordsListProps = {
-  scrollViewRef?: RefObject<ScrollView | null>;
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
+  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
+  contentContainerStyle?: StyleProp<ViewStyle>;
 };
 
 export const TrackingRecordsList = React.memo(
-  ({ scrollViewRef, onRecordPress }: TrackingRecordsListProps) => {
+  ({
+    onRecordPress,
+    ListHeaderComponent,
+    contentContainerStyle,
+  }: TrackingRecordsListProps) => {
     const {
       flatRecords: trackingRecords,
       isLoading,
@@ -30,27 +43,37 @@ export const TrackingRecordsList = React.memo(
       }
     };
 
-    if (isLoading) {
-      return (
-        <View style={styles.container}>
-          <AppText variant="body" tone="primary" style={styles.loadingText}>
-            Bringing your notes together...
-          </AppText>
+    const renderItem: ListRenderItem<TrackingRecordApiResponse> = useCallback(
+      ({ item }) => (
+        <View style={styles.itemContainer}>
+          <TrackingRecordCard record={item} onPress={onRecordPress} />
         </View>
-      );
-    }
+      ),
+      [onRecordPress],
+    );
 
-    if (isError) {
-      return (
-        <View style={styles.container}>
-          <AppText variant="body" style={styles.errorText}>
-            Failed to load tracking records: {error?.message || 'Unknown error'}
-          </AppText>
-        </View>
-      );
-    }
+    const ListEmptyComponent = useCallback(() => {
+      if (isLoading) {
+        return (
+          <View style={styles.container}>
+            <AppText variant="body" tone="primary" style={styles.loadingText}>
+              Bringing your notes together...
+            </AppText>
+          </View>
+        );
+      }
 
-    if (!trackingRecords || trackingRecords.length === 0) {
+      if (isError) {
+        return (
+          <View style={styles.container}>
+            <AppText variant="body" style={styles.errorText}>
+              Failed to load tracking records:{' '}
+              {error?.message || 'Unknown error'}
+            </AppText>
+          </View>
+        );
+      }
+
       return (
         <View style={styles.container}>
           <AppText variant="body" tone="primary" style={styles.emptyText}>
@@ -58,30 +81,22 @@ export const TrackingRecordsList = React.memo(
           </AppText>
         </View>
       );
-    }
+    }, [isLoading, isError, error]);
 
-    return (
-      <View style={styles.container}>
-        <View style={styles.recordsList}>
-          {trackingRecords.map(record => (
-            <TrackingRecordCard
-              key={record.record_id}
-              record={record}
-              onPress={onRecordPress}
-            />
-          ))}
-        </View>
-
-        {isFetchingNextPage && (
+    const ListFooterComponent = useCallback(() => {
+      if (isFetchingNextPage) {
+        return (
           <View style={styles.loadingFooter}>
             <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />
             <AppText variant="body" tone="primary" style={styles.loadingText}>
               Loading more records...
             </AppText>
           </View>
-        )}
+        );
+      }
 
-        {!isFetchingNextPage && hasNextPage && trackingRecords.length > 0 && (
+      if (hasNextPage && trackingRecords && trackingRecords.length > 0) {
+        return (
           <View style={styles.loadMoreContainer}>
             <AppText
               variant="body"
@@ -91,8 +106,23 @@ export const TrackingRecordsList = React.memo(
               Load More
             </AppText>
           </View>
-        )}
-      </View>
+        );
+      }
+
+      return null;
+    }, [isFetchingNextPage, hasNextPage, trackingRecords]);
+
+    return (
+      <FlatList
+        data={trackingRecords || []}
+        renderItem={renderItem}
+        keyExtractor={item => String(item.record_id)}
+        ListHeaderComponent={ListHeaderComponent}
+        ListEmptyComponent={ListEmptyComponent}
+        ListFooterComponent={ListFooterComponent}
+        contentContainerStyle={contentContainerStyle}
+        showsVerticalScrollIndicator={false}
+      />
     );
   },
 );
@@ -100,6 +130,9 @@ export const TrackingRecordsList = React.memo(
 const styles = StyleSheet.create({
   container: {
     marginTop: SPACING.lg,
+  },
+  itemContainer: {
+    marginBottom: SPACING.xs,
   },
   sectionTitle: {
     color: COLOR_PALETTE.textPrimary,
