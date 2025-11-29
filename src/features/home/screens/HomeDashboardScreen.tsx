@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xl,
   },
   chartCard: {
+    marginTop: SPACING.xl,
     marginBottom: SPACING.xl,
   },
 });

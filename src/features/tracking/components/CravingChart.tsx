@@ -330,6 +330,6 @@ const styles = StyleSheet.create({
     color: BRAND_COLORS.cream,
     marginTop: SPACING.md,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 14,
   },
 });
