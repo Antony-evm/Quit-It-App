@@ -13,6 +13,7 @@ import {
   DraggableModal,
   Box,
   AppPressable,
+  AppIcon,
 } from '@/shared/components/ui';
 import {
   SPACING,
@@ -28,8 +29,8 @@ import {
   NotesCardHandle,
 } from '@/features/home/components/NotesCard';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
-import CancelIcon from '@/assets/cancel.svg';
 import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
+import CancelIcon from '@/assets/cancel.svg';
 
 export const JournalScreen = () => {
   const queryClient = useQueryClient();
@@ -77,9 +78,9 @@ export const JournalScreen = () => {
           variant="icon"
           hitSlop={10}
         >
-          <CancelIcon
-            width={24}
-            height={24}
+          <AppIcon
+            icon={CancelIcon}
+            variant="default"
             color={COLOR_PALETTE.textPrimary}
           />
         </AppPressable>

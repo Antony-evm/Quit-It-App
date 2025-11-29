@@ -9,7 +9,7 @@ import {
   Rect,
 } from 'react-native-svg';
 
-import { AppText, AppPressable } from '@/shared/components/ui';
+import { AppText, AppPressable, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
@@ -29,7 +29,7 @@ const PlaceholderIcon = (props: SvgProps) => (
   <View style={{ width: 24, height: 24 }} />
 );
 
-const TAB_ICONS: Record<HomeFooterTab, React.ComponentType<SvgProps>> = {
+const TAB_ICONS: Record<HomeFooterTab, React.FC<SvgProps>> = {
   account: AccountIcon,
   home: HomeIcon,
   journal: ClipboardIcon,
@@ -103,7 +103,8 @@ export const HomeFooterNavigator = ({
           }
         }}
       >
-        <Icon
+        <AppIcon
+          icon={Icon}
           width={FOOTER_LAYOUT.ICON_SIZE}
           height={FOOTER_LAYOUT.ICON_SIZE}
           style={styles.icon}
@@ -171,7 +172,8 @@ export const HomeFooterNavigator = ({
                 <Rect width="100%" height="100%" fill="url(#grad)" />
               </Svg>
             </View>
-            <PlusIcon
+            <AppIcon
+              icon={PlusIcon}
               width={FOOTER_LAYOUT.PLUS_ICON_SIZE}
               height={FOOTER_LAYOUT.PLUS_ICON_SIZE}
               fill={COLOR_PALETTE.textPrimary}

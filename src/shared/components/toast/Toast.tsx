@@ -85,7 +85,11 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
         },
       ]}
     >
-      <AppPressable style={styles.toastContent} onPress={handleDismiss}>
+      <AppPressable
+        style={styles.toastContent}
+        onPress={handleDismiss}
+        fullWidth
+      >
         <Text style={styles.toastText}>{toast.message}</Text>
         <Text style={styles.dismissHint}>Tap to dismiss</Text>
       </AppPressable>

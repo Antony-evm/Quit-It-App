@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { AppTextInput, AppText, Box } from '@/shared/components/ui';
+import { AppTextInput, AppText, Box, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
 import HidePasswordSvg from '@/assets/hidePassword.svg';
@@ -64,21 +64,12 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             disabled={isLoading}
           >
-            {isPasswordVisible ? (
-              <ShowPasswordSvg
-                width={20}
-                height={20}
-                fill="none"
-                stroke={COLOR_PALETTE.textPrimary}
-              />
-            ) : (
-              <HidePasswordSvg
-                width={20}
-                height={20}
-                fill="none"
-                stroke={COLOR_PALETTE.textPrimary}
-              />
-            )}
+            <AppIcon
+              icon={isPasswordVisible ? ShowPasswordSvg : HidePasswordSvg}
+              variant="default"
+              fill="none"
+              stroke={COLOR_PALETTE.textPrimary}
+            />
           </TouchableOpacity>
         </Box>
         {errorMessage && (

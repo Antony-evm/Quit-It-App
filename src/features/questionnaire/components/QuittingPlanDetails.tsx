@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { AppText, Box } from '@/shared/components/ui';
+import { AppText, Box, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
@@ -55,7 +55,11 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
     <Box gap="md" style={style}>
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <AimSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
+          <AppIcon
+            icon={AimSvg}
+            variant="default"
+            color={COLOR_PALETTE.textPrimary}
+          />
           <AppText tone="primary" variant="body">
             {plan.status}
           </AppText>
@@ -64,9 +68,9 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <CalendarSvg
-            width={24}
-            height={24}
+          <AppIcon
+            icon={CalendarSvg}
+            variant="default"
             color={COLOR_PALETTE.textPrimary}
           />
           <AppText tone="primary" variant="body">
@@ -77,7 +81,11 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <StopSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
+          <AppIcon
+            icon={StopSvg}
+            variant="default"
+            color={COLOR_PALETTE.textPrimary}
+          />
           <AppText tone="primary" variant="body">
             {plan.current} cigarettes per day
           </AppText>
@@ -86,7 +94,11 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
       <Box bg="backgroundPrimary" borderRadius="small" p="lg">
         <Box flexDirection="row" alignItems="center" gap="sm">
-          <GoalSvg width={24} height={24} color={COLOR_PALETTE.textPrimary} />
+          <AppIcon
+            icon={GoalSvg}
+            variant="default"
+            color={COLOR_PALETTE.textPrimary}
+          />
           <AppText tone="primary" variant="body">
             {plan.target} cigarettes per day
           </AppText>

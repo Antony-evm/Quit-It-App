@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import BackArrowSvg from '@/assets/backArrow.svg';
 import { COLOR_PALETTE } from '@/shared/theme';
 import { AppPressable } from './AppPressable';
+import { AppIcon } from './AppIcon';
 
 type BackArrowProps = {
   onPress: () => void;
@@ -14,11 +15,12 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
     style={styles.container}
     onPress={onPress}
     disabled={disabled}
-    variant="scale"
+    interaction="scale"
+    variant="icon"
   >
-    <BackArrowSvg
-      width={20}
-      height={20}
+    <AppIcon
+      icon={BackArrowSvg}
+      variant="default"
       fill={
         disabled ? COLOR_PALETTE.textSecondary : COLOR_PALETTE.backgroundPrimary
       }

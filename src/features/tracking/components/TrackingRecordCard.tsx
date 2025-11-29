@@ -85,45 +85,45 @@ export const TrackingRecordCard = React.memo(
           alignItems="flex-start"
           justifyContent="space-between"
         >
-            <Box
-              px="md"
-              py="xs"
-              borderRadius="full"
-              style={[
-                styles.badgeSelf,
-                { backgroundColor: badgeBackgroundColor },
-              ]}
-            >
-              <AppText
-                style={[styles.badgeText, { color: COLOR_PALETTE.textPrimary }]}
-              >
-                {trackingType?.displayName || `Type ${record.tracking_type_id}`}
-              </AppText>
-            </Box>
-            <Box alignItems="flex-end">
-              <AppText style={styles.timeText}>{timeLabel}</AppText>
-              <AppText style={styles.dateText}>{dateLabel}</AppText>
-            </Box>
-          </Box>
-
           <Box
             px="md"
-            py="sm"
-            mt="md"
-            bg="backgroundMuted"
-            borderRadius="medium"
-            style={styles.noteSection}
+            py="xs"
+            borderRadius="full"
+            style={[
+              styles.badgeSelf,
+              { backgroundColor: badgeBackgroundColor },
+            ]}
           >
-            {record.note ? (
-              <AppText variant="body" style={styles.noteText}>
-                {record.note}
-              </AppText>
-            ) : (
-              <AppText variant="body" style={styles.notePlaceholder}>
-                Add a thought about this moment…
-              </AppText>
-            )}
+            <AppText
+              style={[styles.badgeText, { color: COLOR_PALETTE.textPrimary }]}
+            >
+              {trackingType?.displayName || `Type ${record.tracking_type_id}`}
+            </AppText>
           </Box>
+          <Box alignItems="flex-end">
+            <AppText style={styles.timeText}>{timeLabel}</AppText>
+            <AppText style={styles.dateText}>{dateLabel}</AppText>
+          </Box>
+        </Box>
+
+        <Box
+          px="md"
+          py="sm"
+          mt="md"
+          bg="backgroundMuted"
+          borderRadius="medium"
+          style={styles.noteSection}
+        >
+          {record.note ? (
+            <AppText variant="body" style={styles.noteText}>
+              {record.note}
+            </AppText>
+          ) : (
+            <AppText variant="body" style={styles.notePlaceholder}>
+              Add a thought about this moment…
+            </AppText>
+          )}
+        </Box>
       </AppPressable>
     );
   },

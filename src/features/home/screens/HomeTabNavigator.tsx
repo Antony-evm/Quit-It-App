@@ -9,7 +9,12 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AppText, DraggableModal, AppPressable } from '@/shared/components/ui';
+import {
+  AppText,
+  DraggableModal,
+  AppPressable,
+  AppIcon,
+} from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from './JournalScreen';
@@ -36,7 +41,11 @@ export const HomeTabNavigator = () => {
         variant="icon"
         hitSlop={10}
       >
-        <CancelIcon width={24} height={24} color={COLOR_PALETTE.textPrimary} />
+        <AppIcon
+          icon={CancelIcon}
+          variant="default"
+          color={COLOR_PALETTE.textPrimary}
+        />
       </AppPressable>
 
       <AppPressable

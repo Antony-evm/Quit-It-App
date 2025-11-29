@@ -5,3 +5,4 @@ export * from './layout';
 export * from './borderRadius';
 export * from './shadows';
 export * from './borderWidth';
+export * from './iconSizes';

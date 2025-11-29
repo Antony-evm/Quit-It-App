@@ -15,6 +15,7 @@ import {
   AppText,
   AppTextInput,
   AppPressable,
+  AppIcon,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQueryClient } from '@tanstack/react-query';
@@ -26,9 +27,9 @@ import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutat
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import CalendarIcon from '@/assets/calendar.svg';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 import ScrollManager from '@/utils/scrollManager';
+import CalendarIcon from '@/assets/calendar.svg';
 
 export type NotesCardHandle = {
   save: () => void;
@@ -483,9 +484,9 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                   : handleDateTimePress
               }
             >
-              <CalendarIcon
-                width={20}
-                height={20}
+              <AppIcon
+                icon={CalendarIcon}
+                variant="default"
                 color={COLOR_PALETTE.textPrimary}
                 style={styles.calendarIcon}
               />
