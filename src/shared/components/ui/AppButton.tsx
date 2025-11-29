@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ViewStyle,
   TextStyle,
+  ActivityIndicator,
 } from 'react-native';
 
 import { AppText } from './AppText';
@@ -25,6 +26,7 @@ export type AppButtonProps = PressableProps & {
   fullWidth?: boolean;
   containerStyle?: ViewStyle;
   textStyle?: TextStyle;
+  loading?: boolean;
 };
 
 const variantToStyles: Record<
@@ -88,11 +90,12 @@ export const AppButton = ({
   fullWidth = false,
   containerStyle,
   textStyle,
+  loading = false,
   ...pressableProps
 }: AppButtonProps) => {
   const variantStyles = variantToStyles[variant] ?? variantToStyles.primary;
   const sizeStyles = sizeToStyles[size] ?? sizeToStyles.md;
-  const isDisabled = pressableProps.disabled ?? false;
+  const isDisabled = pressableProps.disabled || loading;
 
   return (
     <Pressable
@@ -103,24 +106,29 @@ export const AppButton = ({
         sizeStyles,
         fullWidth && styles.fullWidth,
         {
-          opacity: isDisabled || pressed ? 0.7 : 1,
+          opacity: isDisabled && !loading ? 0.5 : pressed ? 0.7 : 1,
         },
         containerStyle,
       ]}
+      disabled={isDisabled}
       {...pressableProps}
     >
-      <AppText
-        variant="heading"
-        style={[
-          styles.text,
-          {
-            color: variantStyles.textColor,
-          },
-          textStyle,
-        ]}
-      >
-        {label}
-      </AppText>
+      {loading ? (
+        <ActivityIndicator color={variantStyles.textColor} />
+      ) : (
+        <AppText
+          variant="heading"
+          style={[
+            styles.text,
+            {
+              color: variantStyles.textColor,
+            },
+            textStyle,
+          ]}
+        >
+          {label}
+        </AppText>
+      )}
     </Pressable>
   );
 };

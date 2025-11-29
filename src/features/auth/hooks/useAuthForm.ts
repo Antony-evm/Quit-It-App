@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { useAuthWithNavigation } from '@/shared/hooks/useAuthWithNavigation';
-import { useAuthMutations } from './useAuthMutations';
 import {
   useCustomPasswordValidation,
   useEmailValidation,
@@ -23,9 +22,9 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isLoginMode, setIsLoginMode] = useState(initialMode === 'login');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, signup } = useAuthWithNavigation();
-  const { login: loginMutation, signup: signupMutation } = useAuthMutations();
 
   // Validations with constants
   const passwordValidation = useCustomPasswordValidation(password);
@@ -165,11 +164,13 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
 
     const { sanitizedEmail } = validation;
 
+    setIsSubmitting(true);
     try {
       // Use auth with navigation (handles user status routing automatically)
       await login(sanitizedEmail, password);
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
+      setIsSubmitting(false);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.LOGIN_ERROR);
     }
   }, [validateForm, login, password]);
@@ -180,11 +181,13 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
 
     const { sanitizedEmail } = validation;
 
+    setIsSubmitting(true);
     try {
       // Use auth with navigation (handles user status routing automatically)
       await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
+      setIsSubmitting(false);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.SIGNUP_ERROR);
     }
   }, [validateForm, signup, password, firstName, lastName]);
@@ -239,11 +242,11 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
     lastNameValidation,
     confirmPasswordValidation,
 
-    // Loading state from mutations - no more manual state management!
-    isLoading: loginMutation.isPending || signupMutation.isPending,
+    // Loading state
+    isLoading: isSubmitting,
 
-    // Error state from mutations
-    error: loginMutation.error || signupMutation.error,
+    // Error state
+    error: null,
 
     // Actions
     handleSubmit,

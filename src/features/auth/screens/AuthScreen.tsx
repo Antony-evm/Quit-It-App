@@ -176,7 +176,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
             variant="primary"
             size="lg"
             fullWidth
-            disabled={isLoading || !isFormReady}
+            loading={isLoading}
+            disabled={!isFormReady}
             onPress={handleSubmit}
           />
         </View>
