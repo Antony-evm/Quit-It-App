@@ -202,7 +202,10 @@ export const HomeScreen = () => {
     <View style={styles.modalHeaderContent}>
       <Pressable
         onPress={() => setIsNoteDrawerVisible(false)}
-        style={styles.headerButton}
+        style={({ pressed }) => [
+          styles.headerButton,
+          pressed && { opacity: 0.7 },
+        ]}
         hitSlop={10}
       >
         <CancelIcon width={24} height={24} color={BRAND_COLORS.cream} />

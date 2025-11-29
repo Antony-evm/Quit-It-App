@@ -120,6 +120,7 @@ export const HomeFooterNavigator = ({
           style={styles.icon}
           fill={isActive ? COLOR_PALETTE.accentPrimary : BRAND_COLORS.cream}
           fillOpacity={isActive ? 1 : 0.5}
+          stroke={BRAND_COLORS.ink}
         />
       </Pressable>
     );
@@ -199,8 +200,8 @@ const styles = StyleSheet.create({
     borderRadius: FOOTER_LAYOUT.CONTAINER_BORDER_RADIUS,
     borderWidth: FOOTER_LAYOUT.CONTAINER_BORDER_WIDTH,
     borderColor: COLOR_PALETTE.borderDefault,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: SPACING.xs,
     alignItems: 'center',
     justifyContent: 'space-between',
     width: '95%',
