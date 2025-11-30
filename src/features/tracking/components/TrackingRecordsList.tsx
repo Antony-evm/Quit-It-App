@@ -12,6 +12,7 @@ import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
+import { TrackingRecordCardSkeleton } from './TrackingRecordCardSkeleton';
 
 type TrackingRecordsListProps = {
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
@@ -56,10 +57,11 @@ export const TrackingRecordsList = React.memo(
     const ListEmptyComponent = useCallback(() => {
       if (isLoading) {
         return (
-          <StatusMessage
-            type="loading"
-            message="Bringing your notes together..."
-          />
+          <Box gap="md">
+            <TrackingRecordCardSkeleton />
+            <TrackingRecordCardSkeleton />
+            <TrackingRecordCardSkeleton />
+          </Box>
         );
       }
 
