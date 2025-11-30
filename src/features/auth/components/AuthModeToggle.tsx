@@ -1,7 +1,6 @@
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, TYPOGRAPHY } from '@/shared/theme';
 
 interface AuthModeToggleProps {
   isLoginMode: boolean;
@@ -17,19 +16,11 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
   return (
     <TouchableOpacity onPress={onToggle} activeOpacity={1} disabled={isLoading}>
       <AppText variant="caption">
-        {isLoginMode ? (
-          <>
-            Don't have an account? Tap{' '}
-            <Text style={{ textDecorationLine: 'underline' }}>here</Text> to
-            sign up
-          </>
-        ) : (
-          <>
-            Already have an account? Tap{' '}
-            <Text style={{ textDecorationLine: 'underline' }}>here</Text> to
-            login
-          </>
-        )}
+        {isLoginMode
+          ? "Don't have an account? Tap "
+          : 'Already have an account? Tap '}
+        <AppText link>here</AppText>
+        {isLoginMode ? ' to sign up' : ' to login'}
       </AppText>
     </TouchableOpacity>
   );

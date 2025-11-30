@@ -9,13 +9,7 @@ import CalendarSvg from '@/assets/calendar.svg';
 import StopSvg from '@/assets/stop.svg';
 import GoalSvg from '@/assets/goal.svg';
 
-interface QuittingPlanDetailsProps {
-  style?: StyleProp<ViewStyle>;
-}
-
-export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
-  style,
-}) => {
+export const QuittingPlanDetails: React.FC = () => {
   const { t } = useTranslation();
   const { plan, isLoading, error } = useQuittingPlan();
 
@@ -32,7 +26,7 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   }
 
   return (
-    <Box gap="md" style={style}>
+    <Box gap="md">
       <IconTextCard icon={AimSvg} text={plan.status} />
       <IconTextCard icon={CalendarSvg} text={formatPlanDate(plan.date)} />
       <IconTextCard

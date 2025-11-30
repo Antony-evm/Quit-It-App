@@ -56,6 +56,12 @@ const BOX_VARIANTS = {
     alignItems: 'center',
     borderTopColor: COLOR_PALETTE.borderDefault,
   },
+  authHeader: {
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    height: '15%',
+  },
 } satisfies Record<string, ViewStyle>;
 
 export type BoxVariant = keyof typeof BOX_VARIANTS;

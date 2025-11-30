@@ -15,6 +15,7 @@ export type AppTextProps = PropsWithChildren<
   TextProps & {
     variant?: TypographyVariant;
     tone?: TextTone;
+    link?: boolean;
   }
 >;
 
@@ -32,14 +33,22 @@ export const AppText = ({
   style,
   variant = 'body',
   tone = 'primary',
+  link = false,
   ...textProps
 }: AppTextProps) => {
   const variantStyle = TYPOGRAPHY[variant] ?? TYPOGRAPHY.body;
   const toneColor = toneToColorMap[tone] ?? COLOR_PALETTE.textPrimary;
+  const linkStyle = link ? { textDecorationLine: 'underline' as const } : {};
 
   return (
     <Text
-      style={[styles.base, variantStyle, { color: toneColor }, style]}
+      style={[
+        styles.base,
+        variantStyle,
+        { color: toneColor },
+        linkStyle,
+        style,
+      ]}
       {...textProps}
     >
       {children}

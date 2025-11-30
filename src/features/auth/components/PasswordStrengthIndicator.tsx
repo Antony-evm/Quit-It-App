@@ -1,18 +1,14 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { SPACING } from '@/shared/theme/spacing';
-import { COLOR_PALETTE } from '@/shared/theme/colors';
 import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordValidation';
 
 interface PasswordStrengthIndicatorProps {
   validation: CustomPasswordValidation;
-  style?: StyleProp<ViewStyle>;
 }
 
 export const PasswordStrengthIndicator: React.FC<
   PasswordStrengthIndicatorProps
-> = ({ validation, style }) => {
+> = ({ validation }) => {
   const renderRequirement = (met: boolean, text: string) => (
     <AppText variant="subcaption" tone={met ? 'success' : 'muted'}>
       {met ? '✓' : '✗'} {text}
@@ -22,13 +18,7 @@ export const PasswordStrengthIndicator: React.FC<
   const hasPassword = !!validation.password;
 
   return (
-    <Box
-      py="xs"
-      bg="backgroundMuted"
-      borderRadius="small"
-      gap="xs"
-      style={style}
-    >
+    <Box py="xs" bg="backgroundMuted" borderRadius="small" gap="xs">
       <AppText variant="caption">
         {hasPassword ? 'Password Requirements:' : 'Password must contain:'}
       </AppText>
@@ -58,5 +48,3 @@ export const PasswordStrengthIndicator: React.FC<
     </Box>
   );
 };
-
-const styles = StyleSheet.create({});

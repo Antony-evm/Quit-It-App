@@ -1,5 +1,4 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { AppCard, AppText, Box } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 
@@ -14,7 +13,7 @@ export const AccountSectionItem = ({
 }: AccountSectionItemProps) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <AppCard size="md" style={styles.container}>
+      <AppCard size="md" style={{ marginBottom: SPACING.md }}>
         <Box
           flexDirection="row"
           justifyContent="space-between"
@@ -29,9 +28,3 @@ export const AccountSectionItem = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: SPACING.md,
-  },
-});
