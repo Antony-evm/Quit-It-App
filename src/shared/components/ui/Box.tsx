@@ -88,6 +88,15 @@ const BOX_VARIANTS = {
     borderColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.xl,
   },
+  valuePill: {
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    alignItems: 'center',
+    gap: SPACING.xs,
+    borderRadius: BORDER_RADIUS.none,
+    borderWidth: BORDER_WIDTH.none,
+  },
 } satisfies Record<string, ViewStyle>;
 
 export type BoxVariant = keyof typeof BOX_VARIANTS;

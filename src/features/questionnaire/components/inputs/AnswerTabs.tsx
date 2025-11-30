@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import {
   AnswerTab,
@@ -29,8 +29,6 @@ export const AnswerTabs = ({
   onSelectionChange,
 }: AnswerTabsProps) => {
   const isMulti = selectionMode === 'multiple';
-
-  // Handle null/undefined variant
   const safeVariant = variant || ANSWER_TAB_VARIANTS.DEFAULT;
 
   const handleToggle = useCallback(

@@ -1,7 +1,5 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE } from '@/shared/theme';
 import { AppText, AppPressable } from '@/shared/components/ui';
 
 export const ANSWER_TAB_VARIANTS = {
@@ -48,5 +46,3 @@ export const AnswerTab = ({
     </AppPressable>
   );
 };
-
-const styles = StyleSheet.create({});

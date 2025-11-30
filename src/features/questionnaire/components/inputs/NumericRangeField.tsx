@@ -1,9 +1,8 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE, INPUT_MIN_HEIGHT } from '@/shared/theme';
 
 type NumericRangeFieldProps = {
   minimum: number;
@@ -21,7 +20,6 @@ export const NumericRangeField = ({
   onValueChange,
 }: NumericRangeFieldProps) => {
   const handleValueChange = (newValue: number) => {
-    // If no value was set before, use the midpoint as initial value
     const roundedValue = Math.round(newValue);
     onValueChange(roundedValue);
   };
@@ -30,15 +28,7 @@ export const NumericRangeField = ({
 
   return (
     <Box gap="md">
-      <Box gap="sm" />
-      <Box
-        py="sm"
-        px="lg"
-        bg="backgroundMuted"
-        alignItems="center"
-        gap="xs"
-        style={styles.valuePill}
-      >
+      <Box variant="valuePill">
         <AppText variant="title">
           {displayValue}
           {units && ` ${units}`}
@@ -56,10 +46,10 @@ export const NumericRangeField = ({
         onValueChange={handleValueChange}
       />
       <Box flexDirection="row" justifyContent="space-between">
-        <AppText variant="caption" style={styles.rangeLabel}>
+        <AppText variant="caption" tone="muted">
           {minimum}
         </AppText>
-        <AppText variant="caption" style={styles.rangeLabel}>
+        <AppText variant="caption" tone="muted">
           {maximum}
         </AppText>
       </Box>
@@ -68,16 +58,8 @@ export const NumericRangeField = ({
 };
 
 const styles = StyleSheet.create({
-  valuePill: {
-    borderRadius: 0,
-    borderWidth: 0,
-  },
   slider: {
     width: '100%',
-    height: 60,
-  },
-  rangeLabel: {
-    color: COLOR_PALETTE.textPrimary,
-    opacity: 0.6,
+    height: INPUT_MIN_HEIGHT,
   },
 });
