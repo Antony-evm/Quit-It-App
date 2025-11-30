@@ -34,15 +34,26 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     const [showValidHint, setShowValidHint] = useState(true);
 
     useEffect(() => {
+      let isMounted = true;
+
       if (validation.isValid && validation.hasInput && !validation.isEmpty) {
         const timer = setTimeout(() => {
-          setShowValidHint(false);
+          if (isMounted) {
+            setShowValidHint(false);
+          }
         }, 500);
 
-        return () => clearTimeout(timer);
+        return () => {
+          isMounted = false;
+          clearTimeout(timer);
+        };
       } else {
         setShowValidHint(true);
       }
+
+      return () => {
+        isMounted = false;
+      };
     }, [validation.isValid, validation.hasInput, validation.isEmpty]);
 
     const shouldShowHint = validation.hasInput && !validation.isEmpty;
@@ -75,3 +86,5 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     );
   },
 );
+
+EmailField.displayName = 'EmailField';

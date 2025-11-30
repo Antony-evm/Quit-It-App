@@ -9,6 +9,8 @@ export default {
       firstNamePlaceholder: 'First name',
       lastNamePlaceholder: 'Last name',
       passwordPlaceholder: 'Password',
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
       passwordRequirements: 'Password Requirements:',
       passwordMustContain: 'Password must contain:',
       requirementLength: '8-32 characters',
@@ -30,6 +32,14 @@ export default {
         habits: 'Your Habits',
       },
       emailPlaceholder: 'Not available',
+      frequency: {
+        loading: 'Loading frequency data...',
+        error: 'Unable to load frequency data',
+      },
+      triggers: {
+        loading: 'Loading triggers...',
+        error: 'Unable to load triggers',
+      },
     },
     plan: {
       loading: 'Loading plan details...',

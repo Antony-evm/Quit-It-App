@@ -59,6 +59,12 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           <TouchableOpacity
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             disabled={isLoading}
+            accessibilityRole="button"
+            accessibilityLabel={
+              isPasswordVisible
+                ? t('auth.hidePassword')
+                : t('auth.showPassword')
+            }
           >
             <AppIcon
               icon={isPasswordVisible ? ShowPasswordSvg : HidePasswordSvg}
@@ -69,6 +75,8 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
     );
   },
 );
+
+PasswordField.displayName = 'PasswordField';
 
 const styles = StyleSheet.create({
   passwordContainer: {

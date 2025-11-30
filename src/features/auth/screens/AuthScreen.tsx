@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppButton, Box } from '@/shared/components/ui';
@@ -25,6 +26,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
   const isKeyboardVisible = useKeyboardVisibility();
 
   const initialMode = route.params?.mode || 'signup';
+
+  // Refs for keyboard navigation
+  const emailRef = useRef<TextInput>(null);
+  const passwordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
 
   const {
     email,
@@ -52,7 +58,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
         <AuthHeader />
@@ -65,7 +71,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
           <WelcomeText isSignup={!isLoginMode} />
 
           <Box bg="backgroundMuted" px="xxl" py="xl" flex={1} gap="lg">
-            <Box style={{ width: '100%' }} gap="lg">
+            <Box gap="lg">
               {!isLoginMode && (
                 <NameFieldsGroup
                   firstName={firstName}
@@ -75,26 +81,40 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
                   firstNameValidation={firstNameValidation}
                   lastNameValidation={lastNameValidation}
                   isLoading={isLoading}
+                  onLastNameSubmit={() => emailRef.current?.focus()}
                 />
               )}
 
               <EmailField
+                ref={emailRef}
                 value={email}
                 onChangeText={setEmail}
                 validation={emailValidation}
                 isLoading={isLoading}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
               />
 
               <PasswordField
+                ref={passwordRef}
                 value={password}
                 onChangeText={setPassword}
                 placeholder="Password"
                 autoComplete={isLoginMode ? 'current-password' : 'new-password'}
                 isLoading={isLoading}
+                returnKeyType={isLoginMode ? 'done' : 'next'}
+                onSubmitEditing={() => {
+                  if (isLoginMode) {
+                    handleSubmit();
+                  } else {
+                    confirmPasswordRef.current?.focus();
+                  }
+                }}
               />
 
               {!isLoginMode && (
                 <PasswordField
+                  ref={confirmPasswordRef}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   placeholder="Confirm password"
@@ -106,6 +126,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
                       : undefined
                   }
                   isLoading={isLoading}
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit}
                 />
               )}
 

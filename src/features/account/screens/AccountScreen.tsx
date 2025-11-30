@@ -3,17 +3,12 @@ import { RefreshControl, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE } from '@/shared/theme';
 
-import { QuittingPlanDetails } from '../components/QuittingPlanDetails';
-import { TriggersList } from '../components/TriggersList';
-import { FrequencyData } from '../components/FrequencyData';
 import { AccountSectionItem } from '../components/AccountSectionItem';
-import { AccountDetails } from '../components/AccountDetails';
 import { BottomDrawer } from '../components/BottomDrawer';
+import { AccountSection, SECTION_CONFIG, SECTION_ORDER } from '../constants';
 import { useQuitDate } from '../hooks/useQuitDate';
-
-type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
@@ -22,33 +17,14 @@ export const AccountScreen = () => {
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
   const renderDrawerContent = () => {
-    switch (activeSection) {
-      case 'details':
-        return <AccountDetails />;
-      case 'plan':
-        return <QuittingPlanDetails />;
-      case 'triggers':
-        return <TriggersList />;
-      case 'habits':
-        return <FrequencyData />;
-      default:
-        return null;
-    }
+    if (!activeSection) return null;
+    const Component = SECTION_CONFIG[activeSection].component;
+    return <Component />;
   };
 
   const getDrawerTitle = () => {
-    switch (activeSection) {
-      case 'details':
-        return t('account.sections.details');
-      case 'plan':
-        return t('account.sections.plan');
-      case 'triggers':
-        return t('account.sections.triggers');
-      case 'habits':
-        return t('account.sections.habits');
-      default:
-        return '';
-    }
+    if (!activeSection) return '';
+    return t(SECTION_CONFIG[activeSection].translationKey);
   };
 
   return (
@@ -66,22 +42,13 @@ export const AccountScreen = () => {
       >
         <ScreenHeader title={t('account.title')} />
 
-        <AccountSectionItem
-          title={t('account.sections.details')}
-          onPress={() => setActiveSection('details')}
-        />
-        <AccountSectionItem
-          title={t('account.sections.plan')}
-          onPress={() => setActiveSection('plan')}
-        />
-        <AccountSectionItem
-          title={t('account.sections.triggers')}
-          onPress={() => setActiveSection('triggers')}
-        />
-        <AccountSectionItem
-          title={t('account.sections.habits')}
-          onPress={() => setActiveSection('habits')}
-        />
+        {SECTION_ORDER.map(sectionKey => (
+          <AccountSectionItem
+            key={sectionKey}
+            title={t(SECTION_CONFIG[sectionKey].translationKey)}
+            onPress={() => setActiveSection(sectionKey)}
+          />
+        ))}
 
         {error ? <StatusMessage type="error" message={error} /> : null}
       </ScrollView>

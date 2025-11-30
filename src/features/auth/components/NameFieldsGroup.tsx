@@ -16,6 +16,7 @@ interface NameFieldsGroupProps {
   firstNameValidation: NameValidation;
   lastNameValidation: NameValidation;
   isLoading?: boolean;
+  onLastNameSubmit?: () => void;
 }
 
 export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
@@ -26,6 +27,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   firstNameValidation,
   lastNameValidation,
   isLoading = false,
+  onLastNameSubmit,
 }) => {
   const { t } = useTranslation();
   const lastNameRef = useRef<TextInput>(null);
@@ -68,6 +70,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           autoComplete="family-name"
           editable={!isLoading}
           hasError={lastName.length > 0 && !lastNameValidation.isValid}
+          returnKeyType="next"
+          onSubmitEditing={onLastNameSubmit}
         />
       </FormField>
     </Box>

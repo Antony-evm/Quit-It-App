@@ -1,16 +1,22 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { AppCard, StatusMessage } from '@/shared/components/ui';
 import { FrequencyGrid } from '@/features/questionnaire/components/FrequencyGrid';
 import { useFrequencyData } from '@/features/questionnaire/hooks/useFrequencyData';
 
 export const FrequencyData: React.FC = () => {
+  const { t } = useTranslation();
   const { question, initialSubSelection, isLoading, error } =
     useFrequencyData();
 
   if (isLoading) {
     return (
       <AppCard variant="filled" p="zero">
-        <StatusMessage type="loading" message="Loading frequency data..." />
+        <StatusMessage
+          type="loading"
+          message={t('account.frequency.loading')}
+        />
       </AppCard>
     );
   }
@@ -18,7 +24,7 @@ export const FrequencyData: React.FC = () => {
   if (error) {
     return (
       <AppCard variant="filled" p="zero">
-        <StatusMessage type="error" message="Unable to load frequency data" />
+        <StatusMessage type="error" message={t('account.frequency.error')} />
       </AppCard>
     );
   }

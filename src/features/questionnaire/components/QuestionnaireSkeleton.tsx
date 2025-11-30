@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { AppCard, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
