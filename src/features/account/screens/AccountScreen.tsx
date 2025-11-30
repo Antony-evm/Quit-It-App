@@ -64,11 +64,7 @@ export const AccountScreen = () => {
           />
         }
       >
-        <ScreenHeader
-          title={t('account.title')}
-          marginBottom={SPACING.xl}
-          paddingHorizontal={0}
-        />
+        <ScreenHeader title={t('account.title')} />
 
         <AccountSectionItem
           title={t('account.sections.details')}

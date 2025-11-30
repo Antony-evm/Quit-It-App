@@ -19,11 +19,7 @@ export const PaywallScreen = ({
           <ScreenHeader
             title="You're Almost Ready!"
             subtitle="Complete your journey with premium access to all features and personalized tracking."
-            align="center"
-            titleVariant="heading"
-            subtitleTone="secondary"
-            marginBottom={SPACING.xl}
-            style={{ gap: SPACING.sm }}
+            variant="paywall"
           />
         </Box>
 

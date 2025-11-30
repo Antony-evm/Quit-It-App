@@ -10,13 +10,6 @@ import {
   ModalActionHeader,
   ScreenHeader,
 } from '@/shared/components/ui';
-import {
-  SPACING,
-  COLOR_PALETTE,
-  BORDER_RADIUS,
-  DEVICE_HEIGHT,
-  FOOTER_LAYOUT,
-} from '@/shared/theme';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import {
@@ -76,7 +69,6 @@ export const JournalScreen = () => {
       <ScreenHeader
         title="Your Quit Journal"
         subtitle="A clear view of how far you've come."
-        marginBottom={SPACING.md}
       />
     ),
     [],

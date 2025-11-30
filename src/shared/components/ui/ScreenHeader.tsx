@@ -1,87 +1,59 @@
-import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
+import { Dimensions } from 'react-native';
 
 import { AppText } from './AppText';
 import { Box } from './Box';
-import type { AppTextProps } from './AppText';
+import { SPACING, SpacingToken } from '../../theme';
 
-type HeaderAlignment = 'left' | 'center' | 'right';
+const { height } = Dimensions.get('window');
+const TOP_MARGIN = height * 0.05;
+
+export type ScreenHeaderVariant = 'default' | 'paywall';
 
 type ScreenHeaderProps = {
   title: string;
   subtitle?: string;
-  align?: HeaderAlignment;
-  titleVariant?: AppTextProps['variant'];
-  subtitleVariant?: AppTextProps['variant'];
-  subtitleTone?: AppTextProps['tone'];
+  variant?: ScreenHeaderVariant;
+};
+
+type VariantConfig = {
+  align: 'left' | 'center' | 'right';
+  marginBottom: number;
+  gap: SpacingToken;
   paddingHorizontal?: number;
-  paddingVertical?: number;
-  marginBottom?: number;
-  style?: StyleProp<ViewStyle>;
+};
+
+const VARIANTS: Record<ScreenHeaderVariant, VariantConfig> = {
+  default: {
+    marginBottom: SPACING.md,
+    align: 'left',
+    gap: 'md',
+  },
+  paywall: {
+    marginBottom: SPACING.xl,
+    align: 'center',
+    gap: 'sm',
+  },
 };
 
 export const ScreenHeader = ({
   title,
   subtitle,
-  align = 'left',
-  titleVariant = 'title',
-  subtitleVariant = 'body',
-  subtitleTone = 'primary',
-  paddingHorizontal,
-  paddingVertical,
-  marginBottom,
-  style,
+  variant = 'default',
 }: ScreenHeaderProps) => {
-  const alignmentStyle =
-    align === 'center'
-      ? styles.centered
-      : align === 'right'
-      ? styles.rightAligned
-      : styles.leftAligned;
+  const config = VARIANTS[variant];
 
   return (
     <Box
       style={[
-        alignmentStyle,
         {
-          paddingHorizontal,
-          paddingVertical,
-          marginBottom,
+          marginBottom: config.marginBottom,
+          marginTop: TOP_MARGIN,
         },
-        style,
       ]}
-      gap="md"
+      gap={config.gap}
     >
-      <AppText
-        variant={titleVariant}
-        style={[styles.title, { textAlign: align }]}
-      >
-        {title}
-      </AppText>
-      {subtitle ? (
-        <AppText
-          variant={subtitleVariant}
-          tone={subtitleTone}
-          style={[styles.subtitle, { textAlign: align }]}
-        >
-          {subtitle}
-        </AppText>
-      ) : null}
+      <AppText variant="title">{title}</AppText>
+      <AppText>{subtitle}</AppText>
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {},
-  title: {},
-  subtitle: {},
-  centered: {
-    alignItems: 'center',
-  },
-  rightAligned: {
-    alignItems: 'flex-end',
-  },
-  leftAligned: {
-    alignItems: 'flex-start',
-  },
-});
