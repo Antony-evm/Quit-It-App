@@ -1,4 +1,10 @@
 export const TYPOGRAPHY = {
+  display: {
+    fontFamily: 'System',
+    fontSize: 40,
+    fontWeight: '700' as const,
+    lineHeight: 48,
+  },
   title: {
     fontFamily: 'System',
     fontSize: 26,

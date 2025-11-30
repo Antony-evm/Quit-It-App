@@ -15,6 +15,7 @@ import {
   BORDER_RADIUS,
   BORDER_WIDTH,
   BorderRadiusToken,
+  SHADOWS,
 } from '../../theme';
 
 const BOX_VARIANTS = {
@@ -56,11 +57,36 @@ const BOX_VARIANTS = {
     alignItems: 'center',
     borderTopColor: COLOR_PALETTE.borderDefault,
   },
+  statCard: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.md,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: BORDER_WIDTH.md,
+    borderColor: COLOR_PALETTE.borderDefault,
+  },
   authHeader: {
     alignItems: 'center',
     justifyContent: 'flex-end',
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
     height: '15%',
+  },
+  welcomeHeader: {
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    paddingHorizontal: SPACING.md,
+    paddingBottom: SPACING.md,
+    borderBottomWidth: BORDER_WIDTH.lg,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
+    ...SHADOWS.lg,
+  },
+  highlightCard: {
+    marginTop: SPACING.sm,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.small,
+    borderWidth: BORDER_WIDTH.md,
+    borderColor: COLOR_PALETTE.borderDefault,
+    ...SHADOWS.xl,
   },
 } satisfies Record<string, ViewStyle>;
 

@@ -8,23 +8,29 @@ import { CravingChart } from '@/features/tracking';
 import { HomeStatsRow } from '../components/HomeStatsRow';
 import { WelcomeComponent } from '../components/WelcomeComponent';
 import { useHomeDashboardStats } from '../hooks/useHomeDashboardStats';
+import { useWelcomeData } from '../hooks/useWelcomeData';
 
 export const HomeDashboardScreen = () => {
   const { dailyData, stats } = useHomeDashboardStats();
+  const { title, message, timeDifference } = useWelcomeData();
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
-      <WelcomeComponent />
+      <WelcomeComponent
+        title={title}
+        message={message}
+        timeDifference={timeDifference}
+      />
 
-      <Box px="xl">
+      <Box px="xl" gap="md">
         {dailyData && dailyData.length > 0 && (
           <CravingChart data={dailyData} style={styles.chartCard} />
         )}
 
-        <HomeStatsRow stats={stats} style={styles.statsRow} />
+        <HomeStatsRow stats={stats} />
 
         <Box mb="xl">
           <AppText variant="heading" style={styles.sectionTitle}>
@@ -49,9 +55,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginBottom: SPACING.sm,
-  },
-  statsRow: {
-    marginBottom: SPACING.xl,
   },
   chartCard: {
     marginTop: SPACING.sm,

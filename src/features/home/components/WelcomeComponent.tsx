@@ -1,163 +1,40 @@
-import React from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 
 import { AppText, Box } from '@/shared/components/ui';
-import { useAuth } from '@/shared/auth/AuthContext';
-import { useQuittingPlan } from '@/features/questionnaire';
-import { useSmokingAnalytics } from '@/features/tracking';
-import { getFormattedTimeDifference } from '@/utils/dateUtils';
-import { SPACING, COLOR_PALETTE, DEVICE_HEIGHT } from '@/shared/theme';
+import { DEVICE_HEIGHT } from '@/shared/theme';
 
-export const WelcomeComponent = () => {
+type WelcomeComponentProps = {
+  title: string;
+  message: string;
+  timeDifference: string;
+};
+
+export const WelcomeComponent = ({
+  title,
+  message,
+  timeDifference,
+}: WelcomeComponentProps) => {
   const { height } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
-  const { user } = useAuth();
-  const { plan } = useQuittingPlan();
-  const { data: smokingAnalytics } = useSmokingAnalytics();
-
-  const rawName = user?.firstName || user?.lastName || 'Friend';
-  const formattedName =
-    rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
-  const today = new Date();
-
-  let message = '';
-  let timeDifference = '';
-
-  if (plan) {
-    const status = plan.status;
-
-    // Check for "Cut Down" or "Cut down first"
-    if (status === 'Cut Down' || status === 'Cut down first') {
-      message = 'Your next big milestone is in';
-      timeDifference = getFormattedTimeDifference(today, plan.date);
-    }
-    // Check for "Quit It" or "Quit it"
-    else if (status === 'Quit It' || status === 'Quit it') {
-      if (today.getTime() < plan.date.getTime()) {
-        message = 'You are going smoke free in';
-        timeDifference = getFormattedTimeDifference(today, plan.date);
-      } else if (today.getTime() > plan.date.getTime()) {
-        if (smokingAnalytics?.last_smoking_day) {
-          message = 'You are smoke free for';
-          const lastSmokingDate = new Date(smokingAnalytics.last_smoking_day);
-          timeDifference = getFormattedTimeDifference(lastSmokingDate, today);
-        }
-      }
-    }
-  }
-
-  const showSpecificMessage = message !== '';
 
   return (
     <Box
-      style={[styles.container, { minHeight: height * 0.3 }]}
-      mb="lg"
-      px="lg"
-      bg="backgroundPrimary"
+      variant="welcomeHeader"
+      style={{ minHeight: height * 0.3, paddingTop: DEVICE_HEIGHT * 0.05 }}
     >
       <Box flex={1}>
         <Box mb="xs">
-          <AppText variant="title" style={styles.title}>
-            Keep the streak going {formattedName}!
-          </AppText>
+          <AppText variant="title">{title}</AppText>
         </Box>
 
         <Box flex={1} justifyContent="center">
-          {showSpecificMessage ? (
-            <>
-              <AppText variant="body" style={styles.message}>
-                {message}
-              </AppText>
-              <Box
-                style={styles.messageContainer}
-                mt="sm"
-                p="md"
-                bg="backgroundMuted"
-                borderRadius="small"
-              >
-                <AppText variant="heading" style={styles.timeDifference}>
-                  {timeDifference}
-                </AppText>
-              </Box>
-            </>
-          ) : (
-            <Box mt="sm">
-              <AppText tone="secondary" style={styles.subtitle}>
-                Here&apos;s how you&apos;ve been doing today.
-              </AppText>
-            </Box>
-          )}
+          <AppText variant="heading">{message}</AppText>
+          <Box variant="highlightCard" py="xl">
+            <AppText variant="display" tone="brand">
+              {timeDifference}
+            </AppText>
+          </Box>
         </Box>
       </Box>
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    paddingHorizontal: SPACING.lg,
-    borderBottomWidth: 3,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
-    paddingTop: DEVICE_HEIGHT * 0.05,
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
-  },
-  content: {
-    flex: 1,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  titleContainer: {
-    marginBottom: SPACING.xs,
-  },
-  title: {
-    marginBottom: SPACING.xs,
-    fontSize: 28,
-    lineHeight: 34,
-  },
-  subtitleContainer: {
-    marginTop: SPACING.sm,
-  },
-  subtitle: {
-    fontSize: 16,
-  },
-  messageContainer: {
-    marginTop: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    padding: SPACING.md,
-    paddingVertical: '10%',
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: COLOR_PALETTE.borderDefault,
-    elevation: 10,
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-  },
-  message: {
-    marginBottom: SPACING.xs,
-    color: COLOR_PALETTE.textPrimary,
-    fontSize: 24,
-  },
-  timeDifference: {
-    color: COLOR_PALETTE.brandPrimary,
-    fontSize: 40,
-    fontWeight: 'bold',
-    marginTop: 0,
-  },
-});

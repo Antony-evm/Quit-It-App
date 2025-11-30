@@ -19,6 +19,12 @@ export default {
     common: {
       error: 'Something went wrong',
     },
+    home: {
+      keepStreakGoing: 'Keep the streak going {{name}}!',
+      nextMilestoneIn: 'Your next big milestone is in',
+      goingSmokeFreeIn: 'You are going smoke free in',
+      smokeFreeFor: 'You are smoke free for',
+    },
     journal: {
       screenTitle: 'Your Quit Journal',
       screenSubtitle: "A clear view of how far you've come.",

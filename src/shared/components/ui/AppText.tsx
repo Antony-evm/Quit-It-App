@@ -9,7 +9,8 @@ type TextTone =
   | 'inverse'
   | 'muted'
   | 'success'
-  | 'error';
+  | 'error'
+  | 'brand';
 
 export type AppTextProps = PropsWithChildren<
   TextProps & {
@@ -26,6 +27,7 @@ const toneToColorMap: Record<TextTone, string> = {
   muted: COLOR_PALETTE.textMuted,
   success: COLOR_PALETTE.systemSuccess,
   error: COLOR_PALETTE.systemError,
+  brand: COLOR_PALETTE.brandPrimary,
 };
 
 export const AppText = ({
