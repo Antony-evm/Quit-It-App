@@ -53,7 +53,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
               <AppTag
                 key={type.id}
                 label={type.displayName}
-                variant="rounded"
                 selected={isSelected}
                 onPress={() => onTrackingTypeSelect(type.id)}
               />

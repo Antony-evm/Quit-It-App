@@ -1,4 +1,4 @@
-import { TAGS, SYSTEM, hexToRgba } from '@/shared/theme';
+import { TAGS, SYSTEM } from '@/shared/theme';
 
 // Default user ID for tracking records
 // TODO: Replace with actual user ID from authentication context
@@ -19,23 +19,19 @@ export type TrackingTypeCode =
 // Color configuration for tracking types
 export type TrackingTypeColors = {
   accent: string;
-  badgeBackground: string;
 };
 
 export const TRACKING_TYPE_COLORS: Record<string, TrackingTypeColors> = {
   [TRACKING_TYPE_CODES.CRAVING]: {
     accent: TAGS.craving,
-    badgeBackground: hexToRgba(TAGS.craving, 0.1),
   },
   [TRACKING_TYPE_CODES.CIGARETTE]: {
     accent: TAGS.cigarette,
-    badgeBackground: hexToRgba(TAGS.cigarette, 0.1),
   },
 };
 
 export const DEFAULT_TRACKING_TYPE_COLORS: TrackingTypeColors = {
   accent: SYSTEM.border,
-  badgeBackground: hexToRgba(SYSTEM.border, 0.1),
 };
 
 /**

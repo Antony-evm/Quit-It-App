@@ -92,12 +92,7 @@ export const CravingChart = memo(function CravingChart({
       style={[styles.container, style]}
     >
       <Box variant="noteHeader" mb="md">
-        <AppTag
-          label="Cravings Resisted"
-          size="small"
-          color={hexToRgba(TAGS.craving, 0.1)}
-          textColor={TEXT.primary}
-        />
+        <AppTag label="Cravings Resisted" size="small" color={TAGS.craving} />
         <Box variant="toggleGroup">
           <AppPressable
             variant="chip"

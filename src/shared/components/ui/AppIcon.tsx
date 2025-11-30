@@ -1,96 +1,57 @@
 import React from 'react';
 import { SvgProps } from 'react-native-svg';
-import { BACKGROUND, TEXT, SYSTEM, ICON_SIZES } from '@/shared/theme';
+import { BACKGROUND, TEXT, ICON_SIZES } from '@/shared/theme';
 
-export type IconVariant =
-  | 'default'
-  | 'small'
-  | 'large'
-  | 'muted'
-  | 'accent'
-  | 'error'
-  | 'fab'
-  | 'inverse'
-  | 'backArrow';
+export type IconVariant = 'default' | 'fab' | 'inverse' | 'backArrow';
 
-const VARIANTS = {
-  default: {
-    size: ICON_SIZES.medium,
-    color: BACKGROUND.primary,
-    stroke: TEXT.primary,
-  },
-  backArrow: {
-    size: ICON_SIZES.medium,
-    color: TEXT.primary,
-    stroke: BACKGROUND.primary,
-  },
-  inverse: {
-    size: ICON_SIZES.large,
-    color: TEXT.primary,
-    stroke: BACKGROUND.primary,
-  },
-  fab: {
-    size: ICON_SIZES.xlarge,
-    color: BACKGROUND.dark,
-  },
-  small: {
-    size: ICON_SIZES.small,
-    color: BACKGROUND.primary,
-    stroke: TEXT.primary,
-  },
-  large: {
-    size: ICON_SIZES.large,
-    color: BACKGROUND.primary,
-    stroke: TEXT.primary,
-  },
-  muted: {
-    size: ICON_SIZES.medium,
-    color: TEXT.muted,
-  },
-  accent: {
-    size: ICON_SIZES.medium,
-    color: SYSTEM.accentPrimary,
-  },
-  error: {
-    size: ICON_SIZES.medium,
-    color: SYSTEM.error,
-  },
-} as const;
+interface VariantStyle {
+  size: number;
+  color: string;
+  stroke?: string;
+  strokeWidth?: number;
+}
 
-export interface AppIconProps extends Omit<SvgProps, 'width' | 'height'> {
+const BASE_SIZES = {
+  medium: { size: ICON_SIZES.medium, strokeWidth: 2 },
+  large: { size: ICON_SIZES.large, strokeWidth: 2.5 },
+  xlarge: { size: ICON_SIZES.xlarge },
+};
+
+const BASE_THEMES = {
+  primary: { color: BACKGROUND.primary, stroke: TEXT.primary },
+  inverse: { color: TEXT.primary, stroke: BACKGROUND.primary },
+};
+
+const VARIANTS: Record<IconVariant, VariantStyle> = {
+  default: { ...BASE_SIZES.medium, ...BASE_THEMES.primary },
+  backArrow: { ...BASE_SIZES.medium, ...BASE_THEMES.inverse },
+  inverse: { ...BASE_SIZES.large, ...BASE_THEMES.inverse, strokeWidth: 2 },
+  fab: { ...BASE_SIZES.xlarge, color: BACKGROUND.dark },
+};
+
+export interface AppIconProps
+  extends Omit<SvgProps, 'width' | 'height' | 'color'> {
   icon: React.FC<SvgProps>;
   variant?: IconVariant;
-  color?: string;
-  width?: number;
-  height?: number;
 }
 
 export const AppIcon = ({
   icon: Icon,
   variant = 'default',
-  color,
   style,
-  width,
-  height,
-  ...props
 }: AppIconProps) => {
-  const {
-    size,
-    color: defaultColor,
-    stroke: defaultStroke,
-  } = VARIANTS[variant] as { size: number; color: string; stroke?: string };
-  const finalColor = color || defaultColor;
-  const finalStroke = defaultStroke || finalColor;
+  const theme = VARIANTS[variant];
+  const iconStroke = theme.stroke ?? theme.color;
 
   return (
     <Icon
-      width={width || size}
-      height={height || size}
-      fill={finalColor}
-      stroke={finalStroke}
-      color={finalStroke}
+      width={theme.size}
+      height={theme.size}
+      fill={theme.color}
+      stroke={iconStroke}
+      strokeWidth={theme.strokeWidth}
+      color={iconStroke}
       style={style}
-      {...props}
     />
   );
 };

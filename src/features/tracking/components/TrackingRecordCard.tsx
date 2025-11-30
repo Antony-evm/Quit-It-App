@@ -5,7 +5,6 @@ import { AppText, Box, AppPressable, AppTag } from '@/shared/components/ui';
 export type TrackingRecordCardProps = {
   displayName: string;
   accentColor: string;
-  badgeBackgroundColor: string;
   dateLabel: string;
   timeLabel: string;
   note: string | null;
@@ -17,7 +16,6 @@ export const TrackingRecordCard = React.memo(
   ({
     displayName,
     accentColor,
-    badgeBackgroundColor,
     dateLabel,
     timeLabel,
     note,
@@ -38,11 +36,7 @@ export const TrackingRecordCard = React.memo(
         }
       >
         <Box variant="noteHeader">
-          <AppTag
-            label={displayName}
-            color={badgeBackgroundColor}
-            size="small"
-          />
+          <AppTag label={displayName} color={accentColor} size="small" />
           <Box alignItems="flex-end" gap="xs">
             <AppText variant="subcaption">{timeLabel}</AppText>
             <AppText variant="subcaption" tone="muted">

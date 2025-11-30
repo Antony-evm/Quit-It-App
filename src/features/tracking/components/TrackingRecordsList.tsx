@@ -24,7 +24,6 @@ export type TransformedRecord = {
   record: TrackingRecordApiResponse;
   displayName: string;
   accentColor: string;
-  badgeBackgroundColor: string;
   dateLabel: string;
   timeLabel: string;
 };
@@ -69,7 +68,6 @@ export const transformRecord = (
     record,
     displayName: trackingType?.displayName || `Type ${record.tracking_type_id}`,
     accentColor: colors.accent,
-    badgeBackgroundColor: colors.badgeBackground,
     dateLabel,
     timeLabel,
   };
@@ -114,7 +112,6 @@ export const TrackingRecordsList = React.memo(
         <TrackingRecordCard
           displayName={item.displayName}
           accentColor={item.accentColor}
-          badgeBackgroundColor={item.badgeBackgroundColor}
           dateLabel={item.dateLabel}
           timeLabel={item.timeLabel}
           note={item.record.note}

@@ -1,4 +1,4 @@
-import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { AppText } from './AppText';
 import { AppPressable } from './AppPressable';
 import { Box } from './Box';
@@ -8,84 +8,72 @@ import {
   SYSTEM,
   SPACING,
   BORDER_RADIUS,
+  BORDER_WIDTH,
+  hexToRgba,
 } from '@/shared/theme';
+
+type TagSize = 'small' | 'medium' | 'large';
 
 export type AppTagProps = {
   label: string;
   color?: string;
-  textColor?: string;
-  size?: 'small' | 'medium' | 'large';
-  variant?: 'pill' | 'rounded';
+  size?: TagSize;
   onPress?: () => void;
   selected?: boolean;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
+};
+
+const SIZE_CONFIG: Record<
+  TagSize,
+  { textVariant: 'gridArea' | 'subcaption' | 'caption'; uppercase: boolean }
+> = {
+  small: { textVariant: 'gridArea', uppercase: true },
+  medium: { textVariant: 'subcaption', uppercase: false },
+  large: { textVariant: 'caption', uppercase: false },
 };
 
 export const AppTag = ({
   label,
   color,
-  textColor,
   size = 'medium',
-  variant = 'pill',
   onPress,
   selected = false,
-  style,
-  textStyle,
 }: AppTagProps) => {
-  const isPill = variant === 'pill';
-  const borderRadius = isPill ? 'full' : 'medium';
+  const isInteractive = !!onPress;
 
-  // Default colors
-  const defaultBg = selected ? TEXT.primary : BACKGROUND.muted;
-  const backgroundColor = color || defaultBg;
+  const bg = selected
+    ? TEXT.primary
+    : color
+    ? hexToRgba(color, 0.1)
+    : BACKGROUND.muted;
 
-  const defaultText = selected ? BACKGROUND.primary : TEXT.primary;
-  const finalTextColor = textColor || defaultText;
+  const textColor = selected ? BACKGROUND.primary : TEXT.primary;
+  const borderColor = selected ? TEXT.primary : SYSTEM.border;
 
-  const getTextStyles = () => {
-    switch (size) {
-      case 'small':
-        return styles.textSmall;
-      case 'large':
-        return styles.textLarge;
-      default:
-        return styles.textMedium;
-    }
-  };
-
-  const getPaddingVertical = () => {
-    if (variant === 'rounded') return SPACING.sm;
-    return SPACING.xs;
-  };
+  const { textVariant, uppercase } = SIZE_CONFIG[size];
 
   const content = (
     <AppText
-      style={[
-        styles.textBase,
-        getTextStyles(),
-        { color: finalTextColor },
-        textStyle,
-      ]}
+      variant={textVariant}
+      style={[{ color: textColor }, uppercase && styles.uppercase]}
+      bold
+      centered
     >
       {label}
     </AppText>
   );
 
-  if (onPress) {
+  if (isInteractive) {
     return (
       <AppPressable
         onPress={onPress}
         style={[
           styles.pressableBase,
           {
-            backgroundColor,
-            borderRadius: isPill ? 9999 : BORDER_RADIUS.medium,
-            borderColor: selected ? TEXT.primary : SYSTEM.border,
-            borderWidth: 1,
-            paddingVertical: getPaddingVertical(),
+            backgroundColor: bg,
+            borderRadius: BORDER_RADIUS.medium,
+            borderColor,
+            borderWidth: BORDER_WIDTH.sm,
           },
-          style,
         ]}
       >
         {content}
@@ -96,9 +84,9 @@ export const AppTag = ({
   return (
     <Box
       px="md"
-      py={size === 'small' ? 'xs' : 'xs'}
-      borderRadius={borderRadius}
-      style={[{ backgroundColor }, style, { alignSelf: 'flex-start' }]}
+      py="xs"
+      borderRadius="full"
+      style={{ backgroundColor: bg, alignSelf: 'flex-start' }}
     >
       {content}
     </Box>
@@ -106,23 +94,13 @@ export const AppTag = ({
 };
 
 const styles = StyleSheet.create({
-  textBase: {
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  textSmall: {
-    fontSize: 12,
+  uppercase: {
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  textMedium: {
-    fontSize: 14,
-  },
-  textLarge: {
-    fontSize: 16,
-  },
   pressableBase: {
     paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },

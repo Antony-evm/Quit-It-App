@@ -11,7 +11,6 @@ export type HomeStat = {
   icon?: ReactNode;
   accentColor?: string;
   tagLabel?: string;
-  tagBackgroundColor?: string;
   bottomLabel?: string;
 };
 
@@ -49,7 +48,7 @@ const StatCard = memo(({ stat, isFirst }: StatCardProps) => {
         <Box mr="sm">
           <AppTag
             label={stat.tagLabel ?? stat.label}
-            color={stat.tagBackgroundColor}
+            color={stat.accentColor}
             size="large"
           />
         </Box>
