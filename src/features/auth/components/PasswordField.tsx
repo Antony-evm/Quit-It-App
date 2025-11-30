@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { AppTextInput, AppText, Box, AppIcon } from '@/shared/components/ui';
+import { AppTextInput, Box, AppIcon, FormField } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
 import HidePasswordSvg from '@/assets/hidePassword.svg';
@@ -35,7 +35,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
-      <Box gap="sm">
+      <FormField errorMessage={errorMessage} showErrorIcon={false}>
         <Box
           flexDirection="row"
           alignItems="center"
@@ -68,12 +68,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
             />
           </TouchableOpacity>
         </Box>
-        {errorMessage && (
-          <AppText variant="caption" tone="error">
-            {errorMessage}
-          </AppText>
-        )}
-      </Box>
+      </FormField>
     );
   },
 );

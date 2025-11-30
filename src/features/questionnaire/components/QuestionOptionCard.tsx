@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { AppSurface, AppText, AppPressable } from '@/shared/components/ui';
+import { AppCard, AppText, AppPressable } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 type QuestionOptionCardProps = {
@@ -18,7 +18,8 @@ export const QuestionOptionCard = ({
   onPress,
 }: QuestionOptionCardProps) => (
   <AppPressable onPress={onPress} fullWidth>
-    <AppSurface
+    <AppCard
+      p="zero"
       style={[
         styles.surface,
         isSelected && { borderColor: COLOR_PALETTE.accentPrimary },
@@ -30,14 +31,13 @@ export const QuestionOptionCard = ({
           {description}
         </AppText>
       ) : null}
-    </AppSurface>
+    </AppCard>
   </AppPressable>
 );
 
 const styles = StyleSheet.create({
   surface: {
     gap: SPACING.xs,
-    paddingHorizontal: 0,
   },
   description: {
     marginTop: SPACING.xs,

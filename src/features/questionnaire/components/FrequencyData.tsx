@@ -1,11 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import {
-  AppText,
-  AppSurface,
-  Box,
-  StatusMessage,
-} from '@/shared/components/ui';
+import { AppText, AppCard, Box, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
@@ -63,17 +58,17 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
 
   if (isLoading) {
     return (
-      <AppSurface style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
         <StatusMessage type="loading" message="Loading frequency data..." />
-      </AppSurface>
+      </AppCard>
     );
   }
 
   if (error) {
     return (
-      <AppSurface style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
         <StatusMessage type="error" message="Unable to load frequency data" />
-      </AppSurface>
+      </AppCard>
     );
   }
 
@@ -82,7 +77,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
   }
 
   return (
-    <AppSurface style={[styles.card, style]}>
+    <AppCard variant="filled" p="zero" style={[styles.card, style]}>
       <FrequencyGrid
         options={question.options}
         subOptions={question.subOptions}
@@ -91,14 +86,12 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
         onMainSelectionChange={() => {}}
         onValidityChange={() => {}}
       />
-    </AppSurface>
+    </AppCard>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
-    padding: 0,
   },
 });

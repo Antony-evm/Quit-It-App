@@ -12,8 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   AppText,
   DraggableModal,
-  AppPressable,
-  AppIcon,
+  ModalActionHeader,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
@@ -24,7 +23,6 @@ import {
   HomeFooterNavigator,
   HomeFooterTab,
 } from '../components/HomeFooterNavigator';
-import CancelIcon from '@/assets/cancel.svg';
 
 export const HomeTabNavigator = () => {
   const insets = useSafeAreaInsets();
@@ -35,25 +33,11 @@ export const HomeTabNavigator = () => {
   const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
 
   const renderHeaderContent = () => (
-    <View style={styles.modalHeaderContent}>
-      <AppPressable
-        onPress={() => setIsNoteDrawerVisible(false)}
-        variant="icon"
-        hitSlop={10}
-      >
-        <AppIcon icon={CancelIcon} />
-      </AppPressable>
-
-      <AppPressable
-        onPress={() => notesCardRef.current?.save()}
-        variant="icon"
-        hitSlop={10}
-      >
-        <AppText variant="body" style={styles.saveButtonText}>
-          Save
-        </AppText>
-      </AppPressable>
-    </View>
+    <ModalActionHeader
+      onClose={() => setIsNoteDrawerVisible(false)}
+      onPrimaryAction={() => notesCardRef.current?.save()}
+      primaryLabel="Save"
+    />
   );
 
   const renderContent = () => {
@@ -120,15 +104,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-  },
-  modalHeaderContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '600',
   },
   modalContent: {
     padding: SPACING.md,

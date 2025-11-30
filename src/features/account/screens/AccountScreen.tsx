@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
-import { AppText, Logo, Box } from '@/shared/components/ui';
+import { AppText, Box, ScreenHeader } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
@@ -82,11 +82,11 @@ export const AccountScreen = () => {
           />
         }
       >
-        <Box mb="xxl">
-          <AppText tone="primary" variant="title" style={styles.headerTitle}>
-            Your Quit It Profile
-          </AppText>
-        </Box>
+        <ScreenHeader
+          title="Your Quit It Profile"
+          marginBottom={SPACING.xl}
+          paddingHorizontal={0}
+        />
 
         <AccountSectionItem
           title="Your Details"
@@ -124,10 +124,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xxl,
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  headerTitle: {
-    marginBottom: SPACING.sm,
-    textAlign: 'left',
   },
   triggersCard: {
     marginBottom: SPACING.xl,

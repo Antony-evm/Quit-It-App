@@ -13,7 +13,8 @@ import {
   DraggableModal,
   Box,
   AppPressable,
-  AppIcon,
+  ModalActionHeader,
+  ScreenHeader,
 } from '@/shared/components/ui';
 import {
   SPACING,
@@ -30,7 +31,6 @@ import {
 } from '@/features/home/components/NotesCard';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
-import CancelIcon from '@/assets/cancel.svg';
 
 export const JournalScreen = () => {
   const queryClient = useQueryClient();
@@ -68,41 +68,22 @@ export const JournalScreen = () => {
 
   const headerContent = useMemo(
     () => (
-      <Box
-        flexDirection="row"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <AppPressable
-          onPress={() => setIsEditModalVisible(false)}
-          variant="icon"
-          hitSlop={10}
-        >
-          <AppIcon icon={CancelIcon} />
-        </AppPressable>
-
-        <AppPressable
-          onPress={() => editCardRef.current?.save()}
-          variant="icon"
-          hitSlop={10}
-        >
-          <AppText variant="body" style={styles.saveButtonText}>
-            Save
-          </AppText>
-        </AppPressable>
-      </Box>
+      <ModalActionHeader
+        onClose={() => setIsEditModalVisible(false)}
+        onPrimaryAction={() => editCardRef.current?.save()}
+        primaryLabel="Save"
+      />
     ),
     [],
   );
 
   const ListHeaderComponent = useMemo(
     () => (
-      <Box mb="sm">
-        <AppText variant="title" style={styles.title}>
-          Your Quit Journal
-        </AppText>
-        <AppText tone="primary">A clear view of how far you've come.</AppText>
-      </Box>
+      <ScreenHeader
+        title="Your Quit Journal"
+        subtitle="A clear view of how far you've come."
+        marginBottom={SPACING.sm}
+      />
     ),
     [],
   );
@@ -175,13 +156,6 @@ const styles = StyleSheet.create({
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  title: {
-    marginBottom: SPACING.sm,
-  },
-  saveButtonText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '600',
   },
   modalContent: {
     padding: SPACING.md,

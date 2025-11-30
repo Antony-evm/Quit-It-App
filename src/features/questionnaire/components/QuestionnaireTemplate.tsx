@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
-import { AppButton, AppSurface, AppText, Box } from '@/shared/components/ui';
+import { AppButton, AppCard, Box, ScreenHeader } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
@@ -90,19 +90,12 @@ export const QuestionnaireTemplate = ({
         <Box style={[styles.container, { maxWidth: contentWidth }]} gap="md">
           {!isLoading ? (
             <Box style={styles.hero} py="md" bg="backgroundMuted">
-              <Box gap="lg">
-                <AppText variant="title">{title}</AppText>
-                {subtitle ? (
-                  <AppText tone="primary" style={styles.subtitle}>
-                    {subtitle}
-                  </AppText>
-                ) : null}
-              </Box>
+              <ScreenHeader title={title} subtitle={subtitle} />
             </Box>
           ) : null}
-          <AppSurface style={styles.body}>
+          <AppCard variant="ghost" p="zero" style={styles.body}>
             {isLoading ? <QuestionnaireSkeleton /> : children}
-          </AppSurface>
+          </AppCard>
         </Box>
       </ScrollView>
       <Box style={styles.footer} gap="md" pt="lg" pb="lg" bg="backgroundMuted">
@@ -160,19 +153,9 @@ const styles = StyleSheet.create({
   heroText: {
     gap: SPACING.lg,
   },
-  subtitle: {},
   body: {
     gap: SPACING.lg,
-    padding: 0,
-    paddingHorizontal: 0, // Explicitly override AppSurface horizontal padding
     paddingVertical: SPACING.xl,
-    borderWidth: 0,
-    borderColor: 'transparent',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    shadowColor: 'transparent',
-    shadowOpacity: 0,
-    shadowOffset: { width: 0, height: 0 },
-    elevation: 0,
   },
   loading: {
     alignItems: 'center',

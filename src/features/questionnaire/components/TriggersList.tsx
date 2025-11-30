@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { AppText, AppSurface, StatusMessage } from '@/shared/components/ui';
+import { AppText, AppCard, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useTriggers } from '@/features/questionnaire/hooks/useTriggers';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
@@ -51,36 +51,34 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
 
   if (isLoading) {
     return (
-      <AppSurface style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
         <StatusMessage type="loading" message="Loading triggers..." />
-      </AppSurface>
+      </AppCard>
     );
   }
 
   if (error) {
     return (
-      <AppSurface style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
         <StatusMessage type="error" message="Unable to load triggers" />
-      </AppSurface>
+      </AppCard>
     );
   }
 
   return (
-    <AppSurface style={[styles.card, style]}>
+    <AppCard variant="filled" p="zero" style={[styles.card, style]}>
       <QuestionnaireQuestion
         question={question}
         initialSelection={initialSelection}
         onSelectionChange={() => {}}
         onValidityChange={() => {}}
       />
-    </AppSurface>
+    </AppCard>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
-    padding: 0,
   },
 });

@@ -4,11 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '@/types/navigation';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import { AppButton, AppText, Box } from '@/shared/components/ui';
+import { AppButton, AppText, Box, ScreenHeader } from '@/shared/components/ui';
 import { usePaywallLogic } from '../hooks/usePaywallLogic';
 
 export const PaywallScreen = ({
-  navigation,
+  navigation: _navigation,
 }: RootStackScreenProps<'Paywall'>) => {
   const { handleSubscribe, isSubscribing } = usePaywallLogic();
 
@@ -16,34 +16,36 @@ export const PaywallScreen = ({
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <Box flex={1} px="lg" justifyContent="space-between">
         <Box alignItems="center" mt="xxl" pt="xl">
-          <AppText variant="heading" style={styles.title}>
-            🎉 You're Almost Ready!
-          </AppText>
-          <AppText variant="body" tone="secondary" style={styles.subtitle}>
-            Complete your journey with premium access to all features and
-            personalized tracking.
-          </AppText>
+          <ScreenHeader
+            title="You're Almost Ready!"
+            subtitle="Complete your journey with premium access to all features and personalized tracking."
+            align="center"
+            titleVariant="heading"
+            subtitleTone="secondary"
+            marginBottom={SPACING.xl}
+            style={{ gap: SPACING.sm }}
+          />
         </Box>
 
         <Box flex={1} justifyContent="center" py="xl">
           <Box mb="lg" px="sm">
             <AppText variant="caption" style={styles.featureText}>
-              ✨ Personalized quit plan based on your responses
+              - Personalized quit plan based on your responses
             </AppText>
           </Box>
           <Box mb="lg" px="sm">
             <AppText variant="caption" style={styles.featureText}>
-              📊 Advanced progress tracking and insights
+              - Advanced progress tracking and insights
             </AppText>
           </Box>
           <Box mb="lg" px="sm">
             <AppText variant="caption" style={styles.featureText}>
-              🎯 Daily motivation and milestone celebrations
+              - Daily motivation and milestone celebrations
             </AppText>
           </Box>
           <Box mb="lg" px="sm">
             <AppText variant="caption" style={styles.featureText}>
-              🔒 Secure, private data with backup protection
+              - Secure, private data with backup protection
             </AppText>
           </Box>
         </Box>
@@ -74,15 +76,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: SPACING.md,
-    color: COLOR_PALETTE.textPrimary,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: SPACING.xl,
   },
   featureText: {
     color: COLOR_PALETTE.textPrimary,

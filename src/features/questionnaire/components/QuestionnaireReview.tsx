@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import type { QuestionnaireResponseRecord } from '../types';
-import { AppSurface, AppText, Box } from '@/shared/components/ui';
+import { AppCard, AppText, Box } from '@/shared/components/ui';
 import { SPACING } from '@/shared/theme';
 import {
   formatDisplayDate,
@@ -22,14 +22,14 @@ export const QuestionnaireReview = ({
       {responses.map(response => {
         const answer = resolveAnswerDisplay(response);
         return (
-          <AppSurface key={response.questionId} style={styles.card}>
+          <AppCard key={response.questionId} style={styles.card}>
             <AppText variant="body">{response.question}</AppText>
             <Box gap="lg">
               <AppText variant="caption" style={styles.answerText}>
                 {answer.primary}
               </AppText>
             </Box>
-          </AppSurface>
+          </AppCard>
         );
       })}
     </Box>

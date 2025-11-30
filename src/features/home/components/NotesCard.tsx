@@ -8,11 +8,9 @@ import React, {
 import { StyleSheet, View, Platform, ScrollView } from 'react-native';
 
 import {
-  AppSurface,
+  AppCard,
   AppText,
   AppTextInput,
-  AppPressable,
-  AppIcon,
   AppDateTimePicker,
   AppTag,
 } from '@/shared/components/ui';
@@ -175,10 +173,9 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
     };
 
     const handleNotesFocus = () => {
-      // Use ScrollManager to ensure only one scroll operation at a time
       ScrollManager.scheduleScroll(() => {
         ScrollManager.scrollCardToPosition(cardRef, scrollViewRef, 0.2);
-      }, 50); // Shorter delay for focus events
+      }, 50);
     };
 
     const handleTrackingTypeSelect = (trackingTypeId: number) => {
@@ -203,10 +200,9 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
           user_id: actualUserId,
           tracking_type_id: selectedTrackingType.id,
           event_at: selectedDateTime.toISOString(),
-          note: notes.trim() || null, // Send null if notes is empty
+          note: notes.trim() || null,
         };
 
-        // Call the legacy callback if provided
         onSave?.({
           trackingTypeId: selectedTrackingType.id,
           dateTime: selectedDateTime,
@@ -226,13 +222,12 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
           const updatedRecord: TrackingRecordApiResponse = {
             record_id: recordId,
-            user_id: actualUserId!, // We assume user is logged in
+            user_id: actualUserId!,
             tracking_type_id: selectedTrackingType.id,
             event_at: selectedDateTime.toISOString(),
             note: notes.trim() || null,
           };
 
-          // Optimistic update
           updateRecordInCache(updatedRecord);
 
           update.mutate(
@@ -257,7 +252,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                 });
               },
               onError: error => {
-                // Rollback
                 if (oldRecord) {
                   updateRecordInCache(oldRecord);
                 }
@@ -271,11 +265,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
             },
           );
         } else {
-          // Make the API call
-          // Generate a temporary ID for the optimistic update
-          const tempId = Date.now(); // Use timestamp as temp ID
-
-          // Create optimistic record that matches API response format
+          const tempId = Date.now();
           const optimisticRecord: TrackingRecordApiResponse = {
             record_id: tempId,
             user_id: payload.user_id,
@@ -283,23 +273,15 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
             event_at: payload.event_at,
             note: payload.note || null,
           };
-
-          // Optimistically add the record to the cache
           addRecordToCache(optimisticRecord);
 
           create.mutate(payload, {
             onSuccess: realRecord => {
-              // Replace the optimistic record with the real record from server
               replaceOptimisticRecord(tempId, realRecord);
 
-              // Reset form
               setNotes('');
               setSelectedDateTime(new Date());
-
-              // Call success callback
               onSaveSuccess?.();
-
-              // Show success message
               showToast('Your tracking entry has been saved!', 'success');
 
               queryClient.invalidateQueries({
@@ -310,7 +292,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               });
             },
             onError: error => {
-              // On error, revert the optimistic update
               removeRecordFromCache(tempId);
 
               showToast(
@@ -383,7 +364,10 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
     return (
       <View ref={cardRef}>
-        <AppSurface
+        <AppCard
+          variant="elevated"
+          size="md"
+          p="lg"
           style={[
             styles.card,
             { borderLeftColor: accentColor, borderLeftWidth: 4 },
@@ -452,7 +436,7 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               </AppText>
             </View>
           </View>
-        </AppSurface>
+        </AppCard>
       </View>
     );
   },
@@ -461,8 +445,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.md,
-    borderRadius: BORDER_RADIUS.medium,
-    padding: SPACING.lg, // Increased padding
   },
   labelSpacing: {
     marginBottom: SPACING.sm,

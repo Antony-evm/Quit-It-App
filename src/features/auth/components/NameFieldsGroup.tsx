@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { AppTextInput, AppText, Box } from '@/shared/components/ui';
+import { AppTextInput, Box, FormField } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface NameValidation {
@@ -32,7 +32,13 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   return (
     <Box gap="lg">
       {/* First Name Field */}
-      <Box gap="xs">
+      <FormField
+        errorMessage={
+          firstName.length > 0 && !firstNameValidation.isValid
+            ? firstNameValidation.error
+            : undefined
+        }
+      >
         <AppTextInput
           placeholder="First name"
           value={firstName}
@@ -44,15 +50,16 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           returnKeyType="next"
           onSubmitEditing={() => lastNameRef.current?.focus()}
         />
-        {firstName.length > 0 && !firstNameValidation.isValid && (
-          <AppText variant="subcaption" tone="error">
-            ✗ {firstNameValidation.error}
-          </AppText>
-        )}
-      </Box>
+      </FormField>
 
       {/* Last Name Field */}
-      <Box gap="xs">
+      <FormField
+        errorMessage={
+          lastName.length > 0 && !lastNameValidation.isValid
+            ? lastNameValidation.error
+            : undefined
+        }
+      >
         <AppTextInput
           ref={lastNameRef}
           placeholder="Last name"
@@ -63,12 +70,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           editable={!isLoading}
           hasError={lastName.length > 0 && !lastNameValidation.isValid}
         />
-        {lastName.length > 0 && !lastNameValidation.isValid && (
-          <AppText variant="subcaption" tone="error">
-            ✗ {lastNameValidation.error}
-          </AppText>
-        )}
-      </Box>
+      </FormField>
     </Box>
   );
 };

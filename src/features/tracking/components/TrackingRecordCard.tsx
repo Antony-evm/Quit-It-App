@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import {
-  AppSurface,
+  AppCard,
   AppText,
   Box,
   AppPressable,
@@ -130,7 +130,6 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.md,
     overflow: 'hidden',
-    padding: SPACING.md,
   },
   badgeSelf: {
     alignSelf: 'flex-start',

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
-import { AppSurface, Box } from '@/shared/components/ui';
+import { AppCard, Box } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 export const SkeletonItem = ({
@@ -69,9 +69,9 @@ export const QuestionnaireSkeleton = () => {
 
       {/* Options Skeleton */}
       <Box gap="md">
-        <AppSurface style={[styles.optionCard, { height: 400 }]}>
+        <AppCard style={[styles.optionCard, { height: 400 }]}>
           <SkeletonItem width="100%" height="100%" />
-        </AppSurface>
+        </AppCard>
       </Box>
     </Box>
   );
@@ -90,8 +90,6 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   optionCard: {
-    padding: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
   },

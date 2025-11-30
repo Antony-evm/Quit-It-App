@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
-import { AppTextInput, AppText, Box } from '@/shared/components/ui';
+import { AppTextInput, FormField } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface EmailValidation {
@@ -48,8 +48,15 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     const shouldShowValidHint = validation.isValid && showValidHint;
     const shouldShowInvalidHint = !validation.isValid;
 
+    const errorMessage =
+      shouldShowHint && shouldShowInvalidHint
+        ? 'Invalid email format'
+        : undefined;
+    const successMessage =
+      shouldShowHint && shouldShowValidHint ? 'Valid email' : undefined;
+
     return (
-      <Box gap="xs">
+      <FormField errorMessage={errorMessage} successMessage={successMessage}>
         <AppTextInput
           ref={ref}
           hasError={validation.hasInput && !validation.isValid}
@@ -63,15 +70,7 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
           onSubmitEditing={onSubmitEditing}
           returnKeyType={returnKeyType}
         />
-        {shouldShowHint && (shouldShowValidHint || shouldShowInvalidHint) && (
-          <AppText
-            variant="subcaption"
-            tone={validation.isValid ? 'success' : 'error'}
-          >
-            {validation.isValid ? '✓ Valid email' : '✗ Invalid email format'}
-          </AppText>
-        )}
-      </Box>
+      </FormField>
     );
   },
 );

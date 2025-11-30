@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 
-import { AppSurface, AppText, Box } from '@/shared/components/ui';
+import { AppCard, AppText, Box } from '@/shared/components/ui';
 import { SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
 import { CravingChart } from '@/features/tracking';
@@ -30,9 +30,9 @@ export const HomeDashboardScreen = () => {
           <AppText variant="heading" style={styles.sectionTitle}>
             Your Plan
           </AppText>
-          <AppSurface style={styles.planCard}>
+          <AppCard style={styles.planCard}>
             <QuittingPlanCard />
-          </AppSurface>
+          </AppCard>
         </Box>
       </Box>
     </ScrollView>
