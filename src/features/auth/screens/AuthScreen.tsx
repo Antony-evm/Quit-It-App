@@ -155,7 +155,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             variant="primary"
-            size="lg"
             fullWidth
             loading={isLoading}
             disabled={!isFormReady}

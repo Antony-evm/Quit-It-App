@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { AppText, AppSurface, Box } from '@/shared/components/ui';
+import { AppText, AppSurface, Box, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
@@ -62,9 +62,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
   if (isLoading) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText tone="primary" style={styles.loadingText}>
-          Loading frequency data...
-        </AppText>
+        <StatusMessage type="loading" message="Loading frequency data..." />
       </AppSurface>
     );
   }
@@ -72,11 +70,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
   if (error) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText
-          style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
-        >
-          Unable to load frequency data
-        </AppText>
+        <StatusMessage type="error" message="Unable to load frequency data" />
       </AppSurface>
     );
   }
@@ -104,13 +98,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
     padding: 0,
-  },
-  loadingText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  errorText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
   },
 });

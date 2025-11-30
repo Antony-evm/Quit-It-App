@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { AppText, AppSurface } from '@/shared/components/ui';
+import { AppText, AppSurface, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useTriggers } from '@/features/questionnaire/hooks/useTriggers';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
@@ -52,9 +52,7 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
   if (isLoading) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText tone="primary" style={styles.loadingText}>
-          Loading triggers...
-        </AppText>
+        <StatusMessage type="loading" message="Loading triggers..." />
       </AppSurface>
     );
   }
@@ -62,11 +60,7 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
   if (error) {
     return (
       <AppSurface style={[styles.card, style]}>
-        <AppText
-          style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
-        >
-          Unable to load triggers
-        </AppText>
+        <StatusMessage type="error" message="Unable to load triggers" />
       </AppSurface>
     );
   }
@@ -88,13 +82,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
     padding: 0,
-  },
-  loadingText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  errorText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
   },
 });

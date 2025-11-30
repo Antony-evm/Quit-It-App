@@ -1,7 +1,6 @@
 import React from 'react';
-import { StyleSheet, StyleProp, ViewStyle } from 'react-native';
-import { AppText, Box, AppIcon } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import { StyleProp, ViewStyle } from 'react-native';
+import { AppText, Box, AppIcon, StatusMessage } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
 import CalendarSvg from '@/assets/calendar.svg';
@@ -18,25 +17,11 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   const { plan, isLoading, error } = useQuittingPlan();
 
   if (isLoading) {
-    return (
-      <Box gap="md">
-        <AppText tone="secondary" style={styles.loadingText}>
-          Loading plan details...
-        </AppText>
-      </Box>
-    );
+    return <StatusMessage type="loading" message="Loading plan details..." />;
   }
 
   if (error) {
-    return (
-      <Box gap="md">
-        <AppText
-          style={[styles.errorText, { color: COLOR_PALETTE.systemError }]}
-        >
-          Unable to load plan details
-        </AppText>
-      </Box>
-    );
+    return <StatusMessage type="error" message="Unable to load plan details" />;
   }
 
   if (!plan) {
@@ -91,14 +76,3 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  errorText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-});

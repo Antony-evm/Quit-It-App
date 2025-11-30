@@ -2,14 +2,13 @@ import React, { useCallback } from 'react';
 import {
   StyleSheet,
   View,
-  ActivityIndicator,
   FlatList,
   ListRenderItem,
   StyleProp,
   ViewStyle,
 } from 'react-native';
 
-import { AppText } from '@/shared/components/ui';
+import { AppText, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -55,22 +54,23 @@ export const TrackingRecordsList = React.memo(
     const ListEmptyComponent = useCallback(() => {
       if (isLoading) {
         return (
-          <View style={styles.container}>
-            <AppText variant="body" tone="primary" style={styles.loadingText}>
-              Bringing your notes together...
-            </AppText>
-          </View>
+          <StatusMessage
+            type="loading"
+            message="Bringing your notes together..."
+            style={styles.container}
+          />
         );
       }
 
       if (isError) {
         return (
-          <View style={styles.container}>
-            <AppText variant="body" style={styles.errorText}>
-              Failed to load tracking records:{' '}
-              {error?.message || 'Unknown error'}
-            </AppText>
-          </View>
+          <StatusMessage
+            type="error"
+            message={`Failed to load tracking records: ${
+              error?.message || 'Unknown error'
+            }`}
+            style={styles.container}
+          />
         );
       }
 
@@ -86,12 +86,11 @@ export const TrackingRecordsList = React.memo(
     const ListFooterComponent = useCallback(() => {
       if (isFetchingNextPage) {
         return (
-          <View style={styles.loadingFooter}>
-            <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />
-            <AppText variant="body" tone="primary" style={styles.loadingText}>
-              Loading more records...
-            </AppText>
-          </View>
+          <StatusMessage
+            type="loading"
+            message="Loading more records..."
+            showSpinner
+          />
         );
       }
 
@@ -143,25 +142,10 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.lg,
     gap: SPACING.xs,
   },
-  loadingText: {
-    textAlign: 'center',
-    paddingVertical: SPACING.lg,
-  },
-  errorText: {
-    textAlign: 'center',
-    paddingVertical: SPACING.lg,
-    color: COLOR_PALETTE.systemError,
-  },
   emptyText: {
     textAlign: 'center',
     paddingVertical: SPACING.xl,
     paddingHorizontal: SPACING.lg,
-  },
-  loadingFooter: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: SPACING.md,
-    gap: SPACING.xs,
   },
   loadMoreContainer: {
     alignItems: 'center',

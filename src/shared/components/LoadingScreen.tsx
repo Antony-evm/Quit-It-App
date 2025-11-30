@@ -1,7 +1,6 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
-import { Box, AppText } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { StyleSheet } from 'react-native';
+import { Box, StatusMessage } from '@/shared/components/ui';
 
 export const LoadingScreen: React.FC = () => {
   return (
@@ -11,10 +10,7 @@ export const LoadingScreen: React.FC = () => {
       alignItems="center"
       bg="backgroundPrimary"
     >
-      <ActivityIndicator size="large" color={COLOR_PALETTE.accentPrimary} />
-      <AppText variant="body" style={styles.loadingText}>
-        Loading...
-      </AppText>
+      <StatusMessage type="loading" message="Loading..." showSpinner />
     </Box>
   );
 };
@@ -24,8 +20,5 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 2,
     elevation: 2,
-  },
-  loadingText: {
-    marginTop: 16,
   },
 });
