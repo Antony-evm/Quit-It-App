@@ -1,9 +1,25 @@
 import React from 'react';
-import { AppPressable, Box } from '@/shared/components/ui';
+import { AppPressable, Box, SkeletonBox } from '@/shared/components/ui';
 import { COLOR_PALETTE } from '@/shared/theme';
 
-export const TrackingRecordCardSkeleton = () => {
-  return (
+/** Skeleton dimension constants matching TrackingRecordCard layout */
+const SKELETON_DIMENSIONS = {
+  tag: { width: 80, height: 24 },
+  time: { width: 50, height: 14 },
+  date: { width: 60, height: 14 },
+  textLine: { height: 16 },
+  textLineShort: { width: '70%' as const, height: 16 },
+} as const;
+
+export type TrackingRecordCardSkeletonProps = {
+  /** Number of skeleton cards to render */
+  count?: number;
+  /** Enable shimmer animation */
+  animated?: boolean;
+};
+
+const SingleSkeleton = React.memo(
+  ({ animated = true }: { animated?: boolean }) => (
     <AppPressable
       variant="cardStrip"
       disabled
@@ -11,42 +27,54 @@ export const TrackingRecordCardSkeleton = () => {
       style={{ borderLeftColor: COLOR_PALETTE.borderDefault }}
     >
       <Box variant="noteHeader">
-        {/* Tag Skeleton */}
-        <Box
-          bg="borderDefault"
-          borderRadius="small"
-          style={{ width: 80, height: 24, opacity: 0.3 }}
+        <SkeletonBox
+          width={SKELETON_DIMENSIONS.tag.width}
+          height={SKELETON_DIMENSIONS.tag.height}
+          animated={animated}
         />
 
         <Box alignItems="flex-end" gap="xs">
-          {/* Time Skeleton */}
-          <Box
-            bg="borderDefault"
-            borderRadius="small"
-            style={{ width: 50, height: 14, opacity: 0.3 }}
+          <SkeletonBox
+            width={SKELETON_DIMENSIONS.time.width}
+            height={SKELETON_DIMENSIONS.time.height}
+            animated={animated}
           />
-          {/* Date Skeleton */}
-          <Box
-            bg="borderDefault"
-            borderRadius="small"
-            style={{ width: 60, height: 14, opacity: 0.3 }}
+          <SkeletonBox
+            width={SKELETON_DIMENSIONS.date.width}
+            height={SKELETON_DIMENSIONS.date.height}
+            animated={animated}
           />
         </Box>
       </Box>
 
       <Box variant="note">
-        <Box
-          bg="borderDefault"
-          borderRadius="small"
+        <SkeletonBox
+          height={SKELETON_DIMENSIONS.textLine.height}
           mb="xs"
-          style={{ height: 16, opacity: 0.3, width: '100%' }}
+          animated={animated}
         />
-        <Box
-          bg="borderDefault"
-          borderRadius="small"
-          style={{ height: 16, opacity: 0.3, width: '70%' }}
+        <SkeletonBox
+          width={SKELETON_DIMENSIONS.textLineShort.width}
+          height={SKELETON_DIMENSIONS.textLineShort.height}
+          animated={animated}
         />
       </Box>
     </AppPressable>
-  );
-};
+  ),
+);
+
+export const TrackingRecordCardSkeleton = React.memo(
+  ({ count = 1, animated = true }: TrackingRecordCardSkeletonProps) => {
+    if (count === 1) {
+      return <SingleSkeleton animated={animated} />;
+    }
+
+    return (
+      <Box gap="md">
+        {Array.from({ length: count }, (_, index) => (
+          <SingleSkeleton key={index} animated={animated} />
+        ))}
+      </Box>
+    );
+  },
+);

@@ -19,6 +19,7 @@ export type AppTextProps = PropsWithChildren<
     link?: boolean;
     bold?: boolean;
     centered?: boolean;
+    italic?: boolean;
   }
 >;
 
@@ -40,6 +41,7 @@ export const AppText = ({
   link = false,
   bold = false,
   centered = false,
+  italic = false,
   ...textProps
 }: AppTextProps) => {
   const variantStyle = TYPOGRAPHY[variant] ?? TYPOGRAPHY.body;
@@ -47,6 +49,7 @@ export const AppText = ({
   const linkStyle = link ? { textDecorationLine: 'underline' as const } : {};
   const boldStyle = bold ? { fontWeight: '600' as const } : {};
   const centeredStyle = centered ? { textAlign: 'center' as const } : {};
+  const italicStyle = italic ? { fontStyle: 'italic' as const } : {};
 
   return (
     <Text
@@ -57,6 +60,7 @@ export const AppText = ({
         linkStyle,
         boldStyle,
         centeredStyle,
+        italicStyle,
         style,
       ]}
       {...textProps}

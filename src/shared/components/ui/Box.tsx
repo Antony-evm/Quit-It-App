@@ -49,6 +49,12 @@ const BOX_VARIANTS = {
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  toggleGroup: {
+    flexDirection: 'row',
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: BORDER_RADIUS.small,
+    padding: SPACING.xs,
+  },
   note: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,

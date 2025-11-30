@@ -1,6 +1,49 @@
+import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
+
 // Default user ID for tracking records
 // TODO: Replace with actual user ID from authentication context
 export const DEFAULT_TRACKING_USER_ID = 2;
 
 // Pagination constants
 export const TRACKING_RECORDS_PAGE_SIZE = 10;
+
+// Tracking type codes
+export const TRACKING_TYPE_CODES = {
+  CRAVING: 'craving',
+  CIGARETTE: 'cigarette',
+} as const;
+
+export type TrackingTypeCode =
+  (typeof TRACKING_TYPE_CODES)[keyof typeof TRACKING_TYPE_CODES];
+
+// Color configuration for tracking types
+export type TrackingTypeColors = {
+  accent: string;
+  badgeBackground: string;
+};
+
+export const TRACKING_TYPE_COLORS: Record<string, TrackingTypeColors> = {
+  [TRACKING_TYPE_CODES.CRAVING]: {
+    accent: COLOR_PALETTE.craving,
+    badgeBackground: hexToRgba(COLOR_PALETTE.craving, 0.1),
+  },
+  [TRACKING_TYPE_CODES.CIGARETTE]: {
+    accent: COLOR_PALETTE.cigarette,
+    badgeBackground: hexToRgba(COLOR_PALETTE.cigarette, 0.1),
+  },
+};
+
+export const DEFAULT_TRACKING_TYPE_COLORS: TrackingTypeColors = {
+  accent: COLOR_PALETTE.borderDefault,
+  badgeBackground: hexToRgba(COLOR_PALETTE.borderDefault, 0.1),
+};
+
+/**
+ * Get colors for a tracking type by code
+ */
+export const getTrackingTypeColors = (
+  typeCode: string | undefined,
+): TrackingTypeColors => {
+  if (!typeCode) return DEFAULT_TRACKING_TYPE_COLORS;
+  return TRACKING_TYPE_COLORS[typeCode] || DEFAULT_TRACKING_TYPE_COLORS;
+};

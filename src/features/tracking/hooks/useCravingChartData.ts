@@ -1,7 +1,11 @@
 import { useMemo, useState } from 'react';
 import { DailyCravingData } from '@/features/tracking';
+import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
 
 export type ChartPeriod = 'daily' | 'weekly';
+
+const DAILY_RANGE_DAYS = 7;
+const WEEKLY_RANGE_WEEKS = 4;
 
 export const useCravingChartData = (data: DailyCravingData[]) => {
   const [period, setPeriod] = useState<ChartPeriod>('daily');
@@ -22,7 +26,7 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
       const labels = [];
       const counts = [];
 
-      for (let i = 6; i >= 0; i--) {
+      for (let i = DAILY_RANGE_DAYS - 1; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(today.getDate() - i);
         d.setHours(0, 0, 0, 0);
@@ -41,17 +45,16 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
         datasets: [
           {
             data: counts,
-            color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`,
+            color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
             strokeWidth: 3,
           },
         ],
       };
     } else {
-      // Weekly: Last 4 weeks (rolling 7-day windows)
       const labels = [];
       const counts = [];
 
-      for (let i = 3; i >= 0; i--) {
+      for (let i = WEEKLY_RANGE_WEEKS - 1; i >= 0; i--) {
         const endDate = new Date(today);
         endDate.setDate(today.getDate() - i * 7);
         endDate.setHours(0, 0, 0, 0);
@@ -87,7 +90,7 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
         datasets: [
           {
             data: counts,
-            color: (opacity = 1) => `rgba(122, 62, 177, ${opacity})`,
+            color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
             strokeWidth: 3,
           },
         ],

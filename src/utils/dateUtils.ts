@@ -1,3 +1,53 @@
+export type FormattedDateLabels = {
+  dateLabel: string;
+  timeLabel: string;
+};
+
+/**
+ * Formats a date into relative date label (Today, Yesterday, or formatted date)
+ * and a time label.
+ *
+ * @param dateString ISO datetime string or Date object
+ * @returns Object with dateLabel and timeLabel
+ */
+export const formatRelativeDate = (
+  dateString: string | Date,
+): FormattedDateLabels => {
+  const date =
+    typeof dateString === 'string' ? new Date(dateString) : dateString;
+  const now = new Date();
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const recordDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+
+  const diffTime = today.getTime() - recordDate.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  let dateLabel: string;
+  if (diffDays === 0) {
+    dateLabel = 'Today';
+  } else if (diffDays === 1) {
+    dateLabel = 'Yesterday';
+  } else {
+    dateLabel = date.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+    });
+  }
+
+  const timeLabel = date.toLocaleTimeString(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+
+  return { dateLabel, timeLabel };
+};
+
 /**
  * Calculates the difference between two dates and returns a formatted string.
  * Format: "Xd Xhrs Xmins Xs"

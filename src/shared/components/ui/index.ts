@@ -16,3 +16,4 @@ export * from './ModalActionHeader';
 export * from './FormField';
 export * from './IconTextCard';
 export * from './Section';
+export * from './SkeletonBox';

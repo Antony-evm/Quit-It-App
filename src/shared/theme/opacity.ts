@@ -1,5 +1,6 @@
 export const OPACITY = {
   transparent: 0,
+  skeleton: 0.3,
   disabled: 0.5,
   medium: 0.7,
   high: 0.8,

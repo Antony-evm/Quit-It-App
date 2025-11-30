@@ -11,7 +11,7 @@ import {
   ModalActionHeader,
   ScreenHeader,
 } from '@/shared/components/ui';
-import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
+import { TrackingRecordsListContainer } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import { NotesCard } from '../components/NotesCard';
 import { useNotesCardController } from '../hooks/useNotesCardController';
@@ -87,7 +87,7 @@ export const JournalScreen = () => {
 
   return (
     <Box variant="default">
-      <TrackingRecordsList
+      <TrackingRecordsListContainer
         onRecordPress={handleRecordPress}
         ListHeaderComponent={ListHeaderComponent}
       />
