@@ -51,7 +51,7 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     const shouldShowInvalidHint = !validation.isValid;
 
     return (
-      <Box mb="lg">
+      <Box mb="lg" gap="xs">
         <AppTextInput
           ref={ref}
           hasError={validation.hasInput && !validation.isValid}
@@ -67,13 +67,8 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
         />
         {shouldShowHint && (shouldShowValidHint || shouldShowInvalidHint) && (
           <AppText
-            variant="body"
-            style={[
-              styles.emailValidationText,
-              validation.isValid
-                ? styles.emailValidText
-                : styles.emailInvalidText,
-            ]}
+            variant="subcaption"
+            tone={validation.isValid ? 'success' : 'error'}
           >
             {validation.isValid ? '✓ Valid email' : '✗ Invalid email format'}
           </AppText>
@@ -83,17 +78,4 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
   },
 );
 
-const styles = StyleSheet.create({
-  emailValidationText: {
-    fontSize: 12,
-    marginTop: SPACING.xs,
-    marginLeft: SPACING.xs,
-    fontWeight: '500',
-  },
-  emailValidText: {
-    color: COLOR_PALETTE.systemSuccess,
-  },
-  emailInvalidText: {
-    color: COLOR_PALETTE.systemError,
-  },
-});
+const styles = StyleSheet.create({});

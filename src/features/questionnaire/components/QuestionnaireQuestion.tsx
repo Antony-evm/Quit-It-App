@@ -6,7 +6,6 @@ import { AnswerTabs } from './controls/AnswerTabs';
 import { ANSWER_TAB_VARIANTS } from './controls/AnswerTab';
 import { DatePickerField } from './fields/DatePickerField';
 import { NumericRangeField } from './fields/NumericRangeField';
-import { TimeSlotSelector } from './fields/TimeSlotSelector';
 import {
   formatDateForSubmission,
   parseSubmissionDateValue,
@@ -365,14 +364,6 @@ export const QuestionnaireQuestion = ({
             onValueChange={setNumericSelection}
           />
         </>
-      ) : null}
-
-      {isTimeRangeQuestion && firstOption ? (
-        <TimeSlotSelector
-          range={firstOption.value}
-          selectedSlots={selectedSlots}
-          onSelectionChange={setSelectedSlots}
-        />
       ) : null}
 
       {isDateQuestion && firstOption && dateBounds ? (

@@ -94,7 +94,6 @@ export const validateName = (
   return { isValid: true };
 };
 
-// Helper function for confirm password validation
 export const validateConfirmPassword = (
   password: string,
   confirmPassword: string,

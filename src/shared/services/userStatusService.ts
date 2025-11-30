@@ -131,7 +131,7 @@ export class UserStatusService {
    */
   static executeStatusAction(
     statusId: number,
-    navigation: NativeStackNavigationProp<RootStackParamList>,
+    navigation: NativeStackNavigationProp<RootStackParamList, any>,
   ): void {
     const action = this.getStatusAction(statusId);
     const status = this.getStatus(statusId);
@@ -162,7 +162,7 @@ export class UserStatusService {
    * Note: The screen will handle its own data fetching on mount
    */
   private static async fetchQuestionnaireDataAndNavigate(
-    navigation: NativeStackNavigationProp<RootStackParamList>,
+    navigation: NativeStackNavigationProp<RootStackParamList, any>,
   ): Promise<void> {
     navigation.navigate('Questionnaire');
   }
@@ -171,7 +171,7 @@ export class UserStatusService {
    * Navigate to paywall screen
    */
   private static navigateToPaywall(
-    navigation: NativeStackNavigationProp<RootStackParamList>,
+    navigation: NativeStackNavigationProp<RootStackParamList, any>,
   ): void {
     navigation.navigate('Paywall');
   }
@@ -180,7 +180,7 @@ export class UserStatusService {
    * Execute placeholder call and navigate to home
    */
   private static async executePlaceholderCallAndNavigate(
-    navigation: NativeStackNavigationProp<RootStackParamList>,
+    navigation: NativeStackNavigationProp<RootStackParamList, any>,
   ): Promise<void> {
     try {
       // Placeholder call implementation

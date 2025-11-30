@@ -147,11 +147,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         </ScrollView>
 
         {/* Submit button - back at the bottom but with stable positioning */}
-        <Box
-          px="xxl"
-          py={isKeyboardVisible ? 'sm' : 'xxl'}
-          bg="backgroundMuted"
-        >
+        <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="backgroundMuted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             variant="primary"

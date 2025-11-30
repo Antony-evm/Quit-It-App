@@ -24,7 +24,6 @@ export const DatePickerField = ({
   maximumDate,
   onChange,
 }: DatePickerFieldProps) => {
-  // Use minimum date as default if no value is provided
   const currentValue = value || minimumDate;
 
   const handleChange = useCallback(

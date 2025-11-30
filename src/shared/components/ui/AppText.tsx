@@ -3,7 +3,13 @@ import { Text, TextProps, StyleSheet } from 'react-native';
 
 import { COLOR_PALETTE, TYPOGRAPHY, TypographyVariant } from '../../theme';
 
-type TextTone = 'primary' | 'secondary' | 'inverse' | 'muted';
+type TextTone =
+  | 'primary'
+  | 'secondary'
+  | 'inverse'
+  | 'muted'
+  | 'success'
+  | 'error';
 
 export type AppTextProps = PropsWithChildren<
   TextProps & {
@@ -17,6 +23,8 @@ const toneToColorMap: Record<TextTone, string> = {
   secondary: COLOR_PALETTE.textSecondary,
   inverse: COLOR_PALETTE.backgroundPrimary,
   muted: COLOR_PALETTE.textMuted,
+  success: COLOR_PALETTE.systemSuccess,
+  error: COLOR_PALETTE.systemError,
 };
 
 export const AppText = ({

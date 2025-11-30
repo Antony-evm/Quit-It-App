@@ -36,7 +36,7 @@ export const useUserStatusUpdate = () => {
   const handleUserStatusUpdateWithNavigation = useCallback(
     async (
       response: UserDataResponse,
-      navigation: NativeStackNavigationProp<RootStackParamList>,
+      navigation: NativeStackNavigationProp<RootStackParamList, any>,
     ): Promise<void> => {
       try {
         const { user_status_id } = response.data;
