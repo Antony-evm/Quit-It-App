@@ -5,8 +5,8 @@ import React, {
   forwardRef,
   useImperativeHandle,
 } from 'react';
-import { StyleSheet, View, Platform, ScrollView } from 'react-native';
-
+import { View, ScrollView } from 'react-native';
+import { Box } from '@/shared/components/ui/Box';
 import {
   AppCard,
   AppText,
@@ -88,10 +88,8 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
     );
     const [notes, setNotes] = useState(initialValues?.notes ?? '');
 
-    // Add ref for the NotesCard component
     const cardRef = useRef<View>(null);
 
-    // Update state when initialValues change
     React.useEffect(() => {
       if (initialValues) {
         setSelectedTrackingTypeId(initialValues.trackingTypeId);
@@ -99,8 +97,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         setNotes(initialValues.notes);
       }
     }, [initialValues]);
-
-    // Cleanup scroll operations when component unmounts
     React.useEffect(() => {
       return () => {
         ScrollManager.cancelCurrent();
@@ -158,7 +154,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       selectedDateOnly.setHours(0, 0, 0, 0);
 
       if (selectedDateOnly.getTime() === today.getTime() && newDateTime > now) {
-        // If it's today and the time is in the future, don't update and show a warning
         showToast('Cannot select a future time for today', 'error');
         return;
       }
@@ -368,20 +363,13 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
           variant="elevated"
           size="md"
           p="lg"
-          style={[
-            styles.card,
-            { borderLeftColor: accentColor, borderLeftWidth: 4 },
-          ]}
+          style={[{ borderLeftColor: accentColor, borderLeftWidth: 4 }]}
         >
-          <View style={styles.typeSelectorContainer}>
-            <AppText
-              variant="sectionLabel"
-              tone="muted"
-              style={styles.labelSpacing}
-            >
+          <Box gap="sm">
+            <AppText variant="subcaption" tone="muted">
               I am logging a...
             </AppText>
-            <View style={styles.chipContainer}>
+            <Box variant="chip">
               {sortedTrackingTypes.map(type => {
                 const isSelected = selectedTrackingTypeId === type.id;
                 return (
@@ -394,11 +382,9 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                   />
                 );
               })}
-            </View>
-          </View>
-
-          {/* Date Time Selector */}
-          <View style={styles.dateTimeSection}>
+            </Box>
+          </Box>
+          <Box>
             <AppDateTimePicker
               label="When did it happen?"
               value={selectedDateTime}
@@ -409,15 +395,10 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
                 formatRelativeDateTimeForDisplay(date.toISOString())
               }
             />
-          </View>
+          </Box>
 
-          {/* Notes Input */}
-          <View style={styles.notesContainer}>
-            <AppText
-              variant="sectionLabel"
-              tone="muted"
-              style={styles.labelSpacing}
-            >
+          <Box gap="sm">
+            <AppText variant="subcaption" tone="muted">
               Notes (Optional)
             </AppText>
             <AppTextInput
@@ -430,52 +411,14 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               numberOfLines={6}
               textAlignVertical="top"
             />
-            <View style={styles.charCountContainer}>
+            <Box alignItems="flex-end">
               <AppText variant="subcaption" tone="primary">
                 {remainingChars} characters remaining
               </AppText>
-            </View>
-          </View>
+            </Box>
+          </Box>
         </AppCard>
       </View>
     );
   },
 );
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: SPACING.md,
-  },
-  labelSpacing: {
-    marginBottom: SPACING.sm,
-  },
-  typeSelectorContainer: {
-    marginBottom: SPACING.xl,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-  },
-  dateTimeSection: {
-    marginBottom: SPACING.xl,
-  },
-  editIndicator: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  editIndicatorText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  notesContainer: {
-    marginBottom: SPACING.sm,
-  },
-  charCountContainer: {
-    alignItems: 'flex-end',
-    marginTop: SPACING.md,
-  },
-});

@@ -61,14 +61,12 @@ export const DraggableModal = ({
   useEffect(() => {
     if (visible) {
       panY.setValue(0);
-      // Start animation immediately
       Animated.spring(slideAnim, {
         toValue: 0,
         useNativeDriver: true,
         bounciness: 0,
       }).start();
 
-      // Defer content rendering to ensure animation starts smoothly
       const task = InteractionManager.runAfterInteractions(() => {
         setIsContentVisible(true);
       });
@@ -80,7 +78,6 @@ export const DraggableModal = ({
         duration: 300,
         useNativeDriver: true,
       }).start(() => {
-        // Only hide content after animation completes
         setIsContentVisible(false);
       });
     }

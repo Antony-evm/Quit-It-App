@@ -161,7 +161,7 @@ export const AppDateTimePicker = ({
     <Box style={{ width: '100%' }} {...boxProps}>
       {label && (
         <Box mb="sm">
-          <AppText variant="sectionLabel" tone="muted">
+          <AppText variant="subcaption" tone="muted">
             {label}
           </AppText>
         </Box>

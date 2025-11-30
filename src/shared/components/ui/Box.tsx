@@ -25,6 +25,11 @@ const BOX_VARIANTS = {
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
   },
+  chip: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
+  },
 } satisfies Record<string, ViewStyle>;
 
 export type BoxVariant = keyof typeof BOX_VARIANTS;

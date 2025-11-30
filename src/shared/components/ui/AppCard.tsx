@@ -32,6 +32,7 @@ export const AppCard = ({
           borderWidth: BORDER_WIDTH.sm,
           borderColor: COLOR_PALETTE.borderDefault,
           ...SHADOWS.softLg,
+          gap: SPACING.md,
         };
       case 'outlined':
         return {

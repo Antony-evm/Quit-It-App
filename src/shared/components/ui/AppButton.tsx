@@ -17,8 +17,7 @@ import {
   TypographyVariant,
 } from '../../theme';
 
-const DISABLED_OPACITY = 0.7;
-const PRESSED_OPACITY = 0.7;
+const MEDIUM_OPACITY = 0.7;
 
 type ButtonVariant =
   | 'primary'
@@ -122,7 +121,7 @@ export const AppButton = ({
   containerStyle,
   textStyle,
   loading = false,
-  style, // Destructure style to avoid passing it to AppPressable via spread if it's a function
+  style,
   ...pressableProps
 }: AppButtonProps) => {
   const variantStyles = variantToStyles[variant] ?? variantToStyles.primary;
@@ -141,8 +140,8 @@ export const AppButton = ({
         containerStyle,
       ]}
       disabled={isDisabled}
-      disabledOpacity={loading ? 1 : DISABLED_OPACITY}
-      activeOpacity={PRESSED_OPACITY}
+      disabledOpacity={loading ? 1 : MEDIUM_OPACITY}
+      activeOpacity={MEDIUM_OPACITY}
       {...pressableProps}
     >
       {loading ? (
