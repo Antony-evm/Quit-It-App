@@ -16,17 +16,14 @@ export const QuestionnaireProgressBar = ({
   isLoading = false,
   isSubmitting = false,
 }: QuestionnaireProgressBarProps) => {
-  // Calculate progress percentage
   const progress = Math.min(currentQuestion / totalQuestions, 1);
   const progressPercentage = Math.round(progress * 100);
 
-  // Animation for loading/submitting state
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const isAnimating = isLoading || isSubmitting;
 
   useEffect(() => {
     if (isAnimating) {
-      // Start pulsing animation
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -44,7 +41,6 @@ export const QuestionnaireProgressBar = ({
       pulse.start();
       return () => pulse.stop();
     } else {
-      // Reset to normal state
       pulseAnim.setValue(1);
     }
   }, [isAnimating, pulseAnim]);

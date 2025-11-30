@@ -43,7 +43,6 @@ export const SkeletonItem = ({
 export const QuestionnaireSkeleton = () => {
   return (
     <Box style={styles.container} py="md">
-      {/* Question Title Skeleton */}
       <SkeletonItem
         width="80%"
         height={32}
@@ -55,7 +54,6 @@ export const QuestionnaireSkeleton = () => {
         style={{ marginBottom: SPACING.xl }}
       />
 
-      {/* Question Subtitle/Explanation Skeleton */}
       <SkeletonItem
         width="90%"
         height={20}
@@ -67,7 +65,6 @@ export const QuestionnaireSkeleton = () => {
         style={{ marginBottom: SPACING.xxl }}
       />
 
-      {/* Options Skeleton */}
       <Box gap="md">
         <AppCard style={[styles.optionCard, { height: 400 }]}>
           <SkeletonItem width="100%" height="100%" />
