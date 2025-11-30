@@ -3,10 +3,6 @@ import { ScrollView, StyleSheet } from 'react-native';
 
 import { AppButton, Box, ScreenHeader } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import {
-  DEVICE_WIDTH,
-  QUESTIONNAIRE_HORIZONTAL_PADDING,
-} from '@/shared/theme/layout';
 import { QuestionnaireProgressBar } from './QuestionnaireProgressBar';
 import { QuestionnaireSkeleton, SkeletonItem } from './QuestionnaireSkeleton';
 
@@ -40,7 +36,7 @@ export const QuestionnaireTemplate = ({
   children,
 }: QuestionnaireTemplateProps) => {
   return (
-    <Box style={styles.wrapper}>
+    <Box variant="default">
       <Box style={styles.headerContainer}>
         <Box style={styles.backButtonSection}>{backButton}</Box>
         <Box style={styles.progressSection}>
@@ -52,7 +48,7 @@ export const QuestionnaireTemplate = ({
               isSubmitting={isSubmitting}
             />
           ) : isLoading ? (
-            <Box variant="default">
+            <Box>
               <SkeletonItem width={40} height={14} />
               <SkeletonItem width="100%" height={6} />
             </Box>
@@ -60,11 +56,7 @@ export const QuestionnaireTemplate = ({
         </Box>
       </Box>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        style={styles.scrollView}
-        testID="questionnaire-template"
-      >
+      <ScrollView testID="questionnaire-template">
         <Box variant="default">
           {!isLoading ? (
             <Box>
@@ -90,49 +82,29 @@ export const QuestionnaireTemplate = ({
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
-    paddingTop: SPACING.md,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingTop: SPACING.md,
-    paddingBottom: SPACING.xl,
-  },
-  loading: {
-    alignItems: 'center',
-    gap: SPACING.sm,
-  },
-  loadingLabel: {
-    textAlign: 'center',
-  },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     position: 'relative',
     width: '100%',
-    marginBottom: SPACING.xxl,
+    marginBottom: SPACING.md,
+    minHeight: 44,
   },
   backButtonSection: {
     width: 44,
-    height: 44,
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    marginRight: SPACING.md,
-    position: 'relative',
+    position: 'absolute',
+    left: 0,
+    zIndex: 1,
   },
   progressSection: {
     width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
-    marginLeft: DEVICE_WIDTH / 7,
   },
   primaryAction: {},
 });

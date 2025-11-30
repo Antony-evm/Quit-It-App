@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import { AppText, AppCard, StatusMessage } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { AppCard, StatusMessage } from '@/shared/components/ui';
 import { useTriggers } from '@/features/questionnaire/hooks/useTriggers';
 import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
 import { QuestionnaireQuestion } from '@/features/questionnaire/components/QuestionnaireQuestion';
@@ -29,8 +27,6 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
     }
 
     const selection: SelectedAnswerOption[] = [];
-
-    // Map triggers (strings) to options
     triggers.forEach(triggerValue => {
       const option = question.options.find(opt => opt.value === triggerValue);
       if (option) {
@@ -51,7 +47,7 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
 
   if (isLoading) {
     return (
-      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero">
         <StatusMessage type="loading" message="Loading triggers..." />
       </AppCard>
     );
@@ -59,14 +55,14 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
 
   if (error) {
     return (
-      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero">
         <StatusMessage type="error" message="Unable to load triggers" />
       </AppCard>
     );
   }
 
   return (
-    <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+    <AppCard variant="filled" p="zero">
       <QuestionnaireQuestion
         question={question}
         initialSelection={initialSelection}
@@ -76,9 +72,3 @@ export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
     </AppCard>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 0,
-  },
-});

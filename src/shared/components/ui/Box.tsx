@@ -20,6 +20,10 @@ const BOX_VARIANTS = {
   default: {
     gap: SPACING.xl,
     width: '100%',
+    flex: 1,
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.md,
   },
 } satisfies Record<string, ViewStyle>;
 

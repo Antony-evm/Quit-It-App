@@ -1,7 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { AppText } from '@/shared/components/ui';
-import { SPACING } from '@/shared/theme';
+import { AppText, StatusMessage } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 
 interface QuittingPlanCardProps {
@@ -15,33 +13,21 @@ export const QuittingPlanCard: React.FC<QuittingPlanCardProps> = ({
 
   if (isLoading) {
     return (
-      <AppText tone="primary" variant="body" style={styles.planText}>
-        Loading your plan...
-      </AppText>
+      <StatusMessage
+        type="loading"
+        message="Loading your plan..."
+        showSpinner
+      />
     );
   }
 
   if (error) {
-    return (
-      <AppText tone="primary" variant="body" style={styles.planText}>
-        Unable to load your plan
-      </AppText>
-    );
+    return <StatusMessage type="error" message="Unable to load your plan" />;
   }
 
   if (!plan) {
     return null;
   }
 
-  return (
-    <AppText tone="primary" variant="body" style={styles.planText}>
-      {plan.text}
-    </AppText>
-  );
+  return <AppText>{plan.text}</AppText>;
 };
-
-const styles = StyleSheet.create({
-  planText: {
-    marginBottom: SPACING.md,
-  },
-});

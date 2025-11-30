@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { AppText, Box, AppIcon, StatusMessage } from '@/shared/components/ui';
+import { Box, StatusMessage, IconTextCard } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
 import CalendarSvg from '@/assets/calendar.svg';
@@ -38,41 +38,13 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
 
   return (
     <Box gap="md" style={style}>
-      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
-        <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon icon={AimSvg} />
-          <AppText tone="primary" variant="body">
-            {plan.status}
-          </AppText>
-        </Box>
-      </Box>
-
-      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
-        <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon icon={CalendarSvg} />
-          <AppText tone="primary" variant="body">
-            {formatDate(plan.date)}
-          </AppText>
-        </Box>
-      </Box>
-
-      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
-        <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon icon={StopSvg} />
-          <AppText tone="primary" variant="body">
-            {plan.current} cigarettes per day
-          </AppText>
-        </Box>
-      </Box>
-
-      <Box bg="backgroundPrimary" borderRadius="small" p="lg">
-        <Box flexDirection="row" alignItems="center" gap="sm">
-          <AppIcon icon={GoalSvg} />
-          <AppText tone="primary" variant="body">
-            {plan.target} cigarettes per day
-          </AppText>
-        </Box>
-      </Box>
+      <IconTextCard icon={AimSvg} text={plan.status} />
+      <IconTextCard icon={CalendarSvg} text={formatDate(plan.date)} />
+      <IconTextCard
+        icon={StopSvg}
+        text={`${plan.current} cigarettes per day`}
+      />
+      <IconTextCard icon={GoalSvg} text={`${plan.target} cigarettes per day`} />
     </Box>
   );
 };

@@ -1,5 +1,4 @@
-import React from 'react';
-import { StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { ViewStyle, StyleProp } from 'react-native';
 import { Box, BoxProps } from './Box';
 import {
   COLOR_PALETTE,
@@ -12,7 +11,7 @@ import {
 export type CardVariant = 'elevated' | 'outlined' | 'filled' | 'ghost';
 export type CardSize = 'sm' | 'md' | 'lg';
 
-export interface AppCardProps extends BoxProps {
+export interface AppCardProps extends Omit<BoxProps, 'variant'> {
   variant?: CardVariant;
   size?: CardSize;
   style?: StyleProp<ViewStyle>;
@@ -43,6 +42,7 @@ export const AppCard = ({
       case 'filled':
         return {
           backgroundColor: COLOR_PALETTE.backgroundMuted,
+          borderWidth: BORDER_WIDTH.none,
         };
       case 'ghost':
         return {

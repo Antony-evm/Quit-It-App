@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 
-import { AppText, Box, ScreenHeader } from '@/shared/components/ui';
+import {
+  AppText,
+  Box,
+  ScreenHeader,
+  IconTextCard,
+} from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import EmailSvg from '@/assets/email.svg';
 
@@ -31,23 +36,19 @@ export const AccountScreen = () => {
     switch (activeSection) {
       case 'details':
         return (
-          <Box bg="backgroundPrimary" p="lg" borderRadius="small" mb="lg">
-            <Box flexDirection="row" alignItems="center" gap="sm">
-              <EmailSvg
-                width={24}
-                height={24}
-                color={COLOR_PALETTE.textPrimary}
-              />
-              <AppText tone="primary">{user?.email ?? 'Not available'}</AppText>
-            </Box>
+          <Box mb="lg">
+            <IconTextCard
+              icon={EmailSvg}
+              text={user?.email ?? 'Not available'}
+            />
           </Box>
         );
       case 'plan':
         return <QuittingPlanDetails />;
       case 'triggers':
-        return <TriggersList style={styles.triggersCard} />;
+        return <TriggersList />;
       case 'habits':
-        return <FrequencyData style={styles.frequencyCard} />;
+        return <FrequencyData />;
       default:
         return null;
     }
@@ -124,12 +125,6 @@ const styles = StyleSheet.create({
     marginTop: SPACING.xxl,
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  triggersCard: {
-    marginBottom: SPACING.xl,
-  },
-  frequencyCard: {
-    marginBottom: SPACING.xl,
   },
   globalError: {
     color: COLOR_PALETTE.systemError,

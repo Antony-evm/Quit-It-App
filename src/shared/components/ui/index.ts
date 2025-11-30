@@ -14,3 +14,4 @@ export * from './AppTag';
 export * from './ScreenHeader';
 export * from './ModalActionHeader';
 export * from './FormField';
+export * from './IconTextCard';
