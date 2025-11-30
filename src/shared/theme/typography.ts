@@ -35,6 +35,14 @@ export const TYPOGRAPHY = {
     fontWeight: '400' as const,
     lineHeight: 24,
   },
+  sectionLabel: {
+    fontFamily: 'System',
+    fontSize: 11,
+    fontWeight: '400' as const,
+    lineHeight: 16,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase' as const,
+  },
 };
 
 export type TypographyVariant = keyof typeof TYPOGRAPHY;

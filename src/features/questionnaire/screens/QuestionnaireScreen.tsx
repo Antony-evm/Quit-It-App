@@ -12,7 +12,6 @@ import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
 import { FrequencyGrid } from '../components/FrequencyGrid';
-import { SubOptionDatePicker } from '../components/SubOptionDatePicker';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { useUserStatusUpdate } from '@/shared/hooks';
 
@@ -279,18 +278,7 @@ export const QuestionnaireScreen = ({
         {/* Sub-option components for other combinations */}
         {question?.subOptions &&
         question.subOptions.length > 0 &&
-        question.subCombination === 'N:1' &&
-        question.subAnswerType === 'date' &&
-        question.subAnswerHandling === 'max' ? (
-          <SubOptionDatePicker
-            subOptions={question.subOptions}
-            initialSelection={selectedSubOptions}
-            onSelectionChange={handleSubSelectionChange}
-            onValidityChange={handleSubValidityChange}
-          />
-        ) : question?.subOptions &&
-          question.subOptions.length > 0 &&
-          question.subCombination !== 'N:N' ? (
+        question.subCombination !== 'N:N' ? (
           <AppText
             variant="body"
             tone="primary"

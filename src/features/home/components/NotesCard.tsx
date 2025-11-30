@@ -6,9 +6,6 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { StyleSheet, View, Platform, ScrollView } from 'react-native';
-import DateTimePicker, {
-  DateTimePickerEvent,
-} from '@react-native-community/datetimepicker';
 
 import {
   AppSurface,
@@ -16,6 +13,7 @@ import {
   AppTextInput,
   AppPressable,
   AppIcon,
+  AppDateTimePicker,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,7 +27,6 @@ import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 import ScrollManager from '@/utils/scrollManager';
-import CalendarIcon from '@/assets/calendar.svg';
 
 export type NotesCardHandle = {
   save: () => void;
@@ -91,8 +88,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
       initialValues?.dateTime ?? new Date(),
     );
     const [notes, setNotes] = useState(initialValues?.notes ?? '');
-    const [showDateTimePicker, setShowDateTimePicker] = useState(false);
-    const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
 
     // Add ref for the NotesCard component
     const cardRef = useRef<View>(null);
@@ -155,69 +150,21 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
     const maxChars = 500;
     const remainingChars = maxChars - notes.length;
 
-    const handleDateTimePress = () => {
-      setPickerMode('date'); // Always start with date selection
-      setShowDateTimePicker(true);
-    };
+    const handleDateChange = (newDateTime: Date) => {
+      // Check if the selected time is in the future for today's date
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDateOnly = new Date(newDateTime);
+      selectedDateOnly.setHours(0, 0, 0, 0);
 
-    const handleDateTimeChange = (
-      event: DateTimePickerEvent,
-      selectedDate?: Date,
-    ) => {
-      if (selectedDate) {
-        if (pickerMode === 'date') {
-          // Update the date part
-          const newDateTime = new Date(selectedDateTime);
-          newDateTime.setFullYear(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth(),
-            selectedDate.getDate(),
-          );
-          setSelectedDateTime(newDateTime);
-
-          // On Android, after date selection, switch to time
-          if (Platform.OS === 'android') {
-            setPickerMode('time');
-            return; // Keep picker open for time selection
-          } else {
-            // On iOS, show time picker after date
-            setPickerMode('time');
-          }
-        } else if (pickerMode === 'time') {
-          // Update the time part
-          const newDateTime = new Date(selectedDateTime);
-          newDateTime.setHours(
-            selectedDate.getHours(),
-            selectedDate.getMinutes(),
-            0,
-            0,
-          );
-
-          // Check if the selected time is in the future for today's date
-          const now = new Date();
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          const selectedDateOnly = new Date(newDateTime);
-          selectedDateOnly.setHours(0, 0, 0, 0);
-
-          if (
-            selectedDateOnly.getTime() === today.getTime() &&
-            newDateTime > now
-          ) {
-            // If it's today and the time is in the future, don't update and show a warning
-            showToast('Cannot select a future time for today', 'error');
-            return;
-          }
-
-          setSelectedDateTime(newDateTime);
-
-          // Close picker after time selection
-          setShowDateTimePicker(false);
-        }
-      } else {
-        // User cancelled
-        setShowDateTimePicker(false);
+      if (selectedDateOnly.getTime() === today.getTime() && newDateTime > now) {
+        // If it's today and the time is in the future, don't update and show a warning
+        showToast('Cannot select a future time for today', 'error');
+        return;
       }
+
+      setSelectedDateTime(newDateTime);
     };
 
     const handleNotesChange = (text: string) => {
@@ -347,7 +294,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               // Reset form
               setNotes('');
               setSelectedDateTime(new Date());
-              setShowDateTimePicker(false);
 
               // Call success callback
               onSaveSuccess?.();
@@ -444,7 +390,11 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
         >
           {/* Tracking Type Selector - Chips/Segmented Control Style */}
           <View style={styles.typeSelectorContainer}>
-            <AppText variant="caption" style={styles.sectionLabel}>
+            <AppText
+              variant="sectionLabel"
+              tone="muted"
+              style={styles.labelSpacing}
+            >
               I am logging a...
             </AppText>
             <View style={styles.chipContainer}>
@@ -473,33 +423,25 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
 
           {/* Date Time Selector */}
           <View style={styles.dateTimeSection}>
-            <AppText variant="caption" style={styles.sectionLabel}>
-              When did it happen?
-            </AppText>
-            <AppPressable
-              variant="input"
-              onPress={
-                showDateTimePicker
-                  ? () => setShowDateTimePicker(false)
-                  : handleDateTimePress
+            <AppDateTimePicker
+              label="When did it happen?"
+              value={selectedDateTime}
+              onChange={handleDateChange}
+              mode="datetime"
+              maximumDate={new Date()}
+              formatDisplay={date =>
+                formatRelativeDateTimeForDisplay(date.toISOString())
               }
-            >
-              <AppIcon icon={CalendarIcon} />
-              <AppText
-                variant="body"
-                tone="primary"
-                style={styles.dateTimeText}
-              >
-                {formatRelativeDateTimeForDisplay(
-                  selectedDateTime.toISOString(),
-                )}
-              </AppText>
-            </AppPressable>
+            />
           </View>
 
           {/* Notes Input */}
           <View style={styles.notesContainer}>
-            <AppText variant="caption" style={styles.sectionLabel}>
+            <AppText
+              variant="sectionLabel"
+              tone="muted"
+              style={styles.labelSpacing}
+            >
               Notes (Optional)
             </AppText>
             <AppTextInput
@@ -518,16 +460,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               </AppText>
             </View>
           </View>
-
-          {showDateTimePicker && (
-            <DateTimePicker
-              value={selectedDateTime}
-              mode={pickerMode}
-              is24Hour={false}
-              maximumDate={new Date()}
-              onChange={handleDateTimeChange}
-            />
-          )}
         </AppSurface>
       </View>
     );
@@ -540,12 +472,8 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.medium,
     padding: SPACING.lg, // Increased padding
   },
-  sectionLabel: {
+  labelSpacing: {
     marginBottom: SPACING.sm,
-    color: COLOR_PALETTE.textMuted,
-    textTransform: 'uppercase',
-    fontSize: 11,
-    letterSpacing: 0.5,
   },
   typeSelectorContainer: {
     marginBottom: SPACING.xl,
@@ -565,12 +493,6 @@ const styles = StyleSheet.create({
   },
   dateTimeSection: {
     marginBottom: SPACING.xl,
-  },
-  calendarIcon: {
-    marginRight: SPACING.sm,
-  },
-  dateTimeText: {
-    flex: 1,
   },
   editIndicator: {
     backgroundColor: COLOR_PALETTE.accentMuted,
