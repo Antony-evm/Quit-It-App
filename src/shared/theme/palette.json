@@ -1,9 +1,36 @@
 {
+  "background": {
+    "primary": "#022C22",
+    "muted": "#011813",
+    "cream": "#F9F6F2",
+    "dark": "#2A2A2A"
+  },
+  "text": {
+    "primary": "#F9F6F2",
+    "secondary": "#022C22",
+    "muted": "#A3B8B0",
+    "inverse": "#FFFFFF"
+  },
+  "tags": {
+    "cigarette": "#D66A3D",
+    "craving": "#7A3EB1",
+    "wealth": "#10B981"
+  },
+  "system": {
+    "error": "#F87171",
+    "errorDark": "#991B1B",
+    "success": "#059669",
+    "successDark": "#065F46",
+    "shadow": "#000000",
+    "border": "#3b655d",
+    "accentPrimary": "#F9F6F2",
+    "accentMuted": "#033A2F",
+    "brand": "#3DDC97"
+  },
   "tokens": {
     "backgroundPrimary": "#022C22",
     "backgroundMuted": "#011813",
     "backgroundCream": "#F9F6F2",
-    "backgroundAmber": "#F1A238",
     "backgroundDark": "#2A2A2A",
     "textPrimary": "#F9F6F2",
     "textSecondary": "#022C22",

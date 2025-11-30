@@ -12,7 +12,7 @@ export { useTrackingRecords } from './hooks/useTrackingRecords';
 export { useInfiniteTrackingRecords } from './hooks/useInfiniteTrackingRecords';
 export { useCravingAnalytics } from './hooks/useCravingAnalytics';
 export { useSmokingAnalytics } from './hooks/useSmokingAnalytics';
-export { TrackingTypesProvider } from './components/TrackingTypesProvider';
+export { useTrackingTypesPrefetch } from './hooks/useTrackingTypesPrefetch';
 export { CravingChart } from './components/CravingChart';
 
 // Re-export API functions

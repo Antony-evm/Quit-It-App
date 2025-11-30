@@ -1,20 +1,13 @@
 import React, { useState, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Keyboard,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   AppText,
+  Box,
   DraggableModal,
   ModalActionHeader,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from '@/features/journal/screens/JournalScreen';
 import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
@@ -57,16 +50,16 @@ export const HomeTabNavigator = () => {
   };
 
   return (
-    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
-      <View style={styles.contentContainer}>{renderContent()}</View>
+    <Box flex={1} bg="backgroundMuted" style={{ paddingTop: insets.top }}>
+      <Box flex={1}>{renderContent()}</Box>
 
-      <View style={styles.footerContainer}>
+      <Box variant="footerWrapper">
         <HomeFooterNavigator
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onFabPress={() => setIsNoteDrawerVisible(true)}
         />
-      </View>
+      </Box>
 
       <DraggableModal
         visible={isNoteDrawerVisible}
@@ -75,19 +68,15 @@ export const HomeTabNavigator = () => {
       >
         <ScrollView
           ref={noteDrawerScrollRef}
-          contentContainerStyle={styles.modalContent}
+          contentContainerStyle={{ padding: 16 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.modalTextContainer}>
-            <AppText
-              variant="body"
-              tone="primary"
-              style={styles.modalDescription}
-            >
+          <Box variant="modalTextContainer">
+            <AppText variant="body" tone="primary" centered>
               Reflect, reset, and track your journey. Every entry is a step
               forward.
             </AppText>
-          </View>
+          </Box>
           {createController.isReady && (
             <NotesCard
               trackingTypes={createController.trackingTypes}
@@ -106,34 +95,6 @@ export const HomeTabNavigator = () => {
           )}
         </ScrollView>
       </DraggableModal>
-    </View>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  contentContainer: {
-    flex: 1,
-  },
-  modalContent: {
-    padding: SPACING.md,
-  },
-  modalTextContainer: {
-    marginBottom: SPACING.xl,
-    marginTop: SPACING.md,
-    paddingHorizontal: SPACING.sm,
-  },
-  modalDescription: {
-    textAlign: 'center',
-    lineHeight: 26,
-    fontSize: 18,
-  },
-  footerContainer: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
-    paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
-  },
-});

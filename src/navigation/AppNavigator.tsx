@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -22,7 +21,6 @@ export const AppNavigator = () => {
     <NavigationContainer
       ref={navigationRef}
       onReady={() => {
-        console.log('[AppNavigator] Navigation container is ready');
         setReady();
       }}
     >
@@ -47,21 +45,21 @@ export const AppNavigator = () => {
             name="Auth"
             component={AuthScreen}
             options={{
-              gestureEnabled: false, // Prevent swipe back from auth
+              gestureEnabled: false,
             }}
           />
           <Stack.Screen
             name="Questionnaire"
             component={QuestionnaireScreen}
             options={{
-              gestureEnabled: false, // Prevent swipe back from questionnaire
+              gestureEnabled: false,
             }}
           />
           <Stack.Screen
             name="Paywall"
             component={PaywallScreen}
             options={{
-              gestureEnabled: false, // Prevent swipe back from paywall (unskippable)
+              gestureEnabled: false,
               headerShown: false,
             }}
           />
@@ -69,7 +67,7 @@ export const AppNavigator = () => {
             name="Home"
             component={HomeTabNavigator}
             options={{
-              gestureEnabled: false, // Prevent swipe back to questionnaire once completed
+              gestureEnabled: false,
             }}
           />
         </Stack.Navigator>

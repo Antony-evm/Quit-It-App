@@ -8,7 +8,7 @@ import Config from 'react-native-config';
 import { COLOR_PALETTE } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
-import { TrackingTypesProvider } from '@/features/tracking/components/TrackingTypesProvider';
+import { useTrackingTypesPrefetch } from '@/features/tracking';
 import { QuestionnaireAccountProvider } from '@/features/questionnaire';
 import { ToastProvider, ToastContainer } from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
@@ -37,6 +37,32 @@ const queryClient = new QueryClient({
   },
 });
 
+/**
+ * Inner app content that has access to all providers.
+ * Runs hooks that need provider context.
+ */
+function AppContent(): React.ReactElement {
+  useTrackingTypesPrefetch();
+
+  return (
+    <QuestionnaireAccountProvider>
+      <ToastProvider>
+        <ErrorHandlerProvider preferToast={true}>
+          <SafeAreaProvider>
+            <StatusBar
+              barStyle="light-content"
+              backgroundColor={COLOR_PALETTE.backgroundMuted}
+            />
+            <AppNavigator />
+            <ToastContainer />
+            {__DEV__ && <DeveloperMenuTrigger />}
+          </SafeAreaProvider>
+        </ErrorHandlerProvider>
+      </ToastProvider>
+    </QuestionnaireAccountProvider>
+  );
+}
+
 function App(): React.ReactElement {
   return (
     <GlobalErrorBoundary>
@@ -44,23 +70,7 @@ function App(): React.ReactElement {
         <QueryClientProvider client={queryClient}>
           <NavigationReadyProvider>
             <AuthProvider>
-              <TrackingTypesProvider>
-                <QuestionnaireAccountProvider>
-                  <ToastProvider>
-                    <ErrorHandlerProvider preferToast={true}>
-                      <SafeAreaProvider>
-                        <StatusBar
-                          barStyle="light-content"
-                          backgroundColor={COLOR_PALETTE.backgroundMuted}
-                        />
-                        <AppNavigator />
-                        <ToastContainer />
-                        {__DEV__ && <DeveloperMenuTrigger />}
-                      </SafeAreaProvider>
-                    </ErrorHandlerProvider>
-                  </ToastProvider>
-                </QuestionnaireAccountProvider>
-              </TrackingTypesProvider>
+              <AppContent />
             </AuthProvider>
           </NavigationReadyProvider>
         </QueryClientProvider>

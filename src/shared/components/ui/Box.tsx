@@ -17,9 +17,10 @@ import {
   BorderRadiusToken,
   SHADOWS,
   FOOTER_LAYOUT,
+  ICON_SIZES,
 } from '../../theme';
 
-const BOX_VARIANTS = {
+export const BOX_VARIANTS = {
   default: {
     gap: SPACING.xl,
     width: '100%',
@@ -164,6 +165,69 @@ const BOX_VARIANTS = {
     borderBottomColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.md,
     zIndex: 5,
+  },
+  footerMain: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  footerBackground: {
+    flexDirection: 'row',
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: FOOTER_LAYOUT.CONTAINER_BORDER_RADIUS,
+    borderWidth: FOOTER_LAYOUT.CONTAINER_BORDER_WIDTH,
+    borderColor: COLOR_PALETTE.borderDefault,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: SPACING.xs,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '95%',
+    ...SHADOWS.lg,
+  },
+  fabPlaceholder: {
+    width: FOOTER_LAYOUT.FAB_SIZE,
+    height: 1,
+  },
+  fabContainer: {
+    position: 'absolute',
+    top: FOOTER_LAYOUT.FAB_OFFSET,
+    alignSelf: 'center',
+    zIndex: 10,
+  },
+  fab: {
+    width: FOOTER_LAYOUT.FAB_SIZE,
+    height: FOOTER_LAYOUT.FAB_SIZE,
+    borderRadius: FOOTER_LAYOUT.FAB_BORDER_RADIUS,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: FOOTER_LAYOUT.FAB_BORDER_WIDTH,
+    borderColor: COLOR_PALETTE.borderDefault,
+    overflow: 'hidden',
+    backgroundColor: COLOR_PALETTE.brandPrimary,
+    ...SHADOWS.xxl,
+  },
+  fabGradient: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  placeholderIcon: {
+    width: ICON_SIZES.medium,
+    height: ICON_SIZES.medium,
+  },
+  placeholderTab: {
+    flex: 1,
+  },
+  modalContent: {
+    padding: SPACING.md,
+  },
+  modalTextContainer: {
+    marginBottom: SPACING.xl,
+    marginTop: SPACING.md,
+    paddingHorizontal: SPACING.sm,
+  },
+  footerWrapper: {
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
+    paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },
 } satisfies Record<string, ViewStyle>;
 
