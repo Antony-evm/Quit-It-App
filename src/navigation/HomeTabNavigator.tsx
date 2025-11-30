@@ -18,27 +18,27 @@ import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from '@/features/journal/screens/JournalScreen';
 import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
-import {
-  NotesCard,
-  NotesCardHandle,
-} from '@/features/journal/components/NotesCard';
-import {
-  HomeFooterNavigator,
-  HomeFooterTab,
-} from '@/features/home/components/HomeFooterNavigator';
+import { NotesCard } from '@/features/journal/components/NotesCard';
+import { useNotesCardController } from '@/features/journal/hooks/useNotesCardController';
+import { HomeFooterNavigator, HomeFooterTab } from './HomeFooterNavigator';
 
 export const HomeTabNavigator = () => {
   const insets = useSafeAreaInsets();
   const noteDrawerScrollRef = useRef<ScrollView>(null);
-  const notesCardRef = useRef<NotesCardHandle>(null);
 
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
   const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
 
+  // Use the controller hook for create mode
+  const createController = useNotesCardController({
+    scrollViewRef: noteDrawerScrollRef,
+    onSaveSuccess: () => setIsNoteDrawerVisible(false),
+  });
+
   const renderHeaderContent = () => (
     <ModalActionHeader
       onClose={() => setIsNoteDrawerVisible(false)}
-      onPrimaryAction={() => notesCardRef.current?.save()}
+      onPrimaryAction={createController.save}
       primaryLabel="Save"
     />
   );
@@ -88,11 +88,22 @@ export const HomeTabNavigator = () => {
               forward.
             </AppText>
           </View>
-          <NotesCard
-            ref={notesCardRef}
-            scrollViewRef={noteDrawerScrollRef}
-            onSaveSuccess={() => setIsNoteDrawerVisible(false)}
-          />
+          {createController.isReady && (
+            <NotesCard
+              trackingTypes={createController.trackingTypes}
+              selectedTrackingTypeId={createController.selectedTrackingTypeId}
+              selectedDateTime={createController.selectedDateTime}
+              notes={createController.notes}
+              maxChars={createController.maxChars}
+              accentColor={createController.accentColor}
+              isLoading={createController.isLoading}
+              onTrackingTypeSelect={createController.onTrackingTypeSelect}
+              onDateTimeChange={createController.onDateTimeChange}
+              onNotesChange={createController.onNotesChange}
+              onNotesFocus={createController.onNotesFocus}
+              scrollViewRef={noteDrawerScrollRef}
+            />
+          )}
         </ScrollView>
       </DraggableModal>
     </View>

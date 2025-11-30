@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useCravingAnalytics } from '@/features/tracking';
 
 type CravingStatsProps = {
@@ -14,5 +14,5 @@ export const CravingStats = ({ onStatsLoaded }: CravingStatsProps) => {
     }
   }, [cravingAnalytics, onStatsLoaded]);
 
-  return null; // This component doesn't render anything
+  return null;
 };

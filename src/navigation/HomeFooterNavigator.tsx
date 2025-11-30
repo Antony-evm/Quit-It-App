@@ -5,7 +5,7 @@ import { SvgProps } from 'react-native-svg';
 import { AppText, AppPressable, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { FabGradient } from './FabGradient';
-import { useFabAnimation } from '../hooks/useFabAnimation';
+import { useFabAnimation } from './useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';

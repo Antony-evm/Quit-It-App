@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
 import { AppText, Box, AppTag } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 export type HomeStat = {
   label: string;

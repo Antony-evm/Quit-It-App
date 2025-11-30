@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -12,28 +13,23 @@ import {
 } from '@/shared/components/ui';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import { NotesCard, NotesCardHandle } from '../components/NotesCard';
+import { NotesCard } from '../components/NotesCard';
+import { useNotesCardController } from '../hooks/useNotesCardController';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
 
 export const JournalScreen = () => {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const currentUserId = useCurrentUserId();
+  const editDrawerScrollRef = useRef<ScrollView>(null);
 
   const [selectedRecord, setSelectedRecord] =
     useState<TrackingRecordApiResponse | null>(null);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-  const editCardRef = useRef<NotesCardHandle>(null);
-  const editDrawerScrollRef = useRef<ScrollView>(null);
 
-  useEffect(() => {
-    const queryKey = ['trackingRecords', 'infinite', currentUserId];
-    queryClient.resetQueries({ queryKey });
-  }, [queryClient, currentUserId]);
-
-  const handleRecordPress = useCallback((record: TrackingRecordApiResponse) => {
-    setSelectedRecord(record);
-    setIsEditModalVisible(true);
+  const handleCloseModal = useCallback(() => {
+    setIsEditModalVisible(false);
   }, []);
 
   const handleEditSuccess = useCallback(() => {
@@ -50,25 +46,43 @@ export const JournalScreen = () => {
     };
   }, [selectedRecord]);
 
+  const editController = useNotesCardController({
+    recordId: selectedRecord?.record_id,
+    initialValues,
+    scrollViewRef: editDrawerScrollRef,
+    onSaveSuccess: handleEditSuccess,
+    onDeleteSuccess: handleEditSuccess,
+  });
+
+  useEffect(() => {
+    const queryKey = ['trackingRecords', 'infinite', currentUserId];
+    queryClient.resetQueries({ queryKey });
+  }, [queryClient, currentUserId]);
+
+  const handleRecordPress = useCallback((record: TrackingRecordApiResponse) => {
+    setSelectedRecord(record);
+    setIsEditModalVisible(true);
+  }, []);
+
   const headerContent = useMemo(
     () => (
       <ModalActionHeader
-        onClose={() => setIsEditModalVisible(false)}
-        onPrimaryAction={() => editCardRef.current?.save()}
-        primaryLabel="Save"
+        onClose={handleCloseModal}
+        onPrimaryAction={editController.save}
+        primaryLabel={t('journal.save')}
       />
     ),
-    [],
+    [handleCloseModal, editController.save, t],
   );
 
   const ListHeaderComponent = useMemo(
     () => (
       <ScreenHeader
-        title="Your Quit Journal"
-        subtitle="A clear view of how far you've come."
+        title={t('journal.screenTitle')}
+        subtitle={t('journal.screenSubtitle')}
       />
     ),
-    [],
+    [t],
   );
 
   return (
@@ -80,7 +94,7 @@ export const JournalScreen = () => {
 
       <DraggableModal
         visible={isEditModalVisible}
-        onClose={() => setIsEditModalVisible(false)}
+        onClose={handleCloseModal}
         headerContent={headerContent}
       >
         <Box variant="default">
@@ -88,30 +102,30 @@ export const JournalScreen = () => {
             ref={editDrawerScrollRef}
             keyboardShouldPersistTaps="handled"
           >
-            <Box>
-              <AppText>
-                Reflect, reset, and track your journey. Every entry is a step
-                forward.
-              </AppText>
-            </Box>
-            {selectedRecord && (
+            <AppText variant="body">
+              {t('journal.editModalDescription')}
+            </AppText>
+            {selectedRecord && editController.isReady && (
               <NotesCard
-                ref={editCardRef}
-                recordId={selectedRecord.record_id}
-                initialValues={initialValues}
+                trackingTypes={editController.trackingTypes}
+                selectedTrackingTypeId={editController.selectedTrackingTypeId}
+                selectedDateTime={editController.selectedDateTime}
+                notes={editController.notes}
+                maxChars={editController.maxChars}
+                accentColor={editController.accentColor}
+                isLoading={editController.isLoading}
+                onTrackingTypeSelect={editController.onTrackingTypeSelect}
+                onDateTimeChange={editController.onDateTimeChange}
+                onNotesChange={editController.onNotesChange}
+                onNotesFocus={editController.onNotesFocus}
                 scrollViewRef={editDrawerScrollRef}
-                onSaveSuccess={handleEditSuccess}
-                onDeleteSuccess={handleEditSuccess}
               />
             )}
           </ScrollView>
           {selectedRecord && (
             <Box variant="buttonSeparator">
-              <AppPressable
-                onPress={() => editCardRef.current?.delete()}
-                variant="delete"
-              >
-                <AppText tone="error">Delete</AppText>
+              <AppPressable onPress={editController.delete} variant="delete">
+                <AppText tone="error">{t('journal.delete')}</AppText>
               </AppPressable>
             </Box>
           )}

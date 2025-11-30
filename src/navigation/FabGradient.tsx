@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Svg, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { COLOR_PALETTE } from '@/shared/theme';

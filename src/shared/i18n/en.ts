@@ -19,5 +19,18 @@ export default {
     common: {
       error: 'Something went wrong',
     },
+    journal: {
+      screenTitle: 'Your Quit Journal',
+      screenSubtitle: "A clear view of how far you've come.",
+      editModalDescription:
+        'Reflect, reset, and track your journey. Every entry is a step forward.',
+      loggingLabel: 'I am logging a...',
+      whenLabel: 'When did it happen?',
+      notesLabel: 'Notes (Optional)',
+      notesPlaceholder: 'Every check-in counts. How are you feeling?',
+      charactersRemaining: '{{count}} characters remaining',
+      save: 'Save',
+      delete: 'Delete',
+    },
   },
 };
