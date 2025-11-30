@@ -15,3 +15,4 @@ export * from './ScreenHeader';
 export * from './ModalActionHeader';
 export * from './FormField';
 export * from './IconTextCard';
+export * from './Section';

@@ -16,6 +16,7 @@ import {
   BORDER_WIDTH,
   BorderRadiusToken,
   SHADOWS,
+  FOOTER_LAYOUT,
 } from '../../theme';
 
 const BOX_VARIANTS = {
@@ -26,6 +27,17 @@ const BOX_VARIANTS = {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
+  },
+  chartContainer: {
+    marginTop: SPACING.sm,
+    marginBottom: SPACING.xl,
+  },
+  sectionContainer: {
+    marginBottom: SPACING.xl,
   },
   chip: {
     flexDirection: 'row',

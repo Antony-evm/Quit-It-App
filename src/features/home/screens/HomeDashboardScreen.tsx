@@ -1,8 +1,7 @@
-import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { memo } from 'react';
+import { ScrollView } from 'react-native';
 
-import { AppCard, AppText, Box } from '@/shared/components/ui';
-import { SPACING, FOOTER_LAYOUT } from '@/shared/theme';
+import { Box, Section } from '@/shared/components/ui';
 import { QuittingPlanCard } from '../components/QuittingPlanCard';
 import { CravingChart } from '@/features/tracking';
 import { HomeStatsRow } from '../components/HomeStatsRow';
@@ -10,14 +9,14 @@ import { WelcomeComponent } from '../components/WelcomeComponent';
 import { useHomeDashboardStats } from '../hooks/useHomeDashboardStats';
 import { useWelcomeData } from '../hooks/useWelcomeData';
 
-export const HomeDashboardScreen = () => {
+export const HomeDashboardScreen = memo(() => {
   const { dailyData, stats } = useHomeDashboardStats();
   const { title, message, timeDifference } = useWelcomeData();
 
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}
+      contentContainerStyle={{ flexGrow: 1 }}
     >
       <WelcomeComponent
         title={title}
@@ -25,39 +24,21 @@ export const HomeDashboardScreen = () => {
         timeDifference={timeDifference}
       />
 
-      <Box px="xl" gap="md">
+      <Box px="xl" gap="md" pb="xxl">
         {dailyData && dailyData.length > 0 && (
-          <CravingChart data={dailyData} style={styles.chartCard} />
+          <Box variant="chartContainer">
+            <CravingChart data={dailyData} />
+          </Box>
         )}
 
         <HomeStatsRow stats={stats} />
 
-        <Box mb="xl">
-          <AppText variant="heading" style={styles.sectionTitle}>
-            Your Plan
-          </AppText>
-          <AppCard style={styles.planCard}>
-            <QuittingPlanCard />
-          </AppCard>
-        </Box>
+        <Section title="Your Plan">
+          <QuittingPlanCard />
+        </Section>
       </Box>
     </ScrollView>
   );
-};
-
-const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  planCard: {
-    marginBottom: SPACING.xl,
-  },
-  sectionTitle: {
-    marginBottom: SPACING.sm,
-  },
-  chartCard: {
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.xl,
-  },
 });
+
+HomeDashboardScreen.displayName = 'HomeDashboardScreen';

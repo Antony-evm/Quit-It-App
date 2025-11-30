@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useCravingAnalytics, useSmokingAnalytics } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
 import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
@@ -10,48 +11,63 @@ export const useHomeDashboardStats = () => {
     useSmokingAnalytics();
 
   // Convert cravings_by_day to daily_data format for the chart
-  const dailyData: DailyCravingData[] = cravingAnalytics?.cravings_by_day
-    ? Object.entries(cravingAnalytics.cravings_by_day)
-        .map(([date, count]) => ({
-          date,
-          count,
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date))
-    : [];
+  const dailyData = useMemo<DailyCravingData[]>(() => {
+    if (!cravingAnalytics?.cravings_by_day) {
+      return [];
+    }
+    return Object.entries(cravingAnalytics.cravings_by_day)
+      .map(([date, count]) => ({
+        date,
+        count,
+      }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [cravingAnalytics?.cravings_by_day]);
 
   // Calculate dynamic stats based on analytics data
-  const stats: HomeStat[] = [
-    {
-      label: 'Cravings',
-      value: cravingAnalytics?.total_cravings?.toString() || '0',
-      accentColor: COLOR_PALETTE.craving,
-      tagLabel: 'Cravings',
-      tagBackgroundColor: hexToRgba(COLOR_PALETTE.craving, 0.1),
-      bottomLabel: 'Resisted',
-    },
-    {
-      label: 'Skipped Cigarettes',
-      value: smokingAnalytics?.skipped_smokes?.toString() || '0',
-      accentColor: COLOR_PALETTE.cigarette,
-      tagLabel: 'Smokes',
-      tagBackgroundColor: hexToRgba(COLOR_PALETTE.cigarette, 0.1),
-      bottomLabel: 'Skipped',
-    },
-    {
-      label: 'Money Saved',
-      value: smokingAnalytics?.savings
-        ? `$${smokingAnalytics.savings.toFixed(2)}`
-        : '$0.00',
-      accentColor: COLOR_PALETTE.wealth,
-      tagLabel: 'Money',
-      tagBackgroundColor: hexToRgba(COLOR_PALETTE.wealth, 0.1),
-      bottomLabel: 'Saved',
-    },
-  ];
+  const stats = useMemo<HomeStat[]>(
+    () => [
+      {
+        id: 'cravings',
+        label: 'Cravings',
+        value: cravingAnalytics?.total_cravings?.toString() || '0',
+        accentColor: COLOR_PALETTE.craving,
+        tagLabel: 'Cravings',
+        tagBackgroundColor: hexToRgba(COLOR_PALETTE.craving, 0.1),
+        bottomLabel: 'Resisted',
+      },
+      {
+        id: 'skipped-cigarettes',
+        label: 'Skipped Cigarettes',
+        value: smokingAnalytics?.skipped_smokes?.toString() || '0',
+        accentColor: COLOR_PALETTE.cigarette,
+        tagLabel: 'Smokes',
+        tagBackgroundColor: hexToRgba(COLOR_PALETTE.cigarette, 0.1),
+        bottomLabel: 'Skipped',
+      },
+      {
+        id: 'money-saved',
+        label: 'Money Saved',
+        value: smokingAnalytics?.savings
+          ? `$${smokingAnalytics.savings.toFixed(2)}`
+          : '$0.00',
+        accentColor: COLOR_PALETTE.wealth,
+        tagLabel: 'Money',
+        tagBackgroundColor: hexToRgba(COLOR_PALETTE.wealth, 0.1),
+        bottomLabel: 'Saved',
+      },
+    ],
+    [
+      cravingAnalytics?.total_cravings,
+      smokingAnalytics?.skipped_smokes,
+      smokingAnalytics?.savings,
+    ],
+  );
+
+  const isLoading = isCravingLoading || isSmokingLoading;
 
   return {
     dailyData,
     stats,
-    isLoading: isCravingLoading || isSmokingLoading,
+    isLoading,
   };
 };

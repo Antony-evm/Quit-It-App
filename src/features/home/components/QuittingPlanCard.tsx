@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { AppText, StatusMessage } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 
-export const QuittingPlanCard: React.FC = () => {
+export const QuittingPlanCard = memo(() => {
   const { plan, isLoading, error } = useQuittingPlan();
 
   if (isLoading) {
@@ -23,5 +23,14 @@ export const QuittingPlanCard: React.FC = () => {
     return null;
   }
 
-  return <AppText>{plan.text}</AppText>;
-};
+  return (
+    <AppText
+      accessibilityRole="text"
+      accessibilityLabel={`Your quitting plan: ${plan.text}`}
+    >
+      {plan.text}
+    </AppText>
+  );
+});
+
+QuittingPlanCard.displayName = 'QuittingPlanCard';
