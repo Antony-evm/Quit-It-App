@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useQuestionnaire } from '../hooks/useQuestionnaire';
@@ -32,7 +31,7 @@ export const QuestionnaireScreen = ({
     SelectedAnswerSubOption[]
   >([]);
   const [isSelectionValid, setIsSelectionValid] = useState(false);
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
+  const [localSubmitting, setLocalSubmitting] = useState(false);
 
   const {
     isLoading,
@@ -68,7 +67,7 @@ export const QuestionnaireScreen = ({
     setActiveSelection([]);
     setActiveSubSelection([]);
     setIsSelectionValid(false);
-    setHasAttemptedSubmit(false);
+    setLocalSubmitting(false);
   }
 
   useEffect(() => {
@@ -76,10 +75,6 @@ export const QuestionnaireScreen = ({
       setMaxQuestion(question.maxQuestion);
     }
   }, [question?.maxQuestion]);
-
-  useEffect(() => {
-    setHasAttemptedSubmit(false);
-  }, [question?.id, isReviewing]);
 
   useEffect(() => {
     if (!question) {
@@ -152,49 +147,37 @@ export const QuestionnaireScreen = ({
     ? isLoading || isSubmitting || isCompleting || !history.length
     : isLoading ||
       isSubmitting ||
+      localSubmitting ||
       isCompleting ||
       !isSelectionValid ||
       (question?.subCombination !== 'N:N' && !activeSelection.length);
-
-  // Debug logging
-  const showValidationError =
-    hasAttemptedSubmit &&
-    !isReviewing &&
-    (!isSelectionValid ||
-      (question?.subCombination !== 'N:N' && !activeSelection.length));
 
   const shouldShowPrimaryAction =
     isReviewing || isLoading || (!!question && !error);
 
   const handlePrimaryAction = async () => {
-    // Extra safeguard: don't proceed if button should be disabled
     if (primaryActionDisabled) {
       return;
     }
 
     if (isReviewing) {
-      // Complete the questionnaire and get user status information
       try {
+        setLocalSubmitting(true);
         const completionResponse = await completeQuestionnaireFlow();
 
         if (completionResponse) {
-          // Update user status and handle navigation using the centralized hook
           await handleUserStatusUpdateWithNavigation(
             completionResponse,
             navigation,
           );
-
-          // Clear questionnaire storage
           await questionnaireStorage.clear();
         } else {
-          // If completion failed, fallback to home navigation
           navigation.reset({
             index: 0,
             routes: [{ name: 'Home' }],
           });
         }
       } catch (completionError) {
-        // Clear storage and navigate to home as fallback
         await questionnaireStorage.clear();
         navigation.reset({
           index: 0,
@@ -204,8 +187,6 @@ export const QuestionnaireScreen = ({
       return;
     }
 
-    setHasAttemptedSubmit(true);
-
     if (
       !isSelectionValid ||
       (question?.subCombination !== 'N:N' && !activeSelection.length)
@@ -213,6 +194,7 @@ export const QuestionnaireScreen = ({
       return;
     }
 
+    setLocalSubmitting(true);
     await submitAnswers(activeSelection, activeSubSelection);
   };
 
@@ -269,14 +251,6 @@ export const QuestionnaireScreen = ({
             implemented yet
           </AppText>
         ) : null}
-
-        {showValidationError ? (
-          <AppText tone="secondary" style={styles.validation}>
-            {question?.subCombination === 'N:N'
-              ? 'Please select a frequency for each time period.'
-              : 'Please provide an answer before continuing.'}
-          </AppText>
-        ) : null}
       </>
     );
   };
@@ -285,7 +259,6 @@ export const QuestionnaireScreen = ({
     (!isReviewing && canGoBack) || (isReviewing && canResumeReview);
 
   const handleBackPress = () => {
-    setHasAttemptedSubmit(false);
     if (isReviewing) {
       resumeFromReview();
     } else {
@@ -310,12 +283,12 @@ export const QuestionnaireScreen = ({
 
   return (
     <Box flex={1} bg="backgroundMuted">
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={{ flex: 1 }}>
         <QuestionnaireTemplate
           title={headerTitle}
           subtitle={headerSubtitle}
           isLoading={isLoading}
-          isSubmitting={isSubmitting}
+          isSubmitting={isSubmitting || isCompleting || localSubmitting}
           progressData={progressData}
           primaryActionLabel={
             shouldShowPrimaryAction ? primaryActionLabel : undefined
@@ -337,13 +310,3 @@ export const QuestionnaireScreen = ({
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-  },
-  validation: {
-    marginTop: SPACING.sm,
-  },
-});

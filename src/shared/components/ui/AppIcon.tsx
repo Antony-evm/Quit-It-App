@@ -10,13 +10,19 @@ export type IconVariant =
   | 'accent'
   | 'error'
   | 'fab'
-  | 'inverse';
+  | 'inverse'
+  | 'backArrow';
 
 const VARIANTS = {
   default: {
     size: ICON_SIZES.medium,
     color: COLOR_PALETTE.backgroundPrimary,
     stroke: COLOR_PALETTE.textPrimary,
+  },
+  backArrow: {
+    size: ICON_SIZES.medium,
+    color: COLOR_PALETTE.textPrimary,
+    stroke: COLOR_PALETTE.backgroundPrimary,
   },
   inverse: {
     size: ICON_SIZES.large,

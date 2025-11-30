@@ -326,7 +326,7 @@ export const QuestionnaireQuestion = ({
 
   if (!question) {
     return (
-      <Box gap="lg">
+      <Box>
         <AppText tone="secondary">No question to display.</AppText>
       </Box>
     );

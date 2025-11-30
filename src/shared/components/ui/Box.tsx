@@ -16,8 +16,19 @@ import {
   BorderRadiusToken,
 } from '../../theme';
 
+const BOX_VARIANTS = {
+  default: {
+    gap: SPACING.xl,
+    width: '100%',
+  },
+} satisfies Record<string, ViewStyle>;
+
+export type BoxVariant = keyof typeof BOX_VARIANTS;
+
 export type BoxProps = PropsWithChildren<
   ViewProps & {
+    /** Predefined Box style variants */
+    variant?: BoxVariant;
     /** Padding on all sides */
     p?: SpacingToken;
     /** Horizontal padding (left and right) */
@@ -98,6 +109,7 @@ export const Box = ({
   justifyContent,
   flexWrap,
   style,
+  variant,
   ...viewProps
 }: BoxProps) => {
   const boxStyle: ViewStyle = {
@@ -144,7 +156,10 @@ export const Box = ({
   };
 
   return (
-    <View style={[styles.base, boxStyle, style]} {...viewProps}>
+    <View
+      style={[styles.base, variant && BOX_VARIANTS[variant], boxStyle, style]}
+      {...viewProps}
+    >
       {children}
     </View>
   );

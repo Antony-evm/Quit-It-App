@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 
@@ -180,27 +180,6 @@ export const FrequencyGrid = ({
     setSelections(initialSelections);
   }, [initialSubSelection]);
 
-  // Ensure every row has a default selection (defaults to the first sub-option, e.g. "Never")
-  useEffect(() => {
-    if (!orderedSubOptions.length || !options.length) {
-      return;
-    }
-
-    setSelections(prev => {
-      let changed = false;
-      const next = { ...prev };
-
-      options.forEach(option => {
-        if (next[option.id] === undefined) {
-          next[option.id] = orderedSubOptions[0].id;
-          changed = true;
-        }
-      });
-
-      return changed ? next : prev;
-    });
-  }, [options, orderedSubOptions]);
-
   useEffect(() => {
     if (options.length > 0) {
       const allMainOptions: SelectedAnswerOption[] = options.map(option => ({
@@ -331,7 +310,7 @@ export const FrequencyGrid = ({
                 tone="primary"
                 style={styles.currentValueText}
               >
-                Select a frequency
+                Select
               </AppText>
             )}
           </Box>

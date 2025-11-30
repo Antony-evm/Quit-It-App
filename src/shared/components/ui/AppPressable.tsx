@@ -95,7 +95,7 @@ const variantStyles = StyleSheet.create({
     width: TOUCH_TARGET_SIZE,
     height: TOUCH_TARGET_SIZE,
     borderRadius: TOUCH_TARGET_SIZE / 2,
-    backgroundColor: COLOR_PALETTE.backgroundCream,
+    backgroundColor: COLOR_PALETTE.textPrimary,
     justifyContent: 'center',
     alignItems: 'center',
     ...SHADOWS.sm,

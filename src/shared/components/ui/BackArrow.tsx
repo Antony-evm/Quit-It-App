@@ -17,6 +17,6 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
     variant="backArrow"
     disabledOpacity={1}
   >
-    <AppIcon icon={BackArrowSvg} variant="default" />
+    <AppIcon icon={BackArrowSvg} variant="backArrow" />
   </AppPressable>
 );

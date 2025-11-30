@@ -52,7 +52,7 @@ export const QuestionnaireTemplate = ({
               isSubmitting={isSubmitting}
             />
           ) : isLoading ? (
-            <Box style={styles.container}>
+            <Box variant="default">
               <SkeletonItem width={40} height={14} />
               <SkeletonItem width="100%" height={6} />
             </Box>
@@ -65,7 +65,7 @@ export const QuestionnaireTemplate = ({
         style={styles.scrollView}
         testID="questionnaire-template"
       >
-        <Box style={styles.container}>
+        <Box variant="default">
           {!isLoading ? (
             <Box>
               <ScreenHeader title={title} subtitle={subtitle} />
@@ -104,27 +104,6 @@ const styles = StyleSheet.create({
     paddingTop: SPACING.md,
     paddingBottom: SPACING.xl,
   },
-  container: {
-    gap: SPACING.xl,
-    width: '100%',
-  },
-  hero: {
-    borderRadius: 0,
-    paddingVertical: SPACING.md,
-    overflow: 'hidden',
-    borderWidth: 0,
-  },
-  heroAccent: {
-    position: 'absolute',
-    right: -40,
-    top: -40,
-    borderRadius: 999,
-    backgroundColor: COLOR_PALETTE.accentMuted,
-    opacity: 0.35,
-  },
-  heroText: {
-    gap: SPACING.lg,
-  },
   loading: {
     alignItems: 'center',
     gap: SPACING.sm,
@@ -154,12 +133,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 4,
     marginLeft: DEVICE_WIDTH / 7,
-  },
-  backButtonContainer: {
-    position: 'relative',
-    height: 60,
-    width: '100%',
-    marginBottom: 0,
   },
   primaryAction: {},
 });

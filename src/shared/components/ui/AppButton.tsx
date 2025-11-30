@@ -17,7 +17,7 @@ import {
   TypographyVariant,
 } from '../../theme';
 
-const DISABLED_OPACITY = 0.5;
+const DISABLED_OPACITY = 0.7;
 const PRESSED_OPACITY = 0.7;
 
 type ButtonVariant =
