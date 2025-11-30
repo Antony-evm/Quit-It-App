@@ -114,10 +114,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                   onChangeText={setConfirmPassword}
                   placeholder="Confirm password"
                   autoComplete="new-password"
-                  hasError={
-                    confirmPassword.length > 0 &&
-                    !confirmPasswordValidation.isValid
-                  }
                   errorMessage={
                     confirmPassword.length > 0 &&
                     !confirmPasswordValidation.isValid

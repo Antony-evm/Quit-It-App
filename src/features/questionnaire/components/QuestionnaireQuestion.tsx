@@ -333,7 +333,7 @@ export const QuestionnaireQuestion = ({
   }
 
   return (
-    <Box gap="lg">
+    <Box>
       {(allowMultipleChoice || allowSingleChoice) && question.options.length ? (
         <AnswerTabs
           options={question.options.map(option => ({

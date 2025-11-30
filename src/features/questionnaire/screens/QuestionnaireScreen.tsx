@@ -146,26 +146,7 @@ export const QuestionnaireScreen = ({
     : prompt || DEFAULT_HEADER_TITLE;
   const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
 
-  const primaryActionLabel = useMemo(() => {
-    if (isReviewing) {
-      return QUESTIONNAIRE_SUBMIT_LABEL;
-    }
-
-    // Use "Submit" for most question types, "Continue" only for specific cases
-    switch (question?.answerType) {
-      case 'multiple_choice':
-        // For multiple choice, always use "Submit" instead of varying by answerHandling
-        return QUESTIONNAIRE_SUBMIT_LABEL;
-      case 'numeric':
-        return QUESTIONNAIRE_SUBMIT_LABEL;
-      case 'time':
-        return QUESTIONNAIRE_SUBMIT_LABEL;
-      case 'date':
-        return QUESTIONNAIRE_SUBMIT_LABEL;
-      default:
-        return QUESTIONNAIRE_SUBMIT_LABEL;
-    }
-  }, [isReviewing, question]);
+  const primaryActionLabel = QUESTIONNAIRE_SUBMIT_LABEL;
 
   const primaryActionDisabled = isReviewing
     ? isLoading || isSubmitting || isCompleting || !history.length
@@ -312,7 +293,6 @@ export const QuestionnaireScreen = ({
     }
   };
 
-  // Calculate progress data for the progress bar
   const progressData = useMemo(() => {
     const total = maxQuestion || question?.maxQuestion;
 
@@ -321,7 +301,7 @@ export const QuestionnaireScreen = ({
     }
 
     const data = {
-      currentQuestion: orderId + 1, // orderId is 0-based, display as 1-based
+      currentQuestion: orderId + 1,
       totalQuestions: total,
     };
 

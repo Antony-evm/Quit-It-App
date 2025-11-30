@@ -36,8 +36,8 @@ export const ScreenHeader = ({
     align === 'center'
       ? styles.centered
       : align === 'right'
-        ? styles.rightAligned
-        : styles.leftAligned;
+      ? styles.rightAligned
+      : styles.leftAligned;
 
   return (
     <Box
@@ -50,7 +50,7 @@ export const ScreenHeader = ({
         },
         style,
       ]}
-      gap="xs"
+      gap="md"
     >
       <AppText
         variant={titleVariant}

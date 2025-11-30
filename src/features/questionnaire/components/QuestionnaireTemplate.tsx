@@ -1,13 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
-import { AppButton, AppCard, Box, ScreenHeader } from '@/shared/components/ui';
+import { AppButton, Box, ScreenHeader } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import { useDeviceDimensions } from '@/shared/hooks/useDeviceDimensions';
 import {
   DEVICE_WIDTH,
   QUESTIONNAIRE_HORIZONTAL_PADDING,
-  QUESTIONNAIRE_MAX_CONTENT_WIDTH,
 } from '@/shared/theme/layout';
 import { QuestionnaireProgressBar } from './QuestionnaireProgressBar';
 import { QuestionnaireSkeleton, SkeletonItem } from './QuestionnaireSkeleton';
@@ -41,27 +39,10 @@ export const QuestionnaireTemplate = ({
   progressData,
   children,
 }: QuestionnaireTemplateProps) => {
-  const { width } = useDeviceDimensions();
-  const safeWidth = Math.max(width, 320);
-  const contentWidth = Math.min(
-    safeWidth - QUESTIONNAIRE_HORIZONTAL_PADDING * 2,
-    QUESTIONNAIRE_MAX_CONTENT_WIDTH,
-  );
-
   return (
-    <Box style={styles.wrapper} flex={1} bg="backgroundMuted">
-      {/* Header with back button and progress bar */}
-      <Box
-        style={styles.headerContainer}
-        flexDirection="row"
-        alignItems="center"
-        px="lg"
-        pt="md"
-        bg="backgroundMuted"
-      >
+    <Box style={styles.wrapper}>
+      <Box style={styles.headerContainer}>
         <Box style={styles.backButtonSection}>{backButton}</Box>
-
-        {/* Progress bar - always reserve space, show when not loading and have progress data */}
         <Box style={styles.progressSection}>
           {progressData ? (
             <QuestionnaireProgressBar
@@ -71,7 +52,7 @@ export const QuestionnaireTemplate = ({
               isSubmitting={isSubmitting}
             />
           ) : isLoading ? (
-            <Box style={{ width: '100%' }} alignItems="center" gap="xs">
+            <Box style={styles.container}>
               <SkeletonItem width={40} height={14} />
               <SkeletonItem width="100%" height={6} />
             </Box>
@@ -80,37 +61,30 @@ export const QuestionnaireTemplate = ({
       </Box>
 
       <ScrollView
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING },
-        ]}
+        contentContainerStyle={styles.scrollContent}
         style={styles.scrollView}
         testID="questionnaire-template"
       >
-        <Box style={[styles.container, { maxWidth: contentWidth }]} gap="md">
+        <Box style={styles.container}>
           {!isLoading ? (
-            <Box style={styles.hero} py="md" bg="backgroundMuted">
+            <Box>
               <ScreenHeader title={title} subtitle={subtitle} />
             </Box>
           ) : null}
-          <AppCard variant="ghost" p="zero" style={styles.body}>
-            {isLoading ? <QuestionnaireSkeleton /> : children}
-          </AppCard>
+          <Box>{isLoading ? <QuestionnaireSkeleton /> : children}</Box>
         </Box>
       </ScrollView>
-      <Box style={styles.footer} gap="md" pt="lg" pb="lg" bg="backgroundMuted">
-        {primaryActionLabel ? (
-          <AppButton
-            label={primaryActionLabel}
-            variant="primary"
-            onPress={onPrimaryActionPress}
-            disabled={primaryActionDisabled}
-            containerStyle={styles.primaryAction}
-            fullWidth
-          />
-        ) : null}
-        {footerSlot}
-      </Box>
+      {primaryActionLabel ? (
+        <AppButton
+          label={primaryActionLabel}
+          variant="primary"
+          onPress={onPrimaryActionPress}
+          disabled={primaryActionDisabled}
+          containerStyle={styles.primaryAction}
+          fullWidth
+        />
+      ) : null}
+      {footerSlot}
     </Box>
   );
 };
@@ -119,27 +93,25 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
+    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
+    paddingTop: SPACING.md,
   },
   scrollView: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: SPACING.xs, // Even smaller top padding
-    paddingBottom: SPACING.xxl,
-    gap: SPACING.xs, // Very small gap between sections
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.xl,
   },
   container: {
-    gap: SPACING.md, // Very small gap between container elements
+    gap: SPACING.xl,
     width: '100%',
-    alignSelf: 'center',
   },
   hero: {
     borderRadius: 0,
     paddingVertical: SPACING.md,
     overflow: 'hidden',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
     borderWidth: 0,
   },
   heroAccent: {
@@ -153,24 +125,12 @@ const styles = StyleSheet.create({
   heroText: {
     gap: SPACING.lg,
   },
-  body: {
-    gap: SPACING.lg,
-    paddingVertical: SPACING.xl,
-  },
   loading: {
     alignItems: 'center',
     gap: SPACING.sm,
   },
   loadingLabel: {
     textAlign: 'center',
-  },
-  footer: {
-    gap: SPACING.md,
-    paddingTop: SPACING.lg,
-    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
-    paddingBottom: SPACING.lg,
-    width: '100%',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -179,30 +139,27 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '100%',
     marginBottom: SPACING.xxl,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingHorizontal: QUESTIONNAIRE_HORIZONTAL_PADDING,
-    paddingTop: SPACING.md, // Add some top padding to position back button lower
   },
   backButtonSection: {
-    width: 44, // Reserve space for the absolutely positioned BackArrow
-    height: 44, // Reserve space for the absolutely positioned BackArrow
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'flex-start',
     marginRight: SPACING.md,
-    position: 'relative', // Ensure it serves as positioning context for BackArrow
+    position: 'relative',
   },
   progressSection: {
-    width: '40%', // Back to 40% as requested
+    width: '40%',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 4,
-    marginLeft: DEVICE_WIDTH / 7, // Add left margin to move it more towards center
+    marginLeft: DEVICE_WIDTH / 7,
   },
   backButtonContainer: {
     position: 'relative',
-    height: 60, // Reduced height
+    height: 60,
     width: '100%',
-    marginBottom: 0, // No margin at all
+    marginBottom: 0,
   },
   primaryAction: {},
 });

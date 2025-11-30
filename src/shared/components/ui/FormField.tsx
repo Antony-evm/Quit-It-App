@@ -29,7 +29,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   const hasSuccess = !!successMessage && !hasError;
 
   return (
-    <Box gap="xs">
+    <Box gap="sm">
       {children}
       {hasError && (
         <AppText variant="subcaption" tone="error">

@@ -41,12 +41,7 @@ export const AnswerTab = ({
       <AppText
         variant="body"
         tone={isSelected ? 'inverse' : 'primary'}
-        style={[
-          isSelected && { color: COLOR_PALETTE.backgroundMuted },
-          !isSelected && { color: COLOR_PALETTE.backgroundCream },
-          variant === ANSWER_TAB_VARIANTS.MULTIPLE_MANY &&
-            styles.multipleManyText,
-        ]}
+        style={{ textAlign: 'center' }}
       >
         {label}
       </AppText>
@@ -54,8 +49,4 @@ export const AnswerTab = ({
   );
 };
 
-const styles = StyleSheet.create({
-  multipleManyText: {
-    textAlign: 'center',
-  },
-});
+const styles = StyleSheet.create({});

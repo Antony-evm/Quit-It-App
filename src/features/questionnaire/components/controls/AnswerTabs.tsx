@@ -56,7 +56,7 @@ export const AnswerTabs = ({
   );
 
   return (
-    <Box flexDirection="row" flexWrap="wrap" gap="md" style={{ width: '100%' }}>
+    <Box flexDirection="row" flexWrap="wrap" gap="md">
       {options.map(option => (
         <AnswerTab
           key={option.id}

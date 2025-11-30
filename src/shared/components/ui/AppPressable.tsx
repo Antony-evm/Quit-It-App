@@ -119,6 +119,7 @@ const variantStyles = StyleSheet.create({
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.xl,
     flexBasis: '40%',
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: COLOR_PALETTE.backgroundPrimary,

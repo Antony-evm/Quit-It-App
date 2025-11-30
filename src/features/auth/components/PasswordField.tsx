@@ -10,7 +10,6 @@ interface PasswordFieldProps {
   onChangeText: (text: string) => void;
   placeholder?: string;
   autoComplete?: 'current-password' | 'new-password' | 'password';
-  hasError?: boolean;
   errorMessage?: string;
   isLoading?: boolean;
   onSubmitEditing?: () => void;
@@ -24,7 +23,6 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
       onChangeText,
       placeholder = 'Password',
       autoComplete = 'password',
-      hasError = false,
       errorMessage,
       isLoading = false,
       onSubmitEditing,
@@ -42,10 +40,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           bg="backgroundPrimary"
           borderRadius="medium"
           gap="sm"
-          style={[
-            styles.passwordContainer,
-            hasError && styles.passwordContainerError,
-          ]}
+          style={[styles.passwordContainer]}
         >
           <AppTextInput
             ref={ref}
@@ -79,8 +74,5 @@ const styles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
     paddingRight: SPACING.sm,
     justifyContent: 'space-between',
-  },
-  passwordContainerError: {
-    borderColor: COLOR_PALETTE.accentPrimary,
   },
 });
