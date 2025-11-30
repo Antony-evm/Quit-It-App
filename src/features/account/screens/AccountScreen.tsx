@@ -1,49 +1,30 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import {
-  AppText,
-  Box,
-  ScreenHeader,
-  IconTextCard,
-} from '@/shared/components/ui';
+import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
-import EmailSvg from '@/assets/email.svg';
 
-import { useAuth } from '@/shared/auth';
 import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
 import { TriggersList } from '@/features/questionnaire/components/TriggersList';
 import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
-import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
-import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
 import { AccountSectionItem } from '../components/AccountSectionItem';
+import { AccountDetails } from '../components/AccountDetails';
 import { BottomDrawer } from '../components/BottomDrawer';
-import { useQuitDateLogic } from '../hooks/useQuitDateLogic';
+import { useQuitDate } from '../hooks/useQuitDate';
 
 type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
-  const { handleRefresh, isRefetching, error } = useQuitDateLogic();
+  const { refresh, isRefetching, error } = useQuitDate();
 
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
-
-  useSmokingTriggersQuestion();
-  useSmokingFrequencyQuestion();
 
   const renderDrawerContent = () => {
     switch (activeSection) {
       case 'details':
-        return (
-          <Box mb="lg">
-            <IconTextCard
-              icon={EmailSvg}
-              text={user?.email ?? t('account.emailPlaceholder')}
-            />
-          </Box>
-        );
+        return <AccountDetails />;
       case 'plan':
         return <QuittingPlanDetails />;
       case 'triggers':
@@ -80,7 +61,7 @@ export const AccountScreen = () => {
             colors={[COLOR_PALETTE.textPrimary]}
             progressBackgroundColor={COLOR_PALETTE.backgroundCream}
             refreshing={isRefetching}
-            onRefresh={handleRefresh}
+            onRefresh={refresh}
           />
         }
       >
@@ -107,7 +88,7 @@ export const AccountScreen = () => {
           onPress={() => setActiveSection('habits')}
         />
 
-        {error ? <AppText style={styles.globalError}>{error}</AppText> : null}
+        {error ? <StatusMessage type="error" message={error} /> : null}
       </ScrollView>
 
       <BottomDrawer
@@ -122,9 +103,9 @@ export const AccountScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: {},
-  globalError: {
-    color: COLOR_PALETTE.systemError,
-    marginBottom: SPACING.lg,
+  scrollContent: {
+    marginTop: SPACING.xxl,
+    paddingHorizontal: SPACING.lg,
+    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
   },
 });
