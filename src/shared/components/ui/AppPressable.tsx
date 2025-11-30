@@ -14,6 +14,9 @@ import {
   SHADOWS,
   TOUCH_TARGET_SIZE,
   INPUT_MIN_HEIGHT,
+  ANSWER_TAB_MIN_HEIGHT,
+  ANSWER_GRID_MIN_HEIGHT,
+  BORDER_WIDTH,
 } from '@/shared/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -27,7 +30,9 @@ type PressableVariant =
   | 'input'
   | 'card'
   | 'toast'
-  | 'backArrow';
+  | 'backArrow'
+  | 'answer'
+  | 'answerGrid';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
@@ -56,7 +61,7 @@ const variantStyles = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderRadius: BORDER_RADIUS.medium,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     backgroundColor: COLOR_PALETTE.backgroundMuted,
   },
@@ -64,7 +69,7 @@ const variantStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.lg,
@@ -74,7 +79,7 @@ const variantStyles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundPrimary,
     borderRadius: BORDER_RADIUS.large,
     padding: SPACING.xl,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.softLg,
     elevation: 2,
@@ -96,6 +101,31 @@ const variantStyles = StyleSheet.create({
     ...SHADOWS.sm,
     elevation: 5,
   },
+  answer: {
+    paddingHorizontal: SPACING.xl,
+    paddingVertical: SPACING.xl,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: COLOR_PALETTE.borderDefault,
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    minHeight: ANSWER_TAB_MIN_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexGrow: 1,
+  },
+  answerGrid: {
+    borderRadius: BORDER_RADIUS.medium,
+    minHeight: ANSWER_GRID_MIN_HEIGHT,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.xl,
+    flexBasis: '40%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: COLOR_PALETTE.borderDefault,
+    ...SHADOWS.softXl,
+  },
 });
 
 const selectedStyles = StyleSheet.create({
@@ -113,6 +143,14 @@ const selectedStyles = StyleSheet.create({
   },
   toast: {},
   backArrow: {},
+  answer: {
+    backgroundColor: COLOR_PALETTE.backgroundCream,
+    borderColor: COLOR_PALETTE.accentPrimary,
+  },
+  answerGrid: {
+    backgroundColor: COLOR_PALETTE.backgroundCream,
+    borderColor: COLOR_PALETTE.accentPrimary,
+  },
 });
 
 export const AppPressable = ({

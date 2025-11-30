@@ -58,7 +58,6 @@ export const TimeSlotSelector = ({
             .map(slot => slots.indexOf(slot))
             .filter(index => index >= 0)}
           selectionMode="multiple"
-          variant="timeslot"
           onSelectionChange={ids => {
             const selected = ids
               .map(id => slots[id])

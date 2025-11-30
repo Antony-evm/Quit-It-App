@@ -1,6 +1,10 @@
 import React, { useCallback } from 'react';
 
-import { AnswerTab } from './AnswerTab';
+import {
+  AnswerTab,
+  ANSWER_TAB_VARIANTS,
+  AnswerTabVariantType,
+} from './AnswerTab';
 import { Box } from '@/shared/components/ui';
 
 type AnswerTabOption = {
@@ -9,17 +13,11 @@ type AnswerTabOption = {
   disabled?: boolean;
 };
 
-type AnswerTabVariant =
-  | 'timeslot'
-  | 'multiple-many'
-  | 'multiple-few'
-  | 'default';
-
 type AnswerTabsProps = {
   options: AnswerTabOption[];
   selectedOptionIds: number[];
   selectionMode?: 'single' | 'multiple';
-  variant?: AnswerTabVariant;
+  variant?: AnswerTabVariantType;
   onSelectionChange: (nextSelected: number[]) => void;
 };
 
@@ -27,13 +25,13 @@ export const AnswerTabs = ({
   options,
   selectedOptionIds,
   selectionMode = 'single',
-  variant = 'default',
+  variant = ANSWER_TAB_VARIANTS.DEFAULT,
   onSelectionChange,
 }: AnswerTabsProps) => {
   const isMulti = selectionMode === 'multiple';
 
   // Handle null/undefined variant
-  const safeVariant = variant || 'default';
+  const safeVariant = variant || ANSWER_TAB_VARIANTS.DEFAULT;
 
   const handleToggle = useCallback(
     (optionId: number) => {

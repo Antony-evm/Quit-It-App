@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import type { Question, SelectedAnswerOption } from '../types';
 import { AppText, Box } from '@/shared/components/ui';
 import { AnswerTabs } from './controls/AnswerTabs';
+import { ANSWER_TAB_VARIANTS } from './controls/AnswerTab';
 import { DatePickerField } from './fields/DatePickerField';
 import { NumericRangeField } from './fields/NumericRangeField';
 import { TimeSlotSelector } from './fields/TimeSlotSelector';
@@ -342,7 +343,7 @@ export const QuestionnaireQuestion = ({
           }))}
           selectedOptionIds={selectedChoiceIds}
           selectionMode={allowMultipleChoice ? 'multiple' : 'single'}
-          variant={'multiple-many'}
+          variant={ANSWER_TAB_VARIANTS.MULTIPLE_MANY}
           onSelectionChange={setSelectedChoiceIds}
         />
       ) : null}

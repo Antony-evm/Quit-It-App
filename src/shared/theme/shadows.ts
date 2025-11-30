@@ -63,6 +63,18 @@ export const SHADOWS = {
   } as ViewStyle,
 
   /**
+   * Soft extra large shadow (elevation 10)
+   * Used for: Answer grids
+   */
+  softXl: {
+    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 10,
+  } as ViewStyle,
+
+  /**
    * Extra large shadow (elevation 10)
    * Used for: Bottom sheets, modals
    */
