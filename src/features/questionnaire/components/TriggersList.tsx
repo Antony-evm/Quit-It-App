@@ -1,45 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { AppCard, StatusMessage } from '@/shared/components/ui';
-import { useTriggers } from '@/features/questionnaire/hooks/useTriggers';
-import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSmokingTriggersQuestion';
 import { QuestionnaireQuestion } from '@/features/questionnaire/components/QuestionnaireQuestion';
-import type { SelectedAnswerOption } from '@/features/questionnaire/types';
+import { useTriggersData } from '@/features/questionnaire/hooks/useTriggersData';
 
 export const TriggersList: React.FC = () => {
-  const {
-    triggers,
-    isLoading: isTriggersLoading,
-    error: triggersError,
-  } = useTriggers();
-  const {
-    question,
-    isLoading: isQuestionLoading,
-    error: questionError,
-  } = useSmokingTriggersQuestion();
-
-  const initialSelection = useMemo(() => {
-    if (!question || !triggers) {
-      return [];
-    }
-
-    const selection: SelectedAnswerOption[] = [];
-    triggers.forEach(triggerValue => {
-      const option = question.options.find(opt => opt.value === triggerValue);
-      if (option) {
-        selection.push({
-          optionId: option.id,
-          value: option.value,
-          answerType: question.answerType,
-          nextVariationId: option.nextVariationId,
-        });
-      }
-    });
-
-    return selection;
-  }, [question, triggers]);
-
-  const isLoading = isTriggersLoading || isQuestionLoading;
-  const error = triggersError || questionError;
+  const { question, initialSelection, isLoading, error } = useTriggersData();
 
   if (isLoading) {
     return (

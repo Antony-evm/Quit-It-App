@@ -25,6 +25,17 @@ export const formatDisplayDate = (date: Date) => {
   });
 };
 
+/**
+ * Formats a date for plan display (e.g., "November 30, 2025")
+ */
+export const formatPlanDate = (date: Date): string => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
 export const getRelativeDateInfo = (date: Date) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);

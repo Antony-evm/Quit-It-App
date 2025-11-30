@@ -9,7 +9,7 @@ export * from './components/QuestionnaireTemplate';
 export * from './components/QuestionnaireProgressBar';
 export * from './components/QuestionnaireQuestion';
 export * from './components/QuestionnaireReview';
-export * from './components/QuestionnaireAccountProvider';
+export * from './providers/QuestionnaireAccountProvider';
 export * from './components/QuittingPlanCard';
 export * from './components/QuittingPlanDetails';
 export * from './components/TriggersList';

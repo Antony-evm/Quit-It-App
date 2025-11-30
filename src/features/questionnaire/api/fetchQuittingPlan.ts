@@ -1,5 +1,5 @@
 import { authenticatedGet, authenticatedPost } from '@/shared/api/apiConfig';
-import type { QuittingPlanResponse, QuittingPlan } from '../types/plan';
+import type { QuittingPlanResponse, QuittingPlan } from '../types';
 import { QUESTIONNAIRE_PLAN_ENDPOINT } from './endpoints';
 
 export interface FetchQuittingPlanResponse {

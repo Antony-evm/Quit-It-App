@@ -1,64 +1,15 @@
-import React, { useMemo } from 'react';
-import { StyleSheet } from 'react-native';
-import { AppText, AppCard, Box, StatusMessage } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
-import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
-import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
+import React from 'react';
+import { AppCard, StatusMessage } from '@/shared/components/ui';
 import { FrequencyGrid } from '@/features/questionnaire/components/FrequencyGrid';
-import type { SelectedAnswerSubOption } from '@/features/questionnaire/types';
+import { useFrequencyData } from '@/features/questionnaire/hooks/useFrequencyData';
 
-interface FrequencyDataProps {
-  style?: any;
-}
-
-export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
-  const {
-    frequency,
-    isLoading: isFrequencyLoading,
-    error: frequencyError,
-  } = useFrequency();
-  const {
-    question,
-    isLoading: isQuestionLoading,
-    error: questionError,
-  } = useSmokingFrequencyQuestion();
-
-  const initialSubSelection = useMemo(() => {
-    if (!question || !frequency) {
-      return [];
-    }
-
-    const selection: SelectedAnswerSubOption[] = [];
-
-    question.options.forEach(option => {
-      const frequencyValue = frequency[option.value];
-
-      if (frequencyValue) {
-        const subOption = question.subOptions.find(
-          sub => sub.value === frequencyValue,
-        );
-
-        if (subOption) {
-          selection.push({
-            optionId: subOption.id,
-            value: subOption.value,
-            answerType: question.subAnswerType || 'multiple_choice',
-            combination: subOption.combination,
-            mainOptionId: option.id,
-          });
-        }
-      }
-    });
-
-    return selection;
-  }, [question, frequency]);
-
-  const isLoading = isFrequencyLoading || isQuestionLoading;
-  const error = frequencyError || questionError;
+export const FrequencyData: React.FC = () => {
+  const { question, initialSubSelection, isLoading, error } =
+    useFrequencyData();
 
   if (isLoading) {
     return (
-      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero">
         <StatusMessage type="loading" message="Loading frequency data..." />
       </AppCard>
     );
@@ -66,7 +17,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
 
   if (error) {
     return (
-      <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+      <AppCard variant="filled" p="zero">
         <StatusMessage type="error" message="Unable to load frequency data" />
       </AppCard>
     );
@@ -77,7 +28,7 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
   }
 
   return (
-    <AppCard variant="filled" p="zero" style={[styles.card, style]}>
+    <AppCard variant="filled" p="zero">
       <FrequencyGrid
         options={question.options}
         subOptions={question.subOptions}
@@ -89,9 +40,3 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
     </AppCard>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    borderWidth: 0,
-  },
-});

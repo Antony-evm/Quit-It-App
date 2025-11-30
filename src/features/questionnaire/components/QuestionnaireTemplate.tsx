@@ -2,9 +2,9 @@ import React, { PropsWithChildren } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { AppButton, Box, ScreenHeader } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { SPACING } from '@/shared/theme';
 import { QuestionnaireProgressBar } from './QuestionnaireProgressBar';
-import { QuestionnaireSkeleton, SkeletonItem } from './QuestionnaireSkeleton';
+import { SkeletonItem } from './QuestionnaireSkeleton';
 
 type QuestionnaireTemplateProps = PropsWithChildren<{
   title: string;
@@ -63,7 +63,7 @@ export const QuestionnaireTemplate = ({
               <ScreenHeader title={title} subtitle={subtitle} />
             </Box>
           ) : null}
-          <Box>{isLoading ? <QuestionnaireSkeleton /> : children}</Box>
+          <Box>{children}</Box>
         </Box>
       </ScrollView>
       {primaryActionLabel ? (

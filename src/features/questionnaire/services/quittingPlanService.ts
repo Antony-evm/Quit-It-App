@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { QuittingPlan } from '../types/plan';
+import { QuittingPlan } from '../types';
 import { fetchQuittingPlan } from '../api/fetchQuittingPlan';
 
 export class QuittingPlanService {

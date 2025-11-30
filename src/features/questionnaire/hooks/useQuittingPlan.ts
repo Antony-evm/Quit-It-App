@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { QuittingPlan } from '../types/plan';
+import { QuittingPlan } from '../types';
 import { QuittingPlanService } from '../services/quittingPlanService';
 import { useBackendUserIdSafe } from '@/shared/hooks';
 

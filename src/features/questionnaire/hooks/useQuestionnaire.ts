@@ -15,10 +15,10 @@ import { submitQuestionAnswer } from '../api/submitAnswer';
 import { completeQuestionnaire } from '../api/completeQuestionnaire';
 import { generateQuittingPlan } from '../api/fetchQuittingPlan';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
-import { questionnaireStorage } from '../data/questionnaireStorage';
+import { questionnaireStorage } from '../services/questionnaireStorage';
 import { useBackendUserIdSafe } from '@/shared/hooks';
 import { UserStatusService } from '@/shared/services/userStatusService';
-import type { QuittingPlan } from '../types/plan';
+import type { QuittingPlan } from '../types';
 
 type UseQuestionnaireOptions = {
   userId?: number;
