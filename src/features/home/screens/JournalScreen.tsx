@@ -1,11 +1,5 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { ScrollView } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 
 import {
@@ -82,7 +76,7 @@ export const JournalScreen = () => {
       <ScreenHeader
         title="Your Quit Journal"
         subtitle="A clear view of how far you've come."
-        marginBottom={SPACING.sm}
+        marginBottom={SPACING.md}
       />
     ),
     [],
@@ -93,7 +87,6 @@ export const JournalScreen = () => {
       <TrackingRecordsList
         onRecordPress={handleRecordPress}
         ListHeaderComponent={ListHeaderComponent}
-        contentContainerStyle={styles.scrollContent}
       />
 
       <DraggableModal
@@ -106,12 +99,8 @@ export const JournalScreen = () => {
             ref={editDrawerScrollRef}
             keyboardShouldPersistTaps="handled"
           >
-            <Box mb="xl" mt="md" px="sm">
-              <AppText
-                variant="body"
-                tone="primary"
-                style={styles.modalDescription}
-              >
+            <Box>
+              <AppText>
                 Reflect, reset, and track your journey. Every entry is a step
                 forward.
               </AppText>
@@ -128,18 +117,12 @@ export const JournalScreen = () => {
             )}
           </ScrollView>
           {selectedRecord && (
-            <Box
-              p="md"
-              pb="xs"
-              bg="backgroundMuted"
-              alignItems="center"
-              style={styles.deleteButtonContainer}
-            >
+            <Box variant="buttonSeparator">
               <AppPressable
                 onPress={() => editCardRef.current?.delete()}
-                style={styles.deleteButton}
+                variant="delete"
               >
-                <AppText style={styles.deleteButtonText}>Delete</AppText>
+                <AppText tone="error">Delete</AppText>
               </AppPressable>
             </Box>
           )}
@@ -148,35 +131,3 @@ export const JournalScreen = () => {
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    marginTop: DEVICE_HEIGHT * 0.05,
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  modalDescription: {
-    textAlign: 'center',
-    lineHeight: 26,
-    fontSize: 18,
-  },
-  deleteButtonContainer: {
-    borderTopWidth: 1,
-    borderTopColor: COLOR_PALETTE.borderDefault,
-  },
-  deleteButton: {
-    backgroundColor: COLOR_PALETTE.backgroundDark,
-    borderWidth: 0,
-    borderRadius: BORDER_RADIUS.medium,
-    width: '50%',
-    paddingVertical: SPACING.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  deleteButtonText: {
-    color: COLOR_PALETTE.systemError,
-    fontWeight: '600',
-    fontSize: 18,
-  },
-});

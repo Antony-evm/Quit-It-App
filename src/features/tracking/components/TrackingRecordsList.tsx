@@ -1,7 +1,6 @@
 import React, { useCallback } from 'react';
 import {
   StyleSheet,
-  View,
   FlatList,
   ListRenderItem,
   StyleProp,
@@ -97,7 +96,7 @@ export const TrackingRecordsList = React.memo(
 
       if (hasNextPage && trackingRecords && trackingRecords.length > 0) {
         return (
-          <Box>
+          <Box alignItems="center" py="md">
             <AppText
               style={{ textDecorationLine: 'underline' }}
               onPress={handleLoadMore}

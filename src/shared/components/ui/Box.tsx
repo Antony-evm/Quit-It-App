@@ -49,6 +49,13 @@ const BOX_VARIANTS = {
   separator: {
     height: SPACING.md,
   },
+  buttonSeparator: {
+    borderTopWidth: BORDER_WIDTH.sm,
+    padding: SPACING.sm,
+    paddingBottom: SPACING.xs,
+    alignItems: 'center',
+    borderTopColor: COLOR_PALETTE.borderDefault,
+  },
 } satisfies Record<string, ViewStyle>;
 
 export type BoxVariant = keyof typeof BOX_VARIANTS;

@@ -74,6 +74,7 @@ const variantToStyles: Record<
     container: {
       backgroundColor: COLOR_PALETTE.systemError,
       borderWidth: BORDER_WIDTH.none,
+      width: '50%',
     },
     textColor: COLOR_PALETTE.textSecondary,
   },

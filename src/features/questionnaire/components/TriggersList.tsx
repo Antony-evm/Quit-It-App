@@ -5,11 +5,7 @@ import { useSmokingTriggersQuestion } from '@/features/questionnaire/hooks/useSm
 import { QuestionnaireQuestion } from '@/features/questionnaire/components/QuestionnaireQuestion';
 import type { SelectedAnswerOption } from '@/features/questionnaire/types';
 
-interface TriggersListProps {
-  style?: any;
-}
-
-export const TriggersList: React.FC<TriggersListProps> = ({ style }) => {
+export const TriggersList: React.FC = () => {
   const {
     triggers,
     isLoading: isTriggersLoading,

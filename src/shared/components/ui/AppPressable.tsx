@@ -34,7 +34,8 @@ type PressableVariant =
   | 'backArrow'
   | 'answer'
   | 'answerGrid'
-  | 'cardStrip';
+  | 'cardStrip'
+  | 'delete';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
@@ -138,6 +139,14 @@ const variantStyles = StyleSheet.create({
     borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.softXl,
+  },
+  delete: {
+    backgroundColor: COLOR_PALETTE.backgroundDark,
+    borderRadius: BORDER_RADIUS.medium,
+    paddingVertical: SPACING.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '50%',
   },
 });
 
