@@ -99,7 +99,7 @@ export const AppTag = ({
       px="md"
       py={size === 'small' ? 'xs' : 'xs'}
       borderRadius={borderRadius}
-      style={[{ backgroundColor }, style]}
+      style={[{ backgroundColor }, style, { alignSelf: 'flex-start' }]}
     >
       {content}
     </Box>

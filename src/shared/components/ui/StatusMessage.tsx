@@ -7,47 +7,41 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { COLOR_PALETTE, TypographyVariant } from '@/shared/theme';
 
 export interface StatusMessageProps {
   message: string;
   type?: 'loading' | 'error' | 'info';
   style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
   showSpinner?: boolean;
+  variant?: TypographyVariant;
 }
 
 export const StatusMessage: React.FC<StatusMessageProps> = ({
   message,
   type = 'info',
   style,
-  textStyle,
   showSpinner = false,
+  variant = 'body',
 }) => {
-  const getBaseTextStyle = () => {
-    switch (type) {
-      case 'loading':
-        return styles.loadingText;
-      case 'error':
-        return styles.errorText;
-      default:
-        return styles.defaultText;
-    }
-  };
+  const config = {
+    loading: {
+      tone: 'primary',
+    },
+    error: {
+      tone: 'error',
+    },
+    info: {
+      tone: 'primary',
+    },
+  } as const;
 
-  const getTone = () => {
-    switch (type) {
-      case 'loading':
-        return 'secondary';
-      default:
-        return 'primary';
-    }
-  };
+  const { tone } = config[type];
 
   return (
     <Box gap="md" style={[styles.container, style]}>
-      {showSpinner && <ActivityIndicator color={COLOR_PALETTE.accentPrimary} />}
-      <AppText tone={getTone()} style={[getBaseTextStyle(), textStyle]}>
+      {showSpinner && <ActivityIndicator color={COLOR_PALETTE.textPrimary} />}
+      <AppText variant={variant} tone={tone} style={[styles.baseText]}>
         {message}
       </AppText>
     </Box>
@@ -60,15 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
   },
-  loadingText: {
-    textAlign: 'center',
-    fontStyle: 'italic',
-  },
-  errorText: {
-    textAlign: 'center',
-    color: COLOR_PALETTE.systemError,
-  },
-  defaultText: {
+  baseText: {
     textAlign: 'center',
   },
 });

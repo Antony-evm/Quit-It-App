@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 
 import { AppText, Box, AppPressable, AppTag } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, hexToRgba } from '@/shared/theme';
+import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 
@@ -38,7 +37,6 @@ export const TrackingRecordCard = React.memo(
       ? hexToRgba(COLOR_PALETTE.cigarette, 0.1)
       : hexToRgba(COLOR_PALETTE.borderDefault, 0.1);
 
-    // Date formatting logic
     const date = new Date(record.event_at);
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -71,42 +69,27 @@ export const TrackingRecordCard = React.memo(
 
     return (
       <AppPressable
-        variant="card"
+        variant="cardStrip"
+        style={{ borderLeftColor: accentColor }}
         onPress={() => onPress?.(record)}
-        style={[
-          styles.card,
-          { borderLeftColor: accentColor, borderLeftWidth: 4 },
-        ]}
       >
-        <Box
-          flexDirection="row"
-          alignItems="flex-start"
-          justifyContent="space-between"
-        >
+        <Box variant="noteHeader">
           <AppTag
             label={
               trackingType?.displayName || `Type ${record.tracking_type_id}`
             }
             color={badgeBackgroundColor}
             size="small"
-            style={styles.badgeSelf}
           />
           <Box alignItems="flex-end" gap="xs">
             <AppText variant="subcaption">{timeLabel}</AppText>
-            <AppText variant="gridArea" tone="muted">
+            <AppText variant="subcaption" tone="muted">
               {dateLabel}
             </AppText>
           </Box>
         </Box>
 
-        <Box
-          px="md"
-          py="sm"
-          mt="md"
-          bg="backgroundMuted"
-          borderRadius="medium"
-          style={styles.noteSection}
-        >
+        <Box variant="note">
           {record.note ? (
             <AppText>{record.note}</AppText>
           ) : (
@@ -117,18 +100,3 @@ export const TrackingRecordCard = React.memo(
     );
   },
 );
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: SPACING.md,
-    overflow: 'hidden',
-  },
-  badgeSelf: {
-    alignSelf: 'flex-start',
-  },
-  noteSection: {
-    borderTopWidth: 1,
-    borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
-  },
-});

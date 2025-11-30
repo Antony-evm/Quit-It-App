@@ -89,7 +89,7 @@ export const JournalScreen = () => {
   );
 
   return (
-    <Box flex={1}>
+    <Box variant="default">
       <TrackingRecordsList
         onRecordPress={handleRecordPress}
         ListHeaderComponent={ListHeaderComponent}
@@ -101,10 +101,9 @@ export const JournalScreen = () => {
         onClose={() => setIsEditModalVisible(false)}
         headerContent={headerContent}
       >
-        <Box flex={1} justifyContent="space-between">
+        <Box variant="default">
           <ScrollView
             ref={editDrawerScrollRef}
-            contentContainerStyle={styles.modalContent}
             keyboardShouldPersistTaps="handled"
           >
             <Box mb="xl" mt="md" px="sm">
@@ -156,9 +155,6 @@ const styles = StyleSheet.create({
     marginTop: DEVICE_HEIGHT * 0.05,
     paddingHorizontal: SPACING.lg,
     paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  modalContent: {
-    padding: SPACING.md,
   },
   modalDescription: {
     textAlign: 'center',

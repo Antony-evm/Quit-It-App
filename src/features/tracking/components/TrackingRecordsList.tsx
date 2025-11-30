@@ -8,7 +8,7 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import { AppText, StatusMessage } from '@/shared/components/ui';
+import { AppText, Box, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -42,11 +42,14 @@ export const TrackingRecordsList = React.memo(
       }
     };
 
+    const renderItemSeparator = useCallback(
+      () => <Box variant="separator" />,
+      [],
+    );
+
     const renderItem: ListRenderItem<TrackingRecordApiResponse> = useCallback(
       ({ item }) => (
-        <View style={styles.itemContainer}>
-          <TrackingRecordCard record={item} onPress={onRecordPress} />
-        </View>
+        <TrackingRecordCard record={item} onPress={onRecordPress} />
       ),
       [onRecordPress],
     );
@@ -57,7 +60,6 @@ export const TrackingRecordsList = React.memo(
           <StatusMessage
             type="loading"
             message="Bringing your notes together..."
-            style={styles.container}
           />
         );
       }
@@ -69,17 +71,16 @@ export const TrackingRecordsList = React.memo(
             message={`Failed to load tracking records: ${
               error?.message || 'Unknown error'
             }`}
-            style={styles.container}
           />
         );
       }
 
       return (
-        <View style={styles.container}>
-          <AppText variant="body" tone="primary" style={styles.emptyText}>
+        <Box>
+          <AppText>
             Your notes help you understand your habits. Start with just one.
           </AppText>
-        </View>
+        </Box>
       );
     }, [isLoading, isError, error]);
 
@@ -96,15 +97,14 @@ export const TrackingRecordsList = React.memo(
 
       if (hasNextPage && trackingRecords && trackingRecords.length > 0) {
         return (
-          <View style={styles.loadMoreContainer}>
+          <Box>
             <AppText
-              variant="body"
-              style={styles.loadMoreButton}
+              style={{ textDecorationLine: 'underline' }}
               onPress={handleLoadMore}
             >
               Load More
             </AppText>
-          </View>
+          </Box>
         );
       }
 
@@ -115,6 +115,7 @@ export const TrackingRecordsList = React.memo(
       <FlatList
         data={trackingRecords || []}
         renderItem={renderItem}
+        ItemSeparatorComponent={renderItemSeparator}
         keyExtractor={item => String(item.record_id)}
         ListHeaderComponent={ListHeaderComponent}
         ListEmptyComponent={ListEmptyComponent}
@@ -130,31 +131,9 @@ const styles = StyleSheet.create({
   container: {
     marginTop: SPACING.lg,
   },
-  itemContainer: {
-    marginBottom: SPACING.xs,
-  },
   sectionTitle: {
     color: COLOR_PALETTE.textPrimary,
     marginBottom: SPACING.md,
     fontWeight: '600',
-  },
-  recordsList: {
-    paddingBottom: SPACING.lg,
-    gap: SPACING.xs,
-  },
-  emptyText: {
-    textAlign: 'center',
-    paddingVertical: SPACING.xl,
-    paddingHorizontal: SPACING.lg,
-  },
-  loadMoreContainer: {
-    alignItems: 'center',
-    paddingVertical: SPACING.md,
-  },
-  loadMoreButton: {
-    color: COLOR_PALETTE.accentPrimary,
-    textDecorationLine: 'underline',
-    fontSize: 16,
-    fontWeight: '500',
   },
 });

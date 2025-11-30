@@ -33,7 +33,8 @@ type PressableVariant =
   | 'toast'
   | 'backArrow'
   | 'answer'
-  | 'answerGrid';
+  | 'answerGrid'
+  | 'cardStrip';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
@@ -84,6 +85,16 @@ const variantStyles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
     ...SHADOWS.softLg,
     elevation: 2,
+  },
+  cardStrip: {
+    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.xl,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: COLOR_PALETTE.borderDefault,
+    ...SHADOWS.softLg,
+    elevation: 2,
+    borderLeftWidth: BORDER_WIDTH.lg,
   },
   toast: {
     paddingHorizontal: SPACING.lg,

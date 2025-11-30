@@ -13,6 +13,7 @@ import {
   COLOR_PALETTE,
   ColorToken,
   BORDER_RADIUS,
+  BORDER_WIDTH,
   BorderRadiusToken,
 } from '../../theme';
 
@@ -29,6 +30,24 @@ const BOX_VARIANTS = {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.sm,
+  },
+  noteHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  note: {
+    paddingHorizontal: SPACING.md,
+    paddingVertical: SPACING.sm,
+    marginTop: SPACING.md,
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: BORDER_WIDTH.sm,
+    borderTopWidth: BORDER_WIDTH.sm,
+    borderColor: COLOR_PALETTE.borderDefault,
+  },
+  separator: {
+    height: SPACING.md,
   },
 } satisfies Record<string, ViewStyle>;
 

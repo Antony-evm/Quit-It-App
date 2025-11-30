@@ -2,13 +2,7 @@ import React from 'react';
 import { AppText, StatusMessage } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 
-interface QuittingPlanCardProps {
-  style?: any;
-}
-
-export const QuittingPlanCard: React.FC<QuittingPlanCardProps> = ({
-  style,
-}) => {
+export const QuittingPlanCard: React.FC = () => {
   const { plan, isLoading, error } = useQuittingPlan();
 
   if (isLoading) {

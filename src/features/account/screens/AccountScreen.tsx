@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
+import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
 import { TriggersList } from '@/features/questionnaire/components/TriggersList';
@@ -52,9 +52,8 @@ export const AccountScreen = () => {
   };
 
   return (
-    <Box flex={1}>
+    <Box variant="default">
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl
             tintColor={COLOR_PALETTE.textPrimary}
@@ -101,11 +100,3 @@ export const AccountScreen = () => {
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  scrollContent: {
-    marginTop: SPACING.xxl,
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-});
