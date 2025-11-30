@@ -10,14 +10,16 @@ import {
 import {
   SPACING,
   SpacingToken,
-  COLOR_PALETTE,
-  ColorToken,
   BORDER_RADIUS,
   BORDER_WIDTH,
   BorderRadiusToken,
   SHADOWS,
   FOOTER_LAYOUT,
   ICON_SIZES,
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
+  BackgroundToken,
 } from '../../theme';
 
 export const BOX_VARIANTS = {
@@ -52,7 +54,7 @@ export const BOX_VARIANTS = {
   },
   toggleGroup: {
     flexDirection: 'row',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     borderRadius: BORDER_RADIUS.small,
     padding: SPACING.xs,
   },
@@ -60,11 +62,11 @@ export const BOX_VARIANTS = {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     marginTop: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     borderRadius: BORDER_RADIUS.medium,
     borderWidth: BORDER_WIDTH.sm,
     borderTopWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
   },
   separator: {
     height: SPACING.md,
@@ -74,43 +76,43 @@ export const BOX_VARIANTS = {
     padding: SPACING.sm,
     paddingBottom: SPACING.xs,
     alignItems: 'center',
-    borderTopColor: COLOR_PALETTE.borderDefault,
+    borderTopColor: SYSTEM.border,
   },
   statCard: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.md,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     borderRadius: BORDER_RADIUS.medium,
     borderWidth: BORDER_WIDTH.md,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
   },
   authHeader: {
     alignItems: 'center',
     justifyContent: 'flex-end',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     height: '15%',
   },
   welcomeHeader: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     paddingHorizontal: SPACING.md,
     paddingBottom: SPACING.md,
     borderBottomWidth: BORDER_WIDTH.lg,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
     ...SHADOWS.lg,
   },
   highlightCard: {
     marginTop: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.small,
     borderWidth: BORDER_WIDTH.md,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     ...SHADOWS.xl,
   },
   valuePill: {
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.lg,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     alignItems: 'center',
     gap: SPACING.xs,
     borderRadius: BORDER_RADIUS.none,
@@ -123,7 +125,7 @@ export const BOX_VARIANTS = {
     paddingHorizontal: SPACING.sm,
     gap: SPACING.md,
     borderBottomWidth: BORDER_WIDTH.sm,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
   },
   gridContainer: {
     borderRadius: BORDER_RADIUS.small,
@@ -147,22 +149,22 @@ export const BOX_VARIANTS = {
   },
   progressTrack: {
     height: 6,
-    backgroundColor: COLOR_PALETTE.borderDefault,
+    backgroundColor: SYSTEM.border,
     borderRadius: 3,
     overflow: 'hidden',
     width: '100%',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: COLOR_PALETTE.textPrimary,
+    backgroundColor: TEXT.primary,
     borderRadius: 3,
   },
   drawerTitle: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     paddingVertical: SPACING.md,
     alignItems: 'center',
     borderBottomWidth: BORDER_WIDTH.sm,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
     ...SHADOWS.md,
     zIndex: 5,
   },
@@ -172,10 +174,10 @@ export const BOX_VARIANTS = {
   },
   footerBackground: {
     flexDirection: 'row',
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     borderRadius: FOOTER_LAYOUT.CONTAINER_BORDER_RADIUS,
     borderWidth: FOOTER_LAYOUT.CONTAINER_BORDER_WIDTH,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     paddingHorizontal: SPACING.xs,
     paddingVertical: SPACING.xs,
     alignItems: 'center',
@@ -200,9 +202,9 @@ export const BOX_VARIANTS = {
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: FOOTER_LAYOUT.FAB_BORDER_WIDTH,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     overflow: 'hidden',
-    backgroundColor: COLOR_PALETTE.brandPrimary,
+    backgroundColor: SYSTEM.brand,
     ...SHADOWS.xxl,
   },
   fabGradient: {
@@ -225,7 +227,7 @@ export const BOX_VARIANTS = {
     paddingHorizontal: SPACING.sm,
   },
   footerWrapper: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
     paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },
@@ -272,7 +274,7 @@ export type BoxProps = PropsWithChildren<
     /** Column gap between children */
     columnGap?: SpacingToken;
     /** Background color from theme palette */
-    bg?: ColorToken;
+    bg?: BackgroundToken;
     /** Border radius from theme tokens */
     borderRadius?: BorderRadiusToken;
     /** Flex value */
@@ -350,7 +352,7 @@ export const Box = ({
     ...(rowGap !== undefined && { rowGap: SPACING[rowGap] }),
     ...(columnGap !== undefined && { columnGap: SPACING[columnGap] }),
     // Background
-    ...(bg !== undefined && { backgroundColor: COLOR_PALETTE[bg] }),
+    ...(bg !== undefined && { backgroundColor: BACKGROUND[bg] }),
     // Border radius
     ...(borderRadius !== undefined && {
       borderRadius: BORDER_RADIUS[borderRadius],

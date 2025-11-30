@@ -9,7 +9,7 @@ import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutat
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { TAGS, SYSTEM } from '@/shared/theme';
 import ScrollManager from '@/utils/scrollManager';
 import type {
   UseNotesCardControllerOptions,
@@ -103,7 +103,7 @@ export const useNotesCardController = ({
 
   // Determine accent color based on tracking type
   const accentColor = useMemo(() => {
-    if (!selectedTrackingType) return COLOR_PALETTE.borderDefault;
+    if (!selectedTrackingType) return SYSTEM.border;
 
     const displayNameLower = selectedTrackingType.displayName.toLowerCase();
     const isCraving = displayNameLower.includes('craving');
@@ -111,9 +111,9 @@ export const useNotesCardController = ({
       displayNameLower.includes('smoke') ||
       displayNameLower.includes('cigarette');
 
-    if (isCraving) return COLOR_PALETTE.craving;
-    if (isSmoke) return COLOR_PALETTE.cigarette;
-    return COLOR_PALETTE.borderDefault;
+    if (isCraving) return TAGS.craving;
+    if (isSmoke) return TAGS.cigarette;
+    return SYSTEM.border;
   }, [selectedTrackingType]);
 
   // Handlers

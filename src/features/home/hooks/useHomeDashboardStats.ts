@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useCravingAnalytics, useSmokingAnalytics } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
-import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
+import { TAGS, hexToRgba } from '@/shared/theme';
 import { HomeStat } from '../components/HomeStatsRow';
 
 export const useHomeDashboardStats = () => {
@@ -30,18 +30,18 @@ export const useHomeDashboardStats = () => {
         id: 'cravings',
         label: 'Cravings',
         value: cravingAnalytics?.total_cravings?.toString() || '0',
-        accentColor: COLOR_PALETTE.craving,
+        accentColor: TAGS.craving,
         tagLabel: 'Cravings',
-        tagBackgroundColor: hexToRgba(COLOR_PALETTE.craving, 0.1),
+        tagBackgroundColor: hexToRgba(TAGS.craving, 0.1),
         bottomLabel: 'Resisted',
       },
       {
         id: 'skipped-cigarettes',
         label: 'Skipped Cigarettes',
         value: smokingAnalytics?.skipped_smokes?.toString() || '0',
-        accentColor: COLOR_PALETTE.cigarette,
+        accentColor: TAGS.cigarette,
         tagLabel: 'Smokes',
-        tagBackgroundColor: hexToRgba(COLOR_PALETTE.cigarette, 0.1),
+        tagBackgroundColor: hexToRgba(TAGS.cigarette, 0.1),
         bottomLabel: 'Skipped',
       },
       {
@@ -50,9 +50,9 @@ export const useHomeDashboardStats = () => {
         value: smokingAnalytics?.savings
           ? `$${smokingAnalytics.savings.toFixed(2)}`
           : '$0.00',
-        accentColor: COLOR_PALETTE.wealth,
+        accentColor: TAGS.wealth,
         tagLabel: 'Money',
-        tagBackgroundColor: hexToRgba(COLOR_PALETTE.wealth, 0.1),
+        tagBackgroundColor: hexToRgba(TAGS.wealth, 0.1),
         bottomLabel: 'Saved',
       },
     ],

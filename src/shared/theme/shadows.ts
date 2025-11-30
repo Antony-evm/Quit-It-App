@@ -1,5 +1,5 @@
 import { ViewStyle } from 'react-native';
-import { COLOR_PALETTE } from './colors';
+import { SYSTEM } from './colors';
 
 /**
  * Shared shadow styles for consistent elevation and depth across the app.
@@ -19,7 +19,7 @@ export const SHADOWS = {
    * Used for: Cards, small elements
    */
   sm: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -31,7 +31,7 @@ export const SHADOWS = {
    * Used for: Dropdowns, elevated surfaces, title containers
    */
   md: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 2,
@@ -43,7 +43,7 @@ export const SHADOWS = {
    * Used for: Navigation bars, footers
    */
   lg: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
@@ -55,7 +55,7 @@ export const SHADOWS = {
    * Used for: Cards with soft depth
    */
   softLg: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 12,
@@ -67,7 +67,7 @@ export const SHADOWS = {
    * Used for: Answer grids
    */
   softXl: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -79,7 +79,7 @@ export const SHADOWS = {
    * Used for: Bottom sheets, modals
    */
   xl: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
@@ -91,7 +91,7 @@ export const SHADOWS = {
    * Used for: Floating Action Buttons (FAB), high emphasis elements
    */
   xxl: {
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.5,
     shadowRadius: 6,

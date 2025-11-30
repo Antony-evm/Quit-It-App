@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { RootStackScreenProps } from '@/types/navigation';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { BACKGROUND, TEXT, SPACING } from '@/shared/theme';
 import { AppButton, AppText, Box, ScreenHeader } from '@/shared/components/ui';
 import { usePaywallLogic } from '../hooks/usePaywallLogic';
 
@@ -71,10 +71,10 @@ export const PaywallScreen = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
   },
   featureText: {
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
   },
   disclaimer: {
     textAlign: 'center',

@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, INPUT_MIN_HEIGHT } from '@/shared/theme';
+import { TEXT, SYSTEM, INPUT_MIN_HEIGHT } from '@/shared/theme';
 
 type NumericRangeFieldProps = {
   minimum: number;
@@ -39,9 +39,9 @@ export const NumericRangeField = ({
         minimumValue={minimum}
         maximumValue={maximum}
         step={1}
-        minimumTrackTintColor={COLOR_PALETTE.textPrimary}
-        maximumTrackTintColor={COLOR_PALETTE.borderDefault}
-        thumbTintColor={COLOR_PALETTE.textPrimary}
+        minimumTrackTintColor={TEXT.primary}
+        maximumTrackTintColor={SYSTEM.border}
+        thumbTintColor={TEXT.primary}
         value={displayValue}
         onValueChange={handleValueChange}
       />

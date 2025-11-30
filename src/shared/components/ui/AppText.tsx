@@ -1,7 +1,13 @@
 import React, { PropsWithChildren } from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
 
-import { COLOR_PALETTE, TYPOGRAPHY, TypographyVariant } from '../../theme';
+import {
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
+  TYPOGRAPHY,
+  TypographyVariant,
+} from '../../theme';
 
 type TextTone =
   | 'primary'
@@ -24,13 +30,13 @@ export type AppTextProps = PropsWithChildren<
 >;
 
 const toneToColorMap: Record<TextTone, string> = {
-  primary: COLOR_PALETTE.textPrimary,
-  secondary: COLOR_PALETTE.textSecondary,
-  inverse: COLOR_PALETTE.backgroundPrimary,
-  muted: COLOR_PALETTE.textMuted,
-  success: COLOR_PALETTE.systemSuccess,
-  error: COLOR_PALETTE.systemError,
-  brand: COLOR_PALETTE.brandPrimary,
+  primary: TEXT.primary,
+  secondary: TEXT.secondary,
+  inverse: BACKGROUND.primary,
+  muted: TEXT.muted,
+  success: SYSTEM.success,
+  error: SYSTEM.error,
+  brand: SYSTEM.brand,
 };
 
 export const AppText = ({
@@ -45,7 +51,7 @@ export const AppText = ({
   ...textProps
 }: AppTextProps) => {
   const variantStyle = TYPOGRAPHY[variant] ?? TYPOGRAPHY.body;
-  const toneColor = toneToColorMap[tone] ?? COLOR_PALETTE.textPrimary;
+  const toneColor = toneToColorMap[tone] ?? TEXT.primary;
   const linkStyle = link ? { textDecorationLine: 'underline' as const } : {};
   const boldStyle = bold ? { fontWeight: '600' as const } : {};
   const centeredStyle = centered ? { textAlign: 'center' as const } : {};

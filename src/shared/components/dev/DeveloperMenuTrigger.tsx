@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
-import { COLOR_PALETTE } from '../../theme';
+import { SYSTEM } from '../../theme';
 import DeveloperMenu from './DeveloperMenu';
 
 const DeveloperMenuTrigger: React.FC = () => {
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 0, 0, 0.1)', // Temporary red background
   },
   trigger: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
+    backgroundColor: SYSTEM.accentMuted,
     paddingHorizontal: 12, // Increased padding
     paddingVertical: 8, // Increased padding
     borderRadius: 8,

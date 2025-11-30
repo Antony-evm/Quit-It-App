@@ -2,7 +2,9 @@ import React from 'react';
 import { StyleSheet, TextInput, TextInputProps } from 'react-native';
 
 import {
-  COLOR_PALETTE,
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
   SPACING,
   TYPOGRAPHY,
   BORDER_WIDTH,
@@ -32,7 +34,7 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
         hasError && styles.inputError,
         style,
       ]}
-      placeholderTextColor={COLOR_PALETTE.textMuted}
+      placeholderTextColor={TEXT.muted}
       {...textInputProps}
     />
   ),
@@ -42,17 +44,17 @@ const styles = StyleSheet.create({
   base: {
     ...TYPOGRAPHY.body,
     borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     borderRadius: BORDER_RADIUS.medium,
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
   },
   primary: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
   },
   secondary: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     minHeight: DEVICE_HEIGHT * 0.15,
   },
   ghost: {
@@ -60,6 +62,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   inputError: {
-    borderColor: COLOR_PALETTE.accentPrimary,
+    borderColor: SYSTEM.accentPrimary,
   },
 });

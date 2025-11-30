@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StytchProvider, StytchClient } from '@stytch/react-native';
 import Config from 'react-native-config';
 
-import { COLOR_PALETTE } from '@/shared/theme';
+import { BACKGROUND } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
 import { useTrackingTypesPrefetch } from '@/features/tracking';
@@ -51,7 +51,7 @@ function AppContent(): React.ReactElement {
           <SafeAreaProvider>
             <StatusBar
               barStyle="light-content"
-              backgroundColor={COLOR_PALETTE.backgroundMuted}
+              backgroundColor={BACKGROUND.muted}
             />
             <AppNavigator />
             <ToastContainer />

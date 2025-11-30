@@ -6,16 +6,10 @@ export const TEXT = Object.freeze(palette.text);
 export const TAGS = Object.freeze(palette.tags);
 export const SYSTEM = Object.freeze(palette.system);
 
-// Legacy flat export for backward compatibility
-export const COLOR_PALETTE = Object.freeze(palette.tokens);
-
-export type ColorToken = keyof typeof COLOR_PALETTE;
 export type BackgroundToken = keyof typeof BACKGROUND;
 export type TextToken = keyof typeof TEXT;
 export type TagToken = keyof typeof TAGS;
 export type SystemToken = keyof typeof SYSTEM;
-
-export const getColor = (token: ColorToken) => COLOR_PALETTE[token];
 
 export const hexToRgba = (hex: string, opacity: number) => {
   const r = parseInt(hex.slice(1, 3), 16);

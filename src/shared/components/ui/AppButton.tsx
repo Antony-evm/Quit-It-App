@@ -10,7 +10,9 @@ import {
 import { AppText } from './AppText';
 import { AppPressable } from './AppPressable';
 import {
-  COLOR_PALETTE,
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
   SPACING,
   BORDER_RADIUS,
   BORDER_WIDTH,
@@ -43,47 +45,47 @@ const variantToStyles: Record<
 > = {
   primary: {
     container: {
-      backgroundColor: COLOR_PALETTE.backgroundCream,
+      backgroundColor: BACKGROUND.cream,
       borderWidth: BORDER_WIDTH.none,
     },
-    textColor: COLOR_PALETTE.textSecondary,
+    textColor: TEXT.secondary,
   },
   secondary: {
     container: {
-      backgroundColor: COLOR_PALETTE.backgroundDark,
+      backgroundColor: BACKGROUND.dark,
       borderWidth: BORDER_WIDTH.none,
     },
-    textColor: COLOR_PALETTE.textPrimary,
+    textColor: TEXT.primary,
   },
   outline: {
     container: {
       backgroundColor: 'transparent',
       borderWidth: BORDER_WIDTH.sm,
-      borderColor: COLOR_PALETTE.textPrimary,
+      borderColor: TEXT.primary,
     },
-    textColor: COLOR_PALETTE.textPrimary,
+    textColor: TEXT.primary,
   },
   ghost: {
     container: {
       backgroundColor: 'transparent',
       borderWidth: BORDER_WIDTH.none,
     },
-    textColor: COLOR_PALETTE.textPrimary,
+    textColor: TEXT.primary,
   },
   danger: {
     container: {
-      backgroundColor: COLOR_PALETTE.systemError,
+      backgroundColor: SYSTEM.error,
       borderWidth: BORDER_WIDTH.none,
       width: '50%',
     },
-    textColor: COLOR_PALETTE.textSecondary,
+    textColor: TEXT.secondary,
   },
   brand: {
     container: {
-      backgroundColor: COLOR_PALETTE.brandPrimary,
+      backgroundColor: SYSTEM.brand,
       borderWidth: BORDER_WIDTH.none,
     },
-    textColor: COLOR_PALETTE.textSecondary,
+    textColor: TEXT.secondary,
   },
 };
 

@@ -2,7 +2,7 @@ import React, { memo, useMemo, ReactNode } from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 
 import { AppText, Box, AppTag } from '@/shared/components/ui';
-import { COLOR_PALETTE, BORDER_WIDTH } from '@/shared/theme';
+import { SYSTEM, BORDER_WIDTH } from '@/shared/theme';
 
 export type HomeStat = {
   id: string;
@@ -27,7 +27,7 @@ type StatCardProps = {
 const StatCard = memo(({ stat, isFirst }: StatCardProps) => {
   const cardStyle = useMemo<ViewStyle>(
     () => ({
-      borderLeftColor: stat.accentColor ?? COLOR_PALETTE.accentMuted,
+      borderLeftColor: stat.accentColor ?? SYSTEM.accentMuted,
       borderLeftWidth: BORDER_WIDTH.lg,
     }),
     [stat.accentColor],

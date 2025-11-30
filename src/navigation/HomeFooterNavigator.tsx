@@ -8,7 +8,7 @@ import {
   Box,
   BOX_VARIANTS,
 } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { SYSTEM } from '@/shared/theme';
 import { FabGradient } from './FabGradient';
 import { useFabAnimation } from './useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
@@ -66,7 +66,7 @@ export const HomeFooterNavigator = ({
         key={tabKey}
         variant="tab"
         separator={showBorderRight}
-        android_ripple={{ color: COLOR_PALETTE.accentMuted }}
+        android_ripple={{ color: SYSTEM.accentMuted }}
         onPress={() => {
           if (tabKey !== activeTab) {
             onTabChange?.(tabKey);

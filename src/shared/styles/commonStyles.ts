@@ -1,6 +1,8 @@
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import {
-  COLOR_PALETTE,
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
   SPACING,
   BORDER_RADIUS,
   SHADOWS as THEME_SHADOWS,
@@ -24,10 +26,10 @@ export const SURFACE_VARIANTS = {
   interactive: {
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     borderRadius: BORDER_RADIUS.xlarge,
     borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
   },
 
   // Card surfaces
@@ -38,18 +40,18 @@ export const SURFACE_VARIANTS = {
 
   // Elevated surfaces (dropdowns, modals)
   elevated: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     borderRadius: BORDER_RADIUS.large,
     borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     ...SHADOWS.medium,
   },
 
   // Input surfaces
   input: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     borderRadius: BORDER_RADIUS.large,
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
@@ -86,11 +88,11 @@ export const LAYOUT_STYLES = StyleSheet.create({
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     borderBottomWidth: BORDER_WIDTH.sm,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
   } as ViewStyle,
 
   dropdownItemSelected: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
   } as ViewStyle,
 
   // Flex layouts
@@ -119,7 +121,7 @@ export const LAYOUT_STYLES = StyleSheet.create({
  */
 export const TEXT_STYLES = StyleSheet.create({
   dropdownText: {
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
     flex: 1,
     fontSize: 20,
     fontWeight: '600',
@@ -127,14 +129,14 @@ export const TEXT_STYLES = StyleSheet.create({
   } as TextStyle,
 
   dropdownItemText: {
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
     fontWeight: '600',
     fontSize: 20,
     lineHeight: 28,
   } as TextStyle,
 
   dropdownItemTextSelected: {
-    color: COLOR_PALETTE.accentPrimary,
+    color: SYSTEM.accentPrimary,
     fontWeight: '600',
     fontSize: 20,
     lineHeight: 28,

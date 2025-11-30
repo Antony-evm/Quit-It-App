@@ -8,7 +8,7 @@ import type {
   SelectedAnswerSubOption,
 } from '../types';
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { TEXT, SYSTEM } from '@/shared/theme';
 import { TimePeriodClock } from './TimePeriodClock';
 import { useFrequencyGrid } from '../hooks/useFrequencyGrid';
 
@@ -69,9 +69,9 @@ export const FrequencyGridView = ({
                 maximumValue={maxSliderValue}
                 step={1}
                 value={row.sliderValue}
-                minimumTrackTintColor={COLOR_PALETTE.textPrimary}
-                maximumTrackTintColor={COLOR_PALETTE.borderDefault}
-                thumbTintColor={COLOR_PALETTE.textPrimary}
+                minimumTrackTintColor={TEXT.primary}
+                maximumTrackTintColor={SYSTEM.border}
+                thumbTintColor={TEXT.primary}
                 onValueChange={value =>
                   onSliderChange(row.optionId, Math.round(value))
                 }

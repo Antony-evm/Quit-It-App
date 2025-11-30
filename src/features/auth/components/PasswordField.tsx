@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppTextInput, Box, AppIcon, FormField } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
+import { SYSTEM, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
 import HidePasswordSvg from '@/assets/hidePassword.svg';
 
@@ -39,7 +39,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
         <Box
           flexDirection="row"
           alignItems="center"
-          bg="backgroundPrimary"
+          bg="primary"
           borderRadius="medium"
           gap="sm"
           style={[styles.passwordContainer]}
@@ -81,7 +81,7 @@ PasswordField.displayName = 'PasswordField';
 const styles = StyleSheet.create({
   passwordContainer: {
     borderWidth: BORDER_WIDTH.sm,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
     paddingRight: SPACING.sm,
     justifyContent: 'space-between',
   },

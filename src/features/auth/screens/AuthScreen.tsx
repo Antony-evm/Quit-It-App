@@ -17,7 +17,7 @@ import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicat
 import { WelcomeText } from '../components/WelcomeText';
 import { useAuthForm } from '../hooks/useAuthForm';
 import { useKeyboardVisibility } from '@/shared/hooks/useKeyboardVisibility';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { BACKGROUND, SPACING } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
@@ -70,7 +70,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
         >
           <WelcomeText isSignup={!isLoginMode} />
 
-          <Box bg="backgroundMuted" px="xxl" py="xl" flex={1} gap="lg">
+          <Box bg="muted" px="xxl" py="xl" flex={1} gap="lg">
             <Box gap="lg">
               {!isLoginMode && (
                 <NameFieldsGroup
@@ -144,7 +144,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
           </Box>
         </ScrollView>
 
-        <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="backgroundMuted">
+        <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="muted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             variant="primary"
@@ -162,7 +162,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
   },
   keyboardView: {
     flex: 1,

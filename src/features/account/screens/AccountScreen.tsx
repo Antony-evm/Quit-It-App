@@ -3,7 +3,7 @@ import { RefreshControl, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { TEXT, BACKGROUND } from '@/shared/theme';
 
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
@@ -32,9 +32,9 @@ export const AccountScreen = () => {
       <ScrollView
         refreshControl={
           <RefreshControl
-            tintColor={COLOR_PALETTE.textPrimary}
-            colors={[COLOR_PALETTE.textPrimary]}
-            progressBackgroundColor={COLOR_PALETTE.backgroundCream}
+            tintColor={TEXT.primary}
+            colors={[TEXT.primary]}
+            progressBackgroundColor={BACKGROUND.cream}
             refreshing={isRefetching}
             onRefresh={refresh}
           />

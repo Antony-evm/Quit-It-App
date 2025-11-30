@@ -11,7 +11,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { SPACING, COLOR_PALETTE, OPACITY } from '@/shared/theme';
+import { SPACING, BACKGROUND, SYSTEM, OPACITY } from '@/shared/theme';
 
 type DraggableModalProps = {
   visible: boolean;
@@ -138,11 +138,11 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: COLOR_PALETTE.shadowDefault,
+    backgroundColor: SYSTEM.shadow,
     zIndex: 1,
   },
   drawer: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     height: '85%',
@@ -150,11 +150,11 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   headerContainer: {
-    backgroundColor: COLOR_PALETTE.shadowDefault,
+    backgroundColor: SYSTEM.shadow,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
     zIndex: 10,
   },
   indicatorContainer: {
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 5,
     borderRadius: 3,
-    backgroundColor: COLOR_PALETTE.brandPrimary,
+    backgroundColor: SYSTEM.brand,
   },
   headerContent: {
     paddingHorizontal: SPACING.lg,

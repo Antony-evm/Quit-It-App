@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { TEXT } from '@/shared/theme';
 
 const PROGRESS_BAR_RADIUS = 3;
 
@@ -48,7 +48,7 @@ export const QuestionnaireProgressBar = ({
   }, [isAnimating, pulseAnim]);
 
   return (
-    <Box alignItems="center" py="xs" bg="backgroundMuted" borderRadius="small">
+    <Box alignItems="center" py="xs" bg="muted" borderRadius="small">
       <AppText variant="subcaption" tone="primary" bold centered>
         {currentQuestion}/{totalQuestions}
       </AppText>
@@ -71,7 +71,7 @@ export const QuestionnaireProgressBar = ({
 const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
-    backgroundColor: COLOR_PALETTE.textPrimary,
+    backgroundColor: TEXT.primary,
     borderRadius: PROGRESS_BAR_RADIUS,
   },
 });

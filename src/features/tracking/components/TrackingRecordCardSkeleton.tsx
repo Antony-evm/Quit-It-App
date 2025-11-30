@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppPressable, Box, SkeletonBox } from '@/shared/components/ui';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { SYSTEM } from '@/shared/theme';
 
 /** Skeleton dimension constants matching TrackingRecordCard layout */
 const SKELETON_DIMENSIONS = {
@@ -24,7 +24,7 @@ const SingleSkeleton = React.memo(
       variant="cardStrip"
       disabled
       disabledOpacity={1}
-      style={{ borderLeftColor: COLOR_PALETTE.borderDefault }}
+      style={{ borderLeftColor: SYSTEM.border }}
     >
       <Box variant="noteHeader">
         <SkeletonBox

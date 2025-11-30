@@ -1,6 +1,5 @@
 import React from 'react';
 import BackArrowSvg from '@/assets/backArrow.svg';
-import { COLOR_PALETTE } from '@/shared/theme';
 import { AppPressable } from './AppPressable';
 import { AppIcon } from './AppIcon';
 

@@ -1,7 +1,8 @@
 import { ViewStyle, StyleProp } from 'react-native';
 import { Box, BoxProps } from './Box';
 import {
-  COLOR_PALETTE,
+  BACKGROUND,
+  SYSTEM,
   SPACING,
   BORDER_RADIUS,
   SHADOWS,
@@ -28,21 +29,21 @@ export const AppCard = ({
     switch (variant) {
       case 'elevated':
         return {
-          backgroundColor: COLOR_PALETTE.backgroundPrimary,
+          backgroundColor: BACKGROUND.primary,
           borderWidth: BORDER_WIDTH.sm,
-          borderColor: COLOR_PALETTE.borderDefault,
+          borderColor: SYSTEM.border,
           ...SHADOWS.softLg,
           gap: SPACING.md,
         };
       case 'outlined':
         return {
-          backgroundColor: COLOR_PALETTE.backgroundPrimary,
+          backgroundColor: BACKGROUND.primary,
           borderWidth: BORDER_WIDTH.sm,
-          borderColor: COLOR_PALETTE.borderDefault,
+          borderColor: SYSTEM.border,
         };
       case 'filled':
         return {
-          backgroundColor: COLOR_PALETTE.backgroundMuted,
+          backgroundColor: BACKGROUND.muted,
           borderWidth: BORDER_WIDTH.none,
         };
       case 'ghost':

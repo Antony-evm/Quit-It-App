@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Toast as ToastType, useToast } from './ToastContext';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { BACKGROUND, TEXT, SYSTEM, SPACING } from '@/shared/theme';
 import { AppPressable } from '../ui';
 
 interface ToastItemProps {
@@ -58,18 +58,18 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
     switch (toast.type) {
       case 'success':
         return {
-          backgroundColor: COLOR_PALETTE.systemSuccess,
-          borderColor: COLOR_PALETTE.systemSuccessDark,
+          backgroundColor: SYSTEM.success,
+          borderColor: SYSTEM.successDark,
         };
       case 'error':
         return {
-          backgroundColor: COLOR_PALETTE.systemError,
-          borderColor: COLOR_PALETTE.systemErrorDark,
+          backgroundColor: SYSTEM.error,
+          borderColor: SYSTEM.errorDark,
         };
       default:
         return {
-          backgroundColor: COLOR_PALETTE.backgroundPrimary,
-          borderColor: COLOR_PALETTE.borderDefault,
+          backgroundColor: BACKGROUND.primary,
+          borderColor: SYSTEM.border,
         };
     }
   };
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     marginBottom: SPACING.xs,
-    shadowColor: COLOR_PALETTE.shadowDefault,
+    shadowColor: SYSTEM.shadow,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -132,14 +132,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   toastText: {
-    color: COLOR_PALETTE.textInverse,
+    color: TEXT.inverse,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: SPACING.xs,
   },
   dismissHint: {
-    color: COLOR_PALETTE.textInverse,
+    color: TEXT.inverse,
     fontSize: 12,
     opacity: 0.8,
     textAlign: 'center',

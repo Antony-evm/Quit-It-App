@@ -8,7 +8,7 @@ import { AppPressable } from './AppPressable';
 import { AppText } from './AppText';
 import { AppIcon } from './AppIcon';
 import { Box, BoxProps } from './Box';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { BACKGROUND, SYSTEM, SPACING } from '@/shared/theme';
 import CalendarIcon from '@/assets/calendar.svg';
 
 export type AppDateTimePickerProps = BoxProps & {
@@ -179,7 +179,7 @@ export const AppDateTimePicker = ({
         (Platform.OS === 'ios' ? (
           <Box
             mt="sm"
-            bg="backgroundPrimary"
+            bg="primary"
             borderRadius="medium"
             style={styles.iosPickerContainer}
           >
@@ -191,7 +191,7 @@ export const AppDateTimePicker = ({
               maximumDate={maximumDate}
               onChange={onDateChange}
               themeVariant="dark"
-              accentColor={COLOR_PALETTE.brandPrimary}
+              accentColor={SYSTEM.brand}
               style={styles.iosPicker}
             />
           </Box>
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   iosPicker: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     // Height might be needed for inline picker if it doesn't size itself
   },
 });

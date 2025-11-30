@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useStytch } from '@stytch/react-native';
 import { useAuth } from '../../auth/AuthContext';
-import { COLOR_PALETTE } from '../../theme';
+import { BACKGROUND, TEXT, SYSTEM } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStatusService } from '../../../shared/services/userStatusService';
 
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menu: {
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     borderRadius: 12,
     width: '90%',
     maxHeight: '80%',
@@ -350,24 +350,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
   },
   closeButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
     justifyContent: 'center',
     alignItems: 'center',
   },
   closeText: {
     fontSize: 16,
-    color: COLOR_PALETTE.textSecondary,
+    color: TEXT.secondary,
     fontWeight: 'bold',
   },
   content: {
@@ -379,14 +379,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
     marginBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
+    borderBottomColor: SYSTEM.border,
     paddingBottom: 4,
   },
   button: {
-    backgroundColor: COLOR_PALETTE.accentPrimary,
+    backgroundColor: SYSTEM.accentPrimary,
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
@@ -394,13 +394,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonDisabled: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    backgroundColor: BACKGROUND.muted,
   },
   dangerButton: {
     backgroundColor: '#F44336',
   },
   buttonText: {
-    color: COLOR_PALETTE.backgroundPrimary,
+    color: BACKGROUND.primary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -415,16 +415,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault + '30',
+    borderBottomColor: SYSTEM.border + '30',
   },
   infoLabel: {
     fontSize: 14,
-    color: COLOR_PALETTE.textSecondary,
+    color: TEXT.secondary,
     flex: 1,
   },
   infoValue: {
     fontSize: 14,
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
     fontWeight: '500',
     flex: 1,
     textAlign: 'right',

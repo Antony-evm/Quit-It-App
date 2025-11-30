@@ -4,7 +4,7 @@ import { Animated, ViewStyle, StyleProp } from 'react-native';
 import {
   SPACING,
   SpacingToken,
-  COLOR_PALETTE,
+  SYSTEM,
   BORDER_RADIUS,
   BorderRadiusToken,
   OPACITY,
@@ -65,7 +65,7 @@ export const SkeletonBox = React.memo(
     const skeletonStyle: ViewStyle = {
       width,
       height,
-      backgroundColor: COLOR_PALETTE.borderDefault,
+      backgroundColor: SYSTEM.border,
       borderRadius: BORDER_RADIUS[borderRadius],
       ...(mb !== undefined && { marginBottom: SPACING[mb] }),
       ...(mt !== undefined && { marginTop: SPACING[mt] }),

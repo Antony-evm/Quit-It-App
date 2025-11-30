@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import { AppText, AppButton, Box } from '../../components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '../../theme';
+import { BACKGROUND, SYSTEM, SPACING, BORDER_RADIUS } from '../../theme';
 
 interface ErrorFallbackProps {
   error: Error;
@@ -46,7 +46,7 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLOR_PALETTE.backgroundPrimary,
+    backgroundColor: BACKGROUND.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   errorText: {
-    color: COLOR_PALETTE.systemError,
+    color: SYSTEM.error,
   },
   button: {
     marginTop: SPACING.md,

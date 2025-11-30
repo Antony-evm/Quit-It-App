@@ -50,7 +50,7 @@ export const HomeTabNavigator = () => {
   };
 
   return (
-    <Box flex={1} bg="backgroundMuted" style={{ paddingTop: insets.top }}>
+    <Box flex={1} bg="muted" style={{ paddingTop: insets.top }}>
       <Box flex={1}>{renderContent()}</Box>
 
       <Box variant="footerWrapper">

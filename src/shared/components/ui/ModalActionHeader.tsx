@@ -7,7 +7,7 @@ import { AppIcon } from './AppIcon';
 import { AppPressable } from './AppPressable';
 import { AppText } from './AppText';
 import { Box } from './Box';
-import { COLOR_PALETTE } from '../../theme';
+import { TEXT } from '../../theme';
 
 type ModalActionHeaderProps = {
   onClose: () => void;
@@ -57,7 +57,7 @@ export const ModalActionHeader = ({
 const styles = StyleSheet.create({
   container: {},
   primaryLabel: {
-    color: COLOR_PALETTE.textPrimary,
+    color: TEXT.primary,
     fontWeight: '600',
   },
   spacer: {

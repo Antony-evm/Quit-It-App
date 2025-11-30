@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ViewStyle, Image } from 'react-native';
 import { Box } from './Box';
-import { COLOR_PALETTE } from '../../theme';
+import { TEXT } from '../../theme';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large';
@@ -42,7 +42,7 @@ export const Logo: React.FC<LogoProps> = ({ size = 'large', style }) => {
 
 const styles = StyleSheet.create({
   logoImage: {
-    shadowColor: COLOR_PALETTE.textSecondary,
+    shadowColor: TEXT.secondary,
     shadowOffset: {
       width: 0,
       height: 4,

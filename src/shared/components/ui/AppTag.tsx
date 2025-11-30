@@ -2,7 +2,13 @@ import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { AppText } from './AppText';
 import { AppPressable } from './AppPressable';
 import { Box } from './Box';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
+import {
+  BACKGROUND,
+  TEXT,
+  SYSTEM,
+  SPACING,
+  BORDER_RADIUS,
+} from '@/shared/theme';
 
 export type AppTagProps = {
   label: string;
@@ -31,14 +37,10 @@ export const AppTag = ({
   const borderRadius = isPill ? 'full' : 'medium';
 
   // Default colors
-  const defaultBg = selected
-    ? COLOR_PALETTE.textPrimary
-    : COLOR_PALETTE.backgroundMuted;
+  const defaultBg = selected ? TEXT.primary : BACKGROUND.muted;
   const backgroundColor = color || defaultBg;
 
-  const defaultText = selected
-    ? COLOR_PALETTE.backgroundPrimary
-    : COLOR_PALETTE.textPrimary;
+  const defaultText = selected ? BACKGROUND.primary : TEXT.primary;
   const finalTextColor = textColor || defaultText;
 
   const getTextStyles = () => {
@@ -79,9 +81,7 @@ export const AppTag = ({
           {
             backgroundColor,
             borderRadius: isPill ? 9999 : BORDER_RADIUS.medium,
-            borderColor: selected
-              ? COLOR_PALETTE.textPrimary
-              : COLOR_PALETTE.borderDefault,
+            borderColor: selected ? TEXT.primary : SYSTEM.border,
             borderWidth: 1,
             paddingVertical: getPaddingVertical(),
           },

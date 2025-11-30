@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { BACKGROUND, SYSTEM } from '@/shared/theme';
 
 type TimePeriodClockProps = {
   startHour: number;
@@ -51,7 +51,7 @@ export const TimePeriodClock = ({
   startHour,
   endHour,
   size = 60,
-  circleStroke = COLOR_PALETTE.backgroundPrimary,
+  circleStroke = BACKGROUND.primary,
   fillOpacity = 0.75,
   padding = 4,
 }: TimePeriodClockProps) => {
@@ -65,15 +65,15 @@ export const TimePeriodClock = ({
         cx={center}
         cy={center}
         r={radius}
-        fill={COLOR_PALETTE.backgroundMuted}
+        fill={BACKGROUND.muted}
         stroke={circleStroke}
         strokeWidth={4}
       />
       <Path
         d={d}
-        fill={COLOR_PALETTE.accentPrimary}
+        fill={SYSTEM.accentPrimary}
         fillOpacity={fillOpacity}
-        stroke={COLOR_PALETTE.accentPrimary}
+        stroke={SYSTEM.accentPrimary}
         strokeWidth={2}
         strokeLinecap="round"
       />

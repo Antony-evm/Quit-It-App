@@ -4,7 +4,10 @@ import { LineChart, BarChart } from 'react-native-chart-kit';
 
 import { AppText, AppTag, Box, AppPressable } from '@/shared/components/ui';
 import {
-  COLOR_PALETTE,
+  BACKGROUND,
+  TEXT,
+  TAGS,
+  SYSTEM,
   DEVICE_HEIGHT,
   SPACING,
   BORDER_RADIUS,
@@ -31,7 +34,7 @@ export const CravingChart = memo(function CravingChart({
   if (!data || data.length === 0) {
     return (
       <Box
-        bg="backgroundPrimary"
+        bg="primary"
         borderRadius="medium"
         p="md"
         style={[styles.container, style]}
@@ -47,28 +50,28 @@ export const CravingChart = memo(function CravingChart({
   }
 
   const chartConfig = {
-    backgroundGradientFrom: COLOR_PALETTE.backgroundMuted,
-    backgroundGradientTo: COLOR_PALETTE.backgroundMuted,
-    color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
-    labelColor: () => COLOR_PALETTE.textMuted,
+    backgroundGradientFrom: BACKGROUND.muted,
+    backgroundGradientTo: BACKGROUND.muted,
+    color: (opacity = 1) => hexToRgba(TAGS.craving, opacity),
+    labelColor: () => TEXT.muted,
     strokeWidth: 3,
     barPercentage: 0.5,
     useShadowColorFromDataset: false,
     propsForDots: {
       r: '6',
       strokeWidth: '2',
-      stroke: COLOR_PALETTE.accentPrimary,
+      stroke: SYSTEM.accentPrimary,
     },
     propsForLabels: {
       fontSize: 12,
       fontFamily: 'System',
     },
     propsForBackgroundLines: {
-      stroke: COLOR_PALETTE.textMuted,
+      stroke: TEXT.muted,
       strokeOpacity: 0.2,
       strokeDasharray: '',
     },
-    fillShadowGradient: COLOR_PALETTE.craving,
+    fillShadowGradient: TAGS.craving,
     fillShadowGradientOpacity: 1,
     decimalPlaces: 0,
   };
@@ -77,13 +80,13 @@ export const CravingChart = memo(function CravingChart({
     ...chartData,
     datasets: chartData.datasets.map(ds => ({
       ...ds,
-      color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
+      color: (opacity = 1) => hexToRgba(TAGS.craving, opacity),
     })),
   };
 
   return (
     <Box
-      bg="backgroundPrimary"
+      bg="primary"
       borderRadius="medium"
       p="md"
       style={[styles.container, style]}
@@ -92,8 +95,8 @@ export const CravingChart = memo(function CravingChart({
         <AppTag
           label="Cravings Resisted"
           size="small"
-          color={hexToRgba(COLOR_PALETTE.craving, 0.1)}
-          textColor={COLOR_PALETTE.textPrimary}
+          color={hexToRgba(TAGS.craving, 0.1)}
+          textColor={TEXT.primary}
         />
         <Box variant="toggleGroup">
           <AppPressable
@@ -133,7 +136,7 @@ export const CravingChart = memo(function CravingChart({
         </Box>
       </Box>
 
-      <Box variant="centered" bg="backgroundMuted" borderRadius="small">
+      <Box variant="centered" bg="muted" borderRadius="small">
         {chartData.labels.length < 4 ? (
           <BarChart
             data={barChartData}
@@ -181,13 +184,13 @@ export const CravingChart = memo(function CravingChart({
 const styles = StyleSheet.create({
   container: {
     borderWidth: BORDER_WIDTH.md,
-    borderColor: COLOR_PALETTE.borderDefault,
-    borderLeftColor: COLOR_PALETTE.craving,
+    borderColor: SYSTEM.border,
+    borderLeftColor: TAGS.craving,
     borderLeftWidth: BORDER_WIDTH.lg,
   },
   activeToggle: {
-    backgroundColor: COLOR_PALETTE.craving,
-    borderColor: COLOR_PALETTE.craving,
+    backgroundColor: TAGS.craving,
+    borderColor: TAGS.craving,
   },
   chart: {
     marginVertical: SPACING.sm,

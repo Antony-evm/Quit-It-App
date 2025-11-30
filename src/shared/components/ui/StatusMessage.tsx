@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, TypographyVariant } from '@/shared/theme';
+import { TEXT, TypographyVariant } from '@/shared/theme';
 
 export interface StatusMessageProps {
   message: string;
@@ -40,7 +40,7 @@ export const StatusMessage: React.FC<StatusMessageProps> = ({
 
   return (
     <Box gap="md" style={[styles.container, style]}>
-      {showSpinner && <ActivityIndicator color={COLOR_PALETTE.textPrimary} />}
+      {showSpinner && <ActivityIndicator color={TEXT.primary} />}
       <AppText variant={variant} tone={tone} style={[styles.baseText]}>
         {message}
       </AppText>

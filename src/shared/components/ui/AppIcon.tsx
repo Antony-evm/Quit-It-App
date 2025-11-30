@@ -1,6 +1,6 @@
 import React from 'react';
 import { SvgProps } from 'react-native-svg';
-import { COLOR_PALETTE, ICON_SIZES } from '@/shared/theme';
+import { BACKGROUND, TEXT, SYSTEM, ICON_SIZES } from '@/shared/theme';
 
 export type IconVariant =
   | 'default'
@@ -16,44 +16,44 @@ export type IconVariant =
 const VARIANTS = {
   default: {
     size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.backgroundPrimary,
-    stroke: COLOR_PALETTE.textPrimary,
+    color: BACKGROUND.primary,
+    stroke: TEXT.primary,
   },
   backArrow: {
     size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.textPrimary,
-    stroke: COLOR_PALETTE.backgroundPrimary,
+    color: TEXT.primary,
+    stroke: BACKGROUND.primary,
   },
   inverse: {
     size: ICON_SIZES.large,
-    color: COLOR_PALETTE.textPrimary,
-    stroke: COLOR_PALETTE.backgroundPrimary,
+    color: TEXT.primary,
+    stroke: BACKGROUND.primary,
   },
   fab: {
     size: ICON_SIZES.xlarge,
-    color: COLOR_PALETTE.backgroundDark,
+    color: BACKGROUND.dark,
   },
   small: {
     size: ICON_SIZES.small,
-    color: COLOR_PALETTE.backgroundPrimary,
-    stroke: COLOR_PALETTE.textPrimary,
+    color: BACKGROUND.primary,
+    stroke: TEXT.primary,
   },
   large: {
     size: ICON_SIZES.large,
-    color: COLOR_PALETTE.backgroundPrimary,
-    stroke: COLOR_PALETTE.textPrimary,
+    color: BACKGROUND.primary,
+    stroke: TEXT.primary,
   },
   muted: {
     size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.textMuted,
+    color: TEXT.muted,
   },
   accent: {
     size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.accentPrimary,
+    color: SYSTEM.accentPrimary,
   },
   error: {
     size: ICON_SIZES.medium,
-    color: COLOR_PALETTE.systemError,
+    color: SYSTEM.error,
   },
 } as const;
 

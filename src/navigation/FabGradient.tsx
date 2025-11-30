@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { Svg, Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { BACKGROUND, SYSTEM } from '@/shared/theme';
 
 export const FabGradient = () => {
   return (
@@ -15,16 +15,8 @@ export const FabGradient = () => {
           fx="50%"
           fy="50%"
         >
-          <Stop
-            offset="0"
-            stopColor={COLOR_PALETTE.brandPrimary}
-            stopOpacity="1"
-          />
-          <Stop
-            offset="1"
-            stopColor={COLOR_PALETTE.backgroundPrimary}
-            stopOpacity="1"
-          />
+          <Stop offset="0" stopColor={SYSTEM.brand} stopOpacity="1" />
+          <Stop offset="1" stopColor={BACKGROUND.primary} stopOpacity="1" />
         </RadialGradient>
       </Defs>
       <Rect width="100%" height="100%" fill="url(#grad)" />

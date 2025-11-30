@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { DailyCravingData } from '@/features/tracking';
-import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
+import { TAGS, hexToRgba } from '@/shared/theme';
 
 export type ChartPeriod = 'daily' | 'weekly';
 
@@ -45,7 +45,7 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
         datasets: [
           {
             data: counts,
-            color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
+            color: (opacity = 1) => hexToRgba(TAGS.craving, opacity),
             strokeWidth: 3,
           },
         ],
@@ -90,7 +90,7 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
         datasets: [
           {
             data: counts,
-            color: (opacity = 1) => hexToRgba(COLOR_PALETTE.craving, opacity),
+            color: (opacity = 1) => hexToRgba(TAGS.craving, opacity),
             strokeWidth: 3,
           },
         ],

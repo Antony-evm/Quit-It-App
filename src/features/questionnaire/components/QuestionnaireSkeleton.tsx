@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Animated, StyleSheet } from 'react-native';
 import { AppCard, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { SYSTEM, SPACING } from '@/shared/theme';
 
 export const SkeletonItem = ({
   width,
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
   },
   skeletonItem: {
-    backgroundColor: COLOR_PALETTE.accentMuted,
+    backgroundColor: SYSTEM.accentMuted,
     borderRadius: 4,
   },
   optionsContainer: {
@@ -88,6 +88,6 @@ const styles = StyleSheet.create({
   },
   optionCard: {
     borderWidth: 1,
-    borderColor: COLOR_PALETTE.borderDefault,
+    borderColor: SYSTEM.border,
   },
 });
