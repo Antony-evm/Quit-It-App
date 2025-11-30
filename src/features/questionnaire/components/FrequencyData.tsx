@@ -1,6 +1,11 @@
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
-import { AppText, AppSurface, Box, StatusMessage } from '@/shared/components/ui';
+import {
+  AppText,
+  AppSurface,
+  Box,
+  StatusMessage,
+} from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 import { useFrequency } from '@/features/questionnaire/hooks/useFrequency';
 import { useSmokingFrequencyQuestion } from '@/features/questionnaire/hooks/useSmokingFrequencyQuestion';
@@ -30,13 +35,10 @@ export const FrequencyData: React.FC<FrequencyDataProps> = ({ style }) => {
 
     const selection: SelectedAnswerSubOption[] = [];
 
-    // Iterate through main options (time slots)
     question.options.forEach(option => {
-      // Check if we have a frequency value for this time slot
       const frequencyValue = frequency[option.value];
 
       if (frequencyValue) {
-        // Find the matching sub-option (frequency level)
         const subOption = question.subOptions.find(
           sub => sub.value === frequencyValue,
         );
