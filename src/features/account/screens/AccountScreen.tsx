@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
-import { QuittingPlanDetails } from '@/features/questionnaire/components/QuittingPlanDetails';
-import { TriggersList } from '@/features/questionnaire/components/TriggersList';
-import { FrequencyData } from '@/features/questionnaire/components/FrequencyData';
+import { QuittingPlanDetails } from '../components/QuittingPlanDetails';
+import { TriggersList } from '../components/TriggersList';
+import { FrequencyData } from '../components/FrequencyData';
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { AccountDetails } from '../components/AccountDetails';
 import { BottomDrawer } from '../components/BottomDrawer';

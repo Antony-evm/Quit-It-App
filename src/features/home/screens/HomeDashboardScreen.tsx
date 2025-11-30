@@ -3,7 +3,7 @@ import { StyleSheet, ScrollView } from 'react-native';
 
 import { AppCard, AppText, Box } from '@/shared/components/ui';
 import { SPACING, FOOTER_LAYOUT } from '@/shared/theme';
-import { QuittingPlanCard } from '@/features/questionnaire/components/QuittingPlanCard';
+import { QuittingPlanCard } from '../components/QuittingPlanCard';
 import { CravingChart } from '@/features/tracking';
 import { HomeStatsRow } from '../components/HomeStatsRow';
 import { WelcomeComponent } from '../components/WelcomeComponent';

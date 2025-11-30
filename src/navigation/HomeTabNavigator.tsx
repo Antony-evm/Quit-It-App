@@ -16,13 +16,16 @@ import {
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
-import { JournalScreen } from './JournalScreen';
-import { HomeDashboardScreen } from './HomeDashboardScreen';
-import { NotesCard, NotesCardHandle } from '../components/NotesCard';
+import { JournalScreen } from '@/features/journal/screens/JournalScreen';
+import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
+import {
+  NotesCard,
+  NotesCardHandle,
+} from '@/features/journal/components/NotesCard';
 import {
   HomeFooterNavigator,
   HomeFooterTab,
-} from '../components/HomeFooterNavigator';
+} from '@/features/home/components/HomeFooterNavigator';
 
 export const HomeTabNavigator = () => {
   const insets = useSafeAreaInsets();
@@ -62,7 +65,6 @@ export const HomeTabNavigator = () => {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onFabPress={() => setIsNoteDrawerVisible(true)}
-          style={styles.footer}
         />
       </View>
 
@@ -122,8 +124,5 @@ const styles = StyleSheet.create({
     backgroundColor: COLOR_PALETTE.backgroundMuted,
     paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
     paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
-  },
-  footer: {
-    // Removed relative positioning as it's now part of the flex layout
   },
 });

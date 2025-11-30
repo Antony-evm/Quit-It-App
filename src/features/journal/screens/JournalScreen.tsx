@@ -12,10 +12,7 @@ import {
 } from '@/shared/components/ui';
 import { TrackingRecordsList } from '@/features/tracking/components/TrackingRecordsList';
 import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import {
-  NotesCard,
-  NotesCardHandle,
-} from '@/features/home/components/NotesCard';
+import { NotesCard, NotesCardHandle } from '../components/NotesCard';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
 
