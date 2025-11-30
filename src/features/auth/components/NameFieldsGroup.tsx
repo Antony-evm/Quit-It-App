@@ -30,9 +30,9 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   const lastNameRef = useRef<TextInput>(null);
 
   return (
-    <Box>
+    <Box gap="lg">
       {/* First Name Field */}
-      <Box mb="lg" gap="xs">
+      <Box gap="xs">
         <AppTextInput
           placeholder="First name"
           value={firstName}
@@ -52,7 +52,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
       </Box>
 
       {/* Last Name Field */}
-      <Box mb="lg" gap="xs">
+      <Box gap="xs">
         <AppTextInput
           ref={lastNameRef}
           placeholder="Last name"
@@ -72,5 +72,3 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
     </Box>
   );
 };
-
-const styles = StyleSheet.create({});

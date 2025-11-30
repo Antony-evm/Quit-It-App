@@ -35,12 +35,13 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
-      <Box mb="lg">
+      <Box gap="sm">
         <Box
           flexDirection="row"
           alignItems="center"
           bg="backgroundPrimary"
           borderRadius="medium"
+          gap="sm"
           style={[
             styles.passwordContainer,
             hasError && styles.passwordContainerError,
@@ -49,7 +50,6 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           <AppTextInput
             ref={ref}
             variant="ghost"
-            style={styles.passwordInput}
             placeholder={placeholder}
             value={value}
             onChangeText={onChangeText}
@@ -60,7 +60,6 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
             returnKeyType={returnKeyType}
           />
           <TouchableOpacity
-            style={styles.passwordToggle}
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             disabled={isLoading}
           >
@@ -70,7 +69,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           </TouchableOpacity>
         </Box>
         {errorMessage && (
-          <AppText variant="caption" style={styles.errorText}>
+          <AppText variant="caption" tone="error">
             {errorMessage}
           </AppText>
         )}
@@ -83,22 +82,10 @@ const styles = StyleSheet.create({
   passwordContainer: {
     borderWidth: BORDER_WIDTH.sm,
     borderColor: COLOR_PALETTE.borderDefault,
+    paddingRight: SPACING.sm,
+    justifyContent: 'space-between',
   },
   passwordContainerError: {
     borderColor: COLOR_PALETTE.accentPrimary,
-  },
-  passwordInput: {
-    flex: 1,
-  },
-  passwordToggle: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  errorText: {
-    color: COLOR_PALETTE.systemError,
-    marginTop: SPACING.xs,
-    marginLeft: SPACING.sm,
   },
 });

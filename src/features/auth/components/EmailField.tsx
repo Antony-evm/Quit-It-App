@@ -49,7 +49,7 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     const shouldShowInvalidHint = !validation.isValid;
 
     return (
-      <Box mb="lg" gap="xs">
+      <Box gap="xs">
         <AppTextInput
           ref={ref}
           hasError={validation.hasInput && !validation.isValid}

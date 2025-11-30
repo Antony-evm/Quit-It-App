@@ -10,3 +10,4 @@ export * from './DraggableModal';
 export * from './Logo';
 export * from './StatusMessage';
 export * from './AppDateTimePicker';
+export * from './AppTag';

@@ -23,7 +23,6 @@ export const PasswordStrengthIndicator: React.FC<
 
   return (
     <Box
-      mt="xs"
       px="sm"
       py="xs"
       bg="backgroundMuted"

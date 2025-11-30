@@ -1,7 +1,13 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import { AppSurface, AppText, Box, AppPressable } from '@/shared/components/ui';
+import {
+  AppSurface,
+  AppText,
+  Box,
+  AppPressable,
+  AppTag,
+} from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
@@ -85,24 +91,19 @@ export const TrackingRecordCard = React.memo(
           alignItems="flex-start"
           justifyContent="space-between"
         >
-          <Box
-            px="md"
-            py="xs"
-            borderRadius="full"
-            style={[
-              styles.badgeSelf,
-              { backgroundColor: badgeBackgroundColor },
-            ]}
-          >
-            <AppText
-              style={[styles.badgeText, { color: COLOR_PALETTE.textPrimary }]}
-            >
-              {trackingType?.displayName || `Type ${record.tracking_type_id}`}
+          <AppTag
+            label={
+              trackingType?.displayName || `Type ${record.tracking_type_id}`
+            }
+            color={badgeBackgroundColor}
+            size="small"
+            style={styles.badgeSelf}
+          />
+          <Box alignItems="flex-end" gap="xs">
+            <AppText variant="subcaption">{timeLabel}</AppText>
+            <AppText variant="gridArea" tone="muted">
+              {dateLabel}
             </AppText>
-          </Box>
-          <Box alignItems="flex-end">
-            <AppText style={styles.timeText}>{timeLabel}</AppText>
-            <AppText style={styles.dateText}>{dateLabel}</AppText>
           </Box>
         </Box>
 
@@ -115,13 +116,9 @@ export const TrackingRecordCard = React.memo(
           style={styles.noteSection}
         >
           {record.note ? (
-            <AppText variant="body" style={styles.noteText}>
-              {record.note}
-            </AppText>
+            <AppText>{record.note}</AppText>
           ) : (
-            <AppText variant="body" style={styles.notePlaceholder}>
-              Add a thought about this moment…
-            </AppText>
+            <AppText tone="muted">Add a thought about this moment…</AppText>
           )}
         </Box>
       </AppPressable>
@@ -138,33 +135,9 @@ const styles = StyleSheet.create({
   badgeSelf: {
     alignSelf: 'flex-start',
   },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  timeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLOR_PALETTE.textPrimary,
-    marginBottom: 2,
-  },
-  dateText: {
-    fontSize: 12,
-    color: COLOR_PALETTE.textMuted,
-  },
   noteSection: {
     borderTopWidth: 1,
     borderWidth: 1,
     borderColor: COLOR_PALETTE.borderDefault,
-  },
-  noteText: {
-    color: COLOR_PALETTE.textPrimary,
-    lineHeight: 22,
-  },
-  notePlaceholder: {
-    color: COLOR_PALETTE.textMuted,
-    fontStyle: 'italic',
   },
 });

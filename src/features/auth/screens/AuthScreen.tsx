@@ -74,9 +74,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         >
           <WelcomeText isSignup={!isLoginMode} />
 
-          <Box bg="backgroundMuted" px="xxl" py="xl" flex={1}>
+          <Box bg="backgroundMuted" px="xxl" py="xl" flex={1} gap="lg">
             {/* Auth form */}
-            <Box style={{ width: '100%' }}>
+            <Box style={{ width: '100%' }} gap="lg">
               {/* Name fields - Only in signup mode */}
               {!isLoginMode && (
                 <NameFieldsGroup
@@ -130,14 +130,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
 
               {/* Show password strength indicator always in signup mode */}
               {!isLoginMode && (
-                <PasswordStrengthIndicator
-                  validation={passwordValidation}
-                  style={{ marginTop: SPACING.xs, marginBottom: SPACING.lg }}
-                />
+                <PasswordStrengthIndicator validation={passwordValidation} />
               )}
             </Box>
 
-            {/* Mode toggle */}
             <AuthModeToggle
               isLoginMode={isLoginMode}
               onToggle={handleModeToggle}

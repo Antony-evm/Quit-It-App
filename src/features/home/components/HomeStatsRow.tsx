@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
-import { AppText, Box } from '@/shared/components/ui';
+import { AppText, Box, AppTag } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 
 export type HomeStat = {
@@ -39,20 +39,12 @@ export const HomeStatsRow = ({ stats, style }: HomeStatsRowProps) => (
           ]}
         >
           <Box flexDirection="row" alignItems="center">
-            <Box
-              px="md"
-              py="xs"
-              borderRadius="full"
-              mr="sm"
-              style={{
-                backgroundColor:
-                  stat.tagBackgroundColor ?? COLOR_PALETTE.backgroundMuted,
-              }}
-            >
-              <AppText style={styles.tagText}>
-                {stat.tagLabel ?? stat.label}
-              </AppText>
-            </Box>
+            <AppTag
+              label={stat.tagLabel ?? stat.label}
+              color={stat.tagBackgroundColor ?? COLOR_PALETTE.backgroundMuted}
+              size="large"
+              style={{ marginRight: SPACING.sm }}
+            />
             <AppText style={styles.text}>
               {stat.bottomLabel}: {stat.value}
             </AppText>
@@ -70,11 +62,6 @@ const styles = StyleSheet.create({
   },
   statCardSpacing: {
     marginTop: SPACING.md,
-  },
-  tagText: {
-    fontSize: 16,
-    fontWeight: '600',
-    textAlign: 'center',
   },
   text: {
     fontSize: 16,

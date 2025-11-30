@@ -1,16 +1,11 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle, Animated } from 'react-native';
-import {
-  SvgProps,
-  Svg,
-  Defs,
-  RadialGradient,
-  Stop,
-  Rect,
-} from 'react-native-svg';
+import { SvgProps } from 'react-native-svg';
 
 import { AppText, AppPressable, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
+import { FabGradient } from './FabGradient';
+import { useFabAnimation } from '../hooks/useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
@@ -49,36 +44,8 @@ export const HomeFooterNavigator = ({
   onFabPress,
   style,
 }: HomeFooterNavigatorProps) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const opacityAnim = useRef(new Animated.Value(1)).current;
-
-  const handleFabPressIn = () => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 0.9,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 0.7,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
-
-  const handleFabPressOut = () => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-      }),
-      Animated.timing(opacityAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  };
+  const { scaleAnim, opacityAnim, handleFabPressIn, handleFabPressOut } =
+    useFabAnimation();
 
   const renderTab = (
     tabKey: HomeFooterTab,
@@ -140,31 +107,7 @@ export const HomeFooterNavigator = ({
             ]}
           >
             <View style={styles.fabGradientContainer}>
-              <Svg height="100%" width="100%" style={StyleSheet.absoluteFill}>
-                <Defs>
-                  <RadialGradient
-                    id="grad"
-                    cx="50%"
-                    cy="50%"
-                    rx="50%"
-                    ry="50%"
-                    fx="50%"
-                    fy="50%"
-                  >
-                    <Stop
-                      offset="0"
-                      stopColor={COLOR_PALETTE.brandPrimary}
-                      stopOpacity="1"
-                    />
-                    <Stop
-                      offset="1"
-                      stopColor={COLOR_PALETTE.backgroundPrimary}
-                      stopOpacity="1"
-                    />
-                  </RadialGradient>
-                </Defs>
-                <Rect width="100%" height="100%" fill="url(#grad)" />
-              </Svg>
+              <FabGradient />
             </View>
             <AppIcon icon={PlusIcon} variant="fab" />
           </Animated.View>

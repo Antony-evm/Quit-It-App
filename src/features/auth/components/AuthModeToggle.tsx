@@ -34,5 +34,3 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({});

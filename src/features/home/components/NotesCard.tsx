@@ -14,6 +14,7 @@ import {
   AppPressable,
   AppIcon,
   AppDateTimePicker,
+  AppTag,
 } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
 import { useQueryClient } from '@tanstack/react-query';
@@ -388,7 +389,6 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
             { borderLeftColor: accentColor, borderLeftWidth: 4 },
           ]}
         >
-          {/* Tracking Type Selector - Chips/Segmented Control Style */}
           <View style={styles.typeSelectorContainer}>
             <AppText
               variant="sectionLabel"
@@ -401,21 +401,13 @@ export const NotesCard = forwardRef<NotesCardHandle, NotesCardProps>(
               {sortedTrackingTypes.map(type => {
                 const isSelected = selectedTrackingTypeId === type.id;
                 return (
-                  <AppPressable
+                  <AppTag
                     key={type.id}
-                    variant="chip"
+                    label={type.displayName}
+                    variant="rounded"
                     selected={isSelected}
                     onPress={() => handleTrackingTypeSelect(type.id)}
-                  >
-                    <AppText
-                      style={[
-                        styles.chipText,
-                        isSelected && styles.chipTextSelected,
-                      ]}
-                    >
-                      {type.displayName}
-                    </AppText>
-                  </AppPressable>
+                  />
                 );
               })}
             </View>
@@ -483,14 +475,6 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: SPACING.sm,
   },
-  chipText: {
-    color: COLOR_PALETTE.textPrimary,
-    fontWeight: '500',
-  },
-  chipTextSelected: {
-    color: COLOR_PALETTE.textSecondary,
-    fontWeight: '600',
-  },
   dateTimeSection: {
     marginBottom: SPACING.xl,
   },
@@ -508,27 +492,8 @@ const styles = StyleSheet.create({
   notesContainer: {
     marginBottom: SPACING.sm,
   },
-  // notesInput: {
-  //   marginBottom: SPACING.xs,
-  // },
   charCountContainer: {
     alignItems: 'flex-end',
     marginTop: SPACING.md,
-  },
-  deleteContainer: {
-    marginTop: SPACING.xxl,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: COLOR_PALETTE.borderDefault,
-    paddingTop: SPACING.xl,
-  },
-  deleteButton: {
-    borderColor: COLOR_PALETTE.systemError,
-    backgroundColor: 'transparent',
-    width: '100%',
-  },
-  deleteButtonText: {
-    color: COLOR_PALETTE.systemError,
-    fontWeight: '600',
   },
 });
