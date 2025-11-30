@@ -1,41 +1,29 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { AppText, Box } from '@/shared/components/ui';
-import { SPACING, COLOR_PALETTE, TYPOGRAPHY } from '@/shared/theme';
 
 interface WelcomeTextProps {
   isSignup: boolean;
 }
 
 export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
-  const title = isSignup ? 'It starts with one choice!' : 'Welcome Back!';
+  const { t } = useTranslation();
+
+  const title = isSignup
+    ? t('auth.welcomeSignupTitle')
+    : t('auth.welcomeLoginTitle');
   const subtitle = isSignup
-    ? 'Make yours with Quit It today.'
-    : 'Continue your smoke-free journey.';
+    ? t('auth.welcomeSignupSubtitle')
+    : t('auth.welcomeLoginSubtitle');
 
   return (
-    <Box alignItems="center" bg="backgroundPrimary" pt="xxl">
-      <AppText variant="title" tone="inverse" style={styles.title}>
+    <Box alignItems="center" bg="backgroundPrimary" pt="xxl" gap="sm" pb="lg">
+      <AppText variant="title" centered>
         {title}
       </AppText>
-      <AppText variant="body" tone="inverse" style={styles.subtitle}>
+      <AppText variant="caption" centered>
         {subtitle}
       </AppText>
     </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  title: {
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-    ...TYPOGRAPHY.title,
-    color: COLOR_PALETTE.textPrimary,
-  },
-  subtitle: {
-    textAlign: 'center',
-    marginBottom: SPACING.lg,
-    color: COLOR_PALETTE.textPrimary,
-    ...TYPOGRAPHY.caption,
-  },
-});

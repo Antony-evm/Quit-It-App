@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { AppTextInput, Box, AppIcon, FormField } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import ShowPasswordSvg from '@/assets/showPassword.svg';
@@ -21,7 +22,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
     {
       value,
       onChangeText,
-      placeholder = 'Password',
+      placeholder,
       autoComplete = 'password',
       errorMessage,
       isLoading = false,
@@ -30,6 +31,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
     },
     ref,
   ) => {
+    const { t } = useTranslation();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     return (
@@ -45,7 +47,7 @@ export const PasswordField = React.forwardRef<TextInput, PasswordFieldProps>(
           <AppTextInput
             ref={ref}
             variant="ghost"
-            placeholder={placeholder}
+            placeholder={placeholder ?? t('auth.passwordPlaceholder')}
             value={value}
             onChangeText={onChangeText}
             secureTextEntry={!isPasswordVisible}

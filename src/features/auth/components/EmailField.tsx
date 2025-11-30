@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { AppTextInput, FormField } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface EmailValidation {
   hasInput: boolean;
@@ -30,6 +30,7 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     },
     ref,
   ) => {
+    const { t } = useTranslation();
     const [showValidHint, setShowValidHint] = useState(true);
 
     useEffect(() => {
@@ -50,17 +51,17 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
 
     const errorMessage =
       shouldShowHint && shouldShowInvalidHint
-        ? 'Invalid email format'
+        ? t('auth.invalidEmail')
         : undefined;
     const successMessage =
-      shouldShowHint && shouldShowValidHint ? 'Valid email' : undefined;
+      shouldShowHint && shouldShowValidHint ? t('auth.validEmail') : undefined;
 
     return (
       <FormField errorMessage={errorMessage} successMessage={successMessage}>
         <AppTextInput
           ref={ref}
           hasError={validation.hasInput && !validation.isValid}
-          placeholder="Email address"
+          placeholder={t('auth.emailPlaceholder')}
           value={value}
           onChangeText={onChangeText}
           keyboardType="email-address"
@@ -74,5 +75,3 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
     );
   },
 );
-
-const styles = StyleSheet.create({});

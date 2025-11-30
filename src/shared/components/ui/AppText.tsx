@@ -17,6 +17,8 @@ export type AppTextProps = PropsWithChildren<
     variant?: TypographyVariant;
     tone?: TextTone;
     link?: boolean;
+    bold?: boolean;
+    centered?: boolean;
   }
 >;
 
@@ -36,11 +38,15 @@ export const AppText = ({
   variant = 'body',
   tone = 'primary',
   link = false,
+  bold = false,
+  centered = false,
   ...textProps
 }: AppTextProps) => {
   const variantStyle = TYPOGRAPHY[variant] ?? TYPOGRAPHY.body;
   const toneColor = toneToColorMap[tone] ?? COLOR_PALETTE.textPrimary;
   const linkStyle = link ? { textDecorationLine: 'underline' as const } : {};
+  const boldStyle = bold ? { fontWeight: '600' as const } : {};
+  const centeredStyle = centered ? { textAlign: 'center' as const } : {};
 
   return (
     <Text
@@ -49,6 +55,8 @@ export const AppText = ({
         variantStyle,
         { color: toneColor },
         linkStyle,
+        boldStyle,
+        centeredStyle,
         style,
       ]}
       {...textProps}

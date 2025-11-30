@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, IconTextCard } from '@/shared/components/ui';
 import { useAuth } from '@/shared/auth';

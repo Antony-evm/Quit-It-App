@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppText, Box } from '@/shared/components/ui';
 import type { CustomPasswordValidation } from '@/shared/hooks/useCustomPasswordValidation';
 
@@ -9,6 +10,8 @@ interface PasswordStrengthIndicatorProps {
 export const PasswordStrengthIndicator: React.FC<
   PasswordStrengthIndicatorProps
 > = ({ validation }) => {
+  const { t } = useTranslation();
+
   const renderRequirement = (met: boolean, text: string) => (
     <AppText variant="subcaption" tone={met ? 'success' : 'muted'}>
       {met ? '✓' : '✗'} {text}
@@ -20,30 +23,32 @@ export const PasswordStrengthIndicator: React.FC<
   return (
     <Box py="xs" bg="backgroundMuted" borderRadius="small" gap="xs">
       <AppText variant="caption">
-        {hasPassword ? 'Password Requirements:' : 'Password must contain:'}
+        {hasPassword
+          ? t('auth.passwordRequirements')
+          : t('auth.passwordMustContain')}
       </AppText>
 
       {renderRequirement(
         hasPassword &&
           validation.requirements.hasMinLength &&
           validation.requirements.hasMaxLength,
-        '8-32 characters',
+        t('auth.requirementLength'),
       )}
       {renderRequirement(
         hasPassword && validation.requirements.hasUppercase,
-        'At least one uppercase letter',
+        t('auth.requirementUppercase'),
       )}
       {renderRequirement(
         hasPassword && validation.requirements.hasLowercase,
-        'At least one lowercase letter',
+        t('auth.requirementLowercase'),
       )}
       {renderRequirement(
         hasPassword && validation.requirements.hasNumber,
-        'At least one number',
+        t('auth.requirementNumber'),
       )}
       {renderRequirement(
         hasPassword && validation.requirements.hasSymbol,
-        'At least one special character',
+        t('auth.requirementSymbol'),
       )}
     </Box>
   );

@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { TextInput } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { AppTextInput, Box, FormField } from '@/shared/components/ui';
 
 interface NameValidation {
@@ -26,6 +27,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   lastNameValidation,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
   const lastNameRef = useRef<TextInput>(null);
 
   return (
@@ -38,7 +40,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
         }
       >
         <AppTextInput
-          placeholder="First name"
+          placeholder={t('auth.firstNamePlaceholder')}
           value={firstName}
           onChangeText={onFirstNameChange}
           autoCapitalize="words"
@@ -59,7 +61,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
       >
         <AppTextInput
           ref={lastNameRef}
-          placeholder="Last name"
+          placeholder={t('auth.lastNamePlaceholder')}
           value={lastName}
           onChangeText={onLastNameChange}
           autoCapitalize="words"

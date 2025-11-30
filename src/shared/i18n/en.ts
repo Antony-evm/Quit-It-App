@@ -1,5 +1,26 @@
 export default {
   translation: {
+    auth: {
+      noAccount: "Don't have an account? Tap <link>here</link> to sign up",
+      hasAccount: 'Already have an account? Tap <link>here</link> to login',
+      emailPlaceholder: 'Email address',
+      invalidEmail: 'Invalid email format',
+      validEmail: 'Valid email',
+      firstNamePlaceholder: 'First name',
+      lastNamePlaceholder: 'Last name',
+      passwordPlaceholder: 'Password',
+      passwordRequirements: 'Password Requirements:',
+      passwordMustContain: 'Password must contain:',
+      requirementLength: '8-32 characters',
+      requirementUppercase: 'At least one uppercase letter',
+      requirementLowercase: 'At least one lowercase letter',
+      requirementNumber: 'At least one number',
+      requirementSymbol: 'At least one special character',
+      welcomeSignupTitle: 'It starts with one choice!',
+      welcomeSignupSubtitle: 'Make yours with Quit It today.',
+      welcomeLoginTitle: 'Welcome Back!',
+      welcomeLoginSubtitle: 'Continue your smoke-free journey.',
+    },
     account: {
       title: 'Your Quit It Profile',
       sections: {
@@ -18,6 +39,7 @@ export default {
     },
     common: {
       error: 'Something went wrong',
+      close: 'Close',
     },
     home: {
       keepStreakGoing: 'Keep the streak going {{name}}!',

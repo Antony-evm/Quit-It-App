@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { AppDateTimePicker, Box } from '@/shared/components/ui';
 
 type DatePickerFieldProps = {

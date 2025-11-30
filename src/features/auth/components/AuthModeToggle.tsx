@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
+import { Trans, useTranslation } from 'react-i18next';
 import { AppText } from '@/shared/components/ui';
 
 interface AuthModeToggleProps {
@@ -13,14 +14,22 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
   onToggle,
   isLoading = false,
 }) => {
+  const { t } = useTranslation();
+
   return (
-    <TouchableOpacity onPress={onToggle} activeOpacity={1} disabled={isLoading}>
+    <TouchableOpacity
+      onPress={onToggle}
+      activeOpacity={0.7}
+      disabled={isLoading}
+    >
       <AppText variant="caption">
-        {isLoginMode
-          ? "Don't have an account? Tap "
-          : 'Already have an account? Tap '}
-        <AppText link>here</AppText>
-        {isLoginMode ? ' to sign up' : ' to login'}
+        <Trans
+          i18nKey={isLoginMode ? 'auth.noAccount' : 'auth.hasAccount'}
+          t={t}
+          components={{
+            link: <AppText link tone="brand" />,
+          }}
+        />
       </AppText>
     </TouchableOpacity>
   );

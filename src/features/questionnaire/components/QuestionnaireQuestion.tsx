@@ -1,8 +1,6 @@
-import React from 'react';
-
 import type { Question, SelectedAnswerOption } from '../types';
 import { AppText, Box } from '@/shared/components/ui';
-import { AnswerTabs, ANSWER_TAB_VARIANTS } from './inputs';
+import { AnswerTabs } from './inputs';
 import { DatePickerField } from './inputs';
 import { NumericRangeField } from './inputs';
 import { useQuestionnaireQuestion } from '../hooks/useQuestionnaireQuestion';
@@ -60,7 +58,6 @@ export const QuestionnaireQuestion = ({
           }))}
           selectedOptionIds={selectedChoiceIds}
           selectionMode={allowMultipleChoice ? 'multiple' : 'single'}
-          variant={ANSWER_TAB_VARIANTS.MULTIPLE_MANY}
           onSelectionChange={setSelectedChoiceIds}
         />
       ) : null}

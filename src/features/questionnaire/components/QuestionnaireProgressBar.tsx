@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Animated } from 'react-native';
+import { useEffect, useRef } from 'react';
+import { Animated, StyleSheet } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
+import { COLOR_PALETTE } from '@/shared/theme';
+
+const PROGRESS_BAR_RADIUS = 3;
 
 type QuestionnaireProgressBarProps = {
   currentQuestion: number;
@@ -46,18 +48,12 @@ export const QuestionnaireProgressBar = ({
   }, [isAnimating, pulseAnim]);
 
   return (
-    <Box
-      style={styles.container}
-      alignItems="center"
-      py="xs"
-      bg="backgroundMuted"
-      borderRadius="small"
-    >
-      <AppText variant="caption" tone="secondary" style={styles.progressText}>
+    <Box alignItems="center" py="xs" bg="backgroundMuted" borderRadius="small">
+      <AppText variant="subcaption" tone="primary" bold centered>
         {currentQuestion}/{totalQuestions}
       </AppText>
 
-      <Box style={styles.progressTrack}>
+      <Box variant="progressTrack">
         <Animated.View
           style={[
             styles.progressFill,
@@ -73,30 +69,9 @@ export const QuestionnaireProgressBar = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    gap: SPACING.xs / 2,
-    alignItems: 'center',
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingVertical: SPACING.xs,
-    borderRadius: 4,
-  },
-  progressText: {
-    textAlign: 'center',
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLOR_PALETTE.textPrimary,
-  },
-  progressTrack: {
-    height: 6,
-    backgroundColor: COLOR_PALETTE.borderDefault,
-    borderRadius: 3,
-    overflow: 'hidden',
-    width: '100%',
-  },
   progressFill: {
     height: '100%',
     backgroundColor: COLOR_PALETTE.textPrimary,
-    borderRadius: 2,
+    borderRadius: PROGRESS_BAR_RADIUS,
   },
 });

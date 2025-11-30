@@ -1,4 +1,3 @@
-import React from 'react';
 import { StyleProp, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { AppText } from './AppText';
 import { AppPressable } from './AppPressable';

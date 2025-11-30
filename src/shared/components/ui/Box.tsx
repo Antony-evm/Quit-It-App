@@ -97,6 +97,56 @@ const BOX_VARIANTS = {
     borderRadius: BORDER_RADIUS.none,
     borderWidth: BORDER_WIDTH.none,
   },
+  gridRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    gap: SPACING.md,
+    borderBottomWidth: BORDER_WIDTH.sm,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
+  },
+  gridContainer: {
+    borderRadius: BORDER_RADIUS.small,
+    overflow: 'hidden',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sliderContainer: {
+    flex: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  sliderOverlay: {
+    position: 'absolute',
+    top: '35%',
+    width: '90%',
+    alignItems: 'flex-end',
+  },
+  progressTrack: {
+    height: 6,
+    backgroundColor: COLOR_PALETTE.borderDefault,
+    borderRadius: 3,
+    overflow: 'hidden',
+    width: '100%',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: COLOR_PALETTE.textPrimary,
+    borderRadius: 3,
+  },
+  drawerTitle: {
+    backgroundColor: COLOR_PALETTE.backgroundMuted,
+    paddingVertical: SPACING.md,
+    alignItems: 'center',
+    borderBottomWidth: BORDER_WIDTH.sm,
+    borderBottomColor: COLOR_PALETTE.borderDefault,
+    ...SHADOWS.md,
+    zIndex: 5,
+  },
 } satisfies Record<string, ViewStyle>;
 
 export type BoxVariant = keyof typeof BOX_VARIANTS;

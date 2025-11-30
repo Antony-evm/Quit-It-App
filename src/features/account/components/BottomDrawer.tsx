@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, ScrollView } from 'react-native';
-import { SPACING, COLOR_PALETTE } from '@/shared/theme';
-import { AppText, DraggableModal, AppIcon } from '@/shared/components/ui';
+import { TouchableOpacity, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
+
+import { AppText, DraggableModal, AppIcon, Box } from '@/shared/components/ui';
 import CancelSvg from '@/assets/cancel.svg';
 
 type BottomDrawerProps = {
@@ -17,8 +18,14 @@ export const BottomDrawer = ({
   title,
   children,
 }: BottomDrawerProps) => {
+  const { t } = useTranslation();
+
   const headerContent = (
-    <TouchableOpacity onPress={onClose}>
+    <TouchableOpacity
+      onPress={onClose}
+      accessibilityLabel={t('common.close')}
+      accessibilityRole="button"
+    >
       <AppIcon icon={CancelSvg} />
     </TouchableOpacity>
   );
@@ -29,35 +36,14 @@ export const BottomDrawer = ({
       onClose={onClose}
       headerContent={headerContent}
     >
-      <View style={styles.titleContainer}>
+      <Box variant="drawerTitle">
         <AppText variant="heading" tone="primary">
           {title}
         </AppText>
-      </View>
-      <ScrollView style={styles.content}>{children}</ScrollView>
+      </Box>
+      <ScrollView style={{ flex: 1 }}>
+        <Box p="lg">{children}</Box>
+      </ScrollView>
     </DraggableModal>
   );
 };
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    backgroundColor: COLOR_PALETTE.backgroundMuted,
-    paddingVertical: SPACING.md,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: COLOR_PALETTE.borderDefault,
-    shadowColor: COLOR_PALETTE.shadowDefault,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
-    elevation: 5,
-    zIndex: 5,
-  },
-  content: {
-    flex: 1,
-    padding: SPACING.lg,
-  },
-});

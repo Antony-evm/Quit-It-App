@@ -1,10 +1,6 @@
 import { useCallback } from 'react';
 
-import {
-  AnswerTab,
-  ANSWER_TAB_VARIANTS,
-  AnswerTabVariantType,
-} from './AnswerTab';
+import { AnswerTab } from './AnswerTab';
 import { Box } from '@/shared/components/ui';
 
 type AnswerTabOption = {
@@ -17,7 +13,6 @@ type AnswerTabsProps = {
   options: AnswerTabOption[];
   selectedOptionIds: number[];
   selectionMode?: 'single' | 'multiple';
-  variant?: AnswerTabVariantType;
   onSelectionChange: (nextSelected: number[]) => void;
 };
 
@@ -25,11 +20,9 @@ export const AnswerTabs = ({
   options,
   selectedOptionIds,
   selectionMode = 'single',
-  variant = ANSWER_TAB_VARIANTS.DEFAULT,
   onSelectionChange,
 }: AnswerTabsProps) => {
   const isMulti = selectionMode === 'multiple';
-  const safeVariant = variant || ANSWER_TAB_VARIANTS.DEFAULT;
 
   const handleToggle = useCallback(
     (optionId: number) => {
@@ -61,7 +54,6 @@ export const AnswerTabs = ({
           label={option.label}
           disabled={option.disabled}
           isSelected={selectedOptionIds.includes(option.id)}
-          variant={safeVariant}
           onPress={() => handleToggle(option.id)}
         />
       ))}
