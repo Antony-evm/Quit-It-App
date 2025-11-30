@@ -17,6 +17,7 @@ import {
   ANSWER_TAB_MIN_HEIGHT,
   ANSWER_GRID_MIN_HEIGHT,
   BORDER_WIDTH,
+  OPACITY,
 } from '@/shared/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -162,8 +163,8 @@ export const AppPressable = ({
   selected = false,
   fullWidth = false,
   separator = false,
-  activeOpacity = 0.7,
-  disabledOpacity = 0.5,
+  activeOpacity = OPACITY.medium,
+  disabledOpacity = OPACITY.disabled,
   scaleValue = 0.96,
   disabled,
   ...props

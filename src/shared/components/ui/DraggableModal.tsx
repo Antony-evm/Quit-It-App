@@ -11,7 +11,7 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { SPACING, COLOR_PALETTE } from '@/shared/theme';
+import { SPACING, COLOR_PALETTE, OPACITY } from '@/shared/theme';
 
 type DraggableModalProps = {
   visible: boolean;
@@ -31,6 +31,7 @@ export const DraggableModal = ({
   const screenHeight = Dimensions.get('window').height;
   const slideAnim = useRef(new Animated.Value(screenHeight)).current;
   const panY = useRef(new Animated.Value(0)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
   const [isContentVisible, setIsContentVisible] = useState(visible);
 
   const panResponder = useRef(
@@ -61,11 +62,18 @@ export const DraggableModal = ({
   useEffect(() => {
     if (visible) {
       panY.setValue(0);
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        bounciness: 0,
-      }).start();
+      Animated.parallel([
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          bounciness: 0,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: OPACITY.medium,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
 
       const task = InteractionManager.runAfterInteractions(() => {
         setIsContentVisible(true);
@@ -73,15 +81,22 @@ export const DraggableModal = ({
 
       return () => task.cancel();
     } else {
-      Animated.timing(slideAnim, {
-        toValue: screenHeight,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
+      Animated.parallel([
+        Animated.timing(slideAnim, {
+          toValue: screenHeight,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
         setIsContentVisible(false);
       });
     }
-  }, [visible, slideAnim, panY, screenHeight]);
+  }, [visible, slideAnim, panY, screenHeight, backdropOpacity]);
 
   const translateY = Animated.add(slideAnim, panY);
 
@@ -94,7 +109,9 @@ export const DraggableModal = ({
     >
       <View style={styles.overlay}>
         <TouchableWithoutFeedback onPress={onClose}>
-          <View style={styles.backdrop} />
+          <Animated.View
+            style={[styles.backdrop, { opacity: backdropOpacity }]}
+          />
         </TouchableWithoutFeedback>
         <Animated.View style={[styles.drawer, { transform: [{ translateY }] }]}>
           <View {...panResponder.panHandlers} style={styles.headerContainer}>
@@ -120,7 +137,9 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   backdrop: {
-    backgroundColor: COLOR_PALETTE.backgroundNav,
+    ...StyleSheet.absoluteFill,
+    backgroundColor: COLOR_PALETTE.shadowDefault,
+    zIndex: 1,
   },
   drawer: {
     backgroundColor: COLOR_PALETTE.backgroundMuted,
@@ -128,9 +147,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     height: '85%',
     overflow: 'hidden',
+    zIndex: 2,
   },
   headerContainer: {
-    backgroundColor: COLOR_PALETTE.backgroundOverlay,
+    backgroundColor: COLOR_PALETTE.shadowDefault,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,

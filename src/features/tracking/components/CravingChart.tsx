@@ -8,6 +8,7 @@ import {
   DEVICE_HEIGHT,
   SPACING,
   BORDER_RADIUS,
+  hexToRgba,
 } from '@/shared/theme';
 import { DailyCravingData } from '@/features/tracking';
 import { useCravingChartData } from '../hooks/useCravingChartData';
@@ -18,7 +19,6 @@ type CravingChartProps = {
 };
 
 const screenWidth = Dimensions.get('window').width;
-// Calculate width based on screen padding (SPACING.xl * 2) and container padding (SPACING.lg * 2)
 const chartWidth = screenWidth - SPACING.md * 6;
 
 export const CravingChart = ({ data, style }: CravingChartProps) => {
@@ -32,9 +32,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
         p="md"
         style={[styles.container, style]}
       >
-        <AppText variant="heading" style={styles.title}>
-          Cravings
-        </AppText>
+        <AppText variant="heading">Cravings</AppText>
         <AppText variant="body" tone="secondary" style={styles.noDataText}>
           No craving data available
         </AppText>
@@ -62,7 +60,7 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
     propsForBackgroundLines: {
       stroke: COLOR_PALETTE.textMuted,
       strokeOpacity: 0.2,
-      strokeDasharray: '', // Solid lines
+      strokeDasharray: '',
     },
     fillShadowGradient: COLOR_PALETTE.craving,
     fillShadowGradientOpacity: 1,
@@ -94,8 +92,10 @@ export const CravingChart = ({ data, style }: CravingChartProps) => {
           px="md"
           py="xs"
           borderRadius="full"
-          bg="cravingLight"
-          style={{ alignSelf: 'flex-start' }}
+          style={{
+            alignSelf: 'flex-start',
+            backgroundColor: hexToRgba(COLOR_PALETTE.craving, 0.1),
+          }}
         >
           <AppText style={styles.titleBadgeText}>Cravings Resisted</AppText>
         </Box>
@@ -200,9 +200,6 @@ const styles = StyleSheet.create({
     borderColor: COLOR_PALETTE.borderDefault,
     borderLeftColor: COLOR_PALETTE.craving,
     borderLeftWidth: 4,
-  },
-  title: {
-    // marginBottom: SPACING.md, // Moved to header
   },
   toggleButton: {
     paddingVertical: 4,

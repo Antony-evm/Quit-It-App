@@ -1,6 +1,6 @@
 import { useCravingAnalytics, useSmokingAnalytics } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
-import { COLOR_PALETTE } from '@/shared/theme';
+import { COLOR_PALETTE, hexToRgba } from '@/shared/theme';
 import { HomeStat } from '../components/HomeStatsRow';
 
 export const useHomeDashboardStats = () => {
@@ -26,7 +26,7 @@ export const useHomeDashboardStats = () => {
       value: cravingAnalytics?.total_cravings?.toString() || '0',
       accentColor: COLOR_PALETTE.craving,
       tagLabel: 'Cravings',
-      tagBackgroundColor: COLOR_PALETTE.cravingLight,
+      tagBackgroundColor: hexToRgba(COLOR_PALETTE.craving, 0.1),
       bottomLabel: 'Resisted',
     },
     {
@@ -34,7 +34,7 @@ export const useHomeDashboardStats = () => {
       value: smokingAnalytics?.skipped_smokes?.toString() || '0',
       accentColor: COLOR_PALETTE.cigarette,
       tagLabel: 'Smokes',
-      tagBackgroundColor: COLOR_PALETTE.cigaretteLight,
+      tagBackgroundColor: hexToRgba(COLOR_PALETTE.cigarette, 0.1),
       bottomLabel: 'Skipped',
     },
     {
@@ -44,7 +44,7 @@ export const useHomeDashboardStats = () => {
         : '$0.00',
       accentColor: COLOR_PALETTE.wealth,
       tagLabel: 'Money',
-      tagBackgroundColor: COLOR_PALETTE.wealthLight,
+      tagBackgroundColor: hexToRgba(COLOR_PALETTE.wealth, 0.1),
       bottomLabel: 'Saved',
     },
   ];

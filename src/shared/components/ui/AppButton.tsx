@@ -15,9 +15,8 @@ import {
   BORDER_RADIUS,
   BORDER_WIDTH,
   TypographyVariant,
+  OPACITY,
 } from '../../theme';
-
-const MEDIUM_OPACITY = 0.7;
 
 type ButtonVariant =
   | 'primary'
@@ -140,8 +139,8 @@ export const AppButton = ({
         containerStyle,
       ]}
       disabled={isDisabled}
-      disabledOpacity={loading ? 1 : MEDIUM_OPACITY}
-      activeOpacity={MEDIUM_OPACITY}
+      disabledOpacity={loading ? 1 : OPACITY.medium}
+      activeOpacity={OPACITY.medium}
       {...pressableProps}
     >
       {loading ? (

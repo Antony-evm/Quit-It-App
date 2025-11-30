@@ -1,18 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 
-import {
-  AppCard,
-  AppText,
-  Box,
-  AppPressable,
-  AppTag,
-} from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING, BORDER_RADIUS } from '@/shared/theme';
-import { LAYOUT_STYLES, TEXT_STYLES } from '@/shared/styles/commonStyles';
+import { AppText, Box, AppPressable, AppTag } from '@/shared/components/ui';
+import { COLOR_PALETTE, SPACING, hexToRgba } from '@/shared/theme';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import type { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
-import { formatRelativeDateTimeForDisplay } from '@/utils/timezoneUtils';
 
 type TrackingRecordCardProps = {
   record: TrackingRecordApiResponse;
@@ -41,10 +33,10 @@ export const TrackingRecordCard = React.memo(
       : COLOR_PALETTE.borderDefault;
 
     const badgeBackgroundColor = isCraving
-      ? 'rgba(122, 62, 177, 0.1)'
+      ? hexToRgba(COLOR_PALETTE.craving, 0.1)
       : isSmoke
-      ? 'rgba(214, 106, 61, 0.1)'
-      : 'rgba(59, 101, 93, 0.1)';
+      ? hexToRgba(COLOR_PALETTE.cigarette, 0.1)
+      : hexToRgba(COLOR_PALETTE.borderDefault, 0.1);
 
     // Date formatting logic
     const date = new Date(record.event_at);

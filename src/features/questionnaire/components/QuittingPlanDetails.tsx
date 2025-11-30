@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Box, StatusMessage, IconTextCard } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
 import AimSvg from '@/assets/aim.svg';
@@ -14,14 +15,15 @@ interface QuittingPlanDetailsProps {
 export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
   style,
 }) => {
+  const { t } = useTranslation();
   const { plan, isLoading, error } = useQuittingPlan();
 
   if (isLoading) {
-    return <StatusMessage type="loading" message="Loading plan details..." />;
+    return <StatusMessage type="loading" message={t('plan.loading')} />;
   }
 
   if (error) {
-    return <StatusMessage type="error" message="Unable to load plan details" />;
+    return <StatusMessage type="error" message={t('plan.error')} />;
   }
 
   if (!plan) {
@@ -42,9 +44,12 @@ export const QuittingPlanDetails: React.FC<QuittingPlanDetailsProps> = ({
       <IconTextCard icon={CalendarSvg} text={formatDate(plan.date)} />
       <IconTextCard
         icon={StopSvg}
-        text={`${plan.current} cigarettes per day`}
+        text={t('plan.cigarettesPerDay', { count: plan.current })}
       />
-      <IconTextCard icon={GoalSvg} text={`${plan.target} cigarettes per day`} />
+      <IconTextCard
+        icon={GoalSvg}
+        text={t('plan.cigarettesPerDay', { count: plan.target })}
+      />
     </Box>
   );
 };

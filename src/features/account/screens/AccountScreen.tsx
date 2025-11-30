@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import {
   AppText,
@@ -23,12 +24,12 @@ import { useQuitDateLogic } from '../hooks/useQuitDateLogic';
 type AccountSection = 'details' | 'plan' | 'triggers' | 'habits' | null;
 
 export const AccountScreen = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { handleRefresh, isRefetching, error } = useQuitDateLogic();
 
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
-  // Pre-fetch the smoking triggers question
   useSmokingTriggersQuestion();
   useSmokingFrequencyQuestion();
 
@@ -39,7 +40,7 @@ export const AccountScreen = () => {
           <Box mb="lg">
             <IconTextCard
               icon={EmailSvg}
-              text={user?.email ?? 'Not available'}
+              text={user?.email ?? t('account.emailPlaceholder')}
             />
           </Box>
         );
@@ -57,13 +58,13 @@ export const AccountScreen = () => {
   const getDrawerTitle = () => {
     switch (activeSection) {
       case 'details':
-        return 'Your Details';
+        return t('account.sections.details');
       case 'plan':
-        return 'Your Plan';
+        return t('account.sections.plan');
       case 'triggers':
-        return 'Your Triggers';
+        return t('account.sections.triggers');
       case 'habits':
-        return 'Your Habits';
+        return t('account.sections.habits');
       default:
         return '';
     }
@@ -84,25 +85,25 @@ export const AccountScreen = () => {
         }
       >
         <ScreenHeader
-          title="Your Quit It Profile"
+          title={t('account.title')}
           marginBottom={SPACING.xl}
           paddingHorizontal={0}
         />
 
         <AccountSectionItem
-          title="Your Details"
+          title={t('account.sections.details')}
           onPress={() => setActiveSection('details')}
         />
         <AccountSectionItem
-          title="Your Plan"
+          title={t('account.sections.plan')}
           onPress={() => setActiveSection('plan')}
         />
         <AccountSectionItem
-          title="Your Triggers"
+          title={t('account.sections.triggers')}
           onPress={() => setActiveSection('triggers')}
         />
         <AccountSectionItem
-          title="Your Habits"
+          title={t('account.sections.habits')}
           onPress={() => setActiveSection('habits')}
         />
 
@@ -121,11 +122,7 @@ export const AccountScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    marginTop: SPACING.xxl,
-    paddingHorizontal: SPACING.lg,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
+  scrollContent: {},
   globalError: {
     color: COLOR_PALETTE.systemError,
     marginBottom: SPACING.lg,
