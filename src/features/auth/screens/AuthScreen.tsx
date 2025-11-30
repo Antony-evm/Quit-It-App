@@ -21,17 +21,12 @@ import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({
-  navigation,
-  route,
-}) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
   const isKeyboardVisible = useKeyboardVisibility();
 
-  // Get initial mode from route params, default to signup if no tokens, login if invalid tokens
   const initialMode = route.params?.mode || 'signup';
 
   const {
-    // Form state
     email,
     password,
     confirmPassword,
@@ -40,8 +35,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     isLoading,
     isLoginMode,
     isFormReady,
-
-    // Form handlers
     setEmail,
     setPassword,
     setConfirmPassword,
@@ -49,8 +42,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
     setLastName,
     handleSubmit,
     handleModeToggle,
-
-    // Validations
     emailValidation,
     passwordValidation,
     firstNameValidation,
@@ -64,7 +55,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
       >
-        {/* Header with animated logo */}
         <AuthHeader />
 
         <ScrollView
@@ -75,9 +65,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
           <WelcomeText isSignup={!isLoginMode} />
 
           <Box bg="backgroundMuted" px="xxl" py="xl" flex={1} gap="lg">
-            {/* Auth form */}
             <Box style={{ width: '100%' }} gap="lg">
-              {/* Name fields - Only in signup mode */}
               {!isLoginMode && (
                 <NameFieldsGroup
                   firstName={firstName}
@@ -90,7 +78,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 />
               )}
 
-              {/* Email field */}
               <EmailField
                 value={email}
                 onChangeText={setEmail}
@@ -98,7 +85,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 isLoading={isLoading}
               />
 
-              {/* Password field */}
               <PasswordField
                 value={password}
                 onChangeText={setPassword}
@@ -107,7 +93,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 isLoading={isLoading}
               />
 
-              {/* Confirm Password - Only in signup mode */}
               {!isLoginMode && (
                 <PasswordField
                   value={confirmPassword}
@@ -124,7 +109,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
                 />
               )}
 
-              {/* Show password strength indicator always in signup mode */}
               {!isLoginMode && (
                 <PasswordStrengthIndicator validation={passwordValidation} />
               )}
@@ -138,7 +122,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
           </Box>
         </ScrollView>
 
-        {/* Submit button - back at the bottom but with stable positioning */}
         <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="backgroundMuted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle, Animated } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 
-import { AppText, AppPressable, AppIcon } from '@/shared/components/ui';
+import { AppPressable, AppIcon } from '@/shared/components/ui';
 import { COLOR_PALETTE, SPACING, FOOTER_LAYOUT } from '@/shared/theme';
 import { FabGradient } from './FabGradient';
 import { useFabAnimation } from './useFabAnimation';
@@ -119,7 +119,6 @@ export const HomeFooterNavigator = ({
 
 const styles = StyleSheet.create({
   mainContainer: {
-    // Removed absolute positioning to allow flex layout in parent
     width: '100%',
     alignItems: 'center',
   },

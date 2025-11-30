@@ -1,7 +1,6 @@
 import React, { useRef } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 import { AppTextInput, Box, FormField } from '@/shared/components/ui';
-import { COLOR_PALETTE, SPACING } from '@/shared/theme';
 
 interface NameValidation {
   isValid: boolean;
@@ -31,7 +30,6 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
 
   return (
     <Box gap="lg">
-      {/* First Name Field */}
       <FormField
         errorMessage={
           firstName.length > 0 && !firstNameValidation.isValid
@@ -52,7 +50,6 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
         />
       </FormField>
 
-      {/* Last Name Field */}
       <FormField
         errorMessage={
           lastName.length > 0 && !lastNameValidation.isValid
