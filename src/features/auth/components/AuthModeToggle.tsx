@@ -15,22 +15,19 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
   isLoading = false,
 }) => {
   return (
-    <TouchableOpacity
-      style={styles.modeToggle}
-      onPress={onToggle}
-      activeOpacity={1}
-      disabled={isLoading}
-    >
-      <AppText variant="body" tone="primary" style={styles.modeToggleText}>
+    <TouchableOpacity onPress={onToggle} activeOpacity={1} disabled={isLoading}>
+      <AppText variant="caption">
         {isLoginMode ? (
           <>
             Don't have an account? Tap{' '}
-            <Text style={styles.underlinedText}>here</Text> to sign up
+            <Text style={{ textDecorationLine: 'underline' }}>here</Text> to
+            sign up
           </>
         ) : (
           <>
             Already have an account? Tap{' '}
-            <Text style={styles.underlinedText}>here</Text> to login
+            <Text style={{ textDecorationLine: 'underline' }}>here</Text> to
+            login
           </>
         )}
       </AppText>
@@ -38,19 +35,4 @@ export const AuthModeToggle: React.FC<AuthModeToggleProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  modeToggle: {
-    padding: SPACING.md,
-    alignItems: 'center',
-  },
-  modeToggleText: {
-    textAlign: 'center',
-    ...TYPOGRAPHY.caption,
-    color: COLOR_PALETTE.textPrimary,
-  },
-  underlinedText: {
-    textDecorationLine: 'underline',
-    ...TYPOGRAPHY.caption,
-    color: COLOR_PALETTE.textPrimary,
-  },
-});
+const styles = StyleSheet.create({});

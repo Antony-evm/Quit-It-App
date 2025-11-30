@@ -32,7 +32,6 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
   ) => {
     const [showValidHint, setShowValidHint] = useState(true);
 
-    // Effect to hide valid email hint after 500ms
     useEffect(() => {
       if (validation.isValid && validation.hasInput && !validation.isEmpty) {
         const timer = setTimeout(() => {
@@ -41,7 +40,6 @@ export const EmailField = React.forwardRef<TextInput, EmailFieldProps>(
 
         return () => clearTimeout(timer);
       } else {
-        // Reset to show hint when email becomes invalid or empty
         setShowValidHint(true);
       }
     }, [validation.isValid, validation.hasInput, validation.isEmpty]);

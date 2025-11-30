@@ -32,7 +32,7 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   return (
     <Box>
       {/* First Name Field */}
-      <Box mb="lg">
+      <Box mb="lg" gap="xs">
         <AppTextInput
           placeholder="First name"
           value={firstName}
@@ -45,14 +45,14 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           onSubmitEditing={() => lastNameRef.current?.focus()}
         />
         {firstName.length > 0 && !firstNameValidation.isValid && (
-          <AppText variant="caption" style={styles.errorText}>
-            {firstNameValidation.error}
+          <AppText variant="subcaption" tone="error">
+            ✗ {firstNameValidation.error}
           </AppText>
         )}
       </Box>
 
       {/* Last Name Field */}
-      <Box mb="lg">
+      <Box mb="lg" gap="xs">
         <AppTextInput
           ref={lastNameRef}
           placeholder="Last name"
@@ -64,8 +64,8 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
           hasError={lastName.length > 0 && !lastNameValidation.isValid}
         />
         {lastName.length > 0 && !lastNameValidation.isValid && (
-          <AppText variant="caption" style={styles.errorText}>
-            {lastNameValidation.error}
+          <AppText variant="subcaption" tone="error">
+            ✗ {lastNameValidation.error}
           </AppText>
         )}
       </Box>
@@ -73,10 +73,4 @@ export const NameFieldsGroup: React.FC<NameFieldsGroupProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  errorText: {
-    color: COLOR_PALETTE.systemError,
-    marginTop: SPACING.xs,
-    marginLeft: SPACING.sm,
-  },
-});
+const styles = StyleSheet.create({});
