@@ -1,18 +1,15 @@
 import { useState } from 'react';
-import { RefreshControl, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { Box, ScreenHeader, StatusMessage } from '@/shared/components/ui';
-import { TEXT, BACKGROUND } from '@/shared/theme';
+import { Box, ScreenHeader } from '@/shared/components/ui';
 
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
 import { AccountSection, SECTION_CONFIG, SECTION_ORDER } from '../constants';
-import { useQuitDate } from '../hooks/useQuitDate';
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
-  const { refresh, isRefetching, error } = useQuitDate();
 
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
@@ -29,17 +26,7 @@ export const AccountScreen = () => {
 
   return (
     <Box variant="default">
-      <ScrollView
-        refreshControl={
-          <RefreshControl
-            tintColor={TEXT.primary}
-            colors={[TEXT.primary]}
-            progressBackgroundColor={BACKGROUND.cream}
-            refreshing={isRefetching}
-            onRefresh={refresh}
-          />
-        }
-      >
+      <ScrollView>
         <ScreenHeader title={t('account.title')} />
 
         {SECTION_ORDER.map(sectionKey => (
@@ -49,8 +36,6 @@ export const AccountScreen = () => {
             onPress={() => setActiveSection(sectionKey)}
           />
         ))}
-
-        {error ? <StatusMessage type="error" message={error} /> : null}
       </ScrollView>
 
       <BottomDrawer
