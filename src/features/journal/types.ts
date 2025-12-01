@@ -4,6 +4,7 @@ import type { ScrollView } from 'react-native';
 export type TrackingTypeOption = {
   id: number;
   displayName: string;
+  code: string;
   is_default?: boolean;
 };
 
@@ -56,7 +57,6 @@ export type UseNotesCardControllerOptions = {
   userId?: number;
   recordId?: number;
   initialValues?: NotesCardInitialValues;
-  onSave?: (data: NotesCardFormData) => void;
   onSaveSuccess?: () => void;
   onDeleteSuccess?: () => void;
   scrollViewRef?: RefObject<ScrollView | null>;

@@ -8,12 +8,10 @@ import {
 import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutations';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
-import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
-import { TAGS, SYSTEM } from '@/shared/theme';
+import { getTrackingTypeColors } from '@/features/tracking/constants';
 import ScrollManager from '@/utils/scrollManager';
 import type {
   UseNotesCardControllerOptions,
-  NotesCardFormData,
   TrackingTypeOption,
 } from '../types';
 
@@ -23,14 +21,16 @@ export const useNotesCardController = ({
   userId,
   recordId,
   initialValues,
-  onSave,
   onSaveSuccess,
   onDeleteSuccess,
   scrollViewRef,
 }: UseNotesCardControllerOptions = {}) => {
   const queryClient = useQueryClient();
-  const currentUserId = useCurrentUserId();
-  const actualUserId = userId ?? currentUserId;
+
+  if (userId === undefined) {
+    throw new Error('useNotesCardController: userId is required');
+  }
+
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
   const {
@@ -43,7 +43,7 @@ export const useNotesCardController = ({
     create,
     update,
     delete: deleteMutation,
-  } = useTrackingMutations(actualUserId);
+  } = useTrackingMutations(userId);
 
   // Form state
   const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
@@ -57,13 +57,22 @@ export const useNotesCardController = ({
   const cardRef = useRef<View>(null);
 
   // Sync with initial values when they change (e.g., when editing different records)
+  // Use individual values to avoid unnecessary re-renders from object reference changes
+  const initialTrackingTypeId = initialValues?.trackingTypeId;
+  const initialDateTime = initialValues?.dateTime?.getTime();
+  const initialNotes = initialValues?.notes;
+
   useEffect(() => {
-    if (initialValues) {
-      setSelectedTrackingTypeId(initialValues.trackingTypeId);
-      setSelectedDateTime(initialValues.dateTime);
-      setNotes(initialValues.notes);
+    if (initialTrackingTypeId !== undefined) {
+      setSelectedTrackingTypeId(initialTrackingTypeId);
     }
-  }, [initialValues]);
+    if (initialDateTime !== undefined) {
+      setSelectedDateTime(new Date(initialDateTime));
+    }
+    if (initialNotes !== undefined) {
+      setNotes(initialNotes);
+    }
+  }, [initialTrackingTypeId, initialDateTime, initialNotes]);
 
   // Cleanup scroll manager on unmount
   useEffect(() => {
@@ -103,18 +112,8 @@ export const useNotesCardController = ({
 
   // Determine accent color based on tracking type
   const accentColor = useMemo(() => {
-    if (!selectedTrackingType) return SYSTEM.border;
-
-    const displayNameLower = selectedTrackingType.displayName.toLowerCase();
-    const isCraving = displayNameLower.includes('craving');
-    const isSmoke =
-      displayNameLower.includes('smoke') ||
-      displayNameLower.includes('cigarette');
-
-    if (isCraving) return TAGS.craving;
-    if (isSmoke) return TAGS.cigarette;
-    return SYSTEM.border;
-  }, [selectedTrackingType]);
+    return getTrackingTypeColors(selectedTrackingType?.code).accent;
+  }, [selectedTrackingType?.code]);
 
   // Handlers
   const handleDateTimeChange = useCallback(
@@ -153,12 +152,12 @@ export const useNotesCardController = ({
 
   const invalidateAnalyticsQueries = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ['cravingAnalytics', actualUserId],
+      queryKey: ['cravingAnalytics', userId],
     });
     queryClient.invalidateQueries({
-      queryKey: ['smokingAnalytics', actualUserId],
+      queryKey: ['smokingAnalytics', userId],
     });
-  }, [queryClient, actualUserId]);
+  }, [queryClient, userId]);
 
   const resetForm = useCallback(() => {
     setNotes('');
@@ -181,16 +180,8 @@ export const useNotesCardController = ({
       }
     }
 
-    const formData: NotesCardFormData = {
-      trackingTypeId: selectedTrackingType.id,
-      dateTime: selectedDateTime,
-      notes: notes.trim(),
-    };
-
-    onSave?.(formData);
-
     const payload = {
-      user_id: actualUserId,
+      user_id: userId,
       tracking_type_id: selectedTrackingType.id,
       event_at: selectedDateTime.toISOString(),
       note: notes.trim() || null,
@@ -200,7 +191,7 @@ export const useNotesCardController = ({
       const oldRecord: TrackingRecordApiResponse | undefined = initialValues
         ? {
             record_id: recordId,
-            user_id: actualUserId!,
+            user_id: userId,
             tracking_type_id: initialValues.trackingTypeId,
             event_at: initialValues.dateTime.toISOString(),
             note: initialValues.notes || null,
@@ -209,7 +200,7 @@ export const useNotesCardController = ({
 
       const updatedRecord: TrackingRecordApiResponse = {
         record_id: recordId,
-        user_id: actualUserId!,
+        user_id: userId,
         tracking_type_id: selectedTrackingType.id,
         event_at: selectedDateTime.toISOString(),
         note: notes.trim() || null,
@@ -289,8 +280,7 @@ export const useNotesCardController = ({
     notes,
     initialValues,
     recordId,
-    actualUserId,
-    onSave,
+    userId,
     onSaveSuccess,
     updateRecordInCache,
     update,
@@ -309,7 +299,7 @@ export const useNotesCardController = ({
     const recordToDelete: TrackingRecordApiResponse | undefined = initialValues
       ? {
           record_id: recordId,
-          user_id: actualUserId!,
+          user_id: userId,
           tracking_type_id: initialValues.trackingTypeId,
           event_at: initialValues.dateTime.toISOString(),
           note: initialValues.notes || null,
@@ -344,7 +334,7 @@ export const useNotesCardController = ({
   }, [
     recordId,
     initialValues,
-    actualUserId,
+    userId,
     removeRecordFromCache,
     deleteMutation,
     addRecordToCache,
