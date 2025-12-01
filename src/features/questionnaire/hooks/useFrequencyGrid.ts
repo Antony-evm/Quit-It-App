@@ -31,21 +31,19 @@ export const useFrequencyGrid = ({
 }: UseFrequencyGridProps) => {
   const [selections, setSelections] = useState<Record<number, number>>({});
 
+  const subOptionsMap = useMemo(
+    () => new Map(subOptions.map(so => [so.id, so])),
+    [subOptions],
+  );
+
   const orderedSubOptions = useMemo(() => {
-    const withPriority = subOptions.map((subOption, index) => {
-      const priority = FREQUENCY_ORDER.indexOf(
-        normalizeFrequencyValue(subOption.value),
-      );
-
-      return {
-        subOption,
-        priority: priority === -1 ? FREQUENCY_ORDER.length + index : priority,
-      };
+    return [...subOptions].sort((a, b) => {
+      const aIndex = FREQUENCY_ORDER.indexOf(normalizeFrequencyValue(a.value));
+      const bIndex = FREQUENCY_ORDER.indexOf(normalizeFrequencyValue(b.value));
+      const aPriority = aIndex === -1 ? Infinity : aIndex;
+      const bPriority = bIndex === -1 ? Infinity : bIndex;
+      return aPriority - bPriority;
     });
-
-    return withPriority
-      .sort((a, b) => a.priority - b.priority)
-      .map(item => item.subOption);
   }, [subOptions]);
 
   // Parse time windows from main options (which contain time periods like "Early Morning (6AM - 9AM)")
@@ -59,14 +57,11 @@ export const useFrequencyGrid = ({
   );
 
   useEffect(() => {
-    const initialSelections: Record<number, number> = {};
-
-    initialSubSelection.forEach(subSelection => {
-      if (subSelection.mainOptionId !== undefined) {
-        initialSelections[subSelection.mainOptionId] = subSelection.optionId;
-      }
-    });
-
+    const initialSelections = Object.fromEntries(
+      initialSubSelection
+        .filter(sub => sub.mainOptionId !== undefined)
+        .map(sub => [sub.mainOptionId, sub.optionId]),
+    );
     setSelections(initialSelections);
   }, [initialSubSelection]);
 
@@ -99,28 +94,37 @@ export const useFrequencyGrid = ({
   );
 
   useEffect(() => {
-    const selectedSubOptions = Object.entries(selections)
-      .map(([optionId, subOptionId]) => {
-        const subOption = subOptions.find(so => so.id === subOptionId);
-        if (!subOption) return null;
+    const selectedSubOptions = Object.entries(selections).flatMap(
+      ([optionId, subOptionId]): SelectedAnswerSubOption[] => {
+        const subOption = subOptionsMap.get(subOptionId);
+        if (!subOption) return [];
 
-        return {
-          optionId: subOptionId,
-          value: subOption.value,
-          answerType: 'multiple_choice' as AnswerType,
-          combination: subOption.combination,
-          mainOptionId: parseInt(optionId), // Include the main option ID for pairing
-        };
-      })
-      .filter(item => item !== null) as SelectedAnswerSubOption[];
+        return [
+          {
+            optionId: subOptionId,
+            value: subOption.value,
+            answerType: 'multiple_choice' as AnswerType,
+            combination: subOption.combination,
+            mainOptionId: Number(optionId),
+          },
+        ];
+      },
+    );
 
     onSubSelectionChange(selectedSubOptions);
+
     const isValid =
       options.length > 0 &&
       options.every(option => selections[option.id] !== undefined);
 
     onValidityChange?.(isValid);
-  }, [selections, options, subOptions, onSubSelectionChange, onValidityChange]);
+  }, [
+    selections,
+    options,
+    subOptionsMap,
+    onSubSelectionChange,
+    onValidityChange,
+  ]);
 
   return {
     selections,

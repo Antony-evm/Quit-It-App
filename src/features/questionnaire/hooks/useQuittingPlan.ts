@@ -1,61 +1,23 @@
-import { useCallback, useEffect, useState } from 'react';
-import { QuittingPlan } from '../types';
-import { QuittingPlanService } from '../services/quittingPlanService';
-import { useBackendUserIdSafe } from '@/shared/hooks';
+import { useQuery } from '@tanstack/react-query';
+import { fetchQuittingPlan } from '../api/fetchQuittingPlan';
+import type { QuittingPlan } from '../types';
 
-interface UseQuittingPlanResult {
-  plan: QuittingPlan | null;
-  isLoading: boolean;
-  error: string | null;
-  refresh: () => Promise<void>;
-}
+export const QUITTING_PLAN_QUERY_KEY = ['quittingPlan'] as const;
 
-export const useQuittingPlan = (): UseQuittingPlanResult => {
-  const [plan, setPlan] = useState<QuittingPlan | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const backendUserId = useBackendUserIdSafe();
-
-  const loadPlan = useCallback(
-    async (forceRefresh = false) => {
-      try {
-        setError(null);
-        setIsLoading(true);
-
-        if (!backendUserId) {
-          throw new Error('Backend user ID not available');
-        }
-
-        await QuittingPlanService.initialize({
-          userId: backendUserId,
-          forceRefresh,
-        });
-        const currentPlan = QuittingPlanService.getPlan();
-        setPlan(currentPlan);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : 'Failed to load quitting plan';
-        setError(errorMessage);
-        console.error('[useQuittingPlan] Error loading plan:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [backendUserId],
-  );
-
-  const refresh = useCallback(async () => {
-    await loadPlan(true);
-  }, [loadPlan]);
-
-  useEffect(() => {
-    loadPlan();
-  }, [loadPlan]);
+export const useQuittingPlan = () => {
+  const query = useQuery<QuittingPlan>({
+    queryKey: QUITTING_PLAN_QUERY_KEY,
+    queryFn: fetchQuittingPlan,
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 24 * 60 * 60 * 1000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   return {
-    plan,
-    isLoading,
-    error,
-    refresh,
+    plan: query.data ?? null,
+    isLoading: query.isLoading,
+    error: query.error?.message ?? null,
+    refresh: query.refetch,
   };
 };

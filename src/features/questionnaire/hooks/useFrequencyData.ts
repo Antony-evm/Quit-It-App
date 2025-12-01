@@ -15,34 +15,30 @@ export const useFrequencyData = () => {
     error: questionError,
   } = useSmokingFrequencyQuestion();
 
-  const initialSubSelection = useMemo(() => {
+  const initialSubSelection = useMemo((): SelectedAnswerSubOption[] => {
     if (!question || !frequency) {
       return [];
     }
 
-    const selection: SelectedAnswerSubOption[] = [];
-
-    question.options.forEach(option => {
+    return question.options.flatMap(option => {
       const frequencyValue = frequency[option.value];
+      if (!frequencyValue) return [];
 
-      if (frequencyValue) {
-        const subOption = question.subOptions.find(
-          sub => sub.value === frequencyValue,
-        );
+      const subOption = question.subOptions.find(
+        sub => sub.value === frequencyValue,
+      );
+      if (!subOption) return [];
 
-        if (subOption) {
-          selection.push({
-            optionId: subOption.id,
-            value: subOption.value,
-            answerType: question.subAnswerType || 'multiple_choice',
-            combination: subOption.combination,
-            mainOptionId: option.id,
-          });
-        }
-      }
+      return [
+        {
+          optionId: subOption.id,
+          value: subOption.value,
+          answerType: question.subAnswerType || 'multiple_choice',
+          combination: subOption.combination,
+          mainOptionId: option.id,
+        },
+      ];
     });
-
-    return selection;
   }, [question, frequency]);
 
   const isLoading = isFrequencyLoading || isQuestionLoading;
