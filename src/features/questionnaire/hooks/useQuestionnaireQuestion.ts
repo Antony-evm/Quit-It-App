@@ -30,7 +30,6 @@ export const useQuestionnaireQuestion = ({
     max: number;
   } | null>(null);
   const [numericSelection, setNumericSelection] = useState<number | null>(null);
-  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const allowMultipleChoice =
@@ -43,9 +42,6 @@ export const useQuestionnaireQuestion = ({
 
   const isNumericRangeQuestion =
     question?.answerType === 'numeric' && question?.answerHandling === 'range';
-
-  const isTimeRangeQuestion =
-    question?.answerType === 'time' && question?.answerHandling === 'all';
 
   const isDateQuestion =
     question?.answerType === 'date' && question?.answerHandling === 'max';
@@ -78,12 +74,6 @@ export const useQuestionnaireQuestion = ({
       );
     } else {
       setSelectedChoiceIds([]);
-    }
-
-    if (isTimeRangeQuestion) {
-      setSelectedSlots((initialSelection ?? []).map(option => option.value));
-    } else {
-      setSelectedSlots([]);
     }
 
     if (isDateQuestion) {
@@ -151,7 +141,6 @@ export const useQuestionnaireQuestion = ({
     allowSingleChoice,
     isDateQuestion,
     isNumericRangeQuestion,
-    isTimeRangeQuestion,
     firstOption,
     initialSelection,
   ]);
@@ -196,13 +185,6 @@ export const useQuestionnaireQuestion = ({
           nextVariationId: firstOption.nextVariationId,
         },
       ];
-    } else if (isTimeRangeQuestion && firstOption) {
-      selection = selectedSlots.map(slot => ({
-        optionId: firstOption.id,
-        value: slot,
-        answerType: question.answerType,
-        nextVariationId: firstOption.nextVariationId,
-      }));
     } else if (isDateQuestion && firstOption && selectedDate) {
       selection = [
         {
@@ -226,14 +208,12 @@ export const useQuestionnaireQuestion = ({
     question,
     isDateQuestion,
     isNumericRangeQuestion,
-    isTimeRangeQuestion,
     numericRange,
     numericSelection,
     onSelectionChange,
     onValidityChange,
     selectedChoiceIds,
     selectedDate,
-    selectedSlots,
     firstOption,
   ]);
 
@@ -262,14 +242,11 @@ export const useQuestionnaireQuestion = ({
     numericRange,
     numericSelection,
     setNumericSelection,
-    selectedSlots,
-    setSelectedSlots,
     selectedDate,
     setSelectedDate,
     allowMultipleChoice,
     allowSingleChoice,
     isNumericRangeQuestion,
-    isTimeRangeQuestion,
     isDateQuestion,
     firstOption,
     dateBounds,

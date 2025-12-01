@@ -15,25 +15,24 @@ export const useTriggersData = () => {
     error: questionError,
   } = useSmokingTriggersQuestion();
 
-  const initialSelection = useMemo(() => {
+  const initialSelection = useMemo((): SelectedAnswerOption[] => {
     if (!question || !triggers) {
       return [];
     }
 
-    const selection: SelectedAnswerOption[] = [];
-    triggers.forEach(triggerValue => {
+    return triggers.flatMap(triggerValue => {
       const option = question.options.find(opt => opt.value === triggerValue);
-      if (option) {
-        selection.push({
+      if (!option) return [];
+
+      return [
+        {
           optionId: option.id,
           value: option.value,
           answerType: question.answerType,
           nextVariationId: option.nextVariationId,
-        });
-      }
+        },
+      ];
     });
-
-    return selection;
   }, [question, triggers]);
 
   const isLoading = isTriggersLoading || isQuestionLoading;

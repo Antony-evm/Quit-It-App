@@ -30,9 +30,10 @@ type NavigationEntry = {
   questionId: number;
 };
 
-const ensureVariationId = (candidates: number[], fallback: number) => {
+const ensureVariationId = (candidates: number[], fallback: number): number => {
   const normalized = candidates.filter(
-    value => typeof value === 'number' && !Number.isNaN(value),
+    (value): value is number =>
+      typeof value === 'number' && !Number.isNaN(value),
   );
 
   if (!normalized.length) {
@@ -42,9 +43,62 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
   const unique = Array.from(new Set(normalized));
 
   if (unique.length > 1) {
+    console.warn(
+      '[useQuestionnaire] Multiple variation IDs found, using first:',
+      unique,
+    );
   }
 
   return unique[0];
+};
+
+/**
+ * Build answer options payload for API submission
+ */
+const buildAnswerOptions = (
+  question: Question,
+  selectedOptions: SelectedAnswerOption[],
+  selectedSubOptions: SelectedAnswerSubOption[],
+) => {
+  if (question.subCombination === 'N:N' && selectedSubOptions.length > 0) {
+    // For N:N combinations (frequency grid), pair each main option with its sub-option
+    return selectedOptions.map(option => {
+      const subOption = selectedSubOptions.find(
+        sub => sub.mainOptionId === option.optionId,
+      );
+      return {
+        answer_option_id: option.optionId,
+        answer_value: option.value,
+        answer_type: option.answerType,
+        answer_sub_option_id: subOption?.optionId ?? null,
+        answer_sub_option_value: subOption?.value ?? null,
+        answer_sub_option_type: subOption?.answerType ?? null,
+      };
+    });
+  }
+
+  if (selectedSubOptions.length > 0) {
+    // For other combinations (N:1, etc), include first sub-option
+    const firstSubOption = selectedSubOptions[0];
+    return selectedOptions.map(option => ({
+      answer_option_id: option.optionId,
+      answer_value: option.value,
+      answer_type: option.answerType,
+      answer_sub_option_id: firstSubOption?.optionId ?? null,
+      answer_sub_option_value: firstSubOption?.value ?? null,
+      answer_sub_option_type: firstSubOption?.answerType ?? null,
+    }));
+  }
+
+  // Regular questions without sub-options
+  return selectedOptions.map(option => ({
+    answer_option_id: option.optionId,
+    answer_value: option.value,
+    answer_type: option.answerType,
+    answer_sub_option_id: null,
+    answer_sub_option_value: null,
+    answer_sub_option_type: null,
+  }));
 };
 
 export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
@@ -151,58 +205,14 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
       setIsReviewing(true);
     };
 
-    loadHistory().catch(storageError => {});
+    loadHistory().catch(storageError => {
+      console.error('[useQuestionnaire] Failed to load history:', storageError);
+    });
 
     return () => {
       isMounted = false;
     };
   }, [question, isLoading, isReviewing, loadError]);
-
-  // Helper function to build answer options for the new payload format
-  const buildAnswerOptions = (
-    question: Question,
-    selectedOptions: SelectedAnswerOption[],
-    selectedSubOptions: SelectedAnswerSubOption[],
-  ) => {
-    if (question.subCombination === 'N:N' && selectedSubOptions.length > 0) {
-      // For N:N combinations (frequency grid), pair each main option with its sub-option
-      // Use mainOptionId to find the correct sub-option for each main option
-      return selectedOptions.map(option => {
-        const subOption = selectedSubOptions.find(
-          sub => sub.mainOptionId === option.optionId,
-        );
-        return {
-          answer_option_id: option.optionId,
-          answer_value: option.value,
-          answer_type: option.answerType,
-          answer_sub_option_id: subOption?.optionId || null,
-          answer_sub_option_value: subOption?.value || null,
-          answer_sub_option_type: subOption?.answerType || null,
-        };
-      });
-    } else if (selectedSubOptions.length > 0) {
-      // For other combinations (N:1, etc), handle differently if needed
-      // For now, we'll just include main options with first sub-option
-      return selectedOptions.map(option => ({
-        answer_option_id: option.optionId,
-        answer_value: option.value,
-        answer_type: option.answerType,
-        answer_sub_option_id: selectedSubOptions[0]?.optionId || null,
-        answer_sub_option_value: selectedSubOptions[0]?.value || null,
-        answer_sub_option_type: selectedSubOptions[0]?.answerType || null,
-      }));
-    } else {
-      // For regular questions, just return main options without sub-options
-      return selectedOptions.map(option => ({
-        answer_option_id: option.optionId,
-        answer_value: option.value,
-        answer_type: option.answerType,
-        answer_sub_option_id: null,
-        answer_sub_option_value: null,
-        answer_sub_option_type: null,
-      }));
-    }
-  };
 
   const submitAnswers = useCallback(
     async (
@@ -215,6 +225,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       try {
         if (!question.questionCode) {
+          console.warn('[useQuestionnaire] Question missing questionCode');
         }
 
         const payload = {
@@ -355,19 +366,19 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       questionnaireStorage
         .removeByQuestionId(popped.questionId)
-        .catch(storageError => {});
+        .catch(storageError => {
+          console.error(
+            '[useQuestionnaire] Failed to remove from storage:',
+            storageError,
+          );
+        });
 
       return nextStack;
     });
   }, [submitMutation, completeMutation]);
 
-  const derived = useMemo(
-    () => ({
-      prompt: question?.prompt ?? '',
-      explanation: question?.explanation ?? '',
-    }),
-    [question],
-  );
+  const prompt = question?.prompt ?? '';
+  const explanation = question?.explanation ?? '';
 
   const currentSelection = question ? selections[question.id] : undefined;
   const currentOptions = useMemo(
@@ -400,14 +411,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
 
       return prev;
     });
-  }, [
-    setOrderId,
-    setVariationId,
-    setIsReviewing,
-    setNavigationStack,
-    submitMutation,
-    completeMutation,
-  ]);
+  }, [submitMutation, completeMutation]);
 
   return {
     question,
@@ -421,7 +425,8 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     history,
     completionData: completeMutation.data ?? null,
     generatedPlan,
-    ...derived,
+    prompt,
+    explanation,
     refresh,
     submitAnswers,
     completeQuestionnaireFlow,

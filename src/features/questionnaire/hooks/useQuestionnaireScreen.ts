@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useQuestionnaire } from './useQuestionnaire';
@@ -53,25 +53,24 @@ export const useQuestionnaireScreen = ({
     orderId,
   } = questionnaire;
 
-  const [maxQuestion, setMaxQuestion] = useState<number>(0);
-  const [lastQuestionId, setLastQuestionId] = useState<number | undefined>(
-    undefined,
-  );
+  const maxQuestionRef = useRef<number>(0);
+  const previousQuestionIdRef = useRef<number | undefined>(undefined);
 
-  // Reset state when question changes
-  if (question?.id !== lastQuestionId) {
-    setLastQuestionId(question?.id);
-    setActiveSelection([]);
-    setActiveSubSelection([]);
-    setIsSelectionValid(false);
-    setLocalSubmitting(false);
+  // Update maxQuestion ref when we get a value
+  if (question?.maxQuestion && question.maxQuestion > maxQuestionRef.current) {
+    maxQuestionRef.current = question.maxQuestion;
   }
 
+  // Reset state when question changes
   useEffect(() => {
-    if (question?.maxQuestion) {
-      setMaxQuestion(question.maxQuestion);
+    if (question?.id !== previousQuestionIdRef.current) {
+      previousQuestionIdRef.current = question?.id;
+      setActiveSelection([]);
+      setActiveSubSelection([]);
+      setIsSelectionValid(false);
+      setLocalSubmitting(false);
     }
-  }, [question?.maxQuestion]);
+  }, [question?.id]);
 
   useEffect(() => {
     if (!question) {
@@ -84,7 +83,6 @@ export const useQuestionnaireScreen = ({
     const shouldLetComponentHandleSelection =
       question.subCombination === 'N:N' ||
       question.answerType === 'numeric' ||
-      question.answerType === 'time' ||
       question.answerType === 'date';
 
     if (!shouldLetComponentHandleSelection) {
@@ -216,7 +214,7 @@ export const useQuestionnaireScreen = ({
   }, [isReviewing, resumeFromReview, goBack]);
 
   const progressData = useMemo(() => {
-    const total = maxQuestion || question?.maxQuestion;
+    const total = maxQuestionRef.current || question?.maxQuestion;
 
     if (orderId === undefined || orderId === null || !total) {
       return undefined;
@@ -226,7 +224,7 @@ export const useQuestionnaireScreen = ({
       currentQuestion: orderId + 1,
       totalQuestions: total,
     };
-  }, [orderId, maxQuestion, question?.maxQuestion]);
+  }, [orderId, question?.maxQuestion]);
 
   return {
     // State
