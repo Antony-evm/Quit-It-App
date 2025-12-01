@@ -40,17 +40,17 @@ export const useWelcomeData = (): WelcomeData => {
     if (status === 'Cut Down') {
       return {
         message: t('home.nextMilestoneIn'),
-        timeDifference: getFormattedTimeDifference(now, plan.date),
+        timeDifference: getFormattedTimeDifference(now, plan.datetime),
       };
     }
 
     if (status === 'Quit It') {
-      const isPlanDateInFuture = now.getTime() < plan.date.getTime();
+      const isPlanDateInFuture = now.getTime() < plan.datetime.getTime();
 
       if (isPlanDateInFuture) {
         return {
           message: t('home.goingSmokeFreeIn'),
-          timeDifference: getFormattedTimeDifference(now, plan.date),
+          timeDifference: getFormattedTimeDifference(now, plan.datetime),
         };
       }
 
