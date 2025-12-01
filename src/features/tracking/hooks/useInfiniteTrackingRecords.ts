@@ -50,7 +50,6 @@ export const useInfiniteTrackingRecords = (
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       const newRecords = await fetchTrackingRecords({
-        user_id: userId,
         offset: pageParam as number,
       });
 

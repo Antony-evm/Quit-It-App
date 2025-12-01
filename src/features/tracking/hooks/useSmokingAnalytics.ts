@@ -8,7 +8,7 @@ export const useSmokingAnalytics = () => {
 
   return useQuery<SmokingAnalyticsResponse>({
     queryKey: ['smokingAnalytics', userId],
-    queryFn: () => fetchSmokingAnalytics({ user_id: userId }),
+    queryFn: () => fetchSmokingAnalytics(),
     enabled: !!userId && userId > 0,
     refetchOnWindowFocus: false,
     staleTime: 60 * 60 * 1000, // 1 hour

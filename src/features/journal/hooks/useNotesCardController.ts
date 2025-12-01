@@ -6,6 +6,7 @@ import {
   useInfiniteTrackingRecords,
 } from '@/features/tracking';
 import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutations';
+import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { getTrackingTypeColors } from '@/features/tracking/constants';
@@ -18,7 +19,6 @@ import type {
 const MAX_CHARS = 500;
 
 export const useNotesCardController = ({
-  userId,
   recordId,
   initialValues,
   onSaveSuccess,
@@ -26,10 +26,7 @@ export const useNotesCardController = ({
   scrollViewRef,
 }: UseNotesCardControllerOptions = {}) => {
   const queryClient = useQueryClient();
-
-  if (userId === undefined) {
-    throw new Error('useNotesCardController: userId is required');
-  }
+  const userId = useCurrentUserId();
 
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
@@ -39,11 +36,7 @@ export const useNotesCardController = ({
     updateRecordInCache,
     removeRecordFromCache,
   } = useInfiniteTrackingRecords();
-  const {
-    create,
-    update,
-    delete: deleteMutation,
-  } = useTrackingMutations(userId);
+  const { create, update, delete: deleteMutation } = useTrackingMutations();
 
   // Form state
   const [selectedTrackingTypeId, setSelectedTrackingTypeId] = useState<
@@ -105,17 +98,14 @@ export const useNotesCardController = ({
     }
   }, [sortedTrackingTypes, selectedTrackingTypeId]);
 
-  // Get selected tracking type details
   const selectedTrackingType = sortedTrackingTypes?.find(
     type => type.id === selectedTrackingTypeId,
   );
 
-  // Determine accent color based on tracking type
   const accentColor = useMemo(() => {
     return getTrackingTypeColors(selectedTrackingType?.code).accent;
   }, [selectedTrackingType?.code]);
 
-  // Handlers
   const handleDateTimeChange = useCallback(
     (newDateTime: Date) => {
       const now = new Date();
@@ -164,133 +154,185 @@ export const useNotesCardController = ({
     setSelectedDateTime(new Date());
   }, []);
 
-  const handleSave = useCallback(() => {
-    if (!selectedTrackingType) return;
-
-    // Check if values haven't changed (for edit mode)
-    if (initialValues) {
-      const isSame =
-        selectedTrackingTypeId === initialValues.trackingTypeId &&
-        selectedDateTime.getTime() === initialValues.dateTime.getTime() &&
-        notes === initialValues.notes;
-
-      if (isSame) {
-        onSaveSuccess?.();
-        return;
-      }
-    }
-
-    const payload = {
-      user_id: userId,
+  const buildPayload = useCallback(() => {
+    if (!selectedTrackingType) return null;
+    return {
       tracking_type_id: selectedTrackingType.id,
       event_at: selectedDateTime.toISOString(),
       note: notes.trim() || null,
     };
+  }, [selectedTrackingType, selectedDateTime, notes]);
 
-    if (recordId) {
-      const oldRecord: TrackingRecordApiResponse | undefined = initialValues
-        ? {
-            record_id: recordId,
-            user_id: userId,
-            tracking_type_id: initialValues.trackingTypeId,
-            event_at: initialValues.dateTime.toISOString(),
-            note: initialValues.notes || null,
-          }
-        : undefined;
+  const buildOldRecord = useCallback(():
+    | TrackingRecordApiResponse
+    | undefined => {
+    if (!recordId || !initialValues) return undefined;
+    return {
+      record_id: recordId,
+      tracking_type_id: initialValues.trackingTypeId,
+      event_at: initialValues.dateTime.toISOString(),
+      note: initialValues.notes || null,
+    };
+  }, [recordId, initialValues]);
 
-      const updatedRecord: TrackingRecordApiResponse = {
+  const buildUpdatedRecord =
+    useCallback((): TrackingRecordApiResponse | null => {
+      if (!recordId || !selectedTrackingType) return null;
+      return {
         record_id: recordId,
-        user_id: userId,
         tracking_type_id: selectedTrackingType.id,
         event_at: selectedDateTime.toISOString(),
         note: notes.trim() || null,
       };
+    }, [recordId, selectedTrackingType, selectedDateTime, notes]);
 
-      // Optimistic update
-      updateRecordInCache(updatedRecord);
-
-      update.mutate(
-        {
-          record_id: recordId,
-          data: {
-            tracking_type_id: selectedTrackingType.id,
-            event_at: selectedDateTime.toISOString(),
-            note: notes.trim() || undefined,
-          },
-          oldRecord,
-        },
-        {
-          onSuccess: () => {
-            onSaveSuccess?.();
-            showToast('Your tracking entry has been updated!', 'success');
-            invalidateAnalyticsQueries();
-          },
-          onError: error => {
-            // Rollback optimistic update
-            if (oldRecord) {
-              updateRecordInCache(oldRecord);
-            }
-            showToast(
-              error instanceof Error
-                ? error.message
-                : 'Failed to update tracking entry',
-              'error',
-            );
-          },
-        },
-      );
-    } else {
-      // Create new record
-      const tempId = Date.now();
-      const optimisticRecord: TrackingRecordApiResponse = {
+  const buildOptimisticRecord = useCallback(
+    (tempId: number): TrackingRecordApiResponse | null => {
+      const payload = buildPayload();
+      if (!payload) return null;
+      return {
         record_id: tempId,
-        user_id: payload.user_id,
         tracking_type_id: payload.tracking_type_id,
         event_at: payload.event_at,
         note: payload.note || null,
       };
+    },
+    [buildPayload],
+  );
 
-      // Optimistic update
-      addRecordToCache(optimisticRecord);
+  const createSuccessCallbacks = useCallback(
+    (options: {
+      successMessage: string;
+      errorMessage: string;
+      onSuccess?: () => void;
+      onRollback?: () => void;
+    }) => ({
+      onSuccess: () => {
+        options.onSuccess?.();
+        showToast(options.successMessage, 'success');
+        invalidateAnalyticsQueries();
+      },
+      onError: (error: Error) => {
+        options.onRollback?.();
+        showToast(
+          error instanceof Error ? error.message : options.errorMessage,
+          'error',
+        );
+      },
+    }),
+    [showToast, invalidateAnalyticsQueries],
+  );
 
-      create.mutate(payload, {
-        onSuccess: realRecord => {
-          replaceOptimisticRecord(tempId, realRecord);
-          resetForm();
-          onSaveSuccess?.();
-          showToast('Your tracking entry has been saved!', 'success');
-          invalidateAnalyticsQueries();
-        },
-        onError: error => {
-          // Rollback optimistic update
-          removeRecordFromCache(tempId);
-          showToast(
-            error instanceof Error
-              ? error.message
-              : 'Failed to save tracking entry',
-            'error',
-          );
-        },
-      });
-    }
+  const hasFormChanged = useCallback(() => {
+    if (!initialValues) return true;
+    return (
+      selectedTrackingTypeId !== initialValues.trackingTypeId ||
+      selectedDateTime.getTime() !== initialValues.dateTime.getTime() ||
+      notes !== initialValues.notes
+    );
+  }, [initialValues, selectedTrackingTypeId, selectedDateTime, notes]);
+
+  const handleCreate = useCallback(() => {
+    const payload = buildPayload();
+    if (!payload) return;
+
+    const tempId = Date.now();
+    const optimisticRecord = buildOptimisticRecord(tempId);
+    if (!optimisticRecord) return;
+
+    // Optimistic update
+    addRecordToCache(optimisticRecord);
+
+    create.mutate(payload, {
+      onSuccess: realRecord => {
+        replaceOptimisticRecord(tempId, realRecord);
+        resetForm();
+        onSaveSuccess?.();
+        showToast('Your tracking entry has been saved!', 'success');
+        invalidateAnalyticsQueries();
+      },
+      onError: (error: Error) => {
+        removeRecordFromCache(tempId);
+        showToast(
+          error instanceof Error
+            ? error.message
+            : 'Failed to save tracking entry',
+          'error',
+        );
+      },
+    });
   }, [
-    selectedTrackingType,
-    selectedTrackingTypeId,
-    selectedDateTime,
-    notes,
-    initialValues,
-    recordId,
-    userId,
-    onSaveSuccess,
-    updateRecordInCache,
-    update,
+    buildPayload,
+    buildOptimisticRecord,
     addRecordToCache,
     create,
     replaceOptimisticRecord,
-    removeRecordFromCache,
     resetForm,
+    onSaveSuccess,
     showToast,
     invalidateAnalyticsQueries,
+    removeRecordFromCache,
+  ]);
+
+  const handleUpdate = useCallback(() => {
+    if (!recordId) return;
+
+    const updatedRecord = buildUpdatedRecord();
+    if (!updatedRecord) return;
+
+    const oldRecord = buildOldRecord();
+
+    // Optimistic update
+    updateRecordInCache(updatedRecord);
+
+    update.mutate(
+      {
+        record_id: recordId,
+        data: {
+          tracking_type_id: updatedRecord.tracking_type_id,
+          event_at: updatedRecord.event_at,
+          note: updatedRecord.note || undefined,
+        },
+        oldRecord,
+      },
+      createSuccessCallbacks({
+        successMessage: 'Your tracking entry has been updated!',
+        errorMessage: 'Failed to update tracking entry',
+        onSuccess: () => onSaveSuccess?.(),
+        onRollback: () => {
+          if (oldRecord) updateRecordInCache(oldRecord);
+        },
+      }),
+    );
+  }, [
+    recordId,
+    buildUpdatedRecord,
+    buildOldRecord,
+    updateRecordInCache,
+    update,
+    createSuccessCallbacks,
+    onSaveSuccess,
+  ]);
+
+  const handleSave = useCallback(() => {
+    if (!selectedTrackingType) return;
+    if (!hasFormChanged()) {
+      onSaveSuccess?.();
+      return;
+    }
+
+    if (recordId) {
+      handleUpdate();
+    } else {
+      handleCreate();
+    }
+  }, [
+    selectedTrackingType,
+    hasFormChanged,
+    onSaveSuccess,
+    recordId,
+    handleUpdate,
+    handleCreate,
   ]);
 
   const handleDelete = useCallback(() => {
@@ -299,7 +341,6 @@ export const useNotesCardController = ({
     const recordToDelete: TrackingRecordApiResponse | undefined = initialValues
       ? {
           record_id: recordId,
-          user_id: userId,
           tracking_type_id: initialValues.trackingTypeId,
           event_at: initialValues.dateTime.toISOString(),
           note: initialValues.notes || null,
@@ -334,7 +375,6 @@ export const useNotesCardController = ({
   }, [
     recordId,
     initialValues,
-    userId,
     removeRecordFromCache,
     deleteMutation,
     addRecordToCache,

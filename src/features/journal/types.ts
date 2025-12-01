@@ -54,7 +54,6 @@ export type NotesCardProps = {
 
 // Props for the controller hook
 export type UseNotesCardControllerOptions = {
-  userId?: number;
   recordId?: number;
   initialValues?: NotesCardInitialValues;
   onSaveSuccess?: () => void;

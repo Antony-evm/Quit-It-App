@@ -7,38 +7,27 @@ export type CravingAnalyticsApiPayload = {
   data: CravingAnalyticsResponse;
 };
 
-export type FetchCravingAnalyticsOptions = {
-  user_id: number;
-};
+export const fetchCravingAnalytics =
+  async (): Promise<CravingAnalyticsResponse> => {
+    const url = CRAVINGS_ANALYTICS_ENDPOINT;
 
-export const fetchCravingAnalytics = async (
-  options: FetchCravingAnalyticsOptions,
-): Promise<CravingAnalyticsResponse> => {
-  const { user_id } = options;
+    try {
+      const response = await authenticatedGet(url);
 
-  const queryParams = new URLSearchParams({
-    user_id: user_id.toString(),
-  });
+      if (!response.ok) {
+        throw ErrorFactory.networkError(
+          `HTTP ${response.status}: ${response.statusText}`,
+        );
+      }
 
-  const url = `${CRAVINGS_ANALYTICS_ENDPOINT}?${queryParams}`;
-
-  try {
-    const response = await authenticatedGet(url);
-
-    if (!response.ok) {
+      const result: CravingAnalyticsApiPayload = await response.json();
+      return result.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw ErrorFactory.networkError(error.message);
+      }
       throw ErrorFactory.networkError(
-        `HTTP ${response.status}: ${response.statusText}`,
+        'Unknown error occurred while fetching craving analytics',
       );
     }
-
-    const result: CravingAnalyticsApiPayload = await response.json();
-    return result.data;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw ErrorFactory.networkError(error.message);
-    }
-    throw ErrorFactory.networkError(
-      'Unknown error occurred while fetching craving analytics',
-    );
-  }
-};
+  };

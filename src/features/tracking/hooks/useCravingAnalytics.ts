@@ -8,7 +8,7 @@ export const useCravingAnalytics = () => {
 
   return useQuery<CravingAnalyticsResponse>({
     queryKey: ['cravingAnalytics', userId],
-    queryFn: () => fetchCravingAnalytics({ user_id: userId }),
+    queryFn: () => fetchCravingAnalytics(),
     enabled: !!userId && userId > 0,
     refetchOnWindowFocus: false,
     staleTime: 60 * 60 * 1000, // 1 hour

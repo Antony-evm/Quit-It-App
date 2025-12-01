@@ -28,11 +28,10 @@ interface DeleteTrackingRecordMutationPayload {
   record?: TrackingRecordApiResponse; // Optional for optimistic updates
 }
 
-export const useTrackingMutations = (overrideUserId?: number) => {
+export const useTrackingMutations = () => {
   const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
-  const currentUserId = useCurrentUserId();
-  const userId = overrideUserId ?? currentUserId;
+  const userId = useCurrentUserId();
 
   const getTrackingTypeCategory = (
     typeId: number,

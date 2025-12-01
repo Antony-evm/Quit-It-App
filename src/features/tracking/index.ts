@@ -21,6 +21,3 @@ export { fetchCravingAnalytics } from './api/fetchCravingAnalytics';
 export { fetchSmokingAnalytics } from './api/fetchSmokingAnalytics';
 export { createTrackingRecord } from './api/createTrackingRecord';
 export type { CreateTrackingRecordPayload } from './api/createTrackingRecord';
-
-// Re-export constants
-export { DEFAULT_TRACKING_USER_ID } from './constants';
