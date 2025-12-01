@@ -1,10 +1,9 @@
 import type { UserDataResponse } from '@/shared/types/api';
 
-// Plan types
 export type PlanStatus = 'Cut Down' | 'Quit It';
 
 export interface QuittingPlanResponse {
-  date: string; // datetime as ISO string
+  date: string;
   status: PlanStatus;
   current: number;
   target: number;
@@ -106,7 +105,6 @@ export interface QuestionnaireAnswerSubOptionPayload {
   answer_type: AnswerType;
 }
 
-// New payload format with combined answer options
 export interface AnswerOptionsPair {
   answer_option_id: number;
   answer_value: string;
@@ -162,7 +160,7 @@ export interface SelectedAnswerSubOption {
   value: string;
   answerType: AnswerType;
   combination: string;
-  mainOptionId?: number; // Optional for backwards compatibility
+  mainOptionId?: number;
 }
 
 export interface QuestionnaireCompleteResponse extends UserDataResponse {}

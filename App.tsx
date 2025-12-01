@@ -9,7 +9,6 @@ import { BACKGROUND } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
 import { useTrackingTypesPrefetch } from '@/features/tracking';
-import { QuestionnaireAccountProvider } from '@/features/questionnaire';
 import { ToastProvider, ToastContainer } from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
 import { ErrorHandlerProvider, GlobalErrorBoundary } from '@/shared/error';
@@ -45,21 +44,19 @@ function AppContent(): React.ReactElement {
   useTrackingTypesPrefetch();
 
   return (
-    <QuestionnaireAccountProvider>
-      <ToastProvider>
-        <ErrorHandlerProvider preferToast={true}>
-          <SafeAreaProvider>
-            <StatusBar
-              barStyle="light-content"
-              backgroundColor={BACKGROUND.muted}
-            />
-            <AppNavigator />
-            <ToastContainer />
-            {__DEV__ && <DeveloperMenuTrigger />}
-          </SafeAreaProvider>
-        </ErrorHandlerProvider>
-      </ToastProvider>
-    </QuestionnaireAccountProvider>
+    <ToastProvider>
+      <ErrorHandlerProvider preferToast={true}>
+        <SafeAreaProvider>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={BACKGROUND.muted}
+          />
+          <AppNavigator />
+          <ToastContainer />
+          {__DEV__ && <DeveloperMenuTrigger />}
+        </SafeAreaProvider>
+      </ErrorHandlerProvider>
+    </ToastProvider>
   );
 }
 

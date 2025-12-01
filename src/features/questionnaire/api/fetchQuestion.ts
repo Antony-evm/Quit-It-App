@@ -29,29 +29,31 @@ const createQueryString = (
   return `order_id=${orderId}&variation_id=${variationId}`;
 };
 
-const parseAnswerType = (value: string): AnswerType => {
-  switch (value) {
-    case 'multiple_choice':
-    case 'numeric':
-    case 'time':
-    case 'date':
-      return value;
-    default:
-      return 'unknown';
-  }
-};
+const VALID_ANSWER_TYPES = new Set<AnswerType>([
+  'multiple_choice',
+  'numeric',
+  'time',
+  'date',
+]);
 
-const parseAnswerHandling = (value: string): AnswerHandling => {
-  switch (value) {
-    case 'single':
-    case 'all':
-    case 'range':
-    case 'max':
-      return value;
-    default:
-      return 'unknown';
-  }
-};
+const isValidAnswerType = (value: string): value is AnswerType =>
+  VALID_ANSWER_TYPES.has(value as AnswerType);
+
+const parseAnswerType = (value: string): AnswerType =>
+  isValidAnswerType(value) ? value : 'unknown';
+
+const VALID_ANSWER_HANDLING = new Set<AnswerHandling>([
+  'single',
+  'all',
+  'range',
+  'max',
+]);
+
+const isValidAnswerHandling = (value: string): value is AnswerHandling =>
+  VALID_ANSWER_HANDLING.has(value as AnswerHandling);
+
+const parseAnswerHandling = (value: string): AnswerHandling =>
+  isValidAnswerHandling(value) ? value : 'unknown';
 
 const parseDefaultValue = (value: string | null | undefined): number | null => {
   if (value === null || value === undefined || value === '') {
@@ -161,7 +163,5 @@ export const fetchQuestion = async (
 
   const resolved = 'data' in payload ? payload.data : payload;
 
-  const mappedQuestion = mapQuestionResponse(resolved);
-
-  return mappedQuestion;
+  return mapQuestionResponse(resolved);
 };

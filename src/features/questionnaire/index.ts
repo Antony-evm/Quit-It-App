@@ -1,6 +1,5 @@
 export * from './types';
 export * from './hooks/useQuestionnaire';
-export * from './hooks/useQuestionnaireAccountData';
 export * from './hooks/useQuittingPlan';
 export * from './hooks/useTriggers';
 export * from './hooks/useFrequency';
@@ -9,8 +8,6 @@ export * from './components/QuestionnaireTemplate';
 export * from './components/QuestionnaireProgressBar';
 export * from './components/QuestionnaireQuestion';
 export * from './components/QuestionnaireReview';
-export * from './providers/QuestionnaireAccountProvider';
-export * from './services/questionnaireAccountService';
 export * from './services/quittingPlanService';
 export * from './services/triggersService';
 export * from './services/frequencyService';
