@@ -8,9 +8,10 @@ export const useLoginMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: ['auth', 'login'],
     mutationFn: (payload: LoginUserPayload) => loginUser(payload),
-    onSuccess: data => {
-      // Login response received
+    onSuccess: () => {
+      // Invalidate all user-related queries to refetch fresh data after login
       queryClient.invalidateQueries({ queryKey: ['user'] });
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
@@ -29,10 +30,12 @@ export const useSignupMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
+    mutationKey: ['auth', 'signup'],
     mutationFn: (payload: CreateUserPayload) => createUser(payload),
-    onSuccess: data => {
-      // Invalidate any user-related queries
+    onSuccess: () => {
+      // Invalidate all user-related queries to refetch fresh data after signup
       queryClient.invalidateQueries({ queryKey: ['user'] });
+      queryClient.invalidateQueries({ queryKey: ['account'] });
     },
     onError: error => {
       handleError(error, {
@@ -48,10 +51,17 @@ export const useAuthMutations = () => {
   const loginMutation = useLoginMutation();
   const signupMutation = useSignupMutation();
 
+  const reset = () => {
+    loginMutation.reset();
+    signupMutation.reset();
+  };
+
   return {
     login: loginMutation,
     signup: signupMutation,
     isLoading: loginMutation.isPending || signupMutation.isPending,
-    error: loginMutation.error || signupMutation.error,
+    loginError: loginMutation.error,
+    signupError: signupMutation.error,
+    reset,
   };
 };

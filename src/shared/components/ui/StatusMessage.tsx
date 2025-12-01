@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { AppText, Box } from '@/shared/components/ui';
-import { TEXT, TypographyVariant } from '@/shared/theme';
+import { SPACING, TEXT, TypographyVariant } from '@/shared/theme';
 
 export interface StatusMessageProps {
   message: string;
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: SPACING.lg,
   },
   baseText: {
     textAlign: 'center',

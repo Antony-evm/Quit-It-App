@@ -1,19 +1,37 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useCravingAnalytics, useSmokingAnalytics } from '@/features/tracking';
 import { DailyCravingData } from '@/features/tracking/types';
 import { TAGS } from '@/shared/theme';
 import { HomeStat } from '../components/HomeStatsRow';
 
+const getTodayDateString = (): string => {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+};
+
 export const useHomeDashboardStats = () => {
-  const { data: cravingAnalytics, isLoading: isCravingLoading } =
-    useCravingAnalytics();
-  const { data: smokingAnalytics, isLoading: isSmokingLoading } =
-    useSmokingAnalytics();
+  const {
+    data: cravingAnalytics,
+    isLoading: isCravingLoading,
+    isError: isCravingError,
+    error: cravingError,
+    refetch: refetchCraving,
+  } = useCravingAnalytics();
+  const {
+    data: smokingAnalytics,
+    isLoading: isSmokingLoading,
+    isError: isSmokingError,
+    error: smokingError,
+    refetch: refetchSmoking,
+  } = useSmokingAnalytics();
 
   // Convert cravings_by_day to daily_data format for the chart
   const dailyData = useMemo<DailyCravingData[]>(() => {
-    if (!cravingAnalytics?.cravings_by_day) {
-      return [];
+    if (
+      !cravingAnalytics?.cravings_by_day ||
+      Object.keys(cravingAnalytics.cravings_by_day).length === 0
+    ) {
+      return [{ date: getTodayDateString(), count: 0 }];
     }
     return Object.entries(cravingAnalytics.cravings_by_day)
       .map(([date, count]) => ({
@@ -29,7 +47,7 @@ export const useHomeDashboardStats = () => {
       {
         id: 'cravings',
         label: 'Cravings',
-        value: cravingAnalytics?.total_cravings?.toString() || '0',
+        value: cravingAnalytics?.total_cravings?.toString() ?? '0',
         accentColor: TAGS.craving,
         tagLabel: 'Cravings',
         bottomLabel: 'Resisted',
@@ -37,7 +55,7 @@ export const useHomeDashboardStats = () => {
       {
         id: 'skipped-cigarettes',
         label: 'Skipped Cigarettes',
-        value: smokingAnalytics?.skipped_smokes?.toString() || '0',
+        value: smokingAnalytics?.skipped_smokes?.toString() ?? '0',
         accentColor: TAGS.cigarette,
         tagLabel: 'Smokes',
         bottomLabel: 'Skipped',
@@ -45,9 +63,10 @@ export const useHomeDashboardStats = () => {
       {
         id: 'money-saved',
         label: 'Money Saved',
-        value: smokingAnalytics?.savings
-          ? `$${smokingAnalytics.savings.toFixed(2)}`
-          : '$0.00',
+        value:
+          smokingAnalytics?.savings != null
+            ? `$${smokingAnalytics.savings.toFixed(2)}`
+            : '$0.00',
         accentColor: TAGS.wealth,
         tagLabel: 'Money',
         bottomLabel: 'Saved',
@@ -60,11 +79,26 @@ export const useHomeDashboardStats = () => {
     ],
   );
 
-  const isLoading = isCravingLoading || isSmokingLoading;
+  const refetchAll = useCallback(async () => {
+    await Promise.all([refetchCraving(), refetchSmoking()]);
+  }, [refetchCraving, refetchSmoking]);
 
   return {
     dailyData,
     stats,
-    isLoading,
+    // Craving analytics state
+    isCravingLoading,
+    isCravingError,
+    cravingError,
+    refetchCraving,
+    // Smoking analytics state
+    isSmokingLoading,
+    isSmokingError,
+    smokingError,
+    refetchSmoking,
+    // Combined state
+    isLoading: isCravingLoading || isSmokingLoading,
+    isError: isCravingError || isSmokingError,
+    refetchAll,
   };
 };

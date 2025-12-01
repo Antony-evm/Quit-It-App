@@ -1,9 +1,11 @@
 import type { UserDataResponse } from '@/shared/types/api';
 
 // Plan types
+export type PlanStatus = 'Cut Down' | 'Quit It';
+
 export interface QuittingPlanResponse {
   date: string; // datetime as ISO string
-  status: string;
+  status: PlanStatus;
   current: number;
   target: number;
   text: string;
@@ -11,7 +13,7 @@ export interface QuittingPlanResponse {
 
 export interface QuittingPlan {
   date: Date;
-  status: string;
+  status: PlanStatus;
   current: number;
   target: number;
   text: string;

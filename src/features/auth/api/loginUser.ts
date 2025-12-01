@@ -13,7 +13,6 @@ export const loginUser = async (
   )}`;
 
   try {
-    // Use the stytch_user_id as the user_id query parameter
     const response = await publicGet(url);
 
     if (!response.ok) {

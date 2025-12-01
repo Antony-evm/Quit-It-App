@@ -9,7 +9,7 @@ import {
 } from '@/shared/hooks';
 import { validateAndSanitizeEmail } from '@/utils/emailValidation';
 import { AUTH_VALIDATION_RULES } from '../constants/validation';
-import { AUTH_MESSAGES, AUTH_DEBUG_MESSAGES } from '../constants/messages';
+import { AUTH_MESSAGES } from '../constants/messages';
 
 interface UseAuthFormProps {
   initialMode?: 'login' | 'signup';
@@ -45,18 +45,11 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
   const isFormReady = useMemo(() => {
     if (isLoginMode) {
       return (
-        email.trim() !== '' &&
-        password.trim() !== '' &&
         emailValidation.isValid &&
         password.length >= AUTH_VALIDATION_RULES.MIN_PASSWORD_LENGTH
       );
     } else {
       return (
-        email.trim() !== '' &&
-        password.trim() !== '' &&
-        confirmPassword.trim() !== '' &&
-        firstName.trim() !== '' &&
-        lastName.trim() !== '' &&
         emailValidation.isValid &&
         passwordValidation.isValid &&
         firstNameValidation.isValid &&
@@ -65,11 +58,7 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       );
     }
   }, [
-    email,
-    password,
-    confirmPassword,
-    firstName,
-    lastName,
+    password.length,
     isLoginMode,
     emailValidation.isValid,
     passwordValidation.isValid,
@@ -78,14 +67,17 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
     confirmPasswordValidation.isValid,
   ]);
 
-  const validateForm = useCallback(() => {
+  const validateForm = useCallback((): {
+    sanitizedEmail: string | null;
+    isValid: boolean;
+  } => {
     // Validate and sanitize email
     const { sanitizedEmail, isValid: isEmailValid } =
       validateAndSanitizeEmail(email);
 
     if (!email.trim()) {
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.EMAIL_REQUIRED);
-      return false;
+      return { sanitizedEmail: null, isValid: false };
     }
 
     if (!isEmailValid) {
@@ -93,12 +85,12 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
         AUTH_MESSAGES.INVALID_EMAIL_TITLE,
         AUTH_MESSAGES.EMAIL_INVALID,
       );
-      return false;
+      return { sanitizedEmail: null, isValid: false };
     }
 
     if (!password.trim()) {
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.PASSWORD_REQUIRED);
-      return false;
+      return { sanitizedEmail: null, isValid: false };
     }
 
     // For signup mode, validate additional fields
@@ -108,14 +100,14 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
           AUTH_MESSAGES.ERROR_TITLE,
           `${AUTH_MESSAGES.FIRST_NAME_ERROR_PREFIX}${firstNameValidation.error}`,
         );
-        return false;
+        return { sanitizedEmail: null, isValid: false };
       }
       if (!lastNameValidation.isValid) {
         Alert.alert(
           AUTH_MESSAGES.ERROR_TITLE,
           `${AUTH_MESSAGES.LAST_NAME_ERROR_PREFIX}${lastNameValidation.error}`,
         );
-        return false;
+        return { sanitizedEmail: null, isValid: false };
       }
       if (!confirmPasswordValidation.isValid) {
         Alert.alert(
@@ -123,7 +115,7 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
           confirmPasswordValidation.error ||
             AUTH_MESSAGES.CONFIRM_PASSWORD_REQUIRED,
         );
-        return false;
+        return { sanitizedEmail: null, isValid: false };
       }
       if (!passwordValidation.isValid) {
         const missingRequirements = passwordValidation.errors.join('\n• ');
@@ -131,7 +123,7 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
           AUTH_MESSAGES.PASSWORD_REQUIREMENTS_NOT_MET,
           `${AUTH_MESSAGES.PASSWORD_REQUIREMENTS_PREFIX}${missingRequirements}`,
         );
-        return false;
+        return { sanitizedEmail: null, isValid: false };
       }
     } else {
       // For login mode, basic password validation
@@ -140,7 +132,7 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
           AUTH_MESSAGES.ERROR_TITLE,
           AUTH_MESSAGES.PASSWORD_TOO_SHORT,
         );
-        return false;
+        return { sanitizedEmail: null, isValid: false };
       }
     }
 
@@ -159,10 +151,8 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
   ]);
 
   const handleLogin = useCallback(async () => {
-    const validation = validateForm();
-    if (!validation) return;
-
-    const { sanitizedEmail } = validation;
+    const { sanitizedEmail, isValid } = validateForm();
+    if (!isValid || !sanitizedEmail) return;
 
     setIsSubmitting(true);
     try {
@@ -170,16 +160,15 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await login(sanitizedEmail, password);
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      setIsSubmitting(false);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.LOGIN_ERROR);
+    } finally {
+      setIsSubmitting(false);
     }
   }, [validateForm, login, password]);
 
   const handleSignup = useCallback(async () => {
-    const validation = validateForm();
-    if (!validation) return;
-
-    const { sanitizedEmail } = validation;
+    const { sanitizedEmail, isValid } = validateForm();
+    if (!isValid || !sanitizedEmail) return;
 
     setIsSubmitting(true);
     try {
@@ -187,30 +176,33 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      setIsSubmitting(false);
       Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.SIGNUP_ERROR);
+    } finally {
+      setIsSubmitting(false);
     }
   }, [validateForm, signup, password, firstName, lastName]);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (isLoginMode) {
-      handleLogin();
+      await handleLogin();
     } else {
-      handleSignup();
+      await handleSignup();
     }
   }, [isLoginMode, handleLogin, handleSignup]);
 
   const toggleMode = useCallback(() => {
-    setIsLoginMode(!isLoginMode);
-    // Clear form when switching modes
-    setPassword('');
-    setConfirmPassword('');
-    if (isLoginMode) {
-      // Switching to signup mode - keep email but clear names
-      setFirstName('');
-      setLastName('');
-    }
-  }, [isLoginMode]);
+    setIsLoginMode(prev => {
+      // Clear form when switching modes
+      setPassword('');
+      setConfirmPassword('');
+      if (prev) {
+        // Switching to signup mode - keep email but clear names
+        setFirstName('');
+        setLastName('');
+      }
+      return !prev;
+    });
+  }, []);
 
   const clearForm = useCallback(() => {
     setEmail('');
@@ -244,9 +236,6 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
 
     // Loading state
     isLoading: isSubmitting,
-
-    // Error state
-    error: null,
 
     // Actions
     handleSubmit,
