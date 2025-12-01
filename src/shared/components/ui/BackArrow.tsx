@@ -12,7 +12,6 @@ export const BackArrow = ({ onPress, disabled = false }: BackArrowProps) => (
   <AppPressable
     onPress={onPress}
     disabled={disabled}
-    interaction="opacity"
     variant="backArrow"
     disabledOpacity={1}
   >

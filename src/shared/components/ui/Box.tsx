@@ -14,10 +14,7 @@ import {
   BORDER_WIDTH,
   BorderRadiusToken,
   SHADOWS,
-  FOOTER_LAYOUT,
-  ICON_SIZES,
   BACKGROUND,
-  TEXT,
   SYSTEM,
   BackgroundToken,
 } from '../../theme';
@@ -30,27 +27,6 @@ export const BOX_VARIANTS = {
     paddingHorizontal: SPACING.md,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    paddingBottom: SPACING.xl + FOOTER_LAYOUT.FAB_SIZE / 2,
-  },
-  chartContainer: {
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.xl,
-  },
-  sectionContainer: {
-    marginBottom: SPACING.xl,
-  },
-  chip: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.sm,
-  },
-  noteHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   toggleGroup: {
     flexDirection: 'row',
@@ -67,9 +43,6 @@ export const BOX_VARIANTS = {
     borderWidth: BORDER_WIDTH.sm,
     borderTopWidth: BORDER_WIDTH.sm,
     borderColor: SYSTEM.border,
-  },
-  separator: {
-    height: SPACING.md,
   },
   buttonSeparator: {
     borderTopWidth: BORDER_WIDTH.sm,
@@ -131,10 +104,6 @@ export const BOX_VARIANTS = {
     borderRadius: BORDER_RADIUS.small,
     overflow: 'hidden',
   },
-  centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   sliderContainer: {
     flex: 3,
     justifyContent: 'center',
@@ -154,11 +123,6 @@ export const BOX_VARIANTS = {
     overflow: 'hidden',
     width: '100%',
   },
-  progressFill: {
-    height: '100%',
-    backgroundColor: TEXT.primary,
-    borderRadius: 3,
-  },
   drawerTitle: {
     backgroundColor: BACKGROUND.muted,
     paddingVertical: SPACING.md,
@@ -168,68 +132,10 @@ export const BOX_VARIANTS = {
     ...SHADOWS.md,
     zIndex: 5,
   },
-  footerMain: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  footerBackground: {
-    flexDirection: 'row',
-    backgroundColor: BACKGROUND.primary,
-    borderRadius: FOOTER_LAYOUT.CONTAINER_BORDER_RADIUS,
-    borderWidth: FOOTER_LAYOUT.CONTAINER_BORDER_WIDTH,
-    borderColor: SYSTEM.border,
-    paddingHorizontal: SPACING.xs,
-    paddingVertical: SPACING.xs,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '95%',
-    ...SHADOWS.lg,
-  },
-  fabPlaceholder: {
-    width: FOOTER_LAYOUT.FAB_SIZE,
-    height: 1,
-  },
-  fabContainer: {
-    position: 'absolute',
-    top: FOOTER_LAYOUT.FAB_OFFSET,
-    alignSelf: 'center',
-    zIndex: 10,
-  },
-  fab: {
-    width: FOOTER_LAYOUT.FAB_SIZE,
-    height: FOOTER_LAYOUT.FAB_SIZE,
-    borderRadius: FOOTER_LAYOUT.FAB_BORDER_RADIUS,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: FOOTER_LAYOUT.FAB_BORDER_WIDTH,
-    borderColor: SYSTEM.border,
-    overflow: 'hidden',
-    backgroundColor: SYSTEM.brand,
-    ...SHADOWS.xxl,
-  },
-  fabGradient: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: -1,
-  },
-  placeholderIcon: {
-    width: ICON_SIZES.medium,
-    height: ICON_SIZES.medium,
-  },
-  placeholderTab: {
-    flex: 1,
-  },
-  modalContent: {
-    padding: SPACING.md,
-  },
   modalTextContainer: {
     marginBottom: SPACING.xl,
     marginTop: SPACING.md,
     paddingHorizontal: SPACING.sm,
-  },
-  footerWrapper: {
-    backgroundColor: BACKGROUND.muted,
-    paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
-    paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },
 } satisfies Record<string, ViewStyle>;
 

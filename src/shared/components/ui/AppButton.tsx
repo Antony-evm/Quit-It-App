@@ -37,7 +37,7 @@ export const AppButton = ({
       {loading ? (
         <ActivityIndicator color={TEXT.secondary} />
       ) : (
-        <AppText variant="body" style={styles.text}>
+        <AppText variant="body" tone="inverse">
           {label}
         </AppText>
       )}

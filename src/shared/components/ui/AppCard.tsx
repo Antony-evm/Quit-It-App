@@ -1,4 +1,4 @@
-import { ViewStyle, StyleProp } from 'react-native';
+import { ViewStyle, StyleProp, StyleSheet } from 'react-native';
 import { Box, BoxProps } from './Box';
 import {
   BACKGROUND,
@@ -9,8 +9,8 @@ import {
   BORDER_WIDTH,
 } from '../../theme';
 
-export type CardVariant = 'elevated' | 'outlined' | 'filled' | 'ghost';
-export type CardSize = 'sm' | 'md' | 'lg';
+type CardVariant = 'elevated' | 'filled';
+type CardSize = 'md' | 'lg';
 
 export interface AppCardProps extends Omit<BoxProps, 'variant'> {
   variant?: CardVariant;
@@ -18,68 +18,38 @@ export interface AppCardProps extends Omit<BoxProps, 'variant'> {
   style?: StyleProp<ViewStyle>;
 }
 
+const variantStyles = StyleSheet.create({
+  elevated: {
+    backgroundColor: BACKGROUND.primary,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: SYSTEM.border,
+    ...SHADOWS.softLg,
+    gap: SPACING.md,
+  },
+  filled: {
+    backgroundColor: BACKGROUND.muted,
+  },
+});
+
+const sizeStyles = StyleSheet.create({
+  md: {
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.medium,
+  },
+  lg: {
+    padding: SPACING.xl,
+    borderRadius: BORDER_RADIUS.large,
+  },
+});
+
 export const AppCard = ({
   variant = 'elevated',
   size = 'lg',
   children,
   style,
   ...boxProps
-}: AppCardProps) => {
-  const getVariantStyles = (): ViewStyle => {
-    switch (variant) {
-      case 'elevated':
-        return {
-          backgroundColor: BACKGROUND.primary,
-          borderWidth: BORDER_WIDTH.sm,
-          borderColor: SYSTEM.border,
-          ...SHADOWS.softLg,
-          gap: SPACING.md,
-        };
-      case 'outlined':
-        return {
-          backgroundColor: BACKGROUND.primary,
-          borderWidth: BORDER_WIDTH.sm,
-          borderColor: SYSTEM.border,
-        };
-      case 'filled':
-        return {
-          backgroundColor: BACKGROUND.muted,
-          borderWidth: BORDER_WIDTH.none,
-        };
-      case 'ghost':
-        return {
-          backgroundColor: 'transparent',
-        };
-      default:
-        return {};
-    }
-  };
-
-  const getSizeStyles = (): ViewStyle => {
-    switch (size) {
-      case 'sm':
-        return {
-          padding: SPACING.sm,
-          borderRadius: BORDER_RADIUS.small,
-        };
-      case 'md':
-        return {
-          padding: SPACING.md,
-          borderRadius: BORDER_RADIUS.medium,
-        };
-      case 'lg':
-        return {
-          padding: SPACING.xl,
-          borderRadius: BORDER_RADIUS.large,
-        };
-      default:
-        return {};
-    }
-  };
-
-  return (
-    <Box style={[getVariantStyles(), getSizeStyles(), style]} {...boxProps}>
-      {children}
-    </Box>
-  );
-};
+}: AppCardProps) => (
+  <Box style={[variantStyles[variant], sizeStyles[size], style]} {...boxProps}>
+    {children}
+  </Box>
+);

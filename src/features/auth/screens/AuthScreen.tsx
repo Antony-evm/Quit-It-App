@@ -147,7 +147,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
         <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="muted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
-            variant="primary"
             fullWidth
             loading={isLoading}
             disabled={!isFormReady}

@@ -26,7 +26,7 @@ export const HomeDashboardScreen = memo(() => {
 
       <Box px="xl" gap="md" pb="xxl">
         {dailyData && dailyData.length > 0 && (
-          <Box variant="chartContainer">
+          <Box mt="sm" mb="xl">
             <CravingChart data={dailyData} />
           </Box>
         )}

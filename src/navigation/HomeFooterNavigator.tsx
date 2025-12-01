@@ -1,14 +1,16 @@
 import React from 'react';
-import { StyleProp, Animated, ViewStyle } from 'react-native';
+import { StyleProp, Animated, ViewStyle, View, StyleSheet } from 'react-native';
 import { SvgProps } from 'react-native-svg';
 
+import { AppPressable, AppIcon, Box } from '@/shared/components/ui';
 import {
-  AppPressable,
-  AppIcon,
-  Box,
-  BOX_VARIANTS,
-} from '@/shared/components/ui';
-import { SYSTEM } from '@/shared/theme';
+  SYSTEM,
+  FOOTER_LAYOUT,
+  ICON_SIZES,
+  BACKGROUND,
+  SPACING,
+  SHADOWS,
+} from '@/shared/theme';
 import { FabGradient } from './FabGradient';
 import { useFabAnimation } from './useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
@@ -25,7 +27,9 @@ export const FOOTER_TABS = {
   PLACEHOLDER: 'placeholder' as HomeFooterTab,
 };
 
-const PlaceholderIcon = (_props: SvgProps) => <Box variant="placeholderIcon" />;
+const PlaceholderIcon = (_props: SvgProps) => (
+  <View style={styles.placeholderIcon} />
+);
 
 const TAB_ICONS: Record<HomeFooterTab, React.FC<SvgProps>> = {
   account: AccountIcon,
@@ -55,7 +59,7 @@ export const HomeFooterNavigator = ({
     showBorderRight: boolean = false,
   ) => {
     if (tabKey === FOOTER_TABS.PLACEHOLDER) {
-      return <Box key={tabKey} variant="placeholderTab" />;
+      return <View key={tabKey} style={styles.placeholderTab} />;
     }
 
     const isActive = tabKey === activeTab;
@@ -65,7 +69,7 @@ export const HomeFooterNavigator = ({
       <AppPressable
         key={tabKey}
         variant="tab"
-        separator={showBorderRight}
+        style={showBorderRight && styles.tabWithBorder}
         android_ripple={{ color: SYSTEM.accentMuted }}
         onPress={() => {
           if (tabKey !== activeTab) {
@@ -83,39 +87,96 @@ export const HomeFooterNavigator = ({
   };
 
   return (
-    <Box variant="footerMain" style={style}>
-      <Box variant="footerBackground">
+    <View style={[styles.footerMain, style]}>
+      <View style={styles.footerBackground}>
         {renderTab(FOOTER_TABS.ACCOUNT, true)}
         {renderTab(FOOTER_TABS.HOME, false)}
-        <Box variant="fabPlaceholder" />
+        <View style={styles.fabPlaceholder} />
 
         {renderTab(FOOTER_TABS.JOURNAL, true)}
         {renderTab(FOOTER_TABS.PLACEHOLDER, false)}
-      </Box>
+      </View>
 
-      <Box variant="fabContainer">
+      <View style={styles.fabContainer}>
         <AppPressable
           onPress={onFabPress}
           onPressIn={handleFabPressIn}
           onPressOut={handleFabPressOut}
-          interaction="none"
+          activeOpacity={1}
         >
           <Animated.View
             style={[
-              BOX_VARIANTS.fab,
+              styles.fab,
               {
                 transform: [{ scale: scaleAnim }],
                 opacity: opacityAnim,
               },
             ]}
           >
-            <Box variant="fabGradient">
+            <View style={styles.fabGradient}>
               <FabGradient />
-            </Box>
+            </View>
             <AppIcon icon={PlusIcon} variant="fab" />
           </Animated.View>
         </AppPressable>
-      </Box>
-    </Box>
+      </View>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  footerMain: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  footerBackground: {
+    flexDirection: 'row',
+    backgroundColor: BACKGROUND.primary,
+    borderRadius: FOOTER_LAYOUT.CONTAINER_BORDER_RADIUS,
+    borderWidth: FOOTER_LAYOUT.CONTAINER_BORDER_WIDTH,
+    borderColor: SYSTEM.border,
+    paddingHorizontal: SPACING.xs,
+    paddingVertical: SPACING.xs,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '95%',
+    ...SHADOWS.lg,
+  },
+  fabPlaceholder: {
+    width: FOOTER_LAYOUT.FAB_SIZE,
+    height: 1,
+  },
+  fabContainer: {
+    position: 'absolute',
+    top: FOOTER_LAYOUT.FAB_OFFSET,
+    alignSelf: 'center',
+    zIndex: 10,
+  },
+  fab: {
+    width: FOOTER_LAYOUT.FAB_SIZE,
+    height: FOOTER_LAYOUT.FAB_SIZE,
+    borderRadius: FOOTER_LAYOUT.FAB_BORDER_RADIUS,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: FOOTER_LAYOUT.FAB_BORDER_WIDTH,
+    borderColor: SYSTEM.border,
+    overflow: 'hidden',
+    backgroundColor: SYSTEM.brand,
+    ...SHADOWS.xxl,
+  },
+  fabGradient: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  placeholderIcon: {
+    width: ICON_SIZES.medium,
+    height: ICON_SIZES.medium,
+  },
+  placeholderTab: {
+    flex: 1,
+  },
+  tabWithBorder: {
+    borderRightWidth: 1,
+    borderRightColor: SYSTEM.border,
+  },
+});

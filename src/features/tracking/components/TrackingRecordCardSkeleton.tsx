@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppPressable, Box, SkeletonBox } from '@/shared/components/ui';
-import { SYSTEM } from '@/shared/theme';
+import { SYSTEM, BORDER_WIDTH } from '@/shared/theme';
 
 /** Skeleton dimension constants matching TrackingRecordCard layout */
 const SKELETON_DIMENSIONS = {
@@ -21,12 +21,19 @@ export type TrackingRecordCardSkeletonProps = {
 const SingleSkeleton = React.memo(
   ({ animated = true }: { animated?: boolean }) => (
     <AppPressable
-      variant="cardStrip"
+      variant="card"
       disabled
       disabledOpacity={1}
-      style={{ borderLeftColor: SYSTEM.border }}
+      style={{
+        borderLeftWidth: BORDER_WIDTH.lg,
+        borderLeftColor: SYSTEM.border,
+      }}
     >
-      <Box variant="noteHeader">
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
         <SkeletonBox
           width={SKELETON_DIMENSIONS.tag.width}
           height={SKELETON_DIMENSIONS.tag.height}

@@ -51,8 +51,8 @@ export const FrequencyGridView = ({
       <Box variant="gridContainer">
         {rows.map(row => (
           <Box key={row.optionId} variant="gridRow">
-            <Box flex={1} variant="centered">
-              <Box variant="centered" gap="xs">
+            <Box flex={1} justifyContent="center" alignItems="center">
+              <Box justifyContent="center" alignItems="center" gap="xs">
                 <TimePeriodClock
                   startHour={row.startHour}
                   endHour={row.endHour}

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { AppText, Box, AppPressable, AppTag } from '@/shared/components/ui';
+import { BORDER_WIDTH } from '@/shared/theme';
 
 export type TrackingRecordCardProps = {
   displayName: string;
@@ -24,8 +25,11 @@ export const TrackingRecordCard = React.memo(
   }: TrackingRecordCardProps) => {
     return (
       <AppPressable
-        variant="cardStrip"
-        style={{ borderLeftColor: accentColor }}
+        variant="card"
+        style={{
+          borderLeftWidth: BORDER_WIDTH.lg,
+          borderLeftColor: accentColor,
+        }}
         onPress={onPress}
         accessibilityRole="button"
         accessibilityLabel={
@@ -35,7 +39,11 @@ export const TrackingRecordCard = React.memo(
           }`
         }
       >
-        <Box variant="noteHeader">
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+        >
           <AppTag label={displayName} color={accentColor} size="small" />
           <Box alignItems="flex-end" gap="xs">
             <AppText variant="subcaption">{timeLabel}</AppText>

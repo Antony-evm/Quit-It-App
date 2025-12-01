@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -8,6 +8,7 @@ import {
   DraggableModal,
   ModalActionHeader,
 } from '@/shared/components/ui';
+import { BACKGROUND, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from '@/features/journal/screens/JournalScreen';
 import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
@@ -53,13 +54,13 @@ export const HomeTabNavigator = () => {
     <Box flex={1} bg="muted" style={{ paddingTop: insets.top }}>
       <Box flex={1}>{renderContent()}</Box>
 
-      <Box variant="footerWrapper">
+      <View style={styles.footerWrapper}>
         <HomeFooterNavigator
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onFabPress={() => setIsNoteDrawerVisible(true)}
         />
-      </Box>
+      </View>
 
       <DraggableModal
         visible={isNoteDrawerVisible}
@@ -98,3 +99,11 @@ export const HomeTabNavigator = () => {
     </Box>
   );
 };
+
+const styles = StyleSheet.create({
+  footerWrapper: {
+    backgroundColor: BACKGROUND.muted,
+    paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
+    paddingTop: FOOTER_LAYOUT.BOTTOM_MARGIN,
+  },
+});

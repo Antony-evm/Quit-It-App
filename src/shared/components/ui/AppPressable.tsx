@@ -16,7 +16,6 @@ import {
   SHADOWS,
   TOUCH_TARGET_SIZE,
   INPUT_MIN_HEIGHT,
-  ANSWER_TAB_MIN_HEIGHT,
   ANSWER_GRID_MIN_HEIGHT,
   BORDER_WIDTH,
   OPACITY,
@@ -24,7 +23,6 @@ import {
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-type PressableInteraction = 'opacity' | 'scale' | 'none';
 type PressableVariant =
   | 'default'
   | 'icon'
@@ -34,21 +32,16 @@ type PressableVariant =
   | 'card'
   | 'toast'
   | 'backArrow'
-  | 'answer'
   | 'answerGrid'
-  | 'cardStrip'
   | 'delete';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
   style?: StyleProp<ViewStyle>;
-  interaction?: PressableInteraction;
   variant?: PressableVariant;
   selected?: boolean;
   fullWidth?: boolean;
-  separator?: boolean;
   activeOpacity?: number;
   disabledOpacity?: number;
-  scaleValue?: number;
 };
 
 const variantStyles = StyleSheet.create({
@@ -89,16 +82,6 @@ const variantStyles = StyleSheet.create({
     ...SHADOWS.softLg,
     elevation: 2,
   },
-  cardStrip: {
-    backgroundColor: BACKGROUND.primary,
-    borderRadius: BORDER_RADIUS.large,
-    padding: SPACING.xl,
-    borderWidth: BORDER_WIDTH.sm,
-    borderColor: SYSTEM.border,
-    ...SHADOWS.softLg,
-    elevation: 2,
-    borderLeftWidth: BORDER_WIDTH.lg,
-  },
   toast: {
     paddingHorizontal: SPACING.lg,
     paddingVertical: SPACING.md,
@@ -115,18 +98,6 @@ const variantStyles = StyleSheet.create({
     alignItems: 'center',
     ...SHADOWS.sm,
     elevation: 5,
-  },
-  answer: {
-    paddingHorizontal: SPACING.xl,
-    paddingVertical: SPACING.xl,
-    borderRadius: BORDER_RADIUS.medium,
-    borderWidth: BORDER_WIDTH.sm,
-    borderColor: SYSTEM.border,
-    backgroundColor: BACKGROUND.primary,
-    minHeight: ANSWER_TAB_MIN_HEIGHT,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexGrow: 1,
   },
   answerGrid: {
     borderRadius: BORDER_RADIUS.medium,
@@ -152,95 +123,48 @@ const variantStyles = StyleSheet.create({
   },
 });
 
-const selectedStyles = StyleSheet.create({
-  default: {},
-  icon: {},
-  tab: {},
+const selectedStyles: Partial<Record<PressableVariant, ViewStyle>> = {
   chip: {
     backgroundColor: TEXT.primary,
     borderColor: TEXT.primary,
-  },
-  input: {},
-  card: {
-    borderColor: SYSTEM.accentPrimary,
-    backgroundColor: BACKGROUND.cream,
-  },
-  toast: {},
-  backArrow: {},
-  answer: {
-    backgroundColor: BACKGROUND.cream,
-    borderColor: SYSTEM.accentPrimary,
   },
   answerGrid: {
     backgroundColor: BACKGROUND.cream,
     borderColor: SYSTEM.accentPrimary,
   },
-});
+};
 
 export const AppPressable = ({
   children,
   style,
-  interaction = 'opacity',
   variant = 'default',
   selected = false,
   fullWidth = false,
-  separator = false,
   activeOpacity = OPACITY.medium,
   disabledOpacity = OPACITY.disabled,
-  scaleValue = 0.96,
   disabled,
   ...props
 }: AppPressableProps) => {
-  const animatedScale = React.useRef(new Animated.Value(1)).current;
   const [isPressed, setIsPressed] = React.useState(false);
-
-  const handlePressIn = () => {
-    setIsPressed(true);
-    if (interaction === 'scale') {
-      Animated.spring(animatedScale, {
-        toValue: scaleValue,
-        useNativeDriver: true,
-        speed: 50,
-        bounciness: 4,
-      }).start();
-    }
-  };
-
-  const handlePressOut = () => {
-    setIsPressed(false);
-    if (interaction === 'scale') {
-      Animated.spring(animatedScale, {
-        toValue: 1,
-        useNativeDriver: true,
-        speed: 50,
-        bounciness: 4,
-      }).start();
-    }
-  };
 
   return (
     <AnimatedPressable
       disabled={disabled}
       onPressIn={e => {
-        handlePressIn();
+        setIsPressed(true);
         props.onPressIn?.(e);
       }}
       onPressOut={e => {
-        handlePressOut();
+        setIsPressed(false);
         props.onPressOut?.(e);
       }}
       style={[
         variantStyles[variant],
-        selected && selectedStyles[variant as keyof typeof selectedStyles],
+        selected && selectedStyles[variant],
         fullWidth && { width: '100%' },
-        separator && {
-          borderRightWidth: 1,
-          borderRightColor: SYSTEM.border,
-        },
         style,
-        interaction === 'opacity' && isPressed && { opacity: activeOpacity },
+        isPressed && { opacity: activeOpacity },
         disabled && { opacity: disabledOpacity },
-        interaction === 'scale' && { transform: [{ scale: animatedScale }] },
       ]}
       {...props}
     >

@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  StyleProp,
+  TextStyle,
+} from 'react-native';
 
 import {
   BACKGROUND,
@@ -12,11 +18,20 @@ import {
   DEVICE_HEIGHT,
 } from '../../theme';
 
-export type AppTextInputVariant = 'primary' | 'ghost' | 'secondary';
+type InputVariant = 'primary' | 'ghost' | 'secondary';
 
 export type AppTextInputProps = TextInputProps & {
   hasError?: boolean;
-  variant?: AppTextInputVariant;
+  variant?: InputVariant;
+};
+
+const VARIANT_STYLES: Record<InputVariant, StyleProp<TextStyle>> = {
+  primary: { backgroundColor: BACKGROUND.primary },
+  secondary: {
+    backgroundColor: BACKGROUND.muted,
+    minHeight: DEVICE_HEIGHT * 0.15,
+  },
+  ghost: { borderWidth: BORDER_WIDTH.none, backgroundColor: 'transparent' },
 };
 
 export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
@@ -28,10 +43,8 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
       ref={ref}
       style={[
         styles.base,
-        variant === 'primary' && styles.primary,
-        variant === 'ghost' && styles.ghost,
-        variant === 'secondary' && styles.secondary,
-        hasError && styles.inputError,
+        VARIANT_STYLES[variant],
+        hasError && styles.error,
         style,
       ]}
       placeholderTextColor={TEXT.muted}
@@ -50,18 +63,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.md,
     color: TEXT.primary,
   },
-  primary: {
-    backgroundColor: BACKGROUND.primary,
-  },
-  secondary: {
-    backgroundColor: BACKGROUND.muted,
-    minHeight: DEVICE_HEIGHT * 0.15,
-  },
-  ghost: {
-    borderWidth: BORDER_WIDTH.none,
-    backgroundColor: 'transparent',
-  },
-  inputError: {
+  error: {
     borderColor: SYSTEM.accentPrimary,
   },
 });

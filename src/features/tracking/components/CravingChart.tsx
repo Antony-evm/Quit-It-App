@@ -91,11 +91,15 @@ export const CravingChart = memo(function CravingChart({
       p="md"
       style={[styles.container, style]}
     >
-      <Box variant="noteHeader" mb="md">
+      <Box
+        flexDirection="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb="md"
+      >
         <AppTag label="Cravings Resisted" size="small" color={TAGS.craving} />
         <Box variant="toggleGroup">
           <AppPressable
-            variant="chip"
             selected={period === 'daily'}
             style={period === 'daily' && styles.activeToggle}
             onPress={() => setPeriod('daily')}
@@ -112,7 +116,6 @@ export const CravingChart = memo(function CravingChart({
             </AppText>
           </AppPressable>
           <AppPressable
-            variant="chip"
             selected={period === 'weekly'}
             style={period === 'weekly' && styles.activeToggle}
             onPress={() => setPeriod('weekly')}
@@ -131,7 +134,12 @@ export const CravingChart = memo(function CravingChart({
         </Box>
       </Box>
 
-      <Box variant="centered" bg="muted" borderRadius="small">
+      <Box
+        justifyContent="center"
+        alignItems="center"
+        bg="muted"
+        borderRadius="small"
+      >
         {chartData.labels.length < 4 ? (
           <BarChart
             data={barChartData}

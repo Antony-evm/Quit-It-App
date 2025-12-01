@@ -46,7 +46,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
         <AppText variant="subcaption" tone="muted">
           {t('journal.loggingLabel')}
         </AppText>
-        <Box variant="chip">
+        <Box flexDirection="row" flexWrap="wrap" gap="sm">
           {trackingTypes.map(type => {
             const isSelected = selectedTrackingTypeId === type.id;
             return (

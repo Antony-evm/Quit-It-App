@@ -103,7 +103,7 @@ export const TrackingRecordsList = React.memo(
     contentContainerStyle,
   }: TrackingRecordsListProps) => {
     const renderItemSeparator = useCallback(
-      () => <Box variant="separator" />,
+      () => <Box style={{ height: 16 }} />,
       [],
     );
 

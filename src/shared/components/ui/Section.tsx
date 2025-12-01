@@ -28,7 +28,7 @@ export const Section = memo(
     );
 
     return (
-      <Box variant="sectionContainer" accessibilityRole="none">
+      <Box mb="xl" accessibilityRole="none">
         <Box mb="sm">
           <AppText variant="heading">{title}</AppText>
         </Box>
