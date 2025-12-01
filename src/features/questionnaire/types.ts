@@ -3,7 +3,7 @@ import type { UserDataResponse } from '@/shared/types/api';
 export type PlanStatus = 'Cut Down' | 'Quit It';
 
 export interface QuittingPlanResponse {
-  date: string;
+  datetime: string;
   status: PlanStatus;
   current: number;
   target: number;
@@ -11,11 +11,19 @@ export interface QuittingPlanResponse {
 }
 
 export interface QuittingPlan {
-  date: Date;
+  datetime: Date;
   status: PlanStatus;
   current: number;
   target: number;
   text: string;
+}
+
+export interface FetchQuittingPlanResponse {
+  data: QuittingPlanResponse;
+}
+
+export interface FetchTriggersResponse {
+  data: string[];
 }
 
 export type AnswerType =
@@ -115,7 +123,6 @@ export interface AnswerOptionsPair {
 }
 
 export interface QuestionnaireAnswerPayload {
-  user_id: number;
   question_id: number;
   question_code: string;
   question_order_id: number;

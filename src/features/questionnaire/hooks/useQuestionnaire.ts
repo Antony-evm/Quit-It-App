@@ -16,12 +16,10 @@ import { completeQuestionnaire } from '../api/completeQuestionnaire';
 import { generateQuittingPlan } from '../api/fetchQuittingPlan';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../services/questionnaireStorage';
-import { useBackendUserIdSafe } from '@/shared/hooks';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import type { QuittingPlan } from '../types';
 
 type UseQuestionnaireOptions = {
-  userId?: number;
   initialOrderId?: number;
   initialVariationId?: number;
 };
@@ -31,8 +29,6 @@ type NavigationEntry = {
   variationId: number;
   questionId: number;
 };
-
-const DEFAULT_USER_ID = 2;
 
 const ensureVariationId = (candidates: number[], fallback: number) => {
   const normalized = candidates.filter(
@@ -53,8 +49,6 @@ const ensureVariationId = (candidates: number[], fallback: number) => {
 
 export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const { isAuthenticated } = useAuth();
-  const backendUserId = useBackendUserIdSafe();
-  const userId = options.userId ?? backendUserId ?? DEFAULT_USER_ID;
   const initialOrderId =
     options.initialOrderId ?? QUESTIONNAIRE_PLACEHOLDERS.orderId;
   const initialVariationId =
@@ -224,7 +218,6 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         }
 
         const payload = {
-          user_id: userId,
           question_id: question.id,
           question_code: question.questionCode,
           question_order_id: question.orderId,
@@ -284,7 +277,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           setHistory(historyRecords);
 
           try {
-            const plan = await generateQuittingPlan(userId);
+            const plan = await generateQuittingPlan();
             setGeneratedPlan(plan);
           } catch (planError) {
             console.error('Failed to generate quitting plan:', planError);
@@ -305,7 +298,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
         // Error handled by mutation state
       }
     },
-    [question, userId, submitMutation],
+    [question, submitMutation],
   );
 
   const completeQuestionnaireFlow =
