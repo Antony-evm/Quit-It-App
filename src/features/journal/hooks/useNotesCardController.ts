@@ -6,7 +6,6 @@ import {
   useInfiniteTrackingRecords,
 } from '@/features/tracking';
 import { useTrackingMutations } from '@/features/tracking/hooks/useTrackingMutations';
-import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import type { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { useToast } from '@/shared/components/toast';
 import { getTrackingTypeColors } from '@/features/tracking/constants';
@@ -26,7 +25,6 @@ export const useNotesCardController = ({
   scrollViewRef,
 }: UseNotesCardControllerOptions = {}) => {
   const queryClient = useQueryClient();
-  const userId = useCurrentUserId();
 
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
@@ -142,12 +140,12 @@ export const useNotesCardController = ({
 
   const invalidateAnalyticsQueries = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ['cravingAnalytics', userId],
+      queryKey: ['cravingAnalytics'],
     });
     queryClient.invalidateQueries({
-      queryKey: ['smokingAnalytics', userId],
+      queryKey: ['smokingAnalytics'],
     });
-  }, [queryClient, userId]);
+  }, [queryClient]);
 
   const resetForm = useCallback(() => {
     setNotes('');

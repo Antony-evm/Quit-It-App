@@ -14,7 +14,6 @@ import {
   SmokingAnalyticsResponse,
   TrackingType,
 } from '../types';
-import { useCurrentUserId } from './useCurrentUserId';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 
 interface UpdateTrackingRecordMutationPayload {
@@ -31,7 +30,6 @@ interface DeleteTrackingRecordMutationPayload {
 export const useTrackingMutations = () => {
   const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
-  const userId = useCurrentUserId();
 
   const getTrackingTypeCategory = (
     typeId: number,
@@ -60,7 +58,7 @@ export const useTrackingMutations = () => {
     updater: (old: CravingAnalyticsResponse) => CravingAnalyticsResponse,
   ) => {
     queryClient.setQueryData<CravingAnalyticsResponse>(
-      ['cravingAnalytics', userId],
+      ['cravingAnalytics'],
       old => (old ? updater(old) : old),
     );
   };
@@ -69,7 +67,7 @@ export const useTrackingMutations = () => {
     updater: (old: SmokingAnalyticsResponse) => SmokingAnalyticsResponse,
   ) => {
     queryClient.setQueryData<SmokingAnalyticsResponse>(
-      ['smokingAnalytics', userId],
+      ['smokingAnalytics'],
       old => (old ? updater(old) : old),
     );
   };

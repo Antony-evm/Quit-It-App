@@ -3,53 +3,45 @@ import { ErrorFactory } from '@/shared/error';
 import { QUESTIONNAIRE_COMPLETE_ENDPOINT } from './endpoints';
 import type { QuestionnaireCompleteResponse } from '../types';
 
+const OPERATION = 'complete_questionnaire';
+
 /**
- * Complete the questionnaire and get user status information
+ * Complete the questionnaire and get user status information.
+ * User ID is automatically provided via the X-User-ID header in authenticated requests.
  */
-export const completeQuestionnaire = async (
-  userId: number,
-): Promise<QuestionnaireCompleteResponse> => {
-  if (!userId) {
-    throw new Error('User ID not available');
-  }
-
-  const queryParams = new URLSearchParams({
-    user_id: userId.toString(),
-  });
-  const url = `${QUESTIONNAIRE_COMPLETE_ENDPOINT}?${queryParams}`;
-
+export async function completeQuestionnaire(): Promise<QuestionnaireCompleteResponse> {
   try {
-    const response = await authenticatedPost(url);
+    const response = await authenticatedPost(QUESTIONNAIRE_COMPLETE_ENDPOINT);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage =
-        errorData.message || 'Failed to complete questionnaire';
 
-      throw ErrorFactory.apiError(response.status, errorMessage, {
-        url: url,
-        operation: 'complete_questionnaire',
-        errorData,
-      });
+      throw ErrorFactory.apiError(
+        response.status,
+        errorData.message || 'Failed to complete questionnaire',
+        {
+          url: QUESTIONNAIRE_COMPLETE_ENDPOINT,
+          operation: OPERATION,
+          errorData,
+        },
+      );
     }
 
-    const result = await response.json();
-    return result;
+    return response.json();
   } catch (error) {
     if (error instanceof Error && error.name === 'AppError') {
       throw error;
     }
 
-    // Handle network errors or other unexpected errors
     throw ErrorFactory.networkError(
       `Failed to complete questionnaire: ${
         error instanceof Error ? error.message : String(error)
       }`,
       {
-        url,
-        operation: 'complete_questionnaire',
+        url: QUESTIONNAIRE_COMPLETE_ENDPOINT,
+        operation: OPERATION,
         originalError: error,
       },
     );
   }
-};
+}

@@ -311,11 +311,11 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const completeQuestionnaireFlow =
     useCallback(async (): Promise<QuestionnaireCompleteResponse | null> => {
       try {
-        return await completeMutation.mutateAsync(userId);
+        return await completeMutation.mutateAsync();
       } catch (caughtError) {
         return null;
       }
-    }, [userId, completeMutation]);
+    }, [completeMutation]);
 
   const refresh = useCallback(() => {
     return refetch();

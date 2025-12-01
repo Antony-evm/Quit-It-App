@@ -12,7 +12,6 @@ import {
   ScreenHeader,
 } from '@/shared/components/ui';
 import { TrackingRecordsListContainer } from '@/features/tracking/components/TrackingRecordsList';
-import { useCurrentUserId } from '@/features/tracking/hooks/useCurrentUserId';
 import { NotesCard } from '../components/NotesCard';
 import { useNotesCardController } from '../hooks/useNotesCardController';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
@@ -21,7 +20,6 @@ import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
 export const JournalScreen = () => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const currentUserId = useCurrentUserId();
   const editDrawerScrollRef = useRef<ScrollView>(null);
 
   const [selectedRecord, setSelectedRecord] =
@@ -29,10 +27,6 @@ export const JournalScreen = () => {
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   const handleCloseModal = useCallback(() => {
-    setIsEditModalVisible(false);
-  }, []);
-
-  const handleEditSuccess = useCallback(() => {
     setIsEditModalVisible(false);
     setSelectedRecord(null);
   }, []);
@@ -50,14 +44,14 @@ export const JournalScreen = () => {
     recordId: selectedRecord?.record_id,
     initialValues,
     scrollViewRef: editDrawerScrollRef,
-    onSaveSuccess: handleEditSuccess,
-    onDeleteSuccess: handleEditSuccess,
+    onSaveSuccess: handleCloseModal,
+    onDeleteSuccess: handleCloseModal,
   });
 
   useEffect(() => {
-    const queryKey = ['trackingRecords', 'infinite', currentUserId];
+    const queryKey = ['trackingRecords', 'infinite'];
     queryClient.resetQueries({ queryKey });
-  }, [queryClient, currentUserId]);
+  }, [queryClient]);
 
   const handleRecordPress = useCallback((record: TrackingRecordApiResponse) => {
     setSelectedRecord(record);

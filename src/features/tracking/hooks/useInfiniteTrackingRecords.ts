@@ -9,10 +9,8 @@ import {
   TrackingRecordApiResponse,
 } from '../api/fetchTrackingRecords';
 import { TRACKING_RECORDS_PAGE_SIZE } from '../constants';
-import { useCurrentUserId } from './useCurrentUserId';
 
 export type UseInfiniteTrackingRecordsOptions = {
-  userId?: number;
   enabled?: boolean;
 };
 
@@ -20,11 +18,10 @@ export const useInfiniteTrackingRecords = (
   options: UseInfiniteTrackingRecordsOptions = {},
 ) => {
   const { isAuthenticated } = useAuth();
-  const currentUserId = useCurrentUserId();
-  const { userId = currentUserId, enabled = true } = options;
+  const { enabled = true } = options;
   const queryClient = useQueryClient();
 
-  const queryKey = ['trackingRecords', 'infinite', userId];
+  const queryKey = ['trackingRecords', 'infinite'];
 
   // Helper function to merge new records with existing cache, removing duplicates
   const mergeRecordsById = (

@@ -4,21 +4,18 @@ import {
   fetchTrackingRecords,
   TrackingRecordApiResponse,
 } from '../api/fetchTrackingRecords';
-import { useCurrentUserId } from './useCurrentUserId';
 
 export type UseTrackingRecordsOptions = {
-  userId?: number;
   offset?: number;
   enabled?: boolean;
 };
 
 export const useTrackingRecords = (options: UseTrackingRecordsOptions = {}) => {
   const { isAuthenticated } = useAuth();
-  const currentUserId = useCurrentUserId();
-  const { userId = currentUserId, offset = 0, enabled = true } = options;
+  const { offset = 0, enabled = true } = options;
 
   return useQuery<TrackingRecordApiResponse[]>({
-    queryKey: ['trackingRecords', userId, offset],
+    queryKey: ['trackingRecords', offset],
     queryFn: () => fetchTrackingRecords({ offset }),
     enabled: enabled && isAuthenticated, // Only fetch when user is authenticated AND enabled
     staleTime: 30000, // 30 seconds
