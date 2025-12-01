@@ -4,6 +4,17 @@ export type FormattedDateLabels = {
 };
 
 /**
+ * Formats a Date to YYYY-MM-DD string in local timezone
+ * Use this for consistent date string formatting throughout the app
+ */
+export const formatDateToLocalString = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+/**
  * Formats a date for display (e.g., "Monday, November 30, 2025")
  */
 export const formatDisplayDate = (date: Date): string => {

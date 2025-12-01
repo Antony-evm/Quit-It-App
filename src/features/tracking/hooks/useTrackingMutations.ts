@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useErrorHandler } from '@/shared/error';
+import { formatDateToLocalString } from '@/utils/dateUtils';
 import {
   updateTrackingRecord,
   type UpdateTrackingRecordPayload,
@@ -38,20 +39,14 @@ export const useTrackingMutations = () => {
     const type = types?.find(t => t.id === typeId);
     if (!type) return undefined;
 
-    // Check code first, then fallback to display name logic used in UI components
     if (type.code === 'CRAVING') return 'CRAVING';
     if (type.code === 'SMOKE') return 'SMOKE';
-
-    const lowerName = type.displayName.toLowerCase();
-    if (lowerName.includes('craving')) return 'CRAVING';
-    if (lowerName.includes('smoke') || lowerName.includes('cigarette'))
-      return 'SMOKE';
 
     return undefined;
   };
 
-  const getDateKey = (dateStr: string) => {
-    return dateStr.split('T')[0];
+  const getDateKey = (dateStr: string): string => {
+    return formatDateToLocalString(new Date(dateStr));
   };
 
   const updateCravingAnalytics = (

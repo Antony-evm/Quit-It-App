@@ -8,11 +8,9 @@ export type {
   DailyCravingData,
 } from './types';
 export { useTrackingTypes } from './hooks/useTrackingTypes';
-export { useTrackingRecords } from './hooks/useTrackingRecords';
 export { useInfiniteTrackingRecords } from './hooks/useInfiniteTrackingRecords';
 export { useCravingAnalytics } from './hooks/useCravingAnalytics';
 export { useSmokingAnalytics } from './hooks/useSmokingAnalytics';
-export { useTrackingTypesPrefetch } from './hooks/useTrackingTypesPrefetch';
 export { CravingChart } from './components/CravingChart';
 
 // Re-export API functions

@@ -8,7 +8,6 @@ import Config from 'react-native-config';
 import { BACKGROUND } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
-import { useTrackingTypesPrefetch } from '@/features/tracking';
 import { ToastProvider, ToastContainer } from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
 import { ErrorHandlerProvider, GlobalErrorBoundary } from '@/shared/error';
@@ -41,8 +40,6 @@ const queryClient = new QueryClient({
  * Runs hooks that need provider context.
  */
 function AppContent(): React.ReactElement {
-  useTrackingTypesPrefetch();
-
   return (
     <ToastProvider>
       <ErrorHandlerProvider preferToast={true}>

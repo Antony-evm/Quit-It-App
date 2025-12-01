@@ -1,9 +1,9 @@
+import { useMemo } from 'react';
 import {
   useInfiniteQuery,
   useQueryClient,
   InfiniteData,
 } from '@tanstack/react-query';
-import { useAuth } from '@/shared/auth';
 import {
   fetchTrackingRecords,
   TrackingRecordApiResponse,
@@ -14,10 +14,14 @@ export type UseInfiniteTrackingRecordsOptions = {
   enabled?: boolean;
 };
 
+const placeholderData: InfiniteData<TrackingRecordApiResponse[]> = {
+  pages: [[]],
+  pageParams: [0],
+};
+
 export const useInfiniteTrackingRecords = (
   options: UseInfiniteTrackingRecordsOptions = {},
 ) => {
-  const { isAuthenticated } = useAuth();
   const { enabled = true } = options;
   const queryClient = useQueryClient();
 
@@ -46,52 +50,14 @@ export const useInfiniteTrackingRecords = (
   const query = useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
-      const newRecords = await fetchTrackingRecords({
+      return fetchTrackingRecords({
         offset: pageParam as number,
       });
-
-      // After receiving new data, update the cache to handle duplicates across all pages
-      setTimeout(() => {
-        queryClient.setQueryData<InfiniteData<TrackingRecordApiResponse[]>>(
-          queryKey,
-          oldData => {
-            if (!oldData?.pages) return oldData;
-
-            // Flatten all existing records
-            const allExistingRecords = oldData.pages.flat();
-
-            // Merge with new records to remove duplicates
-            const mergedRecords = mergeRecordsById(
-              allExistingRecords,
-              newRecords,
-            );
-
-            // Redistribute records back into pages
-            const newPages: TrackingRecordApiResponse[][] = [];
-            for (
-              let i = 0;
-              i < mergedRecords.length;
-              i += TRACKING_RECORDS_PAGE_SIZE
-            ) {
-              newPages.push(
-                mergedRecords.slice(i, i + TRACKING_RECORDS_PAGE_SIZE),
-              );
-            }
-
-            // Preserve all infinite query metadata
-            return {
-              ...oldData,
-              pages: newPages.length > 0 ? newPages : [[]],
-            };
-          },
-        );
-      }, 0);
-
-      return newRecords;
     },
-    enabled: enabled && isAuthenticated, // Only fetch when user is authenticated AND enabled
+    enabled,
     staleTime: Infinity, // Never consider data stale to prevent automatic refetches
-    gcTime: 5 * 60 * 1000, // 5 minutes - shorter cache time to allow fresh data
+    gcTime: Infinity, // Keep in cache indefinitely
+    placeholderData,
     getNextPageParam: (lastPage, allPages) => {
       // If the last page has fewer items than the page size, we've reached the end
       if (!lastPage || lastPage.length < TRACKING_RECORDS_PAGE_SIZE) {
@@ -111,13 +77,15 @@ export const useInfiniteTrackingRecords = (
     refetchOnReconnect: false, // Don't refetch when reconnecting to network
   });
 
-  // Flatten all pages into a single array and sort by event_at date
-  const flatRecords = query.data?.pages.flat() || [];
-  const sortedRecords = [...flatRecords].sort((a, b) => {
-    const dateA = new Date(a.event_at);
-    const dateB = new Date(b.event_at);
-    return dateB.getTime() - dateA.getTime();
-  });
+  // Flatten all pages into a single array and sort by event_at date (memoized)
+  const sortedRecords = useMemo(() => {
+    const flatRecords = query.data?.pages.flat() || [];
+    return [...flatRecords].sort((a, b) => {
+      const dateA = new Date(a.event_at);
+      const dateB = new Date(b.event_at);
+      return dateB.getTime() - dateA.getTime();
+    });
+  }, [query.data?.pages]);
 
   // Cache update utilities for optimistic updates
   // These preserve the infinite query structure while updating data
