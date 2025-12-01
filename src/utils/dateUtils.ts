@@ -4,6 +4,51 @@ export type FormattedDateLabels = {
 };
 
 /**
+ * Formats a date for display (e.g., "Monday, November 30, 2025")
+ */
+export const formatDisplayDate = (date: Date): string => {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+/**
+ * Formats a date for plan display (e.g., "November 30, 2025")
+ */
+export const formatPlanDate = (date: Date): string => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
+/**
+ * Returns a relative description of a date (Today, Tomorrow, Yesterday, In X days, X days ago)
+ */
+export const getRelativeDateInfo = (date: Date): string => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const targetDate = new Date(date);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const diffTime = targetDate.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  if (diffDays === -1) return 'Yesterday';
+  if (diffDays > 1) return `In ${diffDays} days`;
+  if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
+
+  return '';
+};
+
+/**
  * Formats a date into relative date label (Today, Yesterday, or formatted date)
  * and a time label.
  *

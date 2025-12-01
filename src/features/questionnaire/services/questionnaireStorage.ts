@@ -5,23 +5,8 @@ type StoredRecord = QuestionnaireResponseRecord & { createdAt: number };
 const cloneRecord = (
   record: QuestionnaireResponseRecord,
 ): QuestionnaireResponseRecord => ({
-  questionId: record.questionId,
-  questionCode: record.questionCode,
-  questionOrderId: record.questionOrderId,
-  questionVariationId: record.questionVariationId,
-  question: record.question,
-  answerType: record.answerType,
-  answerHandling: record.answerHandling,
-  answerOptions: record.answerOptions.map(option => ({
-    answer_option_id: option.answer_option_id,
-    answer_value: option.answer_value,
-    answer_type: option.answer_type,
-    answer_sub_option_id: option.answer_sub_option_id,
-    answer_sub_option_value: option.answer_sub_option_value,
-    answer_sub_option_type: option.answer_sub_option_type,
-  })),
-  subAnswerType: record.subAnswerType,
-  subAnswerHandling: record.subAnswerHandling,
+  ...record,
+  answerOptions: record.answerOptions.map(option => ({ ...option })),
 });
 
 const cloneStoredRecord = (record: StoredRecord): StoredRecord => ({
@@ -39,11 +24,7 @@ const resolveAll = (): QuestionnaireResponseRecord[] =>
 
 export const questionnaireStorage = {
   all: async (): Promise<QuestionnaireResponseRecord[]> => {
-    const snapshot = resolveAll();
-    return snapshot;
-  },
-  append: async (record: QuestionnaireResponseRecord): Promise<void> => {
-    await questionnaireStorage.save(record);
+    return resolveAll();
   },
   save: async (record: QuestionnaireResponseRecord): Promise<void> => {
     const existingIndex = records.findIndex(

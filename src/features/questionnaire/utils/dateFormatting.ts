@@ -1,3 +1,9 @@
+import {
+  formatDisplayDate,
+  formatPlanDate,
+  getRelativeDateInfo,
+} from '@/utils/dateUtils';
+
 const DATE_SUBMISSION_SEPARATOR = ' ';
 
 export const formatDateForSubmission = (date: Date) => {
@@ -16,41 +22,5 @@ export const parseSubmissionDateValue = (value: string) => {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 };
 
-export const formatDisplayDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-/**
- * Formats a date for plan display (e.g., "November 30, 2025")
- */
-export const formatPlanDate = (date: Date): string => {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-export const getRelativeDateInfo = (date: Date) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const targetDate = new Date(date);
-  targetDate.setHours(0, 0, 0, 0);
-
-  const diffTime = targetDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  if (diffDays === -1) return 'Yesterday';
-  if (diffDays > 1) return `In ${diffDays} days`;
-  if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
-
-  return '';
-};
+// Re-export shared date utils for backward compatibility
+export { formatDisplayDate, formatPlanDate, getRelativeDateInfo };

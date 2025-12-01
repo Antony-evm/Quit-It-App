@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, StatusMessage, IconTextCard } from '@/shared/components/ui';
 import { useQuittingPlan } from '@/features/questionnaire/hooks/useQuittingPlan';
-import { formatPlanDate } from '@/features/questionnaire/utils/dateFormatting';
+import { formatPlanDate } from '@/utils/dateUtils';
 import AimSvg from '@/assets/aim.svg';
 import CalendarSvg from '@/assets/calendar.svg';
 import StopSvg from '@/assets/stop.svg';
@@ -27,7 +27,7 @@ export const QuittingPlanDetails: React.FC = () => {
   return (
     <Box gap="md">
       <IconTextCard icon={AimSvg} text={plan.status} />
-      <IconTextCard icon={CalendarSvg} text={formatPlanDate(plan.date)} />
+      <IconTextCard icon={CalendarSvg} text={formatPlanDate(plan.datetime)} />
       <IconTextCard
         icon={StopSvg}
         text={t('plan.cigarettesPerDay', { count: plan.current })}
