@@ -1,8 +1,6 @@
 import { authenticatedGet } from '@/shared/api/apiConfig';
-import { API_BASE_URL } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
-
-const TRACKING_RECORDS_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
+import { TRACKING_ENDPOINT } from './endpoints';
 
 export type TrackingRecordApiResponse = {
   record_id: number;
@@ -30,7 +28,7 @@ export const fetchTrackingRecords = async (
     offset: offset.toString(),
   });
 
-  const url = `${TRACKING_RECORDS_ENDPOINT}?${queryParams}`;
+  const url = `${TRACKING_ENDPOINT}?${queryParams}`;
 
   try {
     const response = await authenticatedGet(url);

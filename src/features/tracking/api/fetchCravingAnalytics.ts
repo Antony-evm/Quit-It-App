@@ -9,25 +9,37 @@ export type CravingAnalyticsApiPayload = {
 
 export const fetchCravingAnalytics =
   async (): Promise<CravingAnalyticsResponse> => {
-    const url = CRAVINGS_ANALYTICS_ENDPOINT;
-
     try {
-      const response = await authenticatedGet(url);
+      const response = await authenticatedGet(CRAVINGS_ANALYTICS_ENDPOINT);
 
       if (!response.ok) {
-        throw ErrorFactory.networkError(
-          `HTTP ${response.status}: ${response.statusText}`,
+        const errorText = await response.text();
+        throw ErrorFactory.apiError(
+          response.status,
+          errorText || 'Failed to fetch craving analytics',
+          {
+            endpoint: CRAVINGS_ANALYTICS_ENDPOINT,
+            operation: 'fetch_craving_analytics',
+          },
         );
       }
 
       const result: CravingAnalyticsApiPayload = await response.json();
       return result.data;
     } catch (error) {
-      if (error instanceof Error) {
-        throw ErrorFactory.networkError(error.message);
+      if (error instanceof Error && error.name === 'AppError') {
+        throw error;
       }
+
       throw ErrorFactory.networkError(
-        'Unknown error occurred while fetching craving analytics',
+        `Failed to fetch craving analytics: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        {
+          endpoint: CRAVINGS_ANALYTICS_ENDPOINT,
+          operation: 'fetch_craving_analytics',
+          originalError: error,
+        },
       );
     }
   };

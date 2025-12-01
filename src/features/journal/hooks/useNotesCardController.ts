@@ -28,12 +28,8 @@ export const useNotesCardController = ({
 
   const { data: trackingTypes } = useTrackingTypes();
   const { showToast } = useToast();
-  const {
-    addRecordToCache,
-    replaceOptimisticRecord,
-    updateRecordInCache,
-    removeRecordFromCache,
-  } = useInfiniteTrackingRecords();
+  const { addRecordToCache, updateRecordInCache, removeRecordFromCache } =
+    useInfiniteTrackingRecords();
   const { create, update, delete: deleteMutation } = useTrackingMutations();
 
   // Form state
@@ -184,20 +180,6 @@ export const useNotesCardController = ({
       };
     }, [recordId, selectedTrackingType, selectedDateTime, notes]);
 
-  const buildOptimisticRecord = useCallback(
-    (tempId: number): TrackingRecordApiResponse | null => {
-      const payload = buildPayload();
-      if (!payload) return null;
-      return {
-        record_id: tempId,
-        tracking_type_id: payload.tracking_type_id,
-        event_at: payload.event_at,
-        note: payload.note || null,
-      };
-    },
-    [buildPayload],
-  );
-
   const createSuccessCallbacks = useCallback(
     (options: {
       successMessage: string;
@@ -234,23 +216,16 @@ export const useNotesCardController = ({
     const payload = buildPayload();
     if (!payload) return;
 
-    const tempId = Date.now();
-    const optimisticRecord = buildOptimisticRecord(tempId);
-    if (!optimisticRecord) return;
-
-    // Optimistic update
-    addRecordToCache(optimisticRecord);
-
     create.mutate(payload, {
-      onSuccess: realRecord => {
-        replaceOptimisticRecord(tempId, realRecord);
+      onSuccess: newRecord => {
+        // Add the real record from server response to cache
+        addRecordToCache(newRecord);
         resetForm();
         onSaveSuccess?.();
         showToast('Your tracking entry has been saved!', 'success');
         invalidateAnalyticsQueries();
       },
       onError: (error: Error) => {
-        removeRecordFromCache(tempId);
         showToast(
           error instanceof Error
             ? error.message
@@ -261,15 +236,12 @@ export const useNotesCardController = ({
     });
   }, [
     buildPayload,
-    buildOptimisticRecord,
     addRecordToCache,
     create,
-    replaceOptimisticRecord,
     resetForm,
     onSaveSuccess,
     showToast,
     invalidateAnalyticsQueries,
-    removeRecordFromCache,
   ]);
 
   const handleUpdate = useCallback(() => {

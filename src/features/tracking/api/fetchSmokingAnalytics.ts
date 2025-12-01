@@ -9,25 +9,37 @@ export type SmokingAnalyticsApiPayload = {
 
 export const fetchSmokingAnalytics =
   async (): Promise<SmokingAnalyticsResponse> => {
-    const url = SMOKES_ANALYTICS_ENDPOINT;
-
     try {
-      const response = await authenticatedGet(url);
+      const response = await authenticatedGet(SMOKES_ANALYTICS_ENDPOINT);
 
       if (!response.ok) {
-        throw ErrorFactory.networkError(
-          `HTTP ${response.status}: ${response.statusText}`,
+        const errorText = await response.text();
+        throw ErrorFactory.apiError(
+          response.status,
+          errorText || 'Failed to fetch smoking analytics',
+          {
+            endpoint: SMOKES_ANALYTICS_ENDPOINT,
+            operation: 'fetch_smoking_analytics',
+          },
         );
       }
 
       const result: SmokingAnalyticsApiPayload = await response.json();
       return result.data;
     } catch (error) {
-      if (error instanceof Error) {
-        throw ErrorFactory.networkError(error.message);
+      if (error instanceof Error && error.name === 'AppError') {
+        throw error;
       }
+
       throw ErrorFactory.networkError(
-        'Unknown error occurred while fetching smoking analytics',
+        `Failed to fetch smoking analytics: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        {
+          endpoint: SMOKES_ANALYTICS_ENDPOINT,
+          operation: 'fetch_smoking_analytics',
+          originalError: error,
+        },
       );
     }
   };

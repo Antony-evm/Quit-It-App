@@ -1,8 +1,17 @@
-import { authenticatedDelete, API_BASE_URL } from '@/shared/api/apiConfig';
+import { authenticatedDelete } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
+import { TRACKING_ENDPOINT } from './endpoints';
+
+const validateRecordId = (recordId: number): void => {
+  if (!recordId || recordId <= 0) {
+    throw ErrorFactory.validationError('recordId', 'Invalid record ID');
+  }
+};
 
 export const deleteTrackingRecord = async (recordId: number): Promise<void> => {
-  const url = `${API_BASE_URL}/api/v1/tracking/${recordId}`;
+  validateRecordId(recordId);
+
+  const url = `${TRACKING_ENDPOINT}/${recordId}`;
 
   try {
     const response = await authenticatedDelete(url);
@@ -19,8 +28,7 @@ export const deleteTrackingRecord = async (recordId: number): Promise<void> => {
         },
       );
     }
-
-    } catch (error) {
+  } catch (error) {
     if (error instanceof Error && error.name === 'AppError') {
       throw error;
     }

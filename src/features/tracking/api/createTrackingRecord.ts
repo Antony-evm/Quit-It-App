@@ -1,9 +1,7 @@
 import { authenticatedPost } from '@/shared/api/apiConfig';
-import { API_BASE_URL } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
+import { TRACKING_ENDPOINT } from './endpoints';
 import type { TrackingRecordApiResponse } from './fetchTrackingRecords';
-
-const TRACKING_ENDPOINT = `${API_BASE_URL}/api/v1/tracking`;
 
 export type CreateTrackingRecordPayload = {
   tracking_type_id: number;
@@ -15,9 +13,37 @@ export type CreateTrackingRecordResponse = {
   data: TrackingRecordApiResponse;
 };
 
+const validatePayload = (payload: CreateTrackingRecordPayload): void => {
+  if (!payload.tracking_type_id || payload.tracking_type_id <= 0) {
+    throw ErrorFactory.validationError(
+      'tracking_type_id',
+      'Please select a valid tracking type',
+    );
+  }
+
+  if (!payload.event_at) {
+    throw ErrorFactory.validationError(
+      'event_at',
+      'Please select a valid date and time',
+    );
+  }
+
+  // Validate ISO date format
+  const date = new Date(payload.event_at);
+  if (isNaN(date.getTime())) {
+    throw ErrorFactory.validationError(
+      'event_at',
+      'Invalid date format. Please use a valid date.',
+    );
+  }
+};
+
 export const createTrackingRecord = async (
   payload: CreateTrackingRecordPayload,
 ): Promise<TrackingRecordApiResponse> => {
+  // Validate input before making API call
+  validatePayload(payload);
+
   try {
     const response = await authenticatedPost(TRACKING_ENDPOINT, payload);
 

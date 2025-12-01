@@ -1,4 +1,5 @@
 import { authenticatedGet } from '@/shared/api/apiConfig';
+import { ErrorFactory } from '@/shared/error';
 import type { TrackingType } from '../types';
 import { TRACKING_TYPES_ENDPOINT } from './endpoints';
 
@@ -31,12 +32,37 @@ const extractRecords = (
 };
 
 export const fetchTrackingTypes = async (): Promise<TrackingType[]> => {
-  const response = await authenticatedGet(TRACKING_TYPES_ENDPOINT);
+  try {
+    const response = await authenticatedGet(TRACKING_TYPES_ENDPOINT);
 
-  if (!response.ok) {
-    throw new Error('Failed to load tracking types');
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw ErrorFactory.apiError(
+        response.status,
+        errorText || 'Failed to fetch tracking types',
+        {
+          endpoint: TRACKING_TYPES_ENDPOINT,
+          operation: 'fetch_tracking_types',
+        },
+      );
+    }
+
+    const payload = (await response.json()) as TrackingTypesApiResponse;
+    return extractRecords(payload).map(mapTrackingType);
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AppError') {
+      throw error;
+    }
+
+    throw ErrorFactory.networkError(
+      `Failed to fetch tracking types: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      {
+        endpoint: TRACKING_TYPES_ENDPOINT,
+        operation: 'fetch_tracking_types',
+        originalError: error,
+      },
+    );
   }
-
-  const payload = (await response.json()) as TrackingTypesApiResponse;
-  return extractRecords(payload).map(mapTrackingType);
 };
