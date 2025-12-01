@@ -28,20 +28,3 @@ export function getStatusAction(status: UserStatus): UserStatusAction {
     }
   );
 }
-
-/**
- * Add new status action mapping at runtime if needed
- */
-export function addStatusActionMapping(
-  statusCode: string,
-  action: UserStatusAction,
-): void {
-  STATUS_ACTION_CONFIG[statusCode] = action;
-}
-
-/**
- * Get all current status action mappings
- */
-export function getStatusActionMappings(): Record<string, UserStatusAction> {
-  return { ...STATUS_ACTION_CONFIG };
-}
