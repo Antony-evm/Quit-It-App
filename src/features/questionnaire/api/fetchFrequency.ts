@@ -1,35 +1,49 @@
 import { authenticatedGet } from '@/shared/api/apiConfig';
+import { ErrorFactory } from '@/shared/error';
 import { QUESTIONNAIRE_FREQUENCY_ENDPOINT } from './endpoints';
 
-export interface FrequencyApiData {
-  [key: string]: any;
+const OPERATION = 'fetch_frequency';
+
+export type FrequencyData = Record<string, string>;
+
+interface FetchFrequencyResponse {
+  data: FrequencyData;
 }
 
-export interface FetchFrequencyResponse {
-  data: FrequencyApiData;
+export async function fetchFrequency(): Promise<FrequencyData> {
+  try {
+    const response = await authenticatedGet(QUESTIONNAIRE_FREQUENCY_ENDPOINT);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      throw ErrorFactory.apiError(
+        response.status,
+        errorData.message || 'Failed to fetch frequency data',
+        {
+          url: QUESTIONNAIRE_FREQUENCY_ENDPOINT,
+          operation: OPERATION,
+          errorData,
+        },
+      );
+    }
+
+    const responseData: FetchFrequencyResponse = await response.json();
+    return responseData.data;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AppError') {
+      throw error;
+    }
+
+    throw ErrorFactory.networkError(
+      `Failed to fetch frequency data: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+      {
+        url: QUESTIONNAIRE_FREQUENCY_ENDPOINT,
+        operation: OPERATION,
+        originalError: error,
+      },
+    );
+  }
 }
-
-/**
- * Fetch the user's frequency data from the questionnaire endpoint
- */
-export const fetchFrequency = async (
-  userId: number,
-): Promise<FrequencyApiData> => {
-  if (!userId) {
-    throw new Error('User ID not available');
-  }
-
-  const queryParams = new URLSearchParams({
-    user_id: userId.toString(),
-  });
-  const url = `${QUESTIONNAIRE_FREQUENCY_ENDPOINT}?${queryParams}`;
-
-  const response = await authenticatedGet(url);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch frequency data: ${response.status}`);
-  }
-
-  const responseData: FetchFrequencyResponse = await response.json();
-  return responseData.data;
-};

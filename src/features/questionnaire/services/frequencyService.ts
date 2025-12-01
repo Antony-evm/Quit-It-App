@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchFrequency, FrequencyApiData } from '../api/fetchFrequency';
+import { fetchFrequency, FrequencyData } from '../api/fetchFrequency';
 
 export class FrequencyService {
-  private static frequency: FrequencyApiData | null = null;
+  private static frequency: FrequencyData | null = null;
   private static readonly CACHE_KEY = 'frequency_cache_v1';
   private static readonly CACHE_EXPIRY_HOURS = 24; // Cache for 24 hours
 
@@ -10,12 +10,10 @@ export class FrequencyService {
    * Initialize the frequency data by fetching from cache or network
    */
   static async initialize({
-    userId,
     forceRefresh = false,
   }: {
-    userId: number;
     forceRefresh?: boolean;
-  }): Promise<void> {
+  } = {}): Promise<void> {
     if (this.frequency && !forceRefresh) {
       return;
     }
@@ -28,34 +26,34 @@ export class FrequencyService {
       ) {
         this.frequency = cachedFrequency.data;
         // Keep cache fresh in background without blocking
-        void this.refreshFromNetwork(userId).catch(error => {
+        void this.refreshFromNetwork().catch(error => {
           console.warn('[FrequencyService] Background refresh failed:', error);
         });
         return;
       }
     }
 
-    await this.refreshFromNetwork(userId);
+    await this.refreshFromNetwork();
   }
 
   /**
    * Get the current frequency data
    */
-  static getFrequency(): FrequencyApiData | null {
+  static getFrequency(): FrequencyData | null {
     return this.frequency;
   }
 
   /**
    * Force refresh the frequency data from network
    */
-  static async refresh(userId: number): Promise<FrequencyApiData> {
-    await this.refreshFromNetwork(userId);
+  static async refresh(): Promise<FrequencyData> {
+    await this.refreshFromNetwork();
     return this.frequency!;
   }
 
-  private static async refreshFromNetwork(userId: number): Promise<void> {
+  private static async refreshFromNetwork(): Promise<void> {
     try {
-      const frequency = await fetchFrequency(userId);
+      const frequency = await fetchFrequency();
       this.frequency = frequency;
       await this.persistCache(frequency);
     } catch (error) {
@@ -68,7 +66,7 @@ export class FrequencyService {
   }
 
   private static async loadFromCache(): Promise<{
-    data: FrequencyApiData;
+    data: FrequencyData;
     cacheTimestamp: number;
   } | null> {
     try {
@@ -85,9 +83,7 @@ export class FrequencyService {
     }
   }
 
-  private static async persistCache(
-    frequency: FrequencyApiData,
-  ): Promise<void> {
+  private static async persistCache(frequency: FrequencyData): Promise<void> {
     try {
       const cacheData = {
         data: frequency,

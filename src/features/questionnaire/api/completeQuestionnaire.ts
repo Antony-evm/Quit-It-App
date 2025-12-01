@@ -5,10 +5,6 @@ import type { QuestionnaireCompleteResponse } from '../types';
 
 const OPERATION = 'complete_questionnaire';
 
-/**
- * Complete the questionnaire and get user status information.
- * User ID is automatically provided via the X-User-ID header in authenticated requests.
- */
 export async function completeQuestionnaire(): Promise<QuestionnaireCompleteResponse> {
   try {
     const response = await authenticatedPost(QUESTIONNAIRE_COMPLETE_ENDPOINT);
