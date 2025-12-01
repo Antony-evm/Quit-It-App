@@ -29,8 +29,9 @@ export class UserStatusService {
       const cachedMap = await this.loadFromCache();
       if (cachedMap) {
         this.statusMap = cachedMap;
-        // Refresh in background to keep data current
-        void this.refreshFromNetwork().catch(error => {});
+        void this.refreshFromNetwork().catch(error => {
+          console.warn('[UserStatusService] Background refresh failed:', error);
+        });
         return;
       }
     }
@@ -57,14 +58,10 @@ export class UserStatusService {
   }
 
   private static async refreshFromNetwork(): Promise<void> {
-    try {
-      const response: UserStatusesResponse = await fetchUserStatuses();
-      const statuses = response.data.statuses;
-      this.statusMap = this.buildStatusMap(statuses);
-      await this.persistCache(statuses);
-    } catch (error) {
-      throw error;
-    }
+    const response: UserStatusesResponse = await fetchUserStatuses();
+    const statuses = response.data.statuses;
+    this.statusMap = this.buildStatusMap(statuses);
+    await this.persistCache(statuses);
   }
 
   private static async loadFromCache(): Promise<UserStatusMap | null> {
@@ -88,7 +85,9 @@ export class UserStatusService {
   private static async persistCache(statuses: UserStatus[]): Promise<void> {
     try {
       await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(statuses));
-    } catch (error) {}
+    } catch (error) {
+      console.warn('[UserStatusService] Failed to persist cache:', error);
+    }
   }
 
   /**
@@ -137,60 +136,21 @@ export class UserStatusService {
     const status = this.getStatus(statusId);
 
     if (!action || !status) {
+      console.warn('[UserStatusService] No action found for status:', statusId);
       return;
     }
 
     switch (action.type) {
       case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:
-        this.fetchQuestionnaireDataAndNavigate(navigation);
+        navigation.navigate('Questionnaire');
         break;
       case USER_STATUS_ACTIONS.NAVIGATE_TO_PAYWALL:
-        this.navigateToPaywall(navigation);
+        navigation.navigate('Paywall');
         break;
       case USER_STATUS_ACTIONS.NAVIGATE_TO_HOME:
-        this.executePlaceholderCallAndNavigate(navigation);
-        break;
       case USER_STATUS_ACTIONS.PLACEHOLDER_CALL:
-        this.executePlaceholderCallAndNavigate(navigation);
+        navigation.navigate('Home');
         break;
-      default:
-    }
-  }
-
-  /**
-   * Navigate to questionnaire screen
-   * Note: The screen will handle its own data fetching on mount
-   */
-  private static async fetchQuestionnaireDataAndNavigate(
-    navigation: NativeStackNavigationProp<RootStackParamList, any>,
-  ): Promise<void> {
-    navigation.navigate('Questionnaire');
-  }
-
-  /**
-   * Navigate to paywall screen
-   */
-  private static navigateToPaywall(
-    navigation: NativeStackNavigationProp<RootStackParamList, any>,
-  ): void {
-    navigation.navigate('Paywall');
-  }
-
-  /**
-   * Execute placeholder call and navigate to home
-   */
-  private static async executePlaceholderCallAndNavigate(
-    navigation: NativeStackNavigationProp<RootStackParamList, any>,
-  ): Promise<void> {
-    try {
-      // Placeholder call implementation
-      // The actual questionnaire account data fetching is handled by QuestionnaireAccountProvider
-      // when user is authenticated and should navigate to home
-
-      navigation.navigate('Home');
-    } catch (error) {
-      // Still navigate to home even if placeholder call fails
-      navigation.navigate('Home');
     }
   }
 }

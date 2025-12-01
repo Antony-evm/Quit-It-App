@@ -1,5 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UserType, UserTypeMap, UserTypesResponse } from '@/shared/types/userType';
+import {
+  UserType,
+  UserTypeMap,
+  UserTypesResponse,
+} from '@/shared/types/userType';
 import { fetchUserTypes } from '@/shared/api/userTypeApi';
 
 export class UserTypeService {
@@ -18,9 +22,9 @@ export class UserTypeService {
       const cachedMap = await this.loadFromCache();
       if (cachedMap) {
         this.typeMap = cachedMap;
-        // Keep cache fresh without blocking startup
         void this.refreshFromNetwork().catch(error => {
-          });
+          console.warn('[UserTypeService] Background refresh failed:', error);
+        });
         return;
       }
     }
@@ -34,7 +38,6 @@ export class UserTypeService {
   private static buildTypeMap(types: UserType[]): UserTypeMap {
     const map: UserTypeMap = {};
 
-    // Safety check for empty or invalid input
     if (!Array.isArray(types)) {
       return map;
     }
@@ -46,22 +49,17 @@ export class UserTypeService {
         typeof type.code === 'string'
       ) {
         map[type.id] = type;
-      } else {
-        }
+      }
     });
 
     return map;
   }
 
   private static async refreshFromNetwork(): Promise<void> {
-    try {
-      const response: UserTypesResponse = await fetchUserTypes();
-      const types = response.data.types;
-      this.typeMap = this.buildTypeMap(types);
-      await this.persistCache(types);
-    } catch (error) {
-      throw error;
-    }
+    const response: UserTypesResponse = await fetchUserTypes();
+    const types = response.data.types;
+    this.typeMap = this.buildTypeMap(types);
+    await this.persistCache(types);
   }
 
   private static async loadFromCache(): Promise<UserTypeMap | null> {
@@ -86,7 +84,8 @@ export class UserTypeService {
     try {
       await AsyncStorage.setItem(this.CACHE_KEY, JSON.stringify(types));
     } catch (error) {
-      }
+      console.warn('[UserTypeService] Failed to persist cache:', error);
+    }
   }
 
   /**
