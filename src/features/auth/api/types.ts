@@ -13,8 +13,6 @@ export interface CreateUserResponse extends UserDataResponse {}
 
 export interface LoginUserPayload {
   stytch_user_id: string;
-  email: string;
-  methodology: 'email+password' | 'google' | 'apple' | 'magic_link' | string;
 }
 
 export interface LoginUserResponse extends UserDataResponse {}

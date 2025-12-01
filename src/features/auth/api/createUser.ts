@@ -2,9 +2,6 @@ import { publicPost, API_BASE_URL } from '@/shared/api/apiConfig';
 import { ErrorFactory } from '@/shared/error';
 import { CreateUserPayload, CreateUserResponse } from './types';
 
-/**
- * Register a new user with the backend after successful Stytch authentication
- */
 export const createUser = async (
   payload: CreateUserPayload,
 ): Promise<CreateUserResponse> => {
@@ -32,7 +29,6 @@ export const createUser = async (
       throw error;
     }
 
-    // Handle network errors or other unexpected errors
     throw ErrorFactory.networkError(
       `Failed to create user: ${
         error instanceof Error ? error.message : String(error)

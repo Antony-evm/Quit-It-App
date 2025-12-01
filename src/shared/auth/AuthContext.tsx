@@ -117,8 +117,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           try {
             const loginUserPayload: LoginUserPayload = {
               stytch_user_id: user_id,
-              email: user.emails?.[0]?.email || email,
-              methodology: 'email+password',
             };
 
             const backendResponse = await loginUser(loginUserPayload);
