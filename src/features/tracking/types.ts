@@ -31,7 +31,7 @@ export type CravingAnalyticsResponse = {
 };
 
 export type SmokingAnalyticsResponse = {
-  last_smoking_day: string; // date as string
+  last_smoking_day: Date;
   total_smokes: number;
   skipped_smokes: number;
   skipped_smokes_per_day: number;

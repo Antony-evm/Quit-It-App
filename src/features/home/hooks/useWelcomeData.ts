@@ -54,10 +54,12 @@ export const useWelcomeData = (): WelcomeData => {
         };
       }
 
-      const lastSmokingDate = new Date(smokingAnalytics!.last_smoking_day);
       return {
         message: t('home.smokeFreeFor'),
-        timeDifference: getFormattedTimeDifference(lastSmokingDate, now),
+        timeDifference: getFormattedTimeDifference(
+          smokingAnalytics!.last_smoking_day,
+          now,
+        ),
       };
     }
 

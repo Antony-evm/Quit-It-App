@@ -1,39 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
+
+export interface PasswordRequirements {
+  hasMinLength: boolean;
+  hasMaxLength: boolean;
+  hasUppercase: boolean;
+  hasLowercase: boolean;
+  hasNumber: boolean;
+  hasSymbol: boolean;
+}
 
 export interface CustomPasswordValidation {
   password: string;
   isValid: boolean;
   errors: string[];
-  requirements: {
-    hasMinLength: boolean;
-    hasMaxLength: boolean;
-    hasUppercase: boolean;
-    hasLowercase: boolean;
-    hasNumber: boolean;
-    hasSymbol: boolean;
-  };
+  requirements: PasswordRequirements;
 }
 
 export const useCustomPasswordValidation = (
   password: string,
 ): CustomPasswordValidation => {
-  const [validation, setValidation] = useState<CustomPasswordValidation>({
-    password: '',
-    isValid: false,
-    errors: [],
-    requirements: {
-      hasMinLength: false,
-      hasMaxLength: false,
-      hasUppercase: false,
-      hasLowercase: false,
-      hasNumber: false,
-      hasSymbol: false,
-    },
-  });
-
-  useEffect(() => {
+  return useMemo(() => {
     const errors: string[] = [];
-    const requirements = {
+    const requirements: PasswordRequirements = {
       hasMinLength: password.length >= 8,
       hasMaxLength: password.length <= 32,
       hasUppercase: /[A-Z]/.test(password),
@@ -63,48 +51,11 @@ export const useCustomPasswordValidation = (
 
     const isValid = Object.values(requirements).every(Boolean);
 
-    setValidation({
+    return {
       password,
       isValid,
       errors,
       requirements,
-    });
+    };
   }, [password]);
-
-  return validation;
-};
-
-// Helper function for name validation
-export const validateName = (
-  name: string,
-  maxLength: number,
-): { isValid: boolean; error?: string } => {
-  if (!name.trim()) {
-    return { isValid: false, error: 'This field is required' };
-  }
-
-  if (name.length > maxLength) {
-    return { isValid: false, error: `Must be ${maxLength} characters or less` };
-  }
-
-  if (/\d/.test(name)) {
-    return { isValid: false, error: 'Numbers are not allowed' };
-  }
-
-  return { isValid: true };
-};
-
-export const validateConfirmPassword = (
-  password: string,
-  confirmPassword: string,
-): { isValid: boolean; error?: string } => {
-  if (!confirmPassword) {
-    return { isValid: false, error: 'Please confirm your password' };
-  }
-
-  if (password !== confirmPassword) {
-    return { isValid: false, error: 'Passwords do not match' };
-  }
-
-  return { isValid: true };
 };

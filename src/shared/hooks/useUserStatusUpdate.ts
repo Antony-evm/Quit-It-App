@@ -38,17 +38,13 @@ export const useUserStatusUpdate = () => {
       response: UserDataResponse,
       navigation: NativeStackNavigationProp<RootStackParamList, any>,
     ): Promise<void> => {
-      try {
-        const { user_status_id } = response.data;
+      const { user_status_id } = response.data;
 
-        // Update user status and refresh cache
-        await handleUserStatusUpdate(response);
+      // Update user status and refresh cache
+      await handleUserStatusUpdate(response);
 
-        // Execute navigation based on the new user status
-        UserStatusService.executeStatusAction(user_status_id, navigation);
-      } catch (error) {
-        throw error;
-      }
+      // Execute navigation based on the new user status
+      UserStatusService.executeStatusAction(user_status_id, navigation);
     },
     [handleUserStatusUpdate],
   );

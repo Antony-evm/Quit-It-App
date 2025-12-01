@@ -27,7 +27,6 @@ export const NavigationReadyProvider: React.FC<
   const [isReady, setIsReady] = useState(false);
 
   const setReady = () => {
-    console.log('[NavigationContext] Setting navigation ready');
     setIsReady(true);
   };
 

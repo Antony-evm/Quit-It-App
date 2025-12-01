@@ -25,7 +25,10 @@ export const fetchSmokingAnalytics =
       }
 
       const result: SmokingAnalyticsApiPayload = await response.json();
-      return result.data;
+      return {
+        ...result.data,
+        last_smoking_day: new Date(result.data.last_smoking_day),
+      };
     } catch (error) {
       if (error instanceof Error && error.name === 'AppError') {
         throw error;

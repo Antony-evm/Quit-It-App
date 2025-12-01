@@ -18,24 +18,18 @@ import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
 import PlusIcon from '@/assets/plus.svg';
 
-export type HomeFooterTab = 'account' | 'home' | 'journal' | 'placeholder';
+export type HomeFooterTab = 'account' | 'home' | 'journal';
 
 export const FOOTER_TABS = {
   ACCOUNT: 'account' as HomeFooterTab,
   HOME: 'home' as HomeFooterTab,
   JOURNAL: 'journal' as HomeFooterTab,
-  PLACEHOLDER: 'placeholder' as HomeFooterTab,
 };
-
-const PlaceholderIcon = (_props: SvgProps) => (
-  <View style={styles.placeholderIcon} />
-);
 
 const TAB_ICONS: Record<HomeFooterTab, React.FC<SvgProps>> = {
   account: AccountIcon,
   home: HomeIcon,
   journal: ClipboardIcon,
-  placeholder: PlaceholderIcon,
 };
 
 type HomeFooterNavigatorProps = {
@@ -58,10 +52,6 @@ export const HomeFooterNavigator = ({
     tabKey: HomeFooterTab,
     showBorderRight: boolean = false,
   ) => {
-    if (tabKey === FOOTER_TABS.PLACEHOLDER) {
-      return <View key={tabKey} style={styles.placeholderTab} />;
-    }
-
     const isActive = tabKey === activeTab;
     const Icon = TAB_ICONS[tabKey];
 
@@ -92,9 +82,7 @@ export const HomeFooterNavigator = ({
         {renderTab(FOOTER_TABS.ACCOUNT, true)}
         {renderTab(FOOTER_TABS.HOME, false)}
         <View style={styles.fabPlaceholder} />
-
-        {renderTab(FOOTER_TABS.JOURNAL, true)}
-        {renderTab(FOOTER_TABS.PLACEHOLDER, false)}
+        {renderTab(FOOTER_TABS.JOURNAL, false)}
       </View>
 
       <View style={styles.fabContainer}>
@@ -167,13 +155,6 @@ const styles = StyleSheet.create({
   fabGradient: {
     ...StyleSheet.absoluteFillObject,
     zIndex: -1,
-  },
-  placeholderIcon: {
-    width: ICON_SIZES.medium,
-    height: ICON_SIZES.medium,
-  },
-  placeholderTab: {
-    flex: 1,
   },
   tabWithBorder: {
     borderRightWidth: 1,

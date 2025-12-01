@@ -153,8 +153,6 @@ class ApiClient {
     this.addResponseInterceptor(async (response, url, config) => {
       // Handle token expiration
       if (response.status === 401) {
-        // Log response details for debugging
-        const responseText = await response.clone().text();
         // Token might be expired - clear auth state
         await AuthService.clearAuth();
         clearAuthState();
@@ -289,7 +287,7 @@ export async function authenticatedDelete(
 /**
  * Get current user ID from stored tokens
  */
-export async function getCurrentUserId(): Promise<string | null> {
+export function getCurrentUserId(): string | null {
   const tokens = getTokens();
   return tokens?.userId || null;
 }

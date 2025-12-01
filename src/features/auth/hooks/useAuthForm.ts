@@ -4,10 +4,9 @@ import { useAuthWithNavigation } from '@/shared/hooks/useAuthWithNavigation';
 import {
   useCustomPasswordValidation,
   useEmailValidation,
-  validateName,
-  validateConfirmPassword,
 } from '@/shared/hooks';
 import { validateAndSanitizeEmail } from '@/utils/emailValidation';
+import { validateName, validateConfirmPassword } from '@/utils/validation';
 import { AUTH_VALIDATION_RULES } from '../constants/validation';
 import { AUTH_MESSAGES } from '../constants/messages';
 

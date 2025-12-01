@@ -3,7 +3,7 @@ import { fetchSmokingAnalytics } from '../api/fetchSmokingAnalytics';
 import { SmokingAnalyticsResponse } from '../types';
 
 const placeholderData: SmokingAnalyticsResponse = {
-  last_smoking_day: '',
+  last_smoking_day: new Date(0),
   total_smokes: 0,
   skipped_smokes: 0,
   skipped_smokes_per_day: 0,

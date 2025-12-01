@@ -1,41 +1,20 @@
-import React, { useState, useRef } from 'react';
-import { ScrollView, View, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  AppText,
-  Box,
-  DraggableModal,
-  ModalActionHeader,
-} from '@/shared/components/ui';
+import { Box } from '@/shared/components/ui';
 import { BACKGROUND, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from '@/features/journal/screens/JournalScreen';
 import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
-import { NotesCard } from '@/features/journal/components/NotesCard';
-import { useNotesCardController } from '@/features/journal/hooks/useNotesCardController';
 import { HomeFooterNavigator, HomeFooterTab } from './HomeFooterNavigator';
+import { CreateNoteModal } from './CreateNoteModal';
 
 export const HomeTabNavigator = () => {
   const insets = useSafeAreaInsets();
-  const noteDrawerScrollRef = useRef<ScrollView>(null);
 
   const [activeTab, setActiveTab] = useState<HomeFooterTab>('home');
   const [isNoteDrawerVisible, setIsNoteDrawerVisible] = useState(false);
-
-  // Use the controller hook for create mode
-  const createController = useNotesCardController({
-    scrollViewRef: noteDrawerScrollRef,
-    onSaveSuccess: () => setIsNoteDrawerVisible(false),
-  });
-
-  const renderHeaderContent = () => (
-    <ModalActionHeader
-      onClose={() => setIsNoteDrawerVisible(false)}
-      onPrimaryAction={createController.save}
-      primaryLabel="Save"
-    />
-  );
 
   const renderContent = () => {
     switch (activeTab) {
@@ -62,40 +41,10 @@ export const HomeTabNavigator = () => {
         />
       </View>
 
-      <DraggableModal
+      <CreateNoteModal
         visible={isNoteDrawerVisible}
         onClose={() => setIsNoteDrawerVisible(false)}
-        headerContent={renderHeaderContent()}
-      >
-        <ScrollView
-          ref={noteDrawerScrollRef}
-          contentContainerStyle={{ padding: 16 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Box variant="modalTextContainer">
-            <AppText variant="body" tone="primary" centered>
-              Reflect, reset, and track your journey. Every entry is a step
-              forward.
-            </AppText>
-          </Box>
-          {createController.isReady && (
-            <NotesCard
-              trackingTypes={createController.trackingTypes}
-              selectedTrackingTypeId={createController.selectedTrackingTypeId}
-              selectedDateTime={createController.selectedDateTime}
-              notes={createController.notes}
-              maxChars={createController.maxChars}
-              accentColor={createController.accentColor}
-              isLoading={createController.isLoading}
-              onTrackingTypeSelect={createController.onTrackingTypeSelect}
-              onDateTimeChange={createController.onDateTimeChange}
-              onNotesChange={createController.onNotesChange}
-              onNotesFocus={createController.onNotesFocus}
-              scrollViewRef={noteDrawerScrollRef}
-            />
-          )}
-        </ScrollView>
-      </DraggableModal>
+      />
     </Box>
   );
 };

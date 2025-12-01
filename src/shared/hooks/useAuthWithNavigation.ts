@@ -13,20 +13,16 @@ export const useAuthWithNavigation = () => {
 
   const loginWithNavigation = useCallback(
     async (email: string, password: string) => {
-      try {
-        // Perform login and get userStatusId
-        const result = await authLogin(email, password);
+      // Perform login and get userStatusId
+      const result = await authLogin(email, password);
 
-        // Initialize user status service if needed and navigate immediately
-        if (!UserStatusService.getStatus(result.userStatusId)) {
-          await UserStatusService.initialize();
-        }
-
-        // Execute navigation based on status
-        UserStatusService.executeStatusAction(result.userStatusId, navigation);
-      } catch (error) {
-        throw error;
+      // Initialize user status service if needed and navigate immediately
+      if (!UserStatusService.getStatus(result.userStatusId)) {
+        await UserStatusService.initialize();
       }
+
+      // Execute navigation based on status
+      UserStatusService.executeStatusAction(result.userStatusId, navigation);
     },
     [authLogin, navigation],
   );
@@ -38,20 +34,16 @@ export const useAuthWithNavigation = () => {
       firstName: string,
       lastName: string,
     ) => {
-      try {
-        // Perform signup and get userStatusId
-        const result = await authSignup(email, password, firstName, lastName);
+      // Perform signup and get userStatusId
+      const result = await authSignup(email, password, firstName, lastName);
 
-        // Initialize user status service if needed and navigate immediately
-        if (!UserStatusService.getStatus(result.userStatusId)) {
-          await UserStatusService.initialize();
-        }
-
-        // Execute navigation based on status
-        UserStatusService.executeStatusAction(result.userStatusId, navigation);
-      } catch (error) {
-        throw error;
+      // Initialize user status service if needed and navigate immediately
+      if (!UserStatusService.getStatus(result.userStatusId)) {
+        await UserStatusService.initialize();
       }
+
+      // Execute navigation based on status
+      UserStatusService.executeStatusAction(result.userStatusId, navigation);
     },
     [authSignup, navigation],
   );
