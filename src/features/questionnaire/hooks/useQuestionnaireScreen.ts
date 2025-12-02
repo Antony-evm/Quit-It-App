@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useQuestionnaire } from './useQuestionnaire';
@@ -55,21 +62,39 @@ export const useQuestionnaireScreen = ({
   } = questionnaire;
 
   const maxQuestionRef = useRef<number>(0);
-  const previousQuestionIdRef = useRef<number | undefined>(undefined);
+  // Initialize with current question ID to prevent resetting on first render
+  const previousQuestionIdRef = useRef<number | undefined>(question?.id);
+
+  // Track which question ID the selection state was last updated for
+  const selectionUpdateQuestionIdRef = useRef<number | undefined>(undefined);
+  const subSelectionUpdateQuestionIdRef = useRef<number | undefined>(undefined);
+  const validityUpdateQuestionIdRef = useRef<number | undefined>(undefined);
 
   // Update maxQuestion ref when we get a value
   if (question?.maxQuestion && question.maxQuestion > maxQuestionRef.current) {
     maxQuestionRef.current = question.maxQuestion;
   }
 
-  // Reset state when question changes
-  useEffect(() => {
+  // Reset state when question changes - use useLayoutEffect to run before child effects
+  // Always reset everything - child components will re-initialize via callbacks
+  useLayoutEffect(() => {
     if (question?.id !== previousQuestionIdRef.current) {
       previousQuestionIdRef.current = question?.id;
-      setActiveSelection([]);
-      setActiveSubSelection([]);
-      setIsSelectionValid(false);
       setLocalSubmitting(false);
+
+      // Only reset state if it hasn't been updated for the new question yet
+      // This handles cases where child components (like FrequencyGrid) initialize state on mount
+      if (selectionUpdateQuestionIdRef.current !== question?.id) {
+        setActiveSelection([]);
+      }
+
+      if (subSelectionUpdateQuestionIdRef.current !== question?.id) {
+        setActiveSubSelection([]);
+      }
+
+      if (validityUpdateQuestionIdRef.current !== question?.id) {
+        setIsSelectionValid(false);
+      }
     }
   }, [question?.id]);
 
@@ -110,28 +135,43 @@ export const useQuestionnaireScreen = ({
   const handleSelectionChange = useCallback(
     (selection: SelectedAnswerOption[]) => {
       setActiveSelection(selection);
+      if (question?.id) {
+        selectionUpdateQuestionIdRef.current = question.id;
+      }
     },
-    [],
+    [question?.id],
   );
 
-  const handleValidityChange = useCallback((isValid: boolean) => {
-    setIsSelectionValid(isValid);
-  }, []);
+  const handleValidityChange = useCallback(
+    (isValid: boolean) => {
+      setIsSelectionValid(isValid);
+      if (question?.id) {
+        validityUpdateQuestionIdRef.current = question.id;
+      }
+    },
+    [question?.id],
+  );
 
   const handleSubSelectionChange = useCallback(
     (subSelection: SelectedAnswerSubOption[]) => {
       setActiveSubSelection(subSelection);
+      if (question?.id) {
+        subSelectionUpdateQuestionIdRef.current = question.id;
+      }
     },
-    [],
+    [question?.id],
   );
 
   const handleSubValidityChange = useCallback(
     (isSubValid: boolean) => {
-      if (question?.subCombination === 'N:N') {
-        setIsSelectionValid(isSubValid);
+      // This callback is only used by FrequencyGrid (N:N questions)
+      // so we can directly set validity without checking subCombination
+      setIsSelectionValid(isSubValid);
+      if (question?.id) {
+        validityUpdateQuestionIdRef.current = question.id;
       }
     },
-    [question?.subCombination],
+    [question?.id],
   );
 
   const headerTitle = isReviewing

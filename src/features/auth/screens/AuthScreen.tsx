@@ -144,7 +144,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
           </Box>
         </ScrollView>
 
-        <Box px="xxl" py={isKeyboardVisible ? 'sm' : 'md'} bg="muted">
+        <Box px="xxl" py="md" bg="muted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             fullWidth
@@ -165,9 +165,9 @@ const styles = StyleSheet.create({
   },
   keyboardView: {
     flex: 1,
+    backgroundColor: BACKGROUND.muted,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: SPACING.lg,
   },
 });

@@ -49,10 +49,10 @@ export const QuestionnaireScreen = ({
     if (error) {
       return (
         <Box alignItems="center" gap="md">
-          <AppText variant="heading" tone="primary">
+          <AppText variant="heading" tone="error">
             We could not load the questionnaire.
           </AppText>
-          <AppButton label="Try again" onPress={refresh} />
+          <AppButton fullWidth label="Try again" onPress={refresh} />
         </Box>
       );
     }
@@ -68,7 +68,7 @@ export const QuestionnaireScreen = ({
         question.subOptions.length > 0 &&
         question.subCombination === 'N:N' ? (
           <FrequencyGrid
-            key={refreshKey}
+            key={`${question.id}-${refreshKey}`}
             options={question.options}
             subOptions={question.subOptions}
             initialSubSelection={selectedSubOptions}
