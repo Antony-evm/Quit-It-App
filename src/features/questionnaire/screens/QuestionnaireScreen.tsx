@@ -35,6 +35,9 @@ export const QuestionnaireScreen = ({
     selectedSubOptions,
     refreshKey,
 
+    // For QuestionnaireQuestion
+    selectedOptions,
+
     // Handlers
     handleSelectionChange,
     handleValidityChange,
@@ -80,6 +83,7 @@ export const QuestionnaireScreen = ({
           /* For regular questions, show the standard question component */
           <QuestionnaireQuestion
             question={question}
+            initialSelection={selectedOptions}
             onSelectionChange={handleSelectionChange}
             onValidityChange={handleValidityChange}
           />

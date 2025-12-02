@@ -74,6 +74,18 @@ export const useQuestionnaireScreen = ({
     maxQuestionRef.current = question.maxQuestion;
   }
 
+  // Track previous isReviewing state to detect when exiting review
+  const previousIsReviewingRef = useRef<boolean>(isReviewing);
+
+  // Reset localSubmitting when exiting review mode
+  useLayoutEffect(() => {
+    if (previousIsReviewingRef.current && !isReviewing) {
+      // Exiting review mode - reset submitting state
+      setLocalSubmitting(false);
+    }
+    previousIsReviewingRef.current = isReviewing;
+  }, [isReviewing]);
+
   // Reset state when question changes - use useLayoutEffect to run before child effects
   // Always reset everything - child components will re-initialize via callbacks
   useLayoutEffect(() => {
@@ -258,6 +270,11 @@ export const useQuestionnaireScreen = ({
   }, [isReviewing, resumeFromReview, goBack]);
 
   const progressData = useMemo(() => {
+    // Hide progress bar on review screen
+    if (isReviewing) {
+      return undefined;
+    }
+
     const total = maxQuestionRef.current || question?.maxQuestion;
 
     if (orderId === undefined || orderId === null || !total) {
@@ -268,7 +285,7 @@ export const useQuestionnaireScreen = ({
       currentQuestion: orderId + 1,
       totalQuestions: total,
     };
-  }, [orderId, question?.maxQuestion]);
+  }, [isReviewing, orderId, question?.maxQuestion]);
 
   return {
     // State
@@ -294,6 +311,9 @@ export const useQuestionnaireScreen = ({
 
     // For FrequencyGrid
     selectedSubOptions,
+
+    // For QuestionnaireQuestion initial selection when navigating back
+    selectedOptions,
 
     // Handlers
     handleSelectionChange,
