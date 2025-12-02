@@ -22,6 +22,10 @@ export interface FetchQuittingPlanResponse {
   data: QuittingPlanResponse;
 }
 
+export interface FetchReviewResponse {
+  data: string[];
+}
+
 export interface FetchTriggersResponse {
   data: string[];
 }

@@ -58,12 +58,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
       >
         <AuthHeader />
 
         <ScrollView
+          style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -166,6 +167,9 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
     backgroundColor: BACKGROUND.muted,
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,

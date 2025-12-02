@@ -13,9 +13,9 @@ import { fetchQuestion } from '../api/fetchQuestion';
 import { submitQuestionAnswer } from '../api/submitAnswer';
 import { completeQuestionnaire } from '../api/completeQuestionnaire';
 import { generateQuittingPlan } from '../api/fetchQuittingPlan';
+import { fetchQuestionnaireReview } from '../api/fetchQuestionnaireReview';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../services/questionnaireStorage';
-import type { QuittingPlan } from '../types';
 
 type UseQuestionnaireOptions = {
   initialOrderId?: number;
@@ -117,7 +117,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const [isReviewing, setIsReviewing] = useState(false);
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
-  const [generatedPlan, setGeneratedPlan] = useState<QuittingPlan | null>(null);
+  const [reviewData, setReviewData] = useState<string[]>([]);
   const [selections, setSelections] = useState<
     Record<
       number,
@@ -287,8 +287,9 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
           setHistory(historyRecords);
 
           try {
-            const plan = await generateQuittingPlan();
-            setGeneratedPlan(plan);
+            await generateQuittingPlan();
+            const review = await fetchQuestionnaireReview();
+            setReviewData(review);
           } catch (planError) {
             console.error('Failed to generate quitting plan:', planError);
             // Continue to review even if plan generation fails?
@@ -425,7 +426,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     isReviewing,
     history,
     completionData: completeMutation.data ?? null,
-    generatedPlan,
+    reviewData,
     prompt,
     explanation,
     refresh,

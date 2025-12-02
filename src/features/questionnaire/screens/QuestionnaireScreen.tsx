@@ -21,7 +21,7 @@ export const QuestionnaireScreen = ({
     isSubmitting,
     error,
     isReviewing,
-    history,
+    reviewData,
 
     // Derived values
     headerTitle,
@@ -58,7 +58,7 @@ export const QuestionnaireScreen = ({
     }
 
     if (isReviewing) {
-      return <QuestionnaireReview responses={history} />;
+      return <QuestionnaireReview reviewData={reviewData} />;
     }
 
     return (

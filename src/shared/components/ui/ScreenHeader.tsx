@@ -55,7 +55,7 @@ export const ScreenHeader = ({
       gap={config.gap}
     >
       <AppText variant="title">{title}</AppText>
-      <AppText>{subtitle}</AppText>
+      {subtitle && <AppText>{subtitle}</AppText>}
     </Box>
   );
 };

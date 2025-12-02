@@ -15,9 +15,7 @@ import { useUserStatusUpdate } from '@/shared/hooks';
 import type { RootStackParamList } from '@/types/navigation';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
-const REVIEW_TITLE = 'Summary';
-const REVIEW_SUBTITLE =
-  "Take a moment to review everything and make sure it feels right for you. You'll be able to adjust your plan later if anything changes, this is just to help you get started.";
+const REVIEW_TITLE = 'Your Plan of Action';
 const QUESTIONNAIRE_SUBMIT_LABEL = 'Submit';
 
 type UseQuestionnaireScreenOptions = {
@@ -59,6 +57,7 @@ export const useQuestionnaireScreen = ({
     resumeFromReview,
     canResumeReview,
     orderId,
+    reviewData,
   } = questionnaire;
 
   const maxQuestionRef = useRef<number>(0);
@@ -177,7 +176,7 @@ export const useQuestionnaireScreen = ({
   const headerTitle = isReviewing
     ? REVIEW_TITLE
     : prompt || DEFAULT_HEADER_TITLE;
-  const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
+  const headerSubtitle = isReviewing ? undefined : explanation;
 
   const primaryActionLabel = QUESTIONNAIRE_SUBMIT_LABEL;
 
@@ -279,6 +278,7 @@ export const useQuestionnaireScreen = ({
     error,
     isReviewing,
     history,
+    reviewData,
     activeSelection,
     activeSubSelection,
 

@@ -40,13 +40,10 @@ export const fetchQuittingPlan = async (): Promise<QuittingPlan> => {
  * Generate the user's quitting plan from the questionnaire endpoint.
  * This triggers plan generation on the backend.
  */
-export const generateQuittingPlan = async (): Promise<QuittingPlan> => {
+export const generateQuittingPlan = async (): Promise<void> => {
   const response = await apiPost(QUESTIONNAIRE_PLAN_ENDPOINT, {});
 
   if (!response.ok) {
     throw new Error(`Failed to generate quitting plan: ${response.status}`);
   }
-
-  const responseData: FetchQuittingPlanResponse = await response.json();
-  return transformPlanResponse(responseData.data);
 };
