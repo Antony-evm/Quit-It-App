@@ -4,7 +4,6 @@ import { useAuth } from '@/shared/auth';
 
 import type {
   Question,
-  QuestionnaireAnswerPayload,
   QuestionnaireResponseRecord,
   SelectedAnswerOption,
   SelectedAnswerSubOption,
@@ -16,7 +15,6 @@ import { completeQuestionnaire } from '../api/completeQuestionnaire';
 import { generateQuittingPlan } from '../api/fetchQuittingPlan';
 import { QUESTIONNAIRE_PLACEHOLDERS } from '../api/endpoints';
 import { questionnaireStorage } from '../services/questionnaireStorage';
-import { UserStatusService } from '@/shared/services/userStatusService';
 import type { QuittingPlan } from '../types';
 
 type UseQuestionnaireOptions = {
@@ -62,7 +60,7 @@ const buildAnswerOptions = (
 ) => {
   if (question.subCombination === 'N:N' && selectedSubOptions.length > 0) {
     // For N:N combinations (frequency grid), pair each main option with its sub-option
-    return selectedOptions.map(option => {
+    const result = selectedOptions.map(option => {
       const subOption = selectedSubOptions.find(
         sub => sub.mainOptionId === option.optionId,
       );
@@ -75,6 +73,7 @@ const buildAnswerOptions = (
         answer_sub_option_type: subOption?.answerType ?? null,
       };
     });
+    return result;
   }
 
   if (selectedSubOptions.length > 0) {

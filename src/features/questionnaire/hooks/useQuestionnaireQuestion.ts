@@ -86,12 +86,11 @@ export const useQuestionnaireQuestion = ({
         setSelectedDate(parsedInitialDate);
       } else {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
 
         let fallbackDate = today;
         if (firstOption) {
           const windowDays = parseDateWindowInDays(firstOption.value);
-          const maxDate = new Date(today);
+          const maxDate = new Date();
           maxDate.setDate(maxDate.getDate() + windowDays);
           if (fallbackDate > maxDate) {
             fallbackDate = maxDate;

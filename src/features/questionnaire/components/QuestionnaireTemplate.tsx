@@ -59,7 +59,7 @@ export const QuestionnaireTemplate = ({
       </Box>
 
       <ScrollView testID="questionnaire-template">
-        <Box px="xs">
+        <Box px="md">
           {!isLoading ? (
             <Box mb="md">
               <ScreenHeader
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   backButtonSection: {
     position: 'absolute',
-    left: SPACING.xs,
+    left: SPACING.md,
     top: SPACING.md,
     zIndex: 1,
   },
