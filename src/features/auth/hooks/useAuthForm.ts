@@ -5,6 +5,7 @@ import {
   useCustomPasswordValidation,
   useEmailValidation,
 } from '@/shared/hooks';
+import { useToast } from '@/shared/components/toast';
 import { validateAndSanitizeEmail } from '@/utils/emailValidation';
 import { validateName, validateConfirmPassword } from '@/utils/validation';
 import { AUTH_VALIDATION_RULES } from '../constants/validation';
@@ -24,6 +25,7 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, signup } = useAuthWithNavigation();
+  const { showToast } = useToast();
 
   // Validations with constants
   const passwordValidation = useCustomPasswordValidation(password);
@@ -159,11 +161,11 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await login(sanitizedEmail, password);
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.LOGIN_ERROR);
+      showToast(AUTH_MESSAGES.LOGIN_ERROR, 'error', 4000);
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, login, password]);
+  }, [validateForm, login, password, showToast]);
 
   const handleSignup = useCallback(async () => {
     const { sanitizedEmail, isValid } = validateForm();
@@ -175,11 +177,11 @@ export const useAuthForm = ({ initialMode = 'signup' }: UseAuthFormProps) => {
       await signup(sanitizedEmail, password, firstName.trim(), lastName.trim());
       // Navigation is handled automatically by useAuthWithNavigation
     } catch (error) {
-      Alert.alert(AUTH_MESSAGES.ERROR_TITLE, AUTH_MESSAGES.SIGNUP_ERROR);
+      showToast(AUTH_MESSAGES.SIGNUP_ERROR, 'error', 4000);
     } finally {
       setIsSubmitting(false);
     }
-  }, [validateForm, signup, password, firstName, lastName]);
+  }, [validateForm, signup, password, firstName, lastName, showToast]);
 
   const handleSubmit = useCallback(async () => {
     if (isLoginMode) {

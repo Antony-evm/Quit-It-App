@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useCallback,
+  ReactNode,
+} from 'react';
 
 export type ToastType = 'success' | 'error';
 
@@ -23,27 +30,38 @@ interface ToastProviderProps {
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const showToast = (message: string, type: ToastType, duration = 3000) => {
-    const id = Date.now().toString() + Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = {
-      id,
-      message,
-      type,
-      duration,
-    };
+  const showToast = useCallback(
+    (message: string, type: ToastType, duration = 3000) => {
+      const id =
+        Date.now().toString() + Math.random().toString(36).substr(2, 9);
+      const newToast: Toast = {
+        id,
+        message,
+        type,
+        duration,
+      };
 
-    setToasts(prev => [...prev, newToast]);
+      // Clear any existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    // Auto-dismiss after duration
-    setTimeout(() => {
-      hideToast(id);
-    }, duration);
-  };
+      // Replace all existing toasts with the new one (only show one at a time)
+      setToasts([newToast]);
 
-  const hideToast = (id: string) => {
+      // Auto-dismiss after duration
+      timeoutRef.current = setTimeout(() => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+      }, duration);
+    },
+    [],
+  );
+
+  const hideToast = useCallback((id: string) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
+  }, []);
 
   return (
     <ToastContext.Provider value={{ showToast, hideToast, toasts }}>

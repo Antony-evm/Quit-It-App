@@ -13,6 +13,7 @@ import { useAuth } from '../../auth/AuthContext';
 import { BACKGROUND, TEXT, SYSTEM } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserStatusService } from '../../../shared/services/userStatusService';
+import { resetNavigation } from '@/navigation/navigationRef';
 
 interface DeveloperMenuProps {
   visible: boolean;
@@ -62,6 +63,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
 
       await AsyncStorage.multiRemove(authKeys);
       Alert.alert('Success', 'Auth tokens cleared');
+      resetNavigation('Auth', { mode: 'login' });
     } catch (error) {
       Alert.alert('Error', 'Failed to clear auth tokens');
     }
@@ -84,6 +86,7 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
         'Success',
         'Local logout completed (session revoked with forceClear)',
       );
+      resetNavigation('Auth', { mode: 'login' });
     } catch (error) {
       Alert.alert('Error', 'Local logout failed');
     }

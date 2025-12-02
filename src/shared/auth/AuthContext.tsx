@@ -3,6 +3,7 @@ import { useStytch } from '@stytch/react-native';
 import AuthService from './authService';
 import { clearAuthState, setAuthState } from './authState';
 import { type AuthTokens, type UserData } from './types';
+import { resetNavigation } from '@/navigation/navigationRef';
 
 import {
   createUser,
@@ -280,6 +281,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setTokens(null);
       clearAuthState();
       setIsLoading(false);
+
+      // Navigate to login screen
+      resetNavigation('Auth', { mode: 'login' });
     } catch (error) {
       throw error;
     }

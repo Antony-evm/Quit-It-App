@@ -73,12 +73,14 @@ export const QuestionnaireTemplate = ({
         </Box>
       </ScrollView>
       {primaryActionLabel ? (
-        <AppButton
-          label={primaryActionLabel}
-          onPress={onPrimaryActionPress}
-          disabled={primaryActionDisabled}
-          fullWidth
-        />
+        <Box px="xxl" py="md">
+          <AppButton
+            label={primaryActionLabel}
+            onPress={onPrimaryActionPress}
+            disabled={primaryActionDisabled}
+            fullWidth
+          />
+        </Box>
       ) : null}
       {footerSlot}
     </Box>

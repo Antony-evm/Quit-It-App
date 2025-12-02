@@ -2,6 +2,7 @@ import AuthService from '../auth/authService';
 import { clearAuthState, getTokens, setTokens } from '../auth/authState';
 import { AuthTokens } from '../auth/types';
 import { parseApiErrorResponse, isErrorResponse } from './apiErrorHandler';
+import { resetNavigation } from '@/navigation/navigationRef';
 
 /**
  * Configuration for authenticated API requests
@@ -136,6 +137,7 @@ class ApiClient {
         if (response.status === 401) {
           await AuthService.clearAuth();
           clearAuthState();
+          resetNavigation('Auth', { mode: 'login' });
         }
       }
 
