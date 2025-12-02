@@ -1,5 +1,4 @@
-import { authenticatedGet } from '@/shared/api/apiConfig';
-import { ErrorFactory } from '@/shared/error';
+import { apiGet } from '@/shared/api/apiConfig';
 import { TRACKING_ENDPOINT } from './endpoints';
 
 export type TrackingRecordApiResponse = {
@@ -29,42 +28,12 @@ export const fetchTrackingRecords = async (
   });
 
   const url = `${TRACKING_ENDPOINT}?${queryParams}`;
+  const response = await apiGet(url);
 
-  try {
-    const response = await authenticatedGet(url);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-
-      throw ErrorFactory.apiError(
-        response.status,
-        errorText || 'Failed to fetch tracking records',
-        {
-          options,
-          url,
-          operation: 'fetch_tracking_records',
-        },
-      );
-    }
-
-    const payload = (await response.json()) as TrackingRecordsApiPayload;
-    return payload.data.tracking_records;
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AppError') {
-      throw error;
-    }
-
-    // Handle network errors or other unexpected errors
-    throw ErrorFactory.networkError(
-      `Failed to fetch tracking records: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-      {
-        options,
-        url,
-        operation: 'fetch_tracking_records',
-        originalError: error,
-      },
-    );
+  if (!response.ok) {
+    throw new Error('Failed to fetch tracking records');
   }
+
+  const payload = (await response.json()) as TrackingRecordsApiPayload;
+  return payload.data.tracking_records;
 };

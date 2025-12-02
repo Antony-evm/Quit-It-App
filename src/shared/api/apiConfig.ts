@@ -1,22 +1,18 @@
 import { Platform } from 'react-native';
 
-// Re-export authenticated fetch utilities
+// Re-export API fetch utilities
 export {
-  authenticatedFetch,
-  authenticatedGet,
-  authenticatedPost,
-  authenticatedPut,
-  authenticatedDelete,
+  apiFetch,
+  apiGet,
+  apiPost,
+  apiPut,
+  apiDelete,
   getCurrentUserId,
-} from './authenticatedFetch';
+  apiClient, // Export apiClient for setting toast function
+} from './apiClient';
 
 // Re-export public (non-authenticated) fetch utilities
-export {
-  publicGet,
-  publicPost,
-  publicPut,
-  publicDelete,
-} from './authenticatedFetch';
+export { publicGet, publicPost, publicPut, publicDelete } from './apiClient';
 
 type MaybeEnv = {
   process?: {

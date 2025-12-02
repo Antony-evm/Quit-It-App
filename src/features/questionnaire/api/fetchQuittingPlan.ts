@@ -1,4 +1,4 @@
-import { authenticatedGet, authenticatedPost } from '@/shared/api/apiConfig';
+import { apiGet, apiPost } from '@/shared/api/apiConfig';
 import type {
   QuittingPlanResponse,
   QuittingPlan,
@@ -26,7 +26,7 @@ const transformPlanResponse = (
  * Fetch the user's quitting plan from the questionnaire endpoint
  */
 export const fetchQuittingPlan = async (): Promise<QuittingPlan> => {
-  const response = await authenticatedGet(QUESTIONNAIRE_PLAN_ENDPOINT);
+  const response = await apiGet(QUESTIONNAIRE_PLAN_ENDPOINT);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch quitting plan: ${response.status}`);
@@ -41,7 +41,7 @@ export const fetchQuittingPlan = async (): Promise<QuittingPlan> => {
  * This triggers plan generation on the backend.
  */
 export const generateQuittingPlan = async (): Promise<QuittingPlan> => {
-  const response = await authenticatedPost(QUESTIONNAIRE_PLAN_ENDPOINT, {});
+  const response = await apiPost(QUESTIONNAIRE_PLAN_ENDPOINT, {});
 
   if (!response.ok) {
     throw new Error(`Failed to generate quitting plan: ${response.status}`);

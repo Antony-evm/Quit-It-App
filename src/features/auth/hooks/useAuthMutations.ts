@@ -1,10 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useErrorHandler } from '@/shared/error';
 import { createUser, loginUser } from '../api';
 import type { CreateUserPayload, LoginUserPayload } from '../api/types';
 
 export const useLoginMutation = () => {
-  const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -16,17 +14,10 @@ export const useLoginMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
     },
-    onError: error => {
-      handleError(error, {
-        context: { operation: 'login' },
-        showToast: true,
-      });
-    },
   });
 };
 
 export const useSignupMutation = () => {
-  const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -36,12 +27,6 @@ export const useSignupMutation = () => {
       // Invalidate all user-related queries to refetch fresh data after signup
       queryClient.invalidateQueries({ queryKey: ['user'] });
       queryClient.invalidateQueries({ queryKey: ['account'] });
-    },
-    onError: error => {
-      handleError(error, {
-        context: { operation: 'signup' },
-        showToast: true,
-      });
     },
   });
 };

@@ -8,10 +8,15 @@ import Config from 'react-native-config';
 import { BACKGROUND } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
 import { NavigationReadyProvider } from '@/navigation/NavigationContext';
-import { ToastProvider, ToastContainer } from '@/shared/components/toast';
+import {
+  ToastProvider,
+  ToastContainer,
+  useToast,
+} from '@/shared/components/toast';
 import { AuthProvider } from '@/shared/auth';
-import { ErrorHandlerProvider, GlobalErrorBoundary } from '@/shared/error';
+import { GlobalErrorBoundary } from '@/shared/error';
 import { DeveloperMenuTrigger } from '@/shared/components/dev';
+import { apiClient } from '@/shared/api/apiConfig';
 
 // Initialize Stytch client once at module level
 const stytchToken = Config.STYTCH_PUBLIC_TOKEN || 'public-token-placeholder';
@@ -40,20 +45,20 @@ const queryClient = new QueryClient({
  * Runs hooks that need provider context.
  */
 function AppContent(): React.ReactElement {
+  const { showToast } = useToast();
+
+  // Set up the toast function for API error handling
+  React.useEffect(() => {
+    apiClient.setToastFunction(showToast);
+  }, [showToast]);
+
   return (
-    <ToastProvider>
-      <ErrorHandlerProvider preferToast={true}>
-        <SafeAreaProvider>
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor={BACKGROUND.muted}
-          />
-          <AppNavigator />
-          <ToastContainer />
-          {__DEV__ && <DeveloperMenuTrigger />}
-        </SafeAreaProvider>
-      </ErrorHandlerProvider>
-    </ToastProvider>
+    <SafeAreaProvider>
+      <StatusBar barStyle="light-content" backgroundColor={BACKGROUND.muted} />
+      <AppNavigator />
+      <ToastContainer />
+      {__DEV__ && <DeveloperMenuTrigger />}
+    </SafeAreaProvider>
   );
 }
 
@@ -64,7 +69,9 @@ function App(): React.ReactElement {
         <QueryClientProvider client={queryClient}>
           <NavigationReadyProvider>
             <AuthProvider>
-              <AppContent />
+              <ToastProvider>
+                <AppContent />
+              </ToastProvider>
             </AuthProvider>
           </NavigationReadyProvider>
         </QueryClientProvider>

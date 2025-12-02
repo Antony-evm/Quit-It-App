@@ -1,4 +1,4 @@
-import { authenticatedGet } from '@/shared/api/apiConfig';
+import { apiGet } from '@/shared/api/apiConfig';
 import type {
   AnswerHandling,
   AnswerOption,
@@ -147,7 +147,7 @@ export const fetchQuestion = async (
     questionCode,
   )}`;
 
-  const response = await authenticatedGet(requestUrl);
+  const response = await apiGet(requestUrl);
 
   if (response.status === 404 || response.status === 204) {
     return null;

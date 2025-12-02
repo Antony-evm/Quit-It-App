@@ -1,12 +1,14 @@
 import AuthService from '../auth/authService';
 import { clearAuthState, getTokens, setTokens } from '../auth/authState';
 import { AuthTokens } from '../auth/types';
+import { parseApiErrorResponse, isErrorResponse } from './apiErrorHandler';
 
 /**
  * Configuration for authenticated API requests
  */
 export interface ApiRequestConfig extends RequestInit {
   requiresAuth?: boolean; // Whether this request requires authentication (default: true)
+  skipErrorHandler?: boolean; // Whether to skip automatic error handling (default: false)
 }
 
 /**
@@ -41,9 +43,27 @@ class ApiClient {
   private requestInterceptors: RequestInterceptor[] = [];
   private responseInterceptors: ResponseInterceptor[] = [];
   private errorInterceptors: ErrorInterceptor[] = [];
+  private toastFunction?: (
+    message: string,
+    type: 'success' | 'error',
+    duration?: number,
+  ) => void;
 
   constructor() {
     this.setupDefaultInterceptors();
+  }
+
+  /**
+   * Set the toast function for showing error messages
+   */
+  setToastFunction(
+    toastFunction: (
+      message: string,
+      type: 'success' | 'error',
+      duration?: number,
+    ) => void,
+  ) {
+    this.toastFunction = toastFunction;
   }
 
   private setupDefaultInterceptors() {
@@ -63,19 +83,15 @@ class ApiClient {
       if (requiresAuth) {
         const tokens = getTokens();
 
-        if (!tokens) {
-          throw new Error(
-            'No authentication tokens found. User may need to log in.',
-          );
+        if (tokens) {
+          // Always send JWT token as Authorization Bearer
+          const authHeader = `Bearer ${tokens.sessionJwt}`;
+          requestHeaders.set('Authorization', authHeader);
+
+          // Always send session token as X-Session-Token header
+          requestHeaders.set('X-Session-Token', tokens.sessionToken);
+          requestHeaders.set('X-User-ID', tokens.userId);
         }
-
-        // Always send JWT token as Authorization Bearer
-        const authHeader = `Bearer ${tokens.sessionJwt}`;
-        requestHeaders.set('Authorization', authHeader);
-
-        // Always send session token as X-Session-Token header
-        requestHeaders.set('X-Session-Token', tokens.sessionToken);
-        requestHeaders.set('X-User-ID', tokens.userId);
       }
 
       return {
@@ -87,62 +103,22 @@ class ApiClient {
       };
     });
 
-    // Default request logging interceptor
-    this.addRequestInterceptor((url, config) => {
-      const method = config.method || 'GET';
-
-      // Log outgoing headers
-      console.log(`[API Request] ${method} ${url}`);
-      if (config.headers) {
-        const headers =
-          config.headers instanceof Headers
-            ? Object.fromEntries(config.headers.entries())
-            : config.headers;
-        console.log('[API Request Headers]:', headers);
-      }
-
-      return { url, config };
-    });
-
-    // Default response logging interceptor
-    this.addResponseInterceptor((response, url, config) => {
-      const method = config.method || 'GET';
-      const status = response.status;
-      const statusText = status >= 400 ? ` (${response.statusText})` : '';
-
-      // Log incoming response headers
-      console.log(`[API Response] ${method} ${url} - ${status}${statusText}`);
-      const responseHeaders = Object.fromEntries(response.headers.entries());
-      console.log('[API Response Headers]:', responseHeaders);
-
-      return response;
-    });
-
     // Token refresh interceptor - check for new tokens in response headers
     this.addResponseInterceptor(async (response, url, config) => {
       const sessionToken = response.headers.get('X-Session-Token');
       const sessionJwt = response.headers.get('X-Session-JWT');
 
-      // If either header is present, update the tokens
       if (sessionToken || sessionJwt) {
         const currentTokens = getTokens();
         if (currentTokens) {
-          // Create updated token object
           const updatedTokens: AuthTokens = {
             ...currentTokens,
             ...(sessionToken && { sessionToken }),
             ...(sessionJwt && { sessionJwt }),
           };
 
-          try {
-            // Update both storage and in-memory state
-            await AuthService.storeTokens(updatedTokens);
-            setTokens(updatedTokens);
-            console.log('[TokenRefresh] Updated tokens from response headers');
-          } catch (error) {
-            console.error('[TokenRefresh] Failed to update tokens:', error);
-            // Continue with the response even if token update fails
-          }
+          await AuthService.storeTokens(updatedTokens);
+          setTokens(updatedTokens);
         }
       }
 
@@ -151,18 +127,21 @@ class ApiClient {
 
     // Default response error interceptor
     this.addResponseInterceptor(async (response, url, config) => {
-      // Handle token expiration
-      if (response.status === 401) {
-        // Token might be expired - clear auth state
-        await AuthService.clearAuth();
-        clearAuthState();
-        throw new Error('Authentication failed. Please log in again.');
+      if (isErrorResponse(response) && !config.skipErrorHandler) {
+        const error = await parseApiErrorResponse(response.clone());
+
+        if (this.toastFunction) {
+          this.toastFunction(error.message, 'error', 4000);
+        }
+        if (response.status === 401) {
+          await AuthService.clearAuth();
+          clearAuthState();
+        }
       }
 
       return response;
     });
 
-    // Default error interceptor
     this.addErrorInterceptor((error, url, config) => {
       throw error;
     });
@@ -205,6 +184,15 @@ class ApiClient {
 
       return response;
     } catch (error) {
+      // Show toast for any error that occurs (network, auth, etc.)
+      if (this.toastFunction && !config.skipErrorHandler) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'An error occurred. Please try again.';
+        this.toastFunction(message, 'error', 4000);
+      }
+
       // Apply error interceptors
       for (const interceptor of this.errorInterceptors) {
         interceptor(error as Error, url, config);
@@ -222,7 +210,7 @@ const apiClient = new ApiClient();
 /**
  * Enhanced fetch function that automatically includes authentication tokens
  */
-export async function authenticatedFetch(
+export async function apiFetch(
   url: string,
   config: ApiRequestConfig = {},
 ): Promise<Response> {
@@ -237,22 +225,22 @@ export { apiClient };
 /**
  * Convenience function for making authenticated GET requests
  */
-export async function authenticatedGet(
+export async function apiGet(
   url: string,
   config: Omit<ApiRequestConfig, 'method'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, { ...config, method: 'GET' });
+  return apiFetch(url, { ...config, method: 'GET' });
 }
 
 /**
  * Convenience function for making authenticated POST requests
  */
-export async function authenticatedPost(
+export async function apiPost(
   url: string,
   data?: any,
   config: Omit<ApiRequestConfig, 'method' | 'body'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'POST',
     body: data ? JSON.stringify(data) : undefined,
@@ -262,12 +250,12 @@ export async function authenticatedPost(
 /**
  * Convenience function for making authenticated PUT requests
  */
-export async function authenticatedPut(
+export async function apiPut(
   url: string,
   data?: any,
   config: Omit<ApiRequestConfig, 'method' | 'body'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'PUT',
     body: data ? JSON.stringify(data) : undefined,
@@ -277,11 +265,11 @@ export async function authenticatedPut(
 /**
  * Convenience function for making authenticated DELETE requests
  */
-export async function authenticatedDelete(
+export async function apiDelete(
   url: string,
   config: Omit<ApiRequestConfig, 'method'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, { ...config, method: 'DELETE' });
+  return apiFetch(url, { ...config, method: 'DELETE' });
 }
 
 /**
@@ -299,7 +287,7 @@ export async function publicGet(
   url: string,
   config: Omit<ApiRequestConfig, 'method' | 'requiresAuth'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'GET',
     requiresAuth: false,
@@ -314,7 +302,7 @@ export async function publicPost(
   data?: any,
   config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'POST',
     body: data ? JSON.stringify(data) : undefined,
@@ -330,7 +318,7 @@ export async function publicPut(
   data?: any,
   config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'PUT',
     body: data ? JSON.stringify(data) : undefined,
@@ -345,7 +333,7 @@ export async function publicDelete(
   url: string,
   config: Omit<ApiRequestConfig, 'method' | 'requiresAuth'> = {},
 ): Promise<Response> {
-  return authenticatedFetch(url, {
+  return apiFetch(url, {
     ...config,
     method: 'DELETE',
     requiresAuth: false,

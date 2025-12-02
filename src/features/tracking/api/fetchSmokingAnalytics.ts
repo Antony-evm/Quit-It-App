@@ -1,5 +1,4 @@
-import { authenticatedGet } from '@/shared/api/apiConfig';
-import { ErrorFactory } from '@/shared/error';
+import { apiGet } from '@/shared/api/apiConfig';
 import { SMOKES_ANALYTICS_ENDPOINT } from './endpoints';
 import { SmokingAnalyticsResponse } from '../types';
 
@@ -9,40 +8,15 @@ export type SmokingAnalyticsApiPayload = {
 
 export const fetchSmokingAnalytics =
   async (): Promise<SmokingAnalyticsResponse> => {
-    try {
-      const response = await authenticatedGet(SMOKES_ANALYTICS_ENDPOINT);
+    const response = await apiGet(SMOKES_ANALYTICS_ENDPOINT);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw ErrorFactory.apiError(
-          response.status,
-          errorText || 'Failed to fetch smoking analytics',
-          {
-            endpoint: SMOKES_ANALYTICS_ENDPOINT,
-            operation: 'fetch_smoking_analytics',
-          },
-        );
-      }
-
-      const result: SmokingAnalyticsApiPayload = await response.json();
-      return {
-        ...result.data,
-        last_smoking_day: new Date(result.data.last_smoking_day),
-      };
-    } catch (error) {
-      if (error instanceof Error && error.name === 'AppError') {
-        throw error;
-      }
-
-      throw ErrorFactory.networkError(
-        `Failed to fetch smoking analytics: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        {
-          endpoint: SMOKES_ANALYTICS_ENDPOINT,
-          operation: 'fetch_smoking_analytics',
-          originalError: error,
-        },
-      );
+    if (!response.ok) {
+      throw new Error('Failed to fetch smoking analytics');
     }
+
+    const result: SmokingAnalyticsApiPayload = await response.json();
+    return {
+      ...result.data,
+      last_smoking_day: new Date(result.data.last_smoking_day),
+    };
   };

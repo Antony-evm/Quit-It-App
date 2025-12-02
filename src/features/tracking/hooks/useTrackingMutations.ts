@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useErrorHandler } from '@/shared/error';
 import { formatDateToLocalString } from '@/utils/dateUtils';
 import {
   updateTrackingRecord,
@@ -29,7 +28,6 @@ interface DeleteTrackingRecordMutationPayload {
 }
 
 export const useTrackingMutations = () => {
-  const { handleError } = useErrorHandler();
   const queryClient = useQueryClient();
 
   const getTrackingTypeCategory = (
@@ -96,12 +94,6 @@ export const useTrackingMutations = () => {
         }));
       }
     },
-    onError: error => {
-      handleError(error, {
-        context: { operation: 'create_tracking_record' },
-        showToast: true,
-      });
-    },
   });
 
   const deleteMutation = useMutation({
@@ -136,15 +128,6 @@ export const useTrackingMutations = () => {
           }));
         }
       }
-    },
-    onError: (error, variables) => {
-      handleError(error, {
-        context: {
-          operation: 'delete_tracking_record',
-          recordId: variables.recordId,
-        },
-        showToast: true,
-      });
     },
   });
 
@@ -228,15 +211,6 @@ export const useTrackingMutations = () => {
         // Handle Smoke -> Smoke (Date change - doesn't affect total_smokes, but might affect other stats if we tracked them)
         // For now, total_smokes is just a count.
       }
-    },
-    onError: (error, variables) => {
-      handleError(error, {
-        context: {
-          operation: 'update_tracking_record',
-          record_id: variables.record_id,
-        },
-        showToast: true,
-      });
     },
   });
 

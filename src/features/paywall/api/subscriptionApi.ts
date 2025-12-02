@@ -1,4 +1,4 @@
-import { authenticatedPost, API_BASE_URL } from '@/shared/api/apiConfig';
+import { apiPost, API_BASE_URL } from '@/shared/api/apiConfig';
 import type { UserDataResponse } from '@/shared/types/api';
 
 const SUBSCRIPTION_ENDPOINT = `${API_BASE_URL}/api/v1/subscription`;
@@ -10,7 +10,7 @@ export interface SubscriptionResponse extends UserDataResponse {}
  */
 export const subscribeUser = async (): Promise<SubscriptionResponse> => {
   try {
-    const response = await authenticatedPost(SUBSCRIPTION_ENDPOINT);
+    const response = await apiPost(SUBSCRIPTION_ENDPOINT);
 
     if (!response.ok) {
       // Try to get the error response body for better debugging
@@ -18,8 +18,7 @@ export const subscribeUser = async (): Promise<SubscriptionResponse> => {
       try {
         const errorText = await response.text();
         errorDetails = errorText ? ` - ${errorText}` : '';
-        } catch (parseError) {
-        }
+      } catch (parseError) {}
 
       throw new Error(
         `Subscription failed: ${response.status} ${response.statusText}${errorDetails}`,

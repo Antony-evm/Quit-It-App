@@ -15,7 +15,7 @@ export const IconTextCard: React.FC<IconTextCardProps> = ({
   style,
 }) => {
   return (
-    <Box bg="backgroundPrimary" borderRadius="small" p="lg" style={style}>
+    <Box bg="muted" borderRadius="small" p="lg" style={style}>
       <Box flexDirection="row" alignItems="center" gap="sm">
         <AppIcon icon={icon} />
         <AppText tone="primary" variant="body">
