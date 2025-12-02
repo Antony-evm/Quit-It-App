@@ -87,9 +87,6 @@ const variantStyles = StyleSheet.create({
     paddingVertical: SPACING.md,
   },
   backArrow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
     width: TOUCH_TARGET_SIZE,
     height: TOUCH_TARGET_SIZE,
     borderRadius: TOUCH_TARGET_SIZE / 2,

@@ -48,12 +48,12 @@ export const QuestionnaireProgressBar = ({
   }, [isAnimating, pulseAnim]);
 
   return (
-    <Box alignItems="center" py="xs" bg="muted" borderRadius="small">
+    <Box alignItems="center" py="xs" px="md" bg="muted" borderRadius="small">
       <AppText variant="subcaption" tone="primary" bold centered>
         {currentQuestion}/{totalQuestions}
       </AppText>
 
-      <Box variant="progressTrack">
+      <Box variant="progressTrack" mt="xs">
         <Animated.View
           style={[
             styles.progressFill,

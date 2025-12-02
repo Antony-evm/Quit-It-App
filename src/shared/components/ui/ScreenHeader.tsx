@@ -13,6 +13,7 @@ type ScreenHeaderProps = {
   title: string;
   subtitle?: string;
   variant?: ScreenHeaderVariant;
+  withTopMargin?: boolean;
 };
 
 type VariantConfig = {
@@ -39,6 +40,7 @@ export const ScreenHeader = ({
   title,
   subtitle,
   variant = 'default',
+  withTopMargin = true,
 }: ScreenHeaderProps) => {
   const config = VARIANTS[variant];
 
@@ -47,7 +49,7 @@ export const ScreenHeader = ({
       style={[
         {
           marginBottom: config.marginBottom,
-          marginTop: TOP_MARGIN,
+          marginTop: withTopMargin ? TOP_MARGIN : 0,
         },
       ]}
       gap={config.gap}

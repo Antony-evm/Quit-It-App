@@ -122,6 +122,7 @@ export const BOX_VARIANTS = {
     borderRadius: 3,
     overflow: 'hidden',
     width: '100%',
+    // alignSelf: 'stretch',
   },
   drawerTitle: {
     backgroundColor: BACKGROUND.muted,

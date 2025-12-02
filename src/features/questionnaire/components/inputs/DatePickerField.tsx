@@ -24,7 +24,7 @@ export const DatePickerField = ({
   maximumDate,
   onChange,
 }: DatePickerFieldProps) => {
-  const currentValue = value || minimumDate;
+  const currentValue = value || new Date();
 
   const handleChange = useCallback(
     (selectedDate: Date) => {

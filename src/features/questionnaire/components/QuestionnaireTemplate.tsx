@@ -38,17 +38,19 @@ export const QuestionnaireTemplate = ({
   return (
     <Box variant="default">
       <Box style={styles.headerContainer}>
-        <Box style={styles.backButtonSection}>{backButton}</Box>
+        {backButton && <Box style={styles.backButtonSection}>{backButton}</Box>}
         <Box style={styles.progressSection}>
           {progressData ? (
-            <QuestionnaireProgressBar
-              currentQuestion={progressData.currentQuestion}
-              totalQuestions={progressData.totalQuestions}
-              isLoading={isLoading}
-              isSubmitting={isSubmitting}
-            />
+            <Box style={{ width: '40%' }}>
+              <QuestionnaireProgressBar
+                currentQuestion={progressData.currentQuestion}
+                totalQuestions={progressData.totalQuestions}
+                isLoading={isLoading}
+                isSubmitting={isSubmitting}
+              />
+            </Box>
           ) : isLoading ? (
-            <Box>
+            <Box style={{ width: '40%' }}>
               <SkeletonItem width={40} height={14} />
               <SkeletonItem width="100%" height={6} />
             </Box>
@@ -57,10 +59,14 @@ export const QuestionnaireTemplate = ({
       </Box>
 
       <ScrollView testID="questionnaire-template">
-        <Box variant="default">
+        <Box px="xs">
           {!isLoading ? (
-            <Box>
-              <ScreenHeader title={title} subtitle={subtitle} />
+            <Box mb="md">
+              <ScreenHeader
+                title={title}
+                subtitle={subtitle}
+                withTopMargin={false}
+              />
             </Box>
           ) : null}
           <Box>{children}</Box>
@@ -69,10 +75,8 @@ export const QuestionnaireTemplate = ({
       {primaryActionLabel ? (
         <AppButton
           label={primaryActionLabel}
-          variant="primary"
           onPress={onPrimaryActionPress}
           disabled={primaryActionDisabled}
-          containerStyle={styles.primaryAction}
           fullWidth
         />
       ) : null}
@@ -86,25 +90,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
     width: '100%',
     marginBottom: SPACING.md,
+    position: 'relative',
     minHeight: 44,
   },
   backButtonSection: {
-    width: 44,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
     position: 'absolute',
-    left: 0,
+    left: SPACING.xs,
+    top: SPACING.md,
     zIndex: 1,
   },
   progressSection: {
-    width: '40%',
-    justifyContent: 'center',
+    flex: 1,
     alignItems: 'center',
-    borderRadius: 4,
+    justifyContent: 'center',
   },
-  primaryAction: {},
 });
