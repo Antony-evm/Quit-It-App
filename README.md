@@ -1,97 +1,165 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Quit-It App
 
-# Getting Started
+A React Native mobile application designed to help users quit smoking through personalized tracking, journaling, and progress monitoring.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## Overview
 
-## Step 1: Start Metro
+Quit-It is a cross-platform (iOS & Android) smoking cessation app built with modern React Native architecture. It provides users with tools to track cravings, monitor progress, and stay motivated on their journey to quit smoking.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+- **Authentication** - Secure user authentication via Stytch
+- **Personalized Onboarding** - Questionnaire-based setup to customize the experience
+- **Craving Tracking** - Log and analyze craving patterns over time
+- **Journaling** - Document thoughts and triggers with timestamped notes
+- **Progress Analytics** - Visual charts showing smoking/craving trends
+- **Subscription Paywall** - Premium features via in-app purchases
 
-```sh
-# Using npm
-npm start
+## Tech Stack
 
-# OR using Yarn
-yarn start
+| Category             | Technology                             |
+| -------------------- | -------------------------------------- |
+| Framework            | React Native 0.82                      |
+| Language             | TypeScript (strict mode)               |
+| Navigation           | React Navigation 7                     |
+| State Management     | React Query (TanStack Query)           |
+| Authentication       | Stytch                                 |
+| Internationalization | i18next                                |
+| Styling              | Custom theme system with design tokens |
+
+## Project Structure
+
+```
+src/
+├── features/           # Feature-based modules
+│   ├── auth/          # Authentication flow
+│   ├── home/          # Home dashboard
+│   ├── journal/       # Note-taking feature
+│   ├── tracking/      # Craving/smoking tracking
+│   ├── questionnaire/ # Onboarding questionnaire
+│   ├── paywall/       # Subscription handling
+│   └── account/       # User settings
+├── navigation/        # Navigation configuration
+├── shared/            # Shared utilities
+│   ├── api/          # API client & endpoints
+│   ├── auth/         # Auth context & services
+│   ├── components/   # Reusable UI components
+│   ├── constants/    # App-wide constants
+│   ├── error/        # Centralized error handling
+│   ├── hooks/        # Shared custom hooks
+│   ├── i18n/         # Internationalization
+│   ├── services/     # Business logic services
+│   ├── theme/        # Design tokens & styling
+│   ├── types/        # Shared TypeScript types
+│   └── utils/        # Utility functions
+├── types/            # Global type definitions
+└── utils/            # Root-level utilities
 ```
 
-## Step 2: Build and run your app
+## Getting Started
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### Prerequisites
 
-### Android
+- Node.js >= 20
+- React Native development environment ([setup guide](https://reactnative.dev/docs/set-up-your-environment))
+- iOS: Xcode, CocoaPods
+- Android: Android Studio, JDK
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
-```
+```bash
+# Clone the repository
+git clone https://github.com/Antony-evm/Quit-It-App.git
+cd Quit-It-App
 
-### iOS
+# Install dependencies
+npm install
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
+# iOS only: Install CocoaPods
 bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
 bundle exec pod install
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+### Environment Setup
 
-```sh
-# Using npm
-npm run ios
+Create environment configuration for your API endpoints:
 
-# OR using Yarn
-yarn ios
+```bash
+# The app resolves API_BASE_URL from environment variables
+# For local development, it defaults to:
+# - Android: http://10.0.2.2:8000
+# - iOS: http://localhost:8000
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Running the App
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+```bash
+# Start Metro bundler
+npm start
 
-## Step 3: Modify your app
+# Run on Android
+npm run android
 
-Now that you have successfully run the app, let's make changes!
+# Run on iOS
+npm run ios
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+# Reset cache if needed
+npm start -- --reset-cache
+```
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+## Development
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+### Code Standards
 
-## Congratulations! :tada:
+This project follows strict development guidelines defined in [`rules.md`](./rules.md):
 
-You've successfully run and modified your React Native App. :partying_face:
+- **Feature-based architecture** - Code organized by feature, not file type
+- **TypeScript strict mode** - No `any` types allowed
+- **Separation of concerns** - Logic in hooks, UI in components, screens as orchestrators
+- **React Query** - For all server state management
+- **Centralized theming** - All styles use design tokens
 
-### Now what?
+### Key Commands
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```bash
+npm run lint      # Run ESLint
+npm test          # Run Jest tests
+npm run android   # Build and run on Android
+npm run ios       # Build and run on iOS
+```
 
-# Troubleshooting
+### Path Aliases
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+The project uses `@/` as an alias for the `src/` directory:
 
-# Learn More
+```typescript
+import { useAuth } from '@/shared/auth';
+import { AppButton } from '@/shared/components/ui';
+```
 
-To learn more about React Native, take a look at the following resources:
+## Documentation
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- [`rules.md`](./rules.md) - Development principles and coding standards
+- [`improvements.md`](./improvements.md) - Known issues and enhancement backlog
+- [`API_ENDPOINTS.md`](./API_ENDPOINTS.md) - Backend API documentation
+
+## Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run specific test file
+npm test -- dateUtils.test.ts
+```
+
+## Contributing
+
+1. Follow the guidelines in `rules.md`
+2. Ensure TypeScript strict compliance
+3. Add tests for new business logic
+4. Use conventional commit messages
+
+## License
+
+Private - All rights reserved

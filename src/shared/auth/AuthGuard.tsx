@@ -22,7 +22,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
         flex={1}
         justifyContent="center"
         alignItems="center"
-        bg="backgroundPrimary"
+        bg="muted"
         p="lg"
       >
         <AppText>Loading...</AppText>
@@ -40,7 +40,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, fallback }) => {
         flex={1}
         justifyContent="center"
         alignItems="center"
-        bg="backgroundPrimary"
+        bg="muted"
         p="lg"
       >
         <AppText>Please log in to continue</AppText>

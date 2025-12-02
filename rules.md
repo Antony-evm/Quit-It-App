@@ -105,3 +105,110 @@ These rules define the architectural and coding standards for the Quit-It-App. T
 - **Unit Tests:** Required for all business logic (hooks, utils).
 - **Integration Tests:** Validate key user flows (e.g., Login, Sign Up).
 - **Smoke Tests:** Ensure basic UI components render without crashing.
+
+## 9. Import Organization & Path Aliases
+
+**Principle:** Consistent imports improve readability and reduce merge conflicts.
+
+- **Path Aliases:** Always use `@/` for `src/` imports. Never use deep relative paths like `../../shared/`.
+- **Import Order:** Group imports in this order:
+  1. React / React Native core
+  2. External packages (navigation, query, etc.)
+  3. Internal `@/` imports
+  4. Relative imports (same feature)
+- **No Circular Imports:** Features must not import from each other's internals. Use the public `index.ts` API.
+
+## 10. Internationalization (i18n)
+
+**Principle:** All user-facing text must be translatable from day one.
+
+- **Translation Keys:** All user-visible strings must use `t('key')` from `react-i18next`.
+- **Key Naming Convention:** Use dot notation following feature structure: `auth.login.title`, `home.welcome.message`.
+- **Exceptions:** Logging messages, error codes, and dev-only content may be hardcoded.
+- **Pluralization:** Use i18next's built-in plural handling for countable items.
+- **Location:** All translations live in `src/shared/i18n/`.
+
+## 11. Data Persistence & Storage
+
+**Principle:** Sensitive and non-sensitive data require different storage strategies.
+
+- **Sensitive Data:** Use `react-native-keychain` for:
+  - Authentication tokens
+  - User credentials
+  - Any PII (personally identifiable information)
+- **Non-Sensitive Data:** Use `AsyncStorage` for:
+  - User preferences
+  - Cache data
+  - App state that doesn't contain secrets
+- **Never Store:** Raw passwords, API keys, or sensitive tokens in `AsyncStorage`.
+- **Encryption:** Keychain provides OS-level encryption; do not roll custom encryption.
+
+## 12. Service Layer
+
+**Principle:** Complex stateful operations belong in services, not hooks or components.
+
+- **When to Use Services:**
+  - Operations requiring caching with persistence
+  - Cross-feature coordination
+  - Complex business logic with multiple side effects
+- **Location:** `src/shared/services/` for shared services, `src/features/[feature]/services/` for feature-specific.
+- **Pattern:** Services are singleton classes with static methods. Hooks consume services for React integration.
+- **Separation:** Services handle "what to do"; hooks handle "when to do it" (React lifecycle).
+
+## 13. Environment Configuration
+
+**Principle:** Environment-specific values must never be hardcoded.
+
+- **Environment Variables:** Use `react-native-config` for build-time environment variables.
+- **Required Variables:** Document all required env vars in a `.env.example` file.
+- **Fallbacks:** Always provide sensible defaults for local development.
+- **Platform Differences:** Handle Android emulator (`10.0.2.2`) vs iOS simulator (`localhost`) in API configuration.
+- **No Secrets in Code:** API keys, secrets, and credentials must come from environment variables or secure storage.
+
+## 14. Logging & Analytics
+
+**Principle:** Production apps need observability without compromising user privacy.
+
+- **Debug Logging:** All `console.log` statements must be gated with `__DEV__` or removed in production.
+- **Error Tracking:** Integrate a service (Sentry, Crashlytics) for production error monitoring.
+- **User Analytics:** Track key flows (signup completion, feature usage) for product insights.
+- **Privacy:** Never log sensitive user data (passwords, tokens, PII).
+- **Centralized Logger:** Use `ErrorLogger` service instead of direct `console` calls.
+
+## 15. Animations
+
+**Principle:** Smooth animations enhance UX but must not compromise performance.
+
+- **Simple Animations:** Use React Native's built-in `Animated` API for fade, slide, and scale effects.
+- **Native Driver:** Always use `useNativeDriver: true` when possible for 60fps animations.
+- **Complex Gestures:** Consider `react-native-reanimated` for gesture-driven or complex choreographed animations.
+- **Loading States:** Use subtle animations (pulse, shimmer) for skeleton loaders.
+- **Avoid Jank:** Never animate layout properties (`width`, `height`) without native driver support.
+
+## 16. Security
+
+**Principle:** Mobile apps are distributed binaries; assume they can be reverse-engineered.
+
+- **Token Storage:** Store auth tokens in Keychain, never in AsyncStorage or state.
+- **Certificate Pinning:** Consider SSL pinning for production API calls.
+- **Input Validation:** Validate all user input on both client and server.
+- **Sensitive Screens:** Prevent screenshots on sensitive screens (payments, auth) where platform allows.
+- **Obfuscation:** Enable ProGuard (Android) and consider additional obfuscation for release builds.
+
+## 17. Code Documentation
+
+**Principle:** Code should be self-documenting, with comments explaining "why" not "what".
+
+- **JSDoc:** Use JSDoc for all public functions, hooks, and component props.
+- **README per Feature:** Complex features should have a brief `README.md` explaining architecture decisions.
+- **TODO/FIXME:** Use consistent tags for technical debt: `// TODO:`, `// FIXME:`, `// HACK:`.
+- **Type as Documentation:** Prefer descriptive type names over comments. `type UserId = number` > `// this is a user id`.
+
+## 18. Git & Version Control
+
+**Principle:** Clean git history enables effective collaboration and debugging.
+
+- **Commit Messages:** Use conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+- **Branch Naming:** Use `feature/`, `fix/`, `refactor/` prefixes.
+- **Small PRs:** Keep pull requests focused and reviewable (< 400 lines when possible).
+- **No Secrets:** Never commit `.env` files, API keys, or credentials. Use `.gitignore`.

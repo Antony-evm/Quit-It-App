@@ -17,7 +17,7 @@ export const WelcomeText: React.FC<WelcomeTextProps> = ({ isSignup }) => {
     : t('auth.welcomeLoginSubtitle');
 
   return (
-    <Box alignItems="center" bg="backgroundPrimary" pt="xxl" gap="sm" pb="lg">
+    <Box alignItems="center" bg="primary" pt="xxl" gap="sm" pb="lg">
       <AppText variant="title" centered>
         {title}
       </AppText>

@@ -51,7 +51,7 @@ export const QuestionnaireScreen = ({
           <AppText variant="heading" tone="secondary">
             We could not load the questionnaire.
           </AppText>
-          <AppButton label="Try again" onPress={refresh} variant="secondary" />
+          <AppButton label="Try again" onPress={refresh} />
         </Box>
       );
     }
@@ -101,7 +101,7 @@ export const QuestionnaireScreen = ({
   };
 
   return (
-    <Box flex={1} bg="backgroundMuted">
+    <Box flex={1} bg="muted">
       <SafeAreaView style={{ flex: 1 }}>
         <QuestionnaireTemplate
           title={headerTitle}

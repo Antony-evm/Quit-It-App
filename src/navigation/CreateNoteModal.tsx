@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/ui';
 import { NotesCard } from '@/features/journal/components/NotesCard';
 import { useNotesCardController } from '@/features/journal/hooks/useNotesCardController';
+import { SPACING } from '@/shared/theme';
 
 type CreateNoteModalProps = {
   visible: boolean;
@@ -39,7 +40,7 @@ export const CreateNoteModal = ({ visible, onClose }: CreateNoteModalProps) => {
     >
       <ScrollView
         ref={scrollRef}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ padding: SPACING.lg }}
         keyboardShouldPersistTaps="handled"
       >
         <Box variant="modalTextContainer">
