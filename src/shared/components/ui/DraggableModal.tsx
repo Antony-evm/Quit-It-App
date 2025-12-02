@@ -7,11 +7,14 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   PanResponder,
-  InteractionManager,
   StyleProp,
   ViewStyle,
 } from 'react-native';
 import { SPACING, BACKGROUND, SYSTEM, OPACITY } from '@/shared/theme';
+
+// React Native exposes requestIdleCallback globally
+declare const requestIdleCallback: (callback: () => void) => number;
+declare const cancelIdleCallback: (id: number) => void;
 
 type DraggableModalProps = {
   visible: boolean;
@@ -75,11 +78,11 @@ export const DraggableModal = ({
         }),
       ]).start();
 
-      const task = InteractionManager.runAfterInteractions(() => {
+      const idleCallbackId = requestIdleCallback(() => {
         setIsContentVisible(true);
       });
 
-      return () => task.cancel();
+      return () => cancelIdleCallback(idleCallbackId);
     } else {
       Animated.parallel([
         Animated.timing(slideAnim, {
