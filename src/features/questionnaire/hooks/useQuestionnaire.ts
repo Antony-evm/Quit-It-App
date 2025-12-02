@@ -322,8 +322,10 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
     }, [completeMutation]);
 
   const refresh = useCallback(() => {
+    submitMutation.reset();
+    completeMutation.reset();
     return refetch();
-  }, [refetch]);
+  }, [refetch, submitMutation, completeMutation]);
 
   const restart = useCallback(async () => {
     await questionnaireStorage.clear();

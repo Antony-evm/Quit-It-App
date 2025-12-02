@@ -31,6 +31,7 @@ export const useQuestionnaireScreen = ({
   const [localSubmitting, setLocalSubmitting] = useState(false);
 
   const questionnaire = useQuestionnaire();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const {
     isLoading,
@@ -85,14 +86,18 @@ export const useQuestionnaireScreen = ({
       question.answerType === 'numeric' ||
       question.answerType === 'date';
 
-    if (!shouldLetComponentHandleSelection) {
-      if (selectedOptions && selectedOptions.length) {
-        setActiveSelection(selectedOptions);
-        setIsSelectionValid(true);
-      } else {
-        setActiveSelection([]);
-        setIsSelectionValid(false);
-      }
+    // For components that manage their own selection (N:N, numeric, date),
+    // don't override the selection state from here - let the component handle it
+    if (shouldLetComponentHandleSelection) {
+      return;
+    }
+
+    if (selectedOptions && selectedOptions.length) {
+      setActiveSelection(selectedOptions);
+      setIsSelectionValid(true);
+    } else {
+      setActiveSelection([]);
+      setIsSelectionValid(false);
     }
 
     if (selectedSubOptions && selectedSubOptions.length) {
@@ -258,7 +263,17 @@ export const useQuestionnaireScreen = ({
     handlePrimaryAction,
     handleBackPress,
 
+    // For FrequencyGrid key to force remount on refresh
+    refreshKey,
+
     // From questionnaire hook
-    refresh: questionnaire.refresh,
+    refresh: useCallback(() => {
+      setLocalSubmitting(false);
+      setActiveSelection([]);
+      setActiveSubSelection([]);
+      setIsSelectionValid(false);
+      setRefreshKey(prev => prev + 1);
+      return questionnaire.refresh();
+    }, [questionnaire]),
   };
 };
