@@ -311,7 +311,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const updateUserStatus = useCallback(
     async (newUserStatusId: number) => {
       if (!user) {
-        console.warn('[Auth] Cannot update user status - no user data');
         return;
       }
 
@@ -331,8 +330,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (tokens) {
           setAuthState(tokens, updatedUserData);
         }
-
-        console.log('[Auth] User status updated to:', newUserStatusId);
       } catch (error) {
         console.error('[Auth] Failed to update user status:', error);
       }
@@ -352,7 +349,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       user_type_id?: number;
     }) => {
       if (!user) {
-        console.warn('[Auth] Cannot update user data - no user data');
         return;
       }
 
@@ -362,7 +358,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           userStatusId: userData.user_status_id,
           firstName: userData.first_name,
           lastName: userData.last_name,
-          // Update combined name field if we have first/last names
           ...(userData.first_name || userData.last_name
             ? {
                 name: [userData.first_name, userData.last_name]
@@ -370,26 +365,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   .join(' '),
               }
             : {}),
-          // Update backend user ID if provided
           ...(userData.user_id ? { backendUserId: userData.user_id } : {}),
         };
 
-        // Update stored user data
         await AuthService.storeUserData(updatedUserData);
 
-        // Update in-memory state
         setUser(updatedUserData);
 
-        // Update auth state
         if (tokens) {
           setAuthState(tokens, updatedUserData);
         }
-
-        console.log('[Auth] User data updated:', {
-          userStatusId: userData.user_status_id,
-          firstName: userData.first_name,
-          lastName: userData.last_name,
-        });
       } catch (error) {
         console.error('[Auth] Failed to update user data:', error);
       }

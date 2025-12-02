@@ -3,6 +3,7 @@ import {
   useEffect,
   useLayoutEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import type {
@@ -78,6 +79,18 @@ export const useFrequencyGrid = ({
   onMainSelectionChange,
   onValidityChange,
 }: UseFrequencyGridProps) => {
+  // Use refs to store callbacks to prevent infinite loops
+  const onSubSelectionChangeRef = useRef(onSubSelectionChange);
+  const onMainSelectionChangeRef = useRef(onMainSelectionChange);
+  const onValidityChangeRef = useRef(onValidityChange);
+
+  // Keep refs up to date
+  useLayoutEffect(() => {
+    onSubSelectionChangeRef.current = onSubSelectionChange;
+    onMainSelectionChangeRef.current = onMainSelectionChange;
+    onValidityChangeRef.current = onValidityChange;
+  });
+
   const subOptionsMap = useMemo(
     () => new Map(subOptions.map(so => [so.id, so])),
     [subOptions],
@@ -123,9 +136,9 @@ export const useFrequencyGrid = ({
         nextVariationId: option.nextVariationId,
       }));
 
-      onMainSelectionChange(allMainOptions);
+      onMainSelectionChangeRef.current(allMainOptions);
     }
-  }, [options, onMainSelectionChange]);
+  }, [options]);
 
   const handleSelectionChange = useCallback(
     (optionId: number, sliderIndex: number) => {
@@ -161,20 +174,14 @@ export const useFrequencyGrid = ({
       },
     );
 
-    onSubSelectionChange(selectedSubOptions);
+    onSubSelectionChangeRef.current(selectedSubOptions);
 
     const isValid =
       options.length > 0 &&
       options.every(option => selections[option.id] !== undefined);
 
-    onValidityChange?.(isValid);
-  }, [
-    selections,
-    options,
-    subOptionsMap,
-    onSubSelectionChange,
-    onValidityChange,
-  ]);
+    onValidityChangeRef.current?.(isValid);
+  }, [selections, options, subOptionsMap]);
 
   return {
     selections,
