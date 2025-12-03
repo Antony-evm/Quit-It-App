@@ -50,6 +50,7 @@ export default {
     common: {
       error: 'Something went wrong',
       close: 'Close',
+      save: 'Save',
     },
     home: {
       keepStreakGoing: 'Keep the streak going {{name}}!',

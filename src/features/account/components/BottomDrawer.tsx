@@ -1,15 +1,21 @@
-import React from 'react';
-import { TouchableOpacity, ScrollView } from 'react-native';
+import React, { useMemo } from 'react';
+import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { AppText, DraggableModal, AppIcon, Box } from '@/shared/components/ui';
-import CancelSvg from '@/assets/cancel.svg';
+import {
+  AppText,
+  DraggableModal,
+  Box,
+  ModalActionHeader,
+} from '@/shared/components/ui';
 
 type BottomDrawerProps = {
   visible: boolean;
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  onPrimaryAction?: () => void;
+  primaryLabel?: string;
 };
 
 export const BottomDrawer = ({
@@ -17,17 +23,20 @@ export const BottomDrawer = ({
   onClose,
   title,
   children,
+  onPrimaryAction,
+  primaryLabel,
 }: BottomDrawerProps) => {
   const { t } = useTranslation();
 
-  const headerContent = (
-    <TouchableOpacity
-      onPress={onClose}
-      accessibilityLabel={t('common.close')}
-      accessibilityRole="button"
-    >
-      <AppIcon icon={CancelSvg} />
-    </TouchableOpacity>
+  const headerContent = useMemo(
+    () => (
+      <ModalActionHeader
+        onClose={onClose}
+        onPrimaryAction={onPrimaryAction}
+        primaryLabel={primaryLabel}
+      />
+    ),
+    [onClose, onPrimaryAction, primaryLabel],
   );
 
   return (

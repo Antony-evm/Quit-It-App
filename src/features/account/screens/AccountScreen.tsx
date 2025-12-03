@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -6,16 +6,47 @@ import { Box, ScreenHeader } from '@/shared/components/ui';
 
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
-import { AccountSection, SECTION_CONFIG, SECTION_ORDER } from '../constants';
+import { FrequencyData } from '../components/FrequencyData';
+import {
+  AccountSection,
+  ACCOUNT_SECTIONS,
+  SECTION_CONFIG,
+  SECTION_ORDER,
+} from '../constants';
+import { useFrequencyController } from '../hooks/useFrequencyController';
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
 
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
 
+  const handleClose = useCallback(() => {
+    setActiveSection(null);
+  }, []);
+
+  const frequencyController = useFrequencyController({
+    onSaveSuccess: handleClose,
+  });
+
   const renderDrawerContent = () => {
     if (!activeSection) return null;
+
+    // Handle HABITS section specially with the controller
+    if (activeSection === ACCOUNT_SECTIONS.HABITS) {
+      return (
+        <FrequencyData
+          question={frequencyController.question}
+          initialSubSelection={frequencyController.initialSubSelection}
+          isLoading={frequencyController.isLoading}
+          error={frequencyController.error}
+          onMainSelectionChange={frequencyController.onMainSelectionChange}
+          onSubSelectionChange={frequencyController.onSubSelectionChange}
+        />
+      );
+    }
+
     const Component = SECTION_CONFIG[activeSection].component;
+    if (!Component) return null;
     return <Component />;
   };
 
@@ -23,6 +54,26 @@ export const AccountScreen = () => {
     if (!activeSection) return '';
     return t(SECTION_CONFIG[activeSection].translationKey);
   };
+
+  const getPrimaryAction = useMemo(() => {
+    if (
+      activeSection === ACCOUNT_SECTIONS.HABITS &&
+      frequencyController.canSave
+    ) {
+      return frequencyController.save;
+    }
+    return undefined;
+  }, [activeSection, frequencyController.canSave, frequencyController.save]);
+
+  const getPrimaryLabel = useMemo(() => {
+    if (
+      activeSection === ACCOUNT_SECTIONS.HABITS &&
+      frequencyController.canSave
+    ) {
+      return t('common.save');
+    }
+    return undefined;
+  }, [activeSection, frequencyController.canSave, t]);
 
   return (
     <Box variant="default">
@@ -40,8 +91,10 @@ export const AccountScreen = () => {
 
       <BottomDrawer
         visible={!!activeSection}
-        onClose={() => setActiveSection(null)}
+        onClose={handleClose}
         title={getDrawerTitle()}
+        onPrimaryAction={getPrimaryAction}
+        primaryLabel={getPrimaryLabel}
       >
         {renderDrawerContent()}
       </BottomDrawer>

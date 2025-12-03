@@ -13,7 +13,7 @@ export const AccountSectionItem = ({
 }: AccountSectionItemProps) => {
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <AppCard size="md" style={{ marginBottom: SPACING.md }}>
+      <AppCard size="md" style={{ marginBottom: SPACING.lg }}>
         <Box
           flexDirection="row"
           justifyContent="space-between"

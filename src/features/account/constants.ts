@@ -3,7 +3,6 @@ import { ComponentType } from 'react';
 import { AccountDetails } from './components/AccountDetails';
 import { QuittingPlanDetails } from './components/QuittingPlanDetails';
 import { TriggersList } from './components/TriggersList';
-import { FrequencyData } from './components/FrequencyData';
 
 export const ACCOUNT_SECTIONS = {
   DETAILS: 'details',
@@ -18,7 +17,7 @@ export type AccountSectionKey =
 export type AccountSection = AccountSectionKey | null;
 
 type SectionConfig = {
-  component: ComponentType;
+  component?: ComponentType;
   translationKey: string;
 };
 
@@ -36,7 +35,6 @@ export const SECTION_CONFIG: Record<AccountSectionKey, SectionConfig> = {
     translationKey: 'account.sections.triggers',
   },
   [ACCOUNT_SECTIONS.HABITS]: {
-    component: FrequencyData,
     translationKey: 'account.sections.habits',
   },
 };
