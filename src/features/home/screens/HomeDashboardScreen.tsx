@@ -1,8 +1,7 @@
 import { memo } from 'react';
 import { ScrollView } from 'react-native';
 
-import { Box, Section } from '@/shared/components/ui';
-import { QuittingPlanCard } from '../components/QuittingPlanCard';
+import { Box } from '@/shared/components/ui';
 import { CravingChart } from '@/features/tracking';
 import { HomeStatsRow } from '../components/HomeStatsRow';
 import { WelcomeComponent } from '../components/WelcomeComponent';
@@ -32,10 +31,6 @@ export const HomeDashboardScreen = memo(() => {
         )}
 
         <HomeStatsRow stats={stats} />
-
-        <Section title="Your Plan">
-          <QuittingPlanCard />
-        </Section>
       </Box>
     </ScrollView>
   );

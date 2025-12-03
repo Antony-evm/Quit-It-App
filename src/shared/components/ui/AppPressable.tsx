@@ -29,6 +29,7 @@ type PressableVariant =
   | 'tab'
   | 'chip'
   | 'input'
+  | 'inputInverse'
   | 'card'
   | 'toast'
   | 'backArrow'
@@ -67,6 +68,16 @@ const variantStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: BACKGROUND.primary,
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: SYSTEM.border,
+    borderRadius: BORDER_RADIUS.large,
+    padding: SPACING.lg,
+    minHeight: INPUT_MIN_HEIGHT,
+  },
+  inputInverse: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: BACKGROUND.muted,
     borderWidth: BORDER_WIDTH.sm,
     borderColor: SYSTEM.border,
     borderRadius: BORDER_RADIUS.large,

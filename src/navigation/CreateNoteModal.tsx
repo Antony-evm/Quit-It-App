@@ -1,5 +1,6 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import {
   AppText,
@@ -17,6 +18,7 @@ type CreateNoteModalProps = {
 };
 
 export const CreateNoteModal = ({ visible, onClose }: CreateNoteModalProps) => {
+  const { t } = useTranslation();
   const scrollRef = useRef<ScrollView>(null);
 
   const controller = useNotesCardController({
@@ -45,8 +47,7 @@ export const CreateNoteModal = ({ visible, onClose }: CreateNoteModalProps) => {
       >
         <Box variant="modalTextContainer">
           <AppText variant="body" tone="primary" centered>
-            Reflect, reset, and track your journey. Every entry is a step
-            forward.
+            {t('journal.editModalDescription')}
           </AppText>
         </Box>
         {controller.isReady && (

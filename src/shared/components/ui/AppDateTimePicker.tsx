@@ -158,16 +158,16 @@ export const AppDateTimePicker = ({
     });
 
   return (
-    <Box style={{ width: '100%' }} {...boxProps}>
+    <Box {...boxProps}>
       {label && (
-        <Box mb="sm">
-          <AppText variant="subcaption" tone="muted">
+        <Box my="sm">
+          <AppText variant="caption" tone="muted">
             {label}
           </AppText>
         </Box>
       )}
 
-      <AppPressable variant="input" onPress={openPicker}>
+      <AppPressable variant="inputInverse" onPress={openPicker}>
         <AppIcon icon={CalendarIcon} style={{ marginRight: SPACING.md }} />
         <AppText variant="body" tone="primary">
           {displayValue || placeholder}

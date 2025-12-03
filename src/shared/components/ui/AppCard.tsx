@@ -25,6 +25,7 @@ const variantStyles = StyleSheet.create({
     borderColor: SYSTEM.border,
     ...SHADOWS.softLg,
     gap: SPACING.md,
+    paddingHorizontal: SPACING.lg,
   },
   filled: {
     backgroundColor: BACKGROUND.muted,

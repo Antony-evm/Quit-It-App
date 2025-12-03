@@ -110,7 +110,12 @@ export const AccountScreen = () => {
       return t('common.save');
     }
     return undefined;
-  }, [activeSection, triggersController.canSave, frequencyController.canSave, t]);
+  }, [
+    activeSection,
+    triggersController.canSave,
+    frequencyController.canSave,
+    t,
+  ]);
 
   return (
     <Box variant="default">

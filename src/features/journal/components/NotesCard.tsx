@@ -42,17 +42,18 @@ export const NotesCard: React.FC<NotesCardProps> = ({
 
   return (
     <AppCard variant="elevated" size="md" p="lg" style={cardAccentStyle}>
-      <Box gap="sm">
-        <AppText variant="subcaption" tone="muted">
+      <Box gap="md">
+        <AppText variant="caption" tone="muted">
           {t('journal.loggingLabel')}
         </AppText>
-        <Box flexDirection="row" flexWrap="wrap" gap="sm">
+        <Box flexDirection="row" flexWrap="wrap" gap="md">
           {trackingTypes.map(type => {
             const isSelected = selectedTrackingTypeId === type.id;
             return (
               <AppTag
                 key={type.id}
                 label={type.displayName}
+                size="large"
                 selected={isSelected}
                 onPress={() => onTrackingTypeSelect(type.id)}
               />
@@ -71,7 +72,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
         }
       />
       <Box gap="sm">
-        <AppText variant="subcaption" tone="muted">
+        <AppText variant="caption" tone="muted">
           {t('journal.notesLabel')}
         </AppText>
         <AppTextInput

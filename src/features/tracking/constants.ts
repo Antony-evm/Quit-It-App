@@ -6,7 +6,7 @@ export const TRACKING_RECORDS_PAGE_SIZE = 10;
 // Tracking type codes
 export const TRACKING_TYPE_CODES = {
   CRAVING: 'craving',
-  CIGARETTE: 'cigarette',
+  CIGARETTE: 'smoke',
 } as const;
 
 export type TrackingTypeCode =
