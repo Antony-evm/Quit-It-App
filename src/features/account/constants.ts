@@ -2,7 +2,6 @@ import { ComponentType } from 'react';
 
 import { AccountDetails } from './components/AccountDetails';
 import { QuittingPlanDetails } from './components/QuittingPlanDetails';
-import { TriggersList } from './components/TriggersList';
 
 export const ACCOUNT_SECTIONS = {
   DETAILS: 'details',
@@ -31,7 +30,6 @@ export const SECTION_CONFIG: Record<AccountSectionKey, SectionConfig> = {
     translationKey: 'account.sections.plan',
   },
   [ACCOUNT_SECTIONS.TRIGGERS]: {
-    component: TriggersList,
     translationKey: 'account.sections.triggers',
   },
   [ACCOUNT_SECTIONS.HABITS]: {

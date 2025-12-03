@@ -7,6 +7,7 @@ import { Box, ScreenHeader } from '@/shared/components/ui';
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
 import { FrequencyData } from '../components/FrequencyData';
+import { TriggersList } from '../components/TriggersList';
 import {
   AccountSection,
   ACCOUNT_SECTIONS,
@@ -14,6 +15,7 @@ import {
   SECTION_ORDER,
 } from '../constants';
 import { useFrequencyController } from '../hooks/useFrequencyController';
+import { useTriggersController } from '../hooks/useTriggersController';
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
@@ -28,8 +30,25 @@ export const AccountScreen = () => {
     onSaveSuccess: handleClose,
   });
 
+  const triggersController = useTriggersController({
+    onSaveSuccess: handleClose,
+  });
+
   const renderDrawerContent = () => {
     if (!activeSection) return null;
+
+    // Handle TRIGGERS section specially with the controller
+    if (activeSection === ACCOUNT_SECTIONS.TRIGGERS) {
+      return (
+        <TriggersList
+          question={triggersController.question}
+          initialSelection={triggersController.initialSelection}
+          isLoading={triggersController.isLoading}
+          error={triggersController.error}
+          onSelectionChange={triggersController.onSelectionChange}
+        />
+      );
+    }
 
     // Handle HABITS section specially with the controller
     if (activeSection === ACCOUNT_SECTIONS.HABITS) {
@@ -57,15 +76,33 @@ export const AccountScreen = () => {
 
   const getPrimaryAction = useMemo(() => {
     if (
+      activeSection === ACCOUNT_SECTIONS.TRIGGERS &&
+      triggersController.canSave
+    ) {
+      return triggersController.save;
+    }
+    if (
       activeSection === ACCOUNT_SECTIONS.HABITS &&
       frequencyController.canSave
     ) {
       return frequencyController.save;
     }
     return undefined;
-  }, [activeSection, frequencyController.canSave, frequencyController.save]);
+  }, [
+    activeSection,
+    triggersController.canSave,
+    triggersController.save,
+    frequencyController.canSave,
+    frequencyController.save,
+  ]);
 
   const getPrimaryLabel = useMemo(() => {
+    if (
+      activeSection === ACCOUNT_SECTIONS.TRIGGERS &&
+      triggersController.canSave
+    ) {
+      return t('common.save');
+    }
     if (
       activeSection === ACCOUNT_SECTIONS.HABITS &&
       frequencyController.canSave
@@ -73,7 +110,7 @@ export const AccountScreen = () => {
       return t('common.save');
     }
     return undefined;
-  }, [activeSection, frequencyController.canSave, t]);
+  }, [activeSection, triggersController.canSave, frequencyController.canSave, t]);
 
   return (
     <Box variant="default">
