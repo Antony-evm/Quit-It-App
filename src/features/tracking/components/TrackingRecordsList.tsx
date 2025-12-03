@@ -212,12 +212,17 @@ export const TrackingRecordsListContainer = React.memo(
     const {
       flatRecords: trackingRecords,
       isLoading,
+      isFetching,
+      isPlaceholderData,
       isError,
       error,
       fetchNextPage,
       isFetchingNextPage,
       hasNextPage,
     } = useInfiniteTrackingRecords();
+
+    // Show loading skeleton when initially fetching with placeholder data
+    const showSkeleton = isLoading || (isFetching && isPlaceholderData);
 
     const { data: trackingTypes } = useTrackingTypes();
 
@@ -242,7 +247,7 @@ export const TrackingRecordsListContainer = React.memo(
     return (
       <TrackingRecordsList
         records={transformedRecords}
-        isLoading={isLoading}
+        isLoading={showSkeleton}
         isError={isError}
         errorMessage={error?.message}
         isFetchingNextPage={isFetchingNextPage}
