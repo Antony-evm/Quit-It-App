@@ -28,7 +28,7 @@ const VARIANTS: Record<IconVariant, VariantStyle> = {
   default: { ...BASE_SIZES.medium, ...BASE_THEMES.primary },
   backArrow: { ...BASE_SIZES.medium, ...BASE_THEMES.inverse },
   inverse: { ...BASE_SIZES.large, ...BASE_THEMES.inverse, strokeWidth: 2 },
-  fab: { ...BASE_SIZES.xlarge, color: BACKGROUND.dark },
+  fab: { ...BASE_SIZES.xlarge, color: BACKGROUND.muted },
   small: { ...BASE_SIZES.small, ...BASE_THEMES.muted },
 };
 

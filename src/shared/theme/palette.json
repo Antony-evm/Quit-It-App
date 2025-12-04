@@ -11,7 +11,8 @@
     "secondary": "#022C22",
     "muted": "#A3B8B0",
     "subtitle": "#B3C8C0",
-    "inverse": "#FFFFFF"
+    "inverse": "#FFFFFF",
+    "mint": "#3DDC97"
   },
   "tags": {
     "cigarette": "#D66A3D",

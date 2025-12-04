@@ -5,6 +5,7 @@ import { SvgProps } from 'react-native-svg';
 import { AppPressable, AppIcon, Box } from '@/shared/components/ui';
 import {
   SYSTEM,
+  TEXT,
   FOOTER_LAYOUT,
   ICON_SIZES,
   BACKGROUND,
@@ -57,6 +58,7 @@ export const HomeFooterNavigator = ({
   ) => {
     const isActive = tabKey === activeTab;
     const Icon = TAB_ICONS[tabKey];
+    const iconColor = isActive ? SYSTEM.brand : TEXT.primary;
 
     return (
       <AppPressable
@@ -70,7 +72,11 @@ export const HomeFooterNavigator = ({
           }
         }}
       >
-        <AppIcon icon={Icon} strokeOpacity={isActive ? 1 : 0.7} />
+        <AppIcon
+          icon={Icon}
+          stroke={iconColor}
+          strokeOpacity={isActive ? 1 : 0.7}
+        />
       </AppPressable>
     );
   };
@@ -101,6 +107,7 @@ export const HomeFooterNavigator = ({
               },
             ]}
           >
+            <View style={styles.fabInnerRing} pointerEvents="none" />
             <View style={styles.fabGradient}>
               <FabGradient />
             </View>
@@ -151,9 +158,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: SYSTEM.brand,
     ...SHADOWS.xxl,
+    shadowColor: SYSTEM.brand,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+  },
+  fabInnerRing: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: FOOTER_LAYOUT.FAB_BORDER_RADIUS,
+    borderWidth: 2,
+    borderColor: TEXT.inverse,
+    zIndex: 1,
   },
   fabGradient: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: -1,
   },
   tabWithBorder: {

@@ -16,7 +16,7 @@ export const FabGradient = () => {
           fy="50%"
         >
           <Stop offset="0" stopColor={SYSTEM.brand} stopOpacity="1" />
-          <Stop offset="1" stopColor={BACKGROUND.primary} stopOpacity="1" />
+          <Stop offset="1" stopColor={SYSTEM.successDark} stopOpacity="1" />
         </RadialGradient>
       </Defs>
       <Rect width="100%" height="100%" fill="url(#grad)" />
