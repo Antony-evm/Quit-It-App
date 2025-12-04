@@ -69,9 +69,10 @@ export const BOX_VARIANTS = {
     backgroundColor: BACKGROUND.pressed,
     padding: SPACING.md,
     borderRadius: BORDER_RADIUS.medium,
-    borderWidth: 1,
+    borderWidth: BORDER_WIDTH.sm,
+    borderLeftWidth: BORDER_WIDTH.lg,
     marginVertical: SPACING.md,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: SYSTEM.borderLight,
     ...SHADOWS.sm,
   },
   valuePill: {

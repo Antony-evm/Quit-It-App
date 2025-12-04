@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { StyleProp, StyleSheet, ViewStyle, Dimensions } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 
@@ -31,6 +31,12 @@ export const CravingChart = memo(function CravingChart({
   style,
 }: CravingChartProps) {
   const { period, setPeriod, chartData } = useCravingChartData(data);
+  const [tooltip, setTooltip] = useState<{
+    x: number;
+    y: number;
+    value: number;
+    visible: boolean;
+  }>({ x: 0, y: 0, value: 0, visible: false });
 
   if (!data || data.length === 0) {
     return (
@@ -84,6 +90,9 @@ export const CravingChart = memo(function CravingChart({
       color: (opacity = 1) => hexToRgba(TAGS.craving, opacity),
     })),
   };
+
+  const maxValue = Math.max(...chartData.datasets[0].data);
+  const segments = Math.max(1, Math.min(maxValue, 4));
 
   return (
     <Box
@@ -156,7 +165,7 @@ export const CravingChart = memo(function CravingChart({
             withHorizontalLabels={true}
             fromZero={true}
             showBarTops={false}
-            segments={4}
+            segments={segments}
             flatColor={true}
           />
         ) : (
@@ -172,9 +181,27 @@ export const CravingChart = memo(function CravingChart({
             withVerticalLines={true}
             withVerticalLabels={true}
             withHorizontalLabels={true}
-            segments={4}
+            segments={segments}
             fromZero={true}
           />
+        )}
+        {tooltip.visible && (
+          <Box
+            bg="primary"
+            p="xs"
+            borderRadius="small"
+            style={{
+              position: 'absolute',
+              top: tooltip.y - 40,
+              left: tooltip.x - 20,
+              zIndex: 10,
+              ...SHADOWS.sm,
+            }}
+          >
+            <AppText variant="caption" bold>
+              {tooltip.value}
+            </AppText>
+          </Box>
         )}
       </Box>
       <Box mt="md">
