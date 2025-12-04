@@ -124,7 +124,7 @@ export const BOX_VARIANTS = {
   },
   drawerTitle: {
     backgroundColor: BACKGROUND.muted,
-    paddingVertical: SPACING.md,
+    paddingVertical: SPACING.xl,
     alignItems: 'center',
     borderBottomWidth: BORDER_WIDTH.sm,
     borderBottomColor: SYSTEM.border,

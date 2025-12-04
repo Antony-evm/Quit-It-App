@@ -68,6 +68,7 @@ export const JournalScreen = ({ onCreateNote }: JournalScreenProps) => {
         onClose={handleCloseModal}
         onPrimaryAction={editController.save}
         primaryLabel={t('journal.save')}
+        title={t('journal.editModalTitle')}
       />
     ),
     [handleCloseModal, editController.save, t],

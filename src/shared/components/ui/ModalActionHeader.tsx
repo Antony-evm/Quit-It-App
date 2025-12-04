@@ -14,6 +14,7 @@ type ModalActionHeaderProps = {
   onPrimaryAction?: () => void;
   primaryLabel?: string;
   primaryIcon?: React.FC<SvgProps>;
+  title?: string;
   style?: StyleProp<ViewStyle>;
 };
 
@@ -22,6 +23,7 @@ export const ModalActionHeader = ({
   onPrimaryAction,
   primaryLabel,
   primaryIcon,
+  title,
   style,
 }: ModalActionHeaderProps) => {
   const showPrimaryAction = Boolean(
@@ -38,6 +40,12 @@ export const ModalActionHeader = ({
       <AppPressable onPress={onClose} variant="icon" hitSlop={10}>
         <AppIcon icon={CancelIcon} />
       </AppPressable>
+
+      {title && (
+        <Box style={styles.titleContainer}>
+          <AppText variant="heading">{title}</AppText>
+        </Box>
+      )}
 
       {showPrimaryAction ? (
         <AppPressable onPress={onPrimaryAction} variant="icon" hitSlop={10}>
@@ -56,6 +64,13 @@ export const ModalActionHeader = ({
 
 const styles = StyleSheet.create({
   container: {},
+  titleContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    pointerEvents: 'none',
+  },
   primaryLabel: {
     color: TEXT.primary,
     fontWeight: '600',

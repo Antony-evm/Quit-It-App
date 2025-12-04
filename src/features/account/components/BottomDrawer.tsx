@@ -36,9 +36,10 @@ export const BottomDrawer = ({
         onClose={onClose}
         onPrimaryAction={onPrimaryAction}
         primaryLabel={primaryLabel}
+        title={title}
       />
     ),
-    [onClose, onPrimaryAction, primaryLabel],
+    [onClose, onPrimaryAction, primaryLabel, title],
   );
 
   return (
@@ -47,18 +48,11 @@ export const BottomDrawer = ({
       onClose={onClose}
       headerContent={headerContent}
     >
-      <Box variant="drawerTitle">
-        <AppText variant="title" tone="primary">
-          {title}
-        </AppText>
-        {subtitle && (
-          <Box mt="xs">
-            <AppText variant="caption" tone="muted">
-              {subtitle}
-            </AppText>
-          </Box>
-        )}
-      </Box>
+      {subtitle && (
+        <Box variant="drawerTitle">
+          <AppText variant="body">{subtitle}</AppText>
+        </Box>
+      )}
       <ScrollView style={{ flex: 1 }}>
         <Box p="lg">{children}</Box>
       </ScrollView>

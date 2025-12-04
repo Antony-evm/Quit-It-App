@@ -31,6 +31,7 @@ export const CreateNoteModal = ({ visible, onClose }: CreateNoteModalProps) => {
       onClose={onClose}
       onPrimaryAction={controller.save}
       primaryLabel="Save"
+      title={t('journal.createModalTitle')}
     />
   );
 

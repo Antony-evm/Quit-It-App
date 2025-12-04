@@ -72,6 +72,8 @@ export default {
     journal: {
       screenTitle: 'Your Quit Journal',
       screenSubtitle: "A clear view of how far you've come.",
+      editModalTitle: 'Edit Entry',
+      createModalTitle: 'New Entry',
       editModalDescription:
         'Reflect, reset, and track your journey. Every entry is a step forward.',
       loggingLabel: 'I am logging a...',
