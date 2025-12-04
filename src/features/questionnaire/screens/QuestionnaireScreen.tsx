@@ -7,7 +7,7 @@ import { AppButton, AppText, BackArrow, Box } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '../components/QuestionnaireQuestion';
 import { QuestionnaireReview } from '../components/QuestionnaireReview';
 import { QuestionnaireTemplate } from '../components/QuestionnaireTemplate';
-import { QuestionnaireSkeleton } from '../components/QuestionnaireSkeleton';
+import { QuestionnaireSkeleton, FrequencyGridSkeleton } from '../components/QuestionnaireSkeleton';
 import { FrequencyGrid } from '../components/FrequencyGrid';
 import { useQuestionnaireScreen } from '../hooks/useQuestionnaireScreen';
 
