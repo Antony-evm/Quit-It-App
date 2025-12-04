@@ -2,7 +2,7 @@ import { Dimensions } from 'react-native';
 
 import { AppText } from './AppText';
 import { Box } from './Box';
-import { SPACING, SpacingToken } from '../../theme';
+import { SPACING, SpacingToken, TEXT } from '../../theme';
 
 const { height } = Dimensions.get('window');
 const TOP_MARGIN = height * 0.05;
@@ -55,7 +55,7 @@ export const ScreenHeader = ({
       gap={config.gap}
     >
       <AppText variant="title">{title}</AppText>
-      <AppText>{subtitle}</AppText>
+      <AppText style={{ color: TEXT.subtitle }}>{subtitle}</AppText>
     </Box>
   );
 };

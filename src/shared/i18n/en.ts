@@ -28,9 +28,13 @@ export default {
       subtitle: 'Everything you need to stay on track.',
       sections: {
         details: 'Your Details',
+        detailsDescription: 'Your name & email',
         plan: 'Your Plan',
+        planDescription: 'Your goals and commitment',
         triggers: 'Your Triggers',
+        triggersDescription: 'What causes your cravings',
         habits: 'Your Habits',
+        habitsDescription: 'When cravings hit the strongest',
       },
       emailPlaceholder: 'Not available',
       firstNamePlaceholder: 'Not available',

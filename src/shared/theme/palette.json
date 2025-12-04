@@ -1,6 +1,7 @@
 {
   "background": {
     "primary": "#022C22",
+    "pressed": "#033A2F",
     "muted": "#011813",
     "cream": "#F9F6F2",
     "dark": "#2A2A2A"
@@ -9,6 +10,7 @@
     "primary": "#F9F6F2",
     "secondary": "#022C22",
     "muted": "#A3B8B0",
+    "subtitle": "#B3C8C0",
     "inverse": "#FFFFFF"
   },
   "tags": {
@@ -23,6 +25,7 @@
     "successDark": "#065F46",
     "shadow": "#000000",
     "border": "#3b655d",
+    "borderLight": "#4A7A70",
     "accentPrimary": "#F9F6F2",
     "accentMuted": "#033A2F",
     "brand": "#3DDC97"

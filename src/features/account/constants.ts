@@ -18,22 +18,27 @@ export type AccountSection = AccountSectionKey | null;
 type SectionConfig = {
   component?: ComponentType;
   translationKey: string;
+  descriptionKey: string;
 };
 
 export const SECTION_CONFIG: Record<AccountSectionKey, SectionConfig> = {
   [ACCOUNT_SECTIONS.DETAILS]: {
     component: AccountDetails,
     translationKey: 'account.sections.details',
+    descriptionKey: 'account.sections.detailsDescription',
   },
   [ACCOUNT_SECTIONS.PLAN]: {
     component: QuittingPlanDetails,
     translationKey: 'account.sections.plan',
+    descriptionKey: 'account.sections.planDescription',
   },
   [ACCOUNT_SECTIONS.TRIGGERS]: {
     translationKey: 'account.sections.triggers',
+    descriptionKey: 'account.sections.triggersDescription',
   },
   [ACCOUNT_SECTIONS.HABITS]: {
     translationKey: 'account.sections.habits',
+    descriptionKey: 'account.sections.habitsDescription',
   },
 };
 

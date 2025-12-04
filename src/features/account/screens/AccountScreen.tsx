@@ -127,6 +127,7 @@ export const AccountScreen = () => {
           <AccountSectionItem
             key={sectionKey}
             title={t(SECTION_CONFIG[sectionKey].translationKey)}
+            description={t(SECTION_CONFIG[sectionKey].descriptionKey)}
             onPress={() => setActiveSection(sectionKey)}
           />
         ))}

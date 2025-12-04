@@ -97,6 +97,18 @@ export const SHADOWS = {
     shadowRadius: 6,
     elevation: 12,
   } as ViewStyle,
+
+  /**
+   * Ambient glow shadow (elevation 8)
+   * Used for: Account section cards with soft ambient glow
+   */
+  ambientGlow: {
+    shadowColor: SYSTEM.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 8,
+  } as ViewStyle,
 } as const;
 
 export type ShadowSize = keyof typeof SHADOWS;
