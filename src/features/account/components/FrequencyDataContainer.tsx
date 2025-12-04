@@ -38,7 +38,7 @@ export const FrequencyDataContainer: React.FC<FrequencyDataContainerProps> = ({
 
   if (controller.error) {
     return (
-      <AppCard variant="filled" p="zero">
+      <AppCard variant="filled">
         <StatusMessage type="error" message={t('account.frequency.error')} />
       </AppCard>
     );

@@ -11,6 +11,7 @@ import {
   ModalActionHeader,
   ScreenHeader,
 } from '@/shared/components/ui';
+import { SPACING } from '@/shared/theme';
 import { TrackingRecordsListContainer } from '@/features/tracking/components/TrackingRecordsList';
 import { NotesCard } from '../components/NotesCard';
 import { useNotesCardController } from '../hooks/useNotesCardController';
@@ -97,14 +98,16 @@ export const JournalScreen = ({ onCreateNote }: JournalScreenProps) => {
         onClose={handleCloseModal}
         headerContent={headerContent}
       >
-        <Box variant="default">
+        <Box variant="default" gap="lg">
           <ScrollView
             ref={editDrawerScrollRef}
             keyboardShouldPersistTaps="handled"
           >
-            <AppText variant="body">
+            <Box mb="lg"></Box>
+            <AppText variant="body" centered>
               {t('journal.editModalDescription')}
             </AppText>
+            <Box mb="xl"></Box>
             {selectedRecord && editController.isReady && (
               <NotesCard
                 trackingTypes={editController.trackingTypes}
