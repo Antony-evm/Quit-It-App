@@ -10,7 +10,7 @@ import { useWelcomeData } from '../hooks/useWelcomeData';
 
 export const HomeDashboardScreen = memo(() => {
   const { dailyData, stats } = useHomeDashboardStats();
-  const { title, message, timeDifference } = useWelcomeData();
+  const { title, message, targetDate } = useWelcomeData();
 
   return (
     <ScrollView
@@ -20,7 +20,7 @@ export const HomeDashboardScreen = memo(() => {
       <WelcomeComponent
         title={title}
         message={message}
-        timeDifference={timeDifference}
+        targetDate={targetDate}
       />
 
       <Box px="xl" gap="md" pb="xxl">

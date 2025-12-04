@@ -4,13 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/shared/auth/AuthContext';
 import { useQuittingPlan } from '@/features/questionnaire';
 import { useSmokingAnalytics } from '@/features/tracking';
-import { getFormattedTimeDifference } from '@/utils/dateUtils';
 import { capitalizeFirst } from '@/utils/stringUtils';
 
 type WelcomeData = {
   title: string;
   message: string;
-  timeDifference: string;
+  targetDate?: Date;
 };
 
 export const useWelcomeData = (): WelcomeData => {
@@ -29,9 +28,9 @@ export const useWelcomeData = (): WelcomeData => {
     [t, formattedName],
   );
 
-  const { message, timeDifference } = useMemo(() => {
+  const { message, targetDate } = useMemo(() => {
     if (!plan) {
-      return { message: '', timeDifference: '' };
+      return { message: '', targetDate: undefined };
     }
 
     const now = new Date();
@@ -40,7 +39,7 @@ export const useWelcomeData = (): WelcomeData => {
     if (status === 'Cut Down') {
       return {
         message: t('home.nextMilestoneIn'),
-        timeDifference: getFormattedTimeDifference(now, plan.datetime),
+        targetDate: plan.datetime,
       };
     }
 
@@ -50,25 +49,22 @@ export const useWelcomeData = (): WelcomeData => {
       if (isPlanDateInFuture) {
         return {
           message: t('home.goingSmokeFreeIn'),
-          timeDifference: getFormattedTimeDifference(now, plan.datetime),
+          targetDate: plan.datetime,
         };
       }
 
       return {
         message: t('home.smokeFreeFor'),
-        timeDifference: getFormattedTimeDifference(
-          smokingAnalytics!.last_smoking_day,
-          now,
-        ),
+        targetDate: smokingAnalytics!.last_smoking_day,
       };
     }
 
-    return { message: '', timeDifference: '' };
+    return { message: '', targetDate: undefined };
   }, [plan, smokingAnalytics?.last_smoking_day, t]);
 
   return {
     title,
     message,
-    timeDifference,
+    targetDate,
   };
 };

@@ -1,17 +1,36 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useWindowDimensions, ViewStyle } from 'react-native';
 
 import { AppText, Box } from '@/shared/components/ui';
+import { getFormattedTimeDifference } from '@/utils/dateUtils';
 
 type WelcomeComponentProps = {
   title: string;
   message: string;
-  timeDifference: string;
+  targetDate?: Date;
 };
 
 export const WelcomeComponent = memo(
-  ({ title, message, timeDifference }: WelcomeComponentProps) => {
+  ({ title, message, targetDate }: WelcomeComponentProps) => {
     const { height } = useWindowDimensions();
+    const [timeDifference, setTimeDifference] = useState('');
+
+    useEffect(() => {
+      if (!targetDate) {
+        setTimeDifference('');
+        return;
+      }
+
+      const updateTime = () => {
+        const now = new Date();
+        setTimeDifference(getFormattedTimeDifference(targetDate, now));
+      };
+
+      updateTime();
+      const interval = setInterval(updateTime, 1000);
+
+      return () => clearInterval(interval);
+    }, [targetDate]);
 
     const containerStyle = useMemo<ViewStyle>(
       () => ({
