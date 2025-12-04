@@ -71,11 +71,11 @@ export default {
       save: 'Save',
       delete: 'Delete',
     },
-    rewards: {
-      screenTitle: 'Your Rewards',
+    milestones: {
+      screenTitle: 'Your Milestones',
       screenSubtitle: 'Celebrate your achievements.',
       comingSoon: 'Coming Soon',
-      placeholder: 'Exciting rewards are on the way!',
+      placeholder: 'Exciting milestones are on the way!',
     },
   },
 };

@@ -7,7 +7,7 @@ import { BACKGROUND, FOOTER_LAYOUT } from '@/shared/theme';
 import { AccountScreen } from '@/features/account/screens/AccountScreen';
 import { JournalScreen } from '@/features/journal/screens/JournalScreen';
 import { HomeDashboardScreen } from '@/features/home/screens/HomeDashboardScreen';
-import { RewardsScreen } from '@/features/rewards/screens/RewardsScreen';
+import { MilestonesScreen } from '@/features/milestones/screens/MilestonesScreen';
 import { HomeFooterNavigator, HomeFooterTab } from './HomeFooterNavigator';
 import { CreateNoteModal } from './CreateNoteModal';
 
@@ -25,8 +25,8 @@ export const HomeTabNavigator = () => {
         return <HomeDashboardScreen />;
       case 'journal':
         return <JournalScreen />;
-      case 'rewards':
-        return <RewardsScreen />;
+      case 'milestones':
+        return <MilestonesScreen />;
       default:
         return <HomeDashboardScreen />;
     }

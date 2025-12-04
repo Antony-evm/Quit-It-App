@@ -16,23 +16,23 @@ import { useFabAnimation } from './useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
-import MedalIcon from '@/assets/medal.svg';
+import MedalIcon from '@/assets/unlock.svg';
 import PlusIcon from '@/assets/plus.svg';
 
-export type HomeFooterTab = 'account' | 'home' | 'journal' | 'rewards';
+export type HomeFooterTab = 'account' | 'home' | 'journal' | 'milestones';
 
 export const FOOTER_TABS = {
   ACCOUNT: 'account' as HomeFooterTab,
   HOME: 'home' as HomeFooterTab,
   JOURNAL: 'journal' as HomeFooterTab,
-  REWARDS: 'rewards' as HomeFooterTab,
+  MILESTONES: 'milestones' as HomeFooterTab,
 };
 
 const TAB_ICONS: Record<HomeFooterTab, React.FC<SvgProps>> = {
   account: AccountIcon,
   home: HomeIcon,
   journal: ClipboardIcon,
-  rewards: MedalIcon,
+  milestones: MedalIcon,
 };
 
 type HomeFooterNavigatorProps = {
@@ -70,11 +70,7 @@ export const HomeFooterNavigator = ({
           }
         }}
       >
-        <AppIcon
-          icon={Icon}
-          variant="inverse"
-          fillOpacity={isActive ? 1 : 0.5}
-        />
+        <AppIcon icon={Icon} strokeOpacity={isActive ? 1 : 0.7} />
       </AppPressable>
     );
   };
@@ -86,7 +82,7 @@ export const HomeFooterNavigator = ({
         {renderTab(FOOTER_TABS.HOME, false)}
         <View style={styles.fabPlaceholder} />
         {renderTab(FOOTER_TABS.JOURNAL, true)}
-        {renderTab(FOOTER_TABS.REWARDS, false)}
+        {renderTab(FOOTER_TABS.MILESTONES, false)}
       </View>
 
       <View style={styles.fabContainer}>

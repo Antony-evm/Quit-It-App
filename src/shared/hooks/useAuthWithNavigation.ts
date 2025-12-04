@@ -17,7 +17,7 @@ export const useAuthWithNavigation = () => {
       const result = await authLogin(email, password);
 
       // Initialize user status service if needed and navigate immediately
-      if (!UserStatusService.getStatus(result.userStatusId)) {
+      if (!UserStatusService.isInitialized()) {
         await UserStatusService.initialize();
       }
 
@@ -38,7 +38,7 @@ export const useAuthWithNavigation = () => {
       const result = await authSignup(email, password, firstName, lastName);
 
       // Initialize user status service if needed and navigate immediately
-      if (!UserStatusService.getStatus(result.userStatusId)) {
+      if (!UserStatusService.isInitialized()) {
         await UserStatusService.initialize();
       }
 

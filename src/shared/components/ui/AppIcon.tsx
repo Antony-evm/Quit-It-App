@@ -39,6 +39,9 @@ export const AppIcon = ({
   icon: Icon,
   variant = 'default',
   style,
+  fillOpacity,
+  strokeOpacity,
+  ...rest
 }: AppIconProps) => {
   const theme = VARIANTS[variant];
   const iconStroke = theme.stroke ?? theme.color;
@@ -48,10 +51,13 @@ export const AppIcon = ({
       width={theme.size}
       height={theme.size}
       fill={theme.color}
+      fillOpacity={fillOpacity}
+      strokeOpacity={strokeOpacity}
       stroke={iconStroke}
       strokeWidth={theme.strokeWidth}
       color={iconStroke}
       style={style}
+      {...rest}
     />
   );
 };
