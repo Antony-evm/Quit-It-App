@@ -45,7 +45,7 @@ export const BOX_VARIANTS = {
     borderColor: SYSTEM.border,
   },
   buttonSeparator: {
-    borderTopWidth: BORDER_WIDTH.sm,
+    borderTopWidth: BORDER_WIDTH.md,
     padding: SPACING.sm,
     paddingBottom: SPACING.xs,
     alignItems: 'center',

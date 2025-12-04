@@ -3,9 +3,11 @@ import type { FetchReviewResponse } from '../types';
 import { QUESTIONNAIRE_REVIEW_ENDPOINT } from './endpoints';
 
 /**
- * Fetch the questionnaire review data (list of text blocks).
+ * Fetch the questionnaire review data (list of [title, text] tuples).
  */
-export const fetchQuestionnaireReview = async (): Promise<string[]> => {
+export const fetchQuestionnaireReview = async (): Promise<
+  [string, string][]
+> => {
   const response = await apiGet(QUESTIONNAIRE_REVIEW_ENDPOINT);
 
   if (!response.ok) {

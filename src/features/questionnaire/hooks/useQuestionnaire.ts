@@ -117,7 +117,7 @@ export const useQuestionnaire = (options: UseQuestionnaireOptions = {}) => {
   const [isReviewing, setIsReviewing] = useState(false);
   const [history, setHistory] = useState<QuestionnaireResponseRecord[]>([]);
   const [navigationStack, setNavigationStack] = useState<NavigationEntry[]>([]);
-  const [reviewData, setReviewData] = useState<string[]>([]);
+  const [reviewData, setReviewData] = useState<[string, string][]>([]);
   const [selections, setSelections] = useState<
     Record<
       number,

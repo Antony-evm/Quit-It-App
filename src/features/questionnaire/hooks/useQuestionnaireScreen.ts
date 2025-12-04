@@ -16,6 +16,8 @@ import type { RootStackParamList } from '@/types/navigation';
 
 const DEFAULT_HEADER_TITLE = 'Questionnaire';
 const REVIEW_TITLE = 'Your Plan of Action';
+const REVIEW_SUBTITLE =
+  'Here is your personalized plan based on your answers and how Quit It can support you.';
 const QUESTIONNAIRE_SUBMIT_LABEL = 'Submit';
 
 type UseQuestionnaireScreenOptions = {
@@ -188,7 +190,7 @@ export const useQuestionnaireScreen = ({
   const headerTitle = isReviewing
     ? REVIEW_TITLE
     : prompt || DEFAULT_HEADER_TITLE;
-  const headerSubtitle = isReviewing ? undefined : explanation;
+  const headerSubtitle = isReviewing ? REVIEW_SUBTITLE : explanation;
 
   const primaryActionLabel = QUESTIONNAIRE_SUBMIT_LABEL;
 
