@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { StytchProvider, StytchClient } from '@stytch/react-native';
 import Config from 'react-native-config';
 
@@ -17,6 +17,7 @@ import { AuthProvider } from '@/shared/auth';
 import { GlobalErrorBoundary } from '@/shared/error';
 import { DeveloperMenuTrigger } from '@/shared/components/dev';
 import { apiClient } from '@/shared/api/apiConfig';
+import { queryClient } from '@/shared/api/queryClient';
 
 // Initialize Stytch client once at module level
 const stytchToken = Config.STYTCH_PUBLIC_TOKEN || 'public-token-placeholder';
@@ -28,17 +29,6 @@ if (!Config.STYTCH_PUBLIC_TOKEN) {
 }
 
 const stytchClient = new StytchClient(stytchToken);
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: Infinity,
-      gcTime: Infinity,
-      refetchOnReconnect: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
 
 /**
  * Inner app content that has access to all providers.

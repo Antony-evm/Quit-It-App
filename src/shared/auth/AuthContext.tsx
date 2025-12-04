@@ -4,6 +4,7 @@ import AuthService from './authService';
 import { clearAuthState, setAuthState } from './authState';
 import { type AuthTokens, type UserData } from './types';
 import { resetNavigation } from '@/navigation/navigationRef';
+import { clearQueryCache } from '@/shared/api/queryClient';
 
 import {
   createUser,
@@ -274,6 +275,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Clear stored auth data locally
       await AuthService.logout();
+
+      // Clear all React Query cached data
+      clearQueryCache();
 
       // Update state
       setIsAuthenticated(false);

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -6,60 +6,69 @@ import { Box, ScreenHeader } from '@/shared/components/ui';
 
 import { AccountSectionItem } from '../components/AccountSectionItem';
 import { BottomDrawer } from '../components/BottomDrawer';
-import { FrequencyData } from '../components/FrequencyData';
-import { TriggersList } from '../components/TriggersList';
+import { FrequencyDataContainer } from '../components/FrequencyDataContainer';
+import { TriggersListContainer } from '../components/TriggersListContainer';
 import {
   AccountSection,
   ACCOUNT_SECTIONS,
   SECTION_CONFIG,
   SECTION_ORDER,
 } from '../constants';
-import { useFrequencyController } from '../hooks/useFrequencyController';
-import { useTriggersController } from '../hooks/useTriggersController';
+
+type ControllerState = {
+  canSave: boolean;
+  save: () => Promise<void>;
+};
 
 export const AccountScreen = () => {
   const { t } = useTranslation();
 
   const [activeSection, setActiveSection] = useState<AccountSection>(null);
+  const [triggersController, setTriggersController] =
+    useState<ControllerState | null>(null);
+  const [frequencyController, setFrequencyController] =
+    useState<ControllerState | null>(null);
 
   const handleClose = useCallback(() => {
     setActiveSection(null);
+    // Reset controller states when closing
+    setTriggersController(null);
+    setFrequencyController(null);
   }, []);
 
-  const frequencyController = useFrequencyController({
-    onSaveSuccess: handleClose,
-  });
+  const handleTriggersControllerReady = useCallback(
+    (controller: ControllerState) => {
+      setTriggersController(controller);
+    },
+    [],
+  );
 
-  const triggersController = useTriggersController({
-    onSaveSuccess: handleClose,
-  });
+  const handleFrequencyControllerReady = useCallback(
+    (controller: ControllerState) => {
+      setFrequencyController(controller);
+    },
+    [],
+  );
 
   const renderDrawerContent = () => {
     if (!activeSection) return null;
 
-    // Handle TRIGGERS section specially with the controller
+    // Handle TRIGGERS section - lazy loaded
     if (activeSection === ACCOUNT_SECTIONS.TRIGGERS) {
       return (
-        <TriggersList
-          question={triggersController.question}
-          initialSelection={triggersController.initialSelection}
-          isLoading={triggersController.isLoading}
-          error={triggersController.error}
-          onSelectionChange={triggersController.onSelectionChange}
+        <TriggersListContainer
+          onSaveSuccess={handleClose}
+          onControllerReady={handleTriggersControllerReady}
         />
       );
     }
 
-    // Handle HABITS section specially with the controller
+    // Handle HABITS section - lazy loaded
     if (activeSection === ACCOUNT_SECTIONS.HABITS) {
       return (
-        <FrequencyData
-          question={frequencyController.question}
-          initialSubSelection={frequencyController.initialSubSelection}
-          isLoading={frequencyController.isLoading}
-          error={frequencyController.error}
-          onMainSelectionChange={frequencyController.onMainSelectionChange}
-          onSubSelectionChange={frequencyController.onSubSelectionChange}
+        <FrequencyDataContainer
+          onSaveSuccess={handleClose}
+          onControllerReady={handleFrequencyControllerReady}
         />
       );
     }
@@ -74,48 +83,37 @@ export const AccountScreen = () => {
     return t(SECTION_CONFIG[activeSection].translationKey);
   };
 
-  const getPrimaryAction = useMemo(() => {
+  const getPrimaryAction = () => {
     if (
       activeSection === ACCOUNT_SECTIONS.TRIGGERS &&
-      triggersController.canSave
+      triggersController?.canSave
     ) {
       return triggersController.save;
     }
     if (
       activeSection === ACCOUNT_SECTIONS.HABITS &&
-      frequencyController.canSave
+      frequencyController?.canSave
     ) {
       return frequencyController.save;
     }
     return undefined;
-  }, [
-    activeSection,
-    triggersController.canSave,
-    triggersController.save,
-    frequencyController.canSave,
-    frequencyController.save,
-  ]);
+  };
 
-  const getPrimaryLabel = useMemo(() => {
+  const getPrimaryLabel = () => {
     if (
       activeSection === ACCOUNT_SECTIONS.TRIGGERS &&
-      triggersController.canSave
+      triggersController?.canSave
     ) {
       return t('common.save');
     }
     if (
       activeSection === ACCOUNT_SECTIONS.HABITS &&
-      frequencyController.canSave
+      frequencyController?.canSave
     ) {
       return t('common.save');
     }
     return undefined;
-  }, [
-    activeSection,
-    triggersController.canSave,
-    frequencyController.canSave,
-    t,
-  ]);
+  };
 
   return (
     <Box variant="default">
@@ -135,8 +133,8 @@ export const AccountScreen = () => {
         visible={!!activeSection}
         onClose={handleClose}
         title={getDrawerTitle()}
-        onPrimaryAction={getPrimaryAction}
-        primaryLabel={getPrimaryLabel}
+        onPrimaryAction={getPrimaryAction()}
+        primaryLabel={getPrimaryLabel()}
       >
         {renderDrawerContent()}
       </BottomDrawer>

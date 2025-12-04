@@ -24,7 +24,7 @@ export const BOX_VARIANTS = {
     gap: SPACING.xl,
     width: '100%',
     flex: 1,
-    paddingHorizontal: SPACING.md,
+    paddingHorizontal: SPACING.xl,
     paddingTop: SPACING.lg,
     paddingBottom: SPACING.md,
   },
