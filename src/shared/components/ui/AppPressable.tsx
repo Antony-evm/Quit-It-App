@@ -51,6 +51,7 @@ const variantStyles = StyleSheet.create({
   callToAction: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.md,
     borderWidth: 2,

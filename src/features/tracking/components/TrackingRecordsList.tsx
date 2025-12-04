@@ -144,7 +144,7 @@ export const TrackingRecordsList = React.memo(
       }
 
       return (
-        <Box py="lg" alignItems="flex-start" gap="md">
+        <Box alignItems="flex-start">
           <Box flexDirection="row" alignItems="flex-start" mb="md">
             <AppText variant="body">
               Your notes help you understand your habits. Start with just one.
@@ -152,16 +152,13 @@ export const TrackingRecordsList = React.memo(
             </AppText>
           </Box>
 
-          <AppPressable onPress={onCreatePress} variant="callToAction">
-            <AppText variant="caption" style={{ marginRight: 6 }}>
-              Write your first note
-            </AppText>
-            <ChevronRight
-              width={14}
-              height={14}
-              color="#A3B8B0"
-              style={{ opacity: 0.8 }}
-            />
+          <AppPressable
+            onPress={onCreatePress}
+            variant="callToAction"
+            style={{ width: '60%' }}
+          >
+            <AppText variant="caption">Write your first note</AppText>
+            <AppIcon icon={ChevronRight} variant="small" />
           </AppPressable>
         </Box>
       );
