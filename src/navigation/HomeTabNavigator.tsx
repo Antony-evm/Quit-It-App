@@ -24,7 +24,9 @@ export const HomeTabNavigator = () => {
       case 'home':
         return <HomeDashboardScreen />;
       case 'journal':
-        return <JournalScreen />;
+        return (
+          <JournalScreen onCreateNote={() => setIsNoteDrawerVisible(true)} />
+        );
       case 'milestones':
         return <MilestonesScreen />;
       default:

@@ -34,6 +34,7 @@ type PressableVariant =
   | 'toast'
   | 'backArrow'
   | 'answerGrid'
+  | 'callToAction'
   | 'delete';
 
 export type AppPressableProps = Omit<PressableProps, 'style'> & {
@@ -47,6 +48,15 @@ export type AppPressableProps = Omit<PressableProps, 'style'> & {
 
 const variantStyles = StyleSheet.create({
   default: {},
+  callToAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.md,
+    borderWidth: 2,
+    borderColor: BACKGROUND.pressed,
+    borderRadius: BORDER_RADIUS.medium,
+  },
   icon: {
     padding: SPACING.xs,
   },

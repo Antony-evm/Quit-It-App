@@ -17,7 +17,11 @@ import { useNotesCardController } from '../hooks/useNotesCardController';
 import { TrackingRecordApiResponse } from '@/features/tracking/api/fetchTrackingRecords';
 import { parseTimestampFromAPI } from '@/utils/timezoneUtils';
 
-export const JournalScreen = () => {
+type JournalScreenProps = {
+  onCreateNote?: () => void;
+};
+
+export const JournalScreen = ({ onCreateNote }: JournalScreenProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const editDrawerScrollRef = useRef<ScrollView>(null);
@@ -83,6 +87,7 @@ export const JournalScreen = () => {
     <Box variant="default">
       <TrackingRecordsListContainer
         onRecordPress={handleRecordPress}
+        onCreatePress={onCreateNote}
         ListHeaderComponent={ListHeaderComponent}
       />
 

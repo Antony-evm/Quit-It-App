@@ -6,8 +6,11 @@ import {
   Box,
   StatusMessage,
   AppPressable,
+  AppIcon,
 } from '@/shared/components/ui';
 import { formatRelativeDate } from '@/utils/dateUtils';
+import PenIcon from '@/assets/pen.svg';
+import ChevronRight from '@/assets/chevronRight.svg';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
@@ -15,6 +18,7 @@ import { TrackingRecordCard } from './TrackingRecordCard';
 import { TrackingRecordCardSkeleton } from './TrackingRecordCardSkeleton';
 import { getTrackingTypeColors } from '../constants';
 import type { TrackingType } from '../types';
+import { SPACING } from '@/shared/theme/spacing';
 
 // ============================================================================
 // Types
@@ -46,6 +50,8 @@ export type TrackingRecordsListProps = {
   onLoadMore: () => void;
   /** Callback when a record is pressed */
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
+  /** Callback when create button is pressed in empty state */
+  onCreatePress?: () => void;
   /** Optional header component */
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   /** Optional content container style */
@@ -99,6 +105,7 @@ export const TrackingRecordsList = React.memo(
     hasNextPage,
     onLoadMore,
     onRecordPress,
+    onCreatePress,
     ListHeaderComponent,
     contentContainerStyle,
   }: TrackingRecordsListProps) => {
@@ -136,12 +143,28 @@ export const TrackingRecordsList = React.memo(
       }
 
       return (
-        <StatusMessage
-          type="info"
-          message="Your notes help you understand your habits. Start with just one."
-        />
+        <Box py="lg" alignItems="flex-start" mt="md" gap="md">
+          <Box flexDirection="row" alignItems="flex-start" mb="md">
+            <AppText variant="body">
+              Your notes help you understand your habits. Start with just one.
+              Your future you will thank you.
+            </AppText>
+          </Box>
+
+          <AppPressable onPress={onCreatePress} variant="callToAction">
+            <AppText variant="caption" style={{ marginRight: 6 }}>
+              Write your first note
+            </AppText>
+            <ChevronRight
+              width={14}
+              height={14}
+              color="#A3B8B0"
+              style={{ opacity: 0.8 }}
+            />
+          </AppPressable>
+        </Box>
       );
-    }, [isLoading, isError, errorMessage]);
+    }, [isLoading, isError, errorMessage, onCreatePress]);
 
     const ListFooterComponent = useCallback(() => {
       if (isFetchingNextPage) {
@@ -195,6 +218,7 @@ export const TrackingRecordsList = React.memo(
 
 type TrackingRecordsListContainerProps = {
   onRecordPress?: (record: TrackingRecordApiResponse) => void;
+  onCreatePress?: () => void;
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   contentContainerStyle?: StyleProp<ViewStyle>;
 };
@@ -206,6 +230,7 @@ type TrackingRecordsListContainerProps = {
 export const TrackingRecordsListContainer = React.memo(
   ({
     onRecordPress,
+    onCreatePress,
     ListHeaderComponent,
     contentContainerStyle,
   }: TrackingRecordsListContainerProps) => {
@@ -254,6 +279,7 @@ export const TrackingRecordsListContainer = React.memo(
         hasNextPage={hasNextPage ?? false}
         onLoadMore={handleLoadMore}
         onRecordPress={onRecordPress}
+        onCreatePress={onCreatePress}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={contentContainerStyle}
       />
