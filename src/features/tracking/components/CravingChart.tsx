@@ -146,7 +146,7 @@ export const CravingChart = memo(function CravingChart({
           <BarChart
             data={barChartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.32}
+            height={DEVICE_HEIGHT * 0.35}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
@@ -163,7 +163,7 @@ export const CravingChart = memo(function CravingChart({
           <LineChart
             data={chartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.32}
+            height={DEVICE_HEIGHT * 0.35}
             chartConfig={chartConfig}
             bezier
             style={styles.chart}

@@ -125,9 +125,6 @@ export const getFormattedTimeDifference = (
   const MS_PER_MINUTE = 60 * MS_PER_SECOND;
   const MS_PER_HOUR = 60 * MS_PER_MINUTE;
   const MS_PER_DAY = 24 * MS_PER_HOUR;
-  const MS_PER_WEEK = 7 * MS_PER_DAY;
-
-  const isMoreThanOneWeek = diffInMs > MS_PER_WEEK;
 
   const days = Math.floor(diffInMs / MS_PER_DAY);
   const remainingAfterDays = diffInMs % MS_PER_DAY;
@@ -148,15 +145,15 @@ export const getFormattedTimeDifference = (
     started = true;
   }
   if (started || hours > 0) {
-    parts.push(`${hours}hrs`);
+    parts.push(`${hours}h`);
     started = true;
   }
   if (started || minutes > 0) {
-    parts.push(`${minutes}mins`);
+    parts.push(`${minutes}m`);
     started = true;
   }
 
-  if (!isMoreThanOneWeek && (started || seconds > 0)) {
+  if (started || seconds > 0) {
     parts.push(`${seconds}s`);
   }
 
@@ -164,5 +161,5 @@ export const getFormattedTimeDifference = (
     return '0s';
   }
 
-  return parts.join(' ');
+  return parts.slice(0, 4).join(' ');
 };
