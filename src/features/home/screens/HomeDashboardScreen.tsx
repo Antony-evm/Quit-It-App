@@ -13,10 +13,7 @@ export const HomeDashboardScreen = memo(() => {
   const { title, message, targetDate } = useWelcomeData();
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
+    <ScrollView showsVerticalScrollIndicator={false}>
       <WelcomeComponent
         title={title}
         message={message}
@@ -25,11 +22,10 @@ export const HomeDashboardScreen = memo(() => {
 
       <Box px="xl" gap="md" pb="xxl">
         {dailyData && dailyData.length > 0 && (
-          <Box mt="sm" mb="xl">
+          <Box mt="xl" mb="xxl">
             <CravingChart data={dailyData} />
           </Box>
         )}
-
         <HomeStatsRow stats={stats} />
       </Box>
     </ScrollView>

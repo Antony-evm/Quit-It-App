@@ -63,7 +63,7 @@ const StatCard = memo(({ stat, isFirst }: StatCardProps) => {
 StatCard.displayName = 'StatCard';
 
 export const HomeStatsRow = memo(({ stats }: HomeStatsRowProps) => (
-  <Box flexDirection="column">
+  <Box flexDirection="column" gap="sm">
     {stats.map((stat, index) => (
       <StatCard key={stat.id} stat={stat} isFirst={index === 0} />
     ))}

@@ -1,7 +1,6 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { useWindowDimensions, ViewStyle } from 'react-native';
+import React, { memo, useEffect, useState } from 'react';
 
-import { AppText, Box } from '@/shared/components/ui';
+import { AppText, Box, ScreenHeader } from '@/shared/components/ui';
 import { getFormattedTimeDifference } from '@/utils/dateUtils';
 
 type WelcomeComponentProps = {
@@ -12,7 +11,6 @@ type WelcomeComponentProps = {
 
 export const WelcomeComponent = memo(
   ({ title, message, targetDate }: WelcomeComponentProps) => {
-    const { height } = useWindowDimensions();
     const [timeDifference, setTimeDifference] = useState('');
 
     useEffect(() => {
@@ -32,38 +30,19 @@ export const WelcomeComponent = memo(
       return () => clearInterval(interval);
     }, [targetDate]);
 
-    const containerStyle = useMemo<ViewStyle>(
-      () => ({
-        minHeight: height * 0.3,
-        paddingTop: height * 0.05,
-      }),
-      [height],
-    );
-
     const hasTimeDifference = Boolean(message && timeDifference);
 
     return (
-      <Box
-        variant="welcomeHeader"
-        style={containerStyle}
-        accessibilityRole="header"
-      >
-        <Box flex={1}>
-          <Box mb="xs">
-            <AppText variant="title">{title}</AppText>
-          </Box>
+      <Box px="xl" gap="md" accessibilityRole="header">
+        <ScreenHeader title={title} subtitle={message} />
 
-          {hasTimeDifference && (
-            <Box flex={1} justifyContent="center">
-              <AppText variant="heading">{message}</AppText>
-              <Box variant="highlightCard" py="xl">
-                <AppText variant="display" tone="brand">
-                  {timeDifference}
-                </AppText>
-              </Box>
-            </Box>
-          )}
-        </Box>
+        {hasTimeDifference && (
+          <Box variant="highlightCard">
+            <AppText variant="display" tone="brand">
+              {timeDifference}
+            </AppText>
+          </Box>
+        )}
       </Box>
     );
   },

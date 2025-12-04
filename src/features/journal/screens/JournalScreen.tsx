@@ -11,7 +11,6 @@ import {
   ModalActionHeader,
   ScreenHeader,
 } from '@/shared/components/ui';
-import { SPACING } from '@/shared/theme';
 import { TrackingRecordsListContainer } from '@/features/tracking/components/TrackingRecordsList';
 import { NotesCard } from '../components/NotesCard';
 import { useNotesCardController } from '../hooks/useNotesCardController';

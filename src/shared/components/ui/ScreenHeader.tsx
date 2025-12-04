@@ -1,11 +1,8 @@
-import { Dimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 
 import { AppText } from './AppText';
 import { Box } from './Box';
 import { SPACING, SpacingToken, TEXT } from '../../theme';
-
-const { height } = Dimensions.get('window');
-const TOP_MARGIN = height * 0.05;
 
 export type ScreenHeaderVariant = 'default' | 'paywall';
 
@@ -42,6 +39,8 @@ export const ScreenHeader = ({
   variant = 'default',
   withTopMargin = true,
 }: ScreenHeaderProps) => {
+  const { height } = useWindowDimensions();
+  const topMargin = height * 0.05;
   const config = VARIANTS[variant];
 
   return (
@@ -49,7 +48,7 @@ export const ScreenHeader = ({
       style={[
         {
           marginBottom: config.marginBottom,
-          marginTop: withTopMargin ? TOP_MARGIN : 0,
+          marginTop: withTopMargin ? topMargin : 0,
         },
       ]}
       gap={config.gap}
