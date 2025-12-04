@@ -50,7 +50,7 @@ export default {
     },
     plan: {
       loading: 'Loading plan details...',
-      error: 'Unable to load plan details',
+      error: 'Unable to load plan details!',
       cigarettesPerDay: '{{count}} cigarettes per day',
       status: 'Status',
       statusLabel: 'Goal',

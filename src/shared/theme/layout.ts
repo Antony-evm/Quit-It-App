@@ -49,7 +49,7 @@ export const QUESTIONNAIRE_MAX_CONTENT_WIDTH = 760;
 export const TOUCH_TARGET_SIZE = 44;
 export const INPUT_MIN_HEIGHT = 44;
 export const ANSWER_TAB_MIN_HEIGHT = 80;
-export const ANSWER_GRID_MIN_HEIGHT = 70;
+export const ANSWER_GRID_MIN_HEIGHT = 80;
 
 export const FOOTER_LAYOUT = {
   FAB_SIZE: 64,
