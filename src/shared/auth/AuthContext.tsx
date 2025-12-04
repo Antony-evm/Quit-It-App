@@ -95,15 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const userData: UserData = {
             id: user_id,
             email: user.emails?.[0]?.email || email,
-            name:
-              user.name?.first_name ||
-              user.name?.middle_name ||
-              user.name?.last_name
-                ? `${user.name.first_name || ''} ${
-                    user.name.last_name || ''
-                  }`.trim()
-                : undefined,
-            phoneNumber: user.phone_numbers?.[0]?.phone_number,
+            // firstName, lastName, and name will be populated from backend response
           };
 
           await Promise.all([
@@ -129,6 +121,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 ...userData,
                 backendUserId: backendResponse.data.user_id,
                 userStatusId: userStatusId,
+                firstName: backendResponse.data.first_name,
+                lastName: backendResponse.data.last_name,
+                // Build combined name from backend's first/last name
+                ...(backendResponse.data.first_name ||
+                backendResponse.data.last_name
+                  ? {
+                      name: [
+                        backendResponse.data.first_name,
+                        backendResponse.data.last_name,
+                      ]
+                        .filter(Boolean)
+                        .join(' '),
+                    }
+                  : {}),
               };
 
               await AuthService.storeUserData(updatedUserData);
@@ -185,7 +191,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             name: `${firstName.trim()} ${lastName.trim()}`.trim(),
             firstName: firstName.trim() || null,
             lastName: lastName.trim() || null,
-            phoneNumber: user.phone_numbers?.[0]?.phone_number,
           };
 
           await Promise.all([

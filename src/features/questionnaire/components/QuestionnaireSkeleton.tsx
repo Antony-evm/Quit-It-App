@@ -41,11 +41,7 @@ export const SkeletonItem = ({
 };
 
 // Skeleton row matching FrequencyGrid's gridRow layout
-const FrequencyGridRowSkeleton = ({
-  isLast = false,
-}: {
-  isLast?: boolean;
-}) => {
+const FrequencyGridRowSkeleton = ({ isLast = false }: { isLast?: boolean }) => {
   return (
     <Box style={[styles.gridRow, isLast && styles.gridRowLast]}>
       {/* Clock and label section */}
@@ -59,7 +55,11 @@ const FrequencyGridRowSkeleton = ({
       </Box>
       {/* Slider section */}
       <Box style={styles.sliderSection}>
-        <SkeletonItem width="90%" height={SPACING.xl * 2} style={styles.sliderSkeleton} />
+        <SkeletonItem
+          width="90%"
+          height={SPACING.xl * 2}
+          style={styles.sliderSkeleton}
+        />
       </Box>
     </Box>
   );

@@ -9,6 +9,7 @@ import {
   BORDER_RADIUS,
   BORDER_WIDTH,
   OPACITY,
+  SHADOWS,
 } from '../../theme';
 
 export type AppButtonProps = Omit<PressableProps, 'style'> & {
@@ -49,8 +50,9 @@ const styles = StyleSheet.create({
   base: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: BORDER_RADIUS.xlarge,
+    borderRadius: BORDER_RADIUS.medium,
     backgroundColor: BACKGROUND.cream,
+    ...SHADOWS.softLg,
     borderWidth: BORDER_WIDTH.none,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
