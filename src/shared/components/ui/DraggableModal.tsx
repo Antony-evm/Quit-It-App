@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   headerContainer: {
-    backgroundColor: SYSTEM.shadow,
+    backgroundColor: BACKGROUND.pressed,
     paddingBottom: SPACING.md,
     paddingTop: SPACING.sm,
     borderBottomWidth: 1,
@@ -165,10 +165,11 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.sm,
   },
   indicator: {
-    width: 40,
+    width: 44,
     height: 5,
-    borderRadius: 3,
+    borderRadius: 2.5,
     backgroundColor: SYSTEM.brand,
+    opacity: OPACITY.medium,
   },
   headerContent: {
     paddingHorizontal: SPACING.lg,
