@@ -12,6 +12,7 @@ import {
   SPACING,
   BORDER_RADIUS,
   BORDER_WIDTH,
+  SHADOWS,
   hexToRgba,
 } from '@/shared/theme';
 import { DailyCravingData } from '@/features/tracking';
@@ -101,15 +102,18 @@ export const CravingChart = memo(function CravingChart({
         <Box variant="toggleGroup">
           <AppPressable
             selected={period === 'daily'}
-            style={period === 'daily' && styles.activeToggle}
+            style={[
+              styles.toggleItem,
+              period === 'daily' && styles.activeToggle,
+            ]}
             onPress={() => setPeriod('daily')}
             accessibilityLabel="Show daily cravings"
             accessibilityRole="button"
             accessibilityState={{ selected: period === 'daily' }}
           >
             <AppText
-              variant="gridArea"
-              tone={period === 'daily' ? 'inverse' : 'muted'}
+              variant="caption"
+              tone={period === 'daily' ? 'muted' : 'primary'}
               bold={period === 'daily'}
             >
               Daily
@@ -117,15 +121,18 @@ export const CravingChart = memo(function CravingChart({
           </AppPressable>
           <AppPressable
             selected={period === 'weekly'}
-            style={period === 'weekly' && styles.activeToggle}
+            style={[
+              styles.toggleItem,
+              period === 'weekly' && styles.activeToggle,
+            ]}
             onPress={() => setPeriod('weekly')}
             accessibilityLabel="Show weekly cravings"
             accessibilityRole="button"
             accessibilityState={{ selected: period === 'weekly' }}
           >
             <AppText
-              variant="gridArea"
-              tone={period === 'weekly' ? 'inverse' : 'muted'}
+              variant="caption"
+              tone={period === 'weekly' ? 'muted' : 'primary'}
               bold={period === 'weekly'}
             >
               Weekly
@@ -194,6 +201,14 @@ const styles = StyleSheet.create({
   activeToggle: {
     backgroundColor: TAGS.craving,
     borderColor: TAGS.craving,
+    ...SHADOWS.sm,
+  },
+  toggleItem: {
+    width: 70,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: SPACING.xs,
+    borderRadius: BORDER_RADIUS.small - 2,
   },
   chart: {
     marginVertical: SPACING.sm,

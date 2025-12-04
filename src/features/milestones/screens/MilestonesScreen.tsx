@@ -6,16 +6,14 @@ export const MilestonesScreen = () => {
   const { t } = useTranslation();
 
   return (
-    <Box variant="default" flex={1}>
+    <Box px="xl" pt="lg">
       <ScreenHeader
         title={t('milestones.screenTitle')}
         subtitle={t('milestones.screenSubtitle')}
       />
-      <Box flex={1}>
+      <Box gap="md">
         <AppText tone="muted">{t('milestones.comingSoon')}</AppText>
-        <AppText tone="muted" style={{ marginTop: 8 }}>
-          {t('milestones.placeholder')}
-        </AppText>
+        <AppText tone="muted">{t('milestones.placeholder')}</AppText>
       </Box>
     </Box>
   );
