@@ -16,20 +16,23 @@ import { useFabAnimation } from './useFabAnimation';
 import AccountIcon from '@/assets/account.svg';
 import HomeIcon from '@/assets/home.svg';
 import ClipboardIcon from '@/assets/clipboard.svg';
+import MedalIcon from '@/assets/medal.svg';
 import PlusIcon from '@/assets/plus.svg';
 
-export type HomeFooterTab = 'account' | 'home' | 'journal';
+export type HomeFooterTab = 'account' | 'home' | 'journal' | 'rewards';
 
 export const FOOTER_TABS = {
   ACCOUNT: 'account' as HomeFooterTab,
   HOME: 'home' as HomeFooterTab,
   JOURNAL: 'journal' as HomeFooterTab,
+  REWARDS: 'rewards' as HomeFooterTab,
 };
 
 const TAB_ICONS: Record<HomeFooterTab, React.FC<SvgProps>> = {
   account: AccountIcon,
   home: HomeIcon,
   journal: ClipboardIcon,
+  rewards: MedalIcon,
 };
 
 type HomeFooterNavigatorProps = {
@@ -82,7 +85,8 @@ export const HomeFooterNavigator = ({
         {renderTab(FOOTER_TABS.ACCOUNT, true)}
         {renderTab(FOOTER_TABS.HOME, false)}
         <View style={styles.fabPlaceholder} />
-        {renderTab(FOOTER_TABS.JOURNAL, false)}
+        {renderTab(FOOTER_TABS.JOURNAL, true)}
+        {renderTab(FOOTER_TABS.REWARDS, false)}
       </View>
 
       <View style={styles.fabContainer}>

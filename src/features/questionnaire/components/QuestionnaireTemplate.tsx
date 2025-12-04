@@ -73,7 +73,7 @@ export const QuestionnaireTemplate = ({
         </Box>
       </ScrollView>
       {primaryActionLabel ? (
-        <Box px="xxl" py="md">
+        <Box px="xxl">
           <AppButton
             label={primaryActionLabel}
             onPress={onPrimaryActionPress}
