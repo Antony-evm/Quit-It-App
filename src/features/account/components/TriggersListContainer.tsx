@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AppCard, StatusMessage } from '@/shared/components/ui';
+import { AppCard, Box, StatusMessage } from '@/shared/components/ui';
 import { QuestionnaireQuestion } from '@/features/questionnaire/components/QuestionnaireQuestion';
 import { useTriggersController } from '../hooks/useTriggersController';
 import { TriggersListSkeleton } from './TriggersListSkeleton';
@@ -45,13 +45,15 @@ export const TriggersListContainer: React.FC<TriggersListContainerProps> = ({
   }
 
   return (
-    <AppCard variant="filled" p="zero">
-      <QuestionnaireQuestion
-        question={controller.question}
-        initialSelection={controller.initialSelection}
-        onSelectionChange={controller.onSelectionChange}
-        onValidityChange={() => {}}
-      />
-    </AppCard>
+    <Box mt="md">
+      <AppCard variant="filled" p="zero">
+        <QuestionnaireQuestion
+          question={controller.question}
+          initialSelection={controller.initialSelection}
+          onSelectionChange={controller.onSelectionChange}
+          onValidityChange={() => {}}
+        />
+      </AppCard>
+    </Box>
   );
 };

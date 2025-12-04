@@ -44,7 +44,7 @@ export const FrequencyGridView = ({
   }
 
   return (
-    <Box my="md">
+    <Box>
       <Box variant="gridContainer">
         {rows.map(row => (
           <Box key={row.optionId} variant="gridRow">

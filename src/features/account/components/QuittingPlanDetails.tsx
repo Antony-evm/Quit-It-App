@@ -25,7 +25,7 @@ export const QuittingPlanDetails: React.FC = () => {
   }
 
   return (
-    <Box gap="md">
+    <Box gap="md" mt="md">
       <IconTextCard
         icon={AimSvg}
         text={plan.status}

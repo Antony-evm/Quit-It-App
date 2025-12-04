@@ -168,8 +168,9 @@ const styles = StyleSheet.create({
     width: 44,
     height: 5,
     borderRadius: 2.5,
-    backgroundColor: SYSTEM.brand,
+    backgroundColor: BACKGROUND.cream,
     opacity: OPACITY.medium,
+    marginBottom: SPACING.sm,
   },
   headerContent: {
     paddingHorizontal: SPACING.lg,

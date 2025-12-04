@@ -30,6 +30,7 @@ const variantStyles = StyleSheet.create({
   filled: {
     backgroundColor: BACKGROUND.muted,
     paddingHorizontal: SPACING.zero,
+    paddingVertical: SPACING.zero,
   },
 });
 
