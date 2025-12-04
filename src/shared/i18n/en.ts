@@ -53,6 +53,10 @@ export default {
       error: 'Unable to load plan details',
       cigarettesPerDay: '{{count}} cigarettes per day',
       status: 'Status',
+      statusLabel: 'Goal',
+      dateLabel: 'When',
+      currentLabel: 'Starting Point',
+      targetLabel: 'Target Point',
     },
     common: {
       error: 'Something went wrong',

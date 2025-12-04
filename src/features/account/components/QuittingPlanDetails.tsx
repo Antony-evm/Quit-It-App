@@ -26,15 +26,29 @@ export const QuittingPlanDetails: React.FC = () => {
 
   return (
     <Box gap="md">
-      <IconTextCard icon={AimSvg} text={plan.status} />
-      <IconTextCard icon={CalendarSvg} text={formatPlanDate(plan.datetime)} />
+      <IconTextCard
+        icon={AimSvg}
+        text={plan.status}
+        label={t('plan.statusLabel')}
+        iconOpacity={0.6}
+      />
+      <IconTextCard
+        icon={CalendarSvg}
+        text={formatPlanDate(plan.datetime)}
+        label={t('plan.dateLabel')}
+        iconOpacity={0.6}
+      />
       <IconTextCard
         icon={StopSvg}
         text={t('plan.cigarettesPerDay', { count: plan.current })}
+        label={t('plan.currentLabel')}
+        iconOpacity={0.6}
       />
       <IconTextCard
         icon={GoalSvg}
         text={t('plan.cigarettesPerDay', { count: plan.target })}
+        label={t('plan.targetLabel')}
+        iconOpacity={0.6}
       />
     </Box>
   );
