@@ -8,12 +8,9 @@ import type {
   SelectedAnswerSubOption,
 } from '../types';
 import { AppText, Box } from '@/shared/components/ui';
-import { TEXT, SYSTEM } from '@/shared/theme';
+import { TEXT, SYSTEM, SPACING, BORDER_WIDTH } from '@/shared/theme';
 import { TimePeriodClock } from './TimePeriodClock';
 import { useFrequencyGrid } from '../hooks/useFrequencyGrid';
-
-const SLIDER_WIDTH = '90%';
-const SLIDER_HEIGHT = 40;
 
 export type FrequencyGridRowData = {
   optionId: number;
@@ -51,7 +48,7 @@ export const FrequencyGridView = ({
       <Box variant="gridContainer">
         {rows.map(row => (
           <Box key={row.optionId} variant="gridRow">
-            <Box flex={1} justifyContent="center" alignItems="center">
+            <Box justifyContent="center" alignItems="center" p="zero">
               <Box justifyContent="center" alignItems="center" gap="xs">
                 <TimePeriodClock
                   startHour={row.startHour}
@@ -70,7 +67,7 @@ export const FrequencyGridView = ({
                 step={1}
                 value={row.sliderValue}
                 minimumTrackTintColor={TEXT.primary}
-                maximumTrackTintColor={SYSTEM.border}
+                maximumTrackTintColor={SYSTEM.borderLight}
                 thumbTintColor={TEXT.primary}
                 onValueChange={value =>
                   onSliderChange(row.optionId, Math.round(value))
@@ -156,8 +153,8 @@ export const FrequencyGrid = ({
 
 const styles = StyleSheet.create({
   slider: {
-    width: SLIDER_WIDTH,
+    width: '90%',
     alignSelf: 'center',
-    height: SLIDER_HEIGHT,
+    height: SPACING.xl * 2,
   },
 });

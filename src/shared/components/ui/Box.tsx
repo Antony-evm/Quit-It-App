@@ -95,7 +95,6 @@ export const BOX_VARIANTS = {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.sm,
     gap: SPACING.md,
     borderBottomWidth: BORDER_WIDTH.sm,
     borderBottomColor: SYSTEM.border,
