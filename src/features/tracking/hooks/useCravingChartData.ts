@@ -16,8 +16,8 @@ type ChartData = {
   datasets: ChartDataset[];
 };
 
-const DAILY_RANGE_DAYS = 7;
-const WEEKLY_RANGE_WEEKS = 4;
+const DAILY_RANGE_DAYS = 12;
+const WEEKLY_RANGE_WEEKS = 12;
 
 export const useCravingChartData = (data: DailyCravingData[]) => {
   const [period, setPeriod] = useState<ChartPeriod>('daily');

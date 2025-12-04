@@ -141,17 +141,12 @@ export const CravingChart = memo(function CravingChart({
         </Box>
       </Box>
 
-      <Box
-        justifyContent="center"
-        alignItems="center"
-        bg="muted"
-        borderRadius="small"
-      >
+      <Box justifyContent="center" alignItems="center" borderRadius="small">
         {chartData.labels.length < 4 ? (
           <BarChart
             data={barChartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.35}
+            height={DEVICE_HEIGHT * 0.32}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
@@ -161,13 +156,14 @@ export const CravingChart = memo(function CravingChart({
             withHorizontalLabels={true}
             fromZero={true}
             showBarTops={false}
+            segments={4}
             flatColor={true}
           />
         ) : (
           <LineChart
             data={chartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.35}
+            height={DEVICE_HEIGHT * 0.32}
             chartConfig={chartConfig}
             bezier
             style={styles.chart}
