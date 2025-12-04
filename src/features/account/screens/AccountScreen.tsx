@@ -83,6 +83,11 @@ export const AccountScreen = () => {
     return t(SECTION_CONFIG[activeSection].translationKey);
   };
 
+  const getDrawerSubtitle = () => {
+    if (!activeSection) return '';
+    return t(SECTION_CONFIG[activeSection].descriptionKey);
+  };
+
   const getPrimaryAction = () => {
     if (
       activeSection === ACCOUNT_SECTIONS.TRIGGERS &&
@@ -137,6 +142,7 @@ export const AccountScreen = () => {
         visible={!!activeSection}
         onClose={handleClose}
         title={getDrawerTitle()}
+        subtitle={getDrawerSubtitle()}
         onPrimaryAction={getPrimaryAction()}
         primaryLabel={getPrimaryLabel()}
       >

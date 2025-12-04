@@ -14,6 +14,8 @@ export const AccountDetails = () => {
       <IconTextCard
         icon={EmailSvg}
         text={user?.email ?? t('account.emailPlaceholder')}
+        label={t('auth.emailPlaceholder')}
+        iconOpacity={0.6}
       />
     </Box>
   );

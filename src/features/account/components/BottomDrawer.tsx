@@ -13,6 +13,7 @@ type BottomDrawerProps = {
   visible: boolean;
   onClose: () => void;
   title: string;
+  subtitle?: string;
   children: React.ReactNode;
   onPrimaryAction?: () => void;
   primaryLabel?: string;
@@ -22,6 +23,7 @@ export const BottomDrawer = ({
   visible,
   onClose,
   title,
+  subtitle,
   children,
   onPrimaryAction,
   primaryLabel,
@@ -46,9 +48,16 @@ export const BottomDrawer = ({
       headerContent={headerContent}
     >
       <Box variant="drawerTitle">
-        <AppText variant="heading" tone="primary">
+        <AppText variant="title" tone="primary">
           {title}
         </AppText>
+        {subtitle && (
+          <Box mt="xs">
+            <AppText variant="caption" tone="muted">
+              {subtitle}
+            </AppText>
+          </Box>
+        )}
       </Box>
       <ScrollView style={{ flex: 1 }}>
         <Box p="lg">{children}</Box>

@@ -12,10 +12,14 @@ export const UserDetailsCard = () => {
       <IconTextCard
         icon={AccountSvg}
         text={user?.firstName ?? t('account.firstNamePlaceholder')}
+        label={t('auth.firstNamePlaceholder')}
+        iconOpacity={0.6}
       />
       <IconTextCard
         icon={AccountSvg}
         text={user?.lastName ?? t('account.lastNamePlaceholder')}
+        label={t('auth.lastNamePlaceholder')}
+        iconOpacity={0.6}
       />
     </Box>
   );
