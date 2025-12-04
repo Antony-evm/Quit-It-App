@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { AppText, Box, AppPressable, AppTag } from '@/shared/components/ui';
-import { BORDER_WIDTH } from '@/shared/theme';
+import { BACKGROUND, BORDER_WIDTH } from '@/shared/theme';
 
 export type TrackingRecordCardProps = {
   displayName: string;
@@ -9,6 +9,7 @@ export type TrackingRecordCardProps = {
   dateLabel: string;
   timeLabel: string;
   note: string | null;
+  index?: number;
   onPress?: () => void;
   accessibilityLabel?: string;
 };
@@ -20,15 +21,22 @@ export const TrackingRecordCard = React.memo(
     dateLabel,
     timeLabel,
     note,
+    index,
     onPress,
     accessibilityLabel,
   }: TrackingRecordCardProps) => {
+    const isAlternating = index !== undefined && index % 2 !== 0;
+    // Slightly lighter than primary background (#022C22) for separation
+
     return (
       <AppPressable
         variant="card"
         style={{
           borderLeftWidth: BORDER_WIDTH.lg,
           borderLeftColor: accentColor,
+          backgroundColor: isAlternating
+            ? BACKGROUND.primary
+            : BACKGROUND.pressed,
         }}
         onPress={onPress}
         accessibilityRole="button"
@@ -42,7 +50,8 @@ export const TrackingRecordCard = React.memo(
         <Box
           flexDirection="row"
           justifyContent="space-between"
-          alignItems="center"
+          alignItems="flex-start"
+          mb="sm"
         >
           <AppTag label={displayName} color={accentColor} size="small" />
           <Box alignItems="flex-end" gap="xs">
@@ -53,7 +62,7 @@ export const TrackingRecordCard = React.memo(
           </Box>
         </Box>
 
-        <Box variant="note">
+        <Box variant="note" mt="md">
           {note ? (
             <AppText>{note}</AppText>
           ) : (

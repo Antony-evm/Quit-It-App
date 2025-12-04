@@ -115,13 +115,14 @@ export const TrackingRecordsList = React.memo(
     );
 
     const renderItem: ListRenderItem<TransformedRecord> = useCallback(
-      ({ item }) => (
+      ({ item, index }) => (
         <TrackingRecordCard
           displayName={item.displayName}
           accentColor={item.accentColor}
           dateLabel={item.dateLabel}
           timeLabel={item.timeLabel}
           note={item.record.note}
+          index={index}
           onPress={onRecordPress ? () => onRecordPress(item.record) : undefined}
         />
       ),
@@ -143,7 +144,7 @@ export const TrackingRecordsList = React.memo(
       }
 
       return (
-        <Box py="lg" alignItems="flex-start" mt="md" gap="md">
+        <Box py="lg" alignItems="flex-start" gap="md">
           <Box flexDirection="row" alignItems="flex-start" mb="md">
             <AppText variant="body">
               Your notes help you understand your habits. Start with just one.

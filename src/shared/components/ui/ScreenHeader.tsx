@@ -25,7 +25,7 @@ type VariantConfig = {
 
 const VARIANTS: Record<ScreenHeaderVariant, VariantConfig> = {
   default: {
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.xl,
     align: 'left',
     gap: 'md',
   },

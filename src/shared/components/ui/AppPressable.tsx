@@ -100,8 +100,7 @@ const variantStyles = StyleSheet.create({
     padding: SPACING.xl,
     borderWidth: BORDER_WIDTH.sm,
     borderColor: SYSTEM.border,
-    ...SHADOWS.softLg,
-    elevation: 2,
+    ...SHADOWS.sm,
   },
   toast: {
     paddingHorizontal: SPACING.lg,
