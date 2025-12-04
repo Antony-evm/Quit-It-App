@@ -118,7 +118,10 @@ export const AccountScreen = () => {
   return (
     <Box variant="default">
       <ScrollView>
-        <ScreenHeader title={t('account.title')} />
+        <ScreenHeader
+          title={t('account.title')}
+          subtitle={t('account.subtitle')}
+        />
 
         {SECTION_ORDER.map(sectionKey => (
           <AccountSectionItem

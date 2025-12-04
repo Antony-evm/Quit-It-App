@@ -25,6 +25,7 @@ export default {
     },
     account: {
       title: 'Your Quit It Profile',
+      subtitle: 'Everything you need to stay on track.',
       sections: {
         details: 'Your Details',
         plan: 'Your Plan',
