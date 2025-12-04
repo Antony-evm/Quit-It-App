@@ -33,6 +33,8 @@ export default {
         habits: 'Your Habits',
       },
       emailPlaceholder: 'Not available',
+      firstNamePlaceholder: 'Not available',
+      lastNamePlaceholder: 'Not available',
       frequency: {
         loading: 'Loading frequency data...',
         error: 'Unable to load frequency data',
