@@ -71,7 +71,10 @@ export const useAuthProvider = (): UseAuthProviderResult => {
    * Login with email and password
    */
   const login = useCallback(
-    async (email: string, password: string): Promise<{ userStatusId: number }> => {
+    async (
+      email: string,
+      password: string,
+    ): Promise<{ userStatusId: number }> => {
       try {
         const result = await AuthService.login(stytch, email, password);
 

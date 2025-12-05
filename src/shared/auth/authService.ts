@@ -58,7 +58,10 @@ export class AuthService {
       await stytchClient.session.revoke();
     } catch (stytchError) {
       // Continue with local logout even if Stytch revocation fails
-      console.warn('[AuthService] Stytch session revocation failed:', stytchError);
+      console.warn(
+        '[AuthService] Stytch session revocation failed:',
+        stytchError,
+      );
     }
     await this.clearAuth();
   }

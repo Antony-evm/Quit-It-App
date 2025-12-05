@@ -1,4 +1,8 @@
-import { UserStatus, UserStatusMap, UserStatusAction } from '@/shared/types/userStatus';
+import {
+  UserStatus,
+  UserStatusMap,
+  UserStatusAction,
+} from '@/shared/types/userStatus';
 import { getStatusAction } from '@/shared/utils/statusActionConfig';
 
 /**

@@ -12,7 +12,10 @@ export class UserStatusNavigator {
    */
   static executeAction(
     action: UserStatusAction,
-    navigation: NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>,
+    navigation: NativeStackNavigationProp<
+      RootStackParamList,
+      keyof RootStackParamList
+    >,
   ): void {
     switch (action.type) {
       case USER_STATUS_ACTIONS.NAVIGATE_TO_QUESTIONNAIRE:

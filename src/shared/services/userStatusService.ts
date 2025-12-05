@@ -92,7 +92,10 @@ export class UserStatusService {
    */
   static executeStatusAction(
     statusId: number,
-    navigation: NativeStackNavigationProp<RootStackParamList, keyof RootStackParamList>,
+    navigation: NativeStackNavigationProp<
+      RootStackParamList,
+      keyof RootStackParamList
+    >,
   ): void {
     const action = this.getStatusAction(statusId);
     const status = this.getStatus(statusId);
