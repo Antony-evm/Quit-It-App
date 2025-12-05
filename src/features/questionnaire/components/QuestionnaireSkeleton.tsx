@@ -8,8 +8,8 @@ export const SkeletonItem = ({
   height,
   style,
 }: {
-  width: number | string;
-  height: number | string;
+  width: number | `${number}%`;
+  height: number | `${number}%`;
   style?: StyleProp<ViewStyle>;
 }) => {
   const opacity = useRef(new Animated.Value(0.3)).current;
