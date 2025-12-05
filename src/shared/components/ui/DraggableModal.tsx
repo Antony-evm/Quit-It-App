@@ -10,7 +10,13 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { SPACING, BACKGROUND, SYSTEM, OPACITY, ANIMATION } from '@/shared/theme';
+import {
+  SPACING,
+  BACKGROUND,
+  SYSTEM,
+  OPACITY,
+  ANIMATION,
+} from '@/shared/theme';
 
 // React Native exposes requestIdleCallback globally
 declare const requestIdleCallback: (callback: () => void) => number;

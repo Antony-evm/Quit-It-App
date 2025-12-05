@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, StyleSheet } from 'react-native';
+import { Animated, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { AppCard, Box } from '@/shared/components/ui';
 import { SYSTEM, SPACING, BORDER_WIDTH } from '@/shared/theme';
 
@@ -10,7 +10,7 @@ export const SkeletonItem = ({
 }: {
   width: number | string;
   height: number | string;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }) => {
   const opacity = useRef(new Animated.Value(0.3)).current;
 

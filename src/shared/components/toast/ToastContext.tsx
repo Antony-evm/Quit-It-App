@@ -40,7 +40,10 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const showToast = useCallback(
     (message: string, type: ToastType, duration = DEFAULT_TOAST_DURATION) => {
       const id =
-        Date.now().toString() + Math.random().toString(36).substr(ID_SUBSTRING_START, ID_SUBSTRING_LENGTH);
+        Date.now().toString() +
+        Math.random()
+          .toString(36)
+          .substr(ID_SUBSTRING_START, ID_SUBSTRING_LENGTH);
       const newToast: Toast = {
         id,
         message,

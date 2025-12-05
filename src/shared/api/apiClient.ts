@@ -1,8 +1,6 @@
-import AuthService from '../auth/authService';
-import { clearAuthState, getTokens, setTokens } from '../auth/authState';
-import { AuthTokens } from '../auth/types';
-import { parseApiErrorResponse, isErrorResponse } from './apiErrorHandler';
-import { resetNavigation } from '@/navigation/navigationRef';
+import { AuthInterceptor } from './interceptors/AuthInterceptor';
+import { ErrorInterceptor } from './interceptors/ErrorInterceptor';
+import { getTokens } from '../auth/authState';
 
 /**
  * Configuration for authenticated API requests
@@ -34,7 +32,7 @@ type ResponseInterceptor = (
 /**
  * Error interceptor function
  */
-type ErrorInterceptor = (
+type ApiErrorInterceptor = (
   error: Error,
   url: string,
   config: ApiRequestConfig,
@@ -43,12 +41,7 @@ type ErrorInterceptor = (
 class ApiClient {
   private requestInterceptors: RequestInterceptor[] = [];
   private responseInterceptors: ResponseInterceptor[] = [];
-  private errorInterceptors: ErrorInterceptor[] = [];
-  private toastFunction?: (
-    message: string,
-    type: 'success' | 'error',
-    duration?: number,
-  ) => void;
+  private errorInterceptors: ApiErrorInterceptor[] = [];
 
   constructor() {
     this.setupDefaultInterceptors();
@@ -63,101 +56,29 @@ class ApiClient {
       type: 'success' | 'error',
       duration?: number,
     ) => void,
-  ) {
-    this.toastFunction = toastFunction;
+  ): void {
+    ErrorInterceptor.setToastFunction(toastFunction);
   }
 
-  private setupDefaultInterceptors() {
-    // Default request interceptor for headers and auth
-    this.addRequestInterceptor(async (url, config) => {
-      const { headers = {}, requiresAuth = true, ...restConfig } = config;
+  private setupDefaultInterceptors(): void {
+    // Use AuthInterceptor for request and response handling
+    this.addRequestInterceptor(AuthInterceptor.handleRequest);
+    this.addResponseInterceptor(AuthInterceptor.handleResponse);
 
-      // Prepare headers
-      const requestHeaders = new Headers(headers);
-
-      // Set default content type if not provided
-      if (!requestHeaders.get('Content-Type')) {
-        requestHeaders.set('Content-Type', 'application/json');
-      }
-
-      // Add authentication token if required
-      if (requiresAuth) {
-        const tokens = getTokens();
-
-        if (tokens) {
-          // Always send JWT token as Authorization Bearer
-          const authHeader = `Bearer ${tokens.sessionJwt}`;
-          requestHeaders.set('Authorization', authHeader);
-
-          // Always send session token as X-Session-Token header
-          requestHeaders.set('X-Session-Token', tokens.sessionToken);
-          requestHeaders.set('X-User-ID', tokens.userId);
-        }
-      }
-
-      return {
-        url,
-        config: {
-          ...restConfig,
-          headers: requestHeaders,
-        },
-      };
-    });
-
-    // Token refresh interceptor - check for new tokens in response headers
-    this.addResponseInterceptor(async (response, url, config) => {
-      const sessionToken = response.headers.get('X-Session-Token');
-      const sessionJwt = response.headers.get('X-Session-JWT');
-
-      if (sessionToken || sessionJwt) {
-        const currentTokens = getTokens();
-        if (currentTokens) {
-          const updatedTokens: AuthTokens = {
-            ...currentTokens,
-            ...(sessionToken && { sessionToken }),
-            ...(sessionJwt && { sessionJwt }),
-          };
-
-          await AuthService.storeTokens(updatedTokens);
-          setTokens(updatedTokens);
-        }
-      }
-
-      return response;
-    });
-
-    // Default response error interceptor
-    this.addResponseInterceptor(async (response, url, config) => {
-      if (isErrorResponse(response) && !config.skipErrorHandler) {
-        const error = await parseApiErrorResponse(response.clone());
-
-        if (this.toastFunction) {
-          this.toastFunction(error.message, 'error', 4000);
-        }
-        if (response.status === 401) {
-          await AuthService.clearAuth();
-          clearAuthState();
-          resetNavigation('Auth', { mode: 'login' });
-        }
-      }
-
-      return response;
-    });
-
-    this.addErrorInterceptor((error, url, config) => {
-      throw error;
-    });
+    // Use ErrorInterceptor for error response handling
+    this.addResponseInterceptor(ErrorInterceptor.handleResponse);
+    this.addErrorInterceptor(ErrorInterceptor.handleError);
   }
 
-  addRequestInterceptor(interceptor: RequestInterceptor) {
+  addRequestInterceptor(interceptor: RequestInterceptor): void {
     this.requestInterceptors.push(interceptor);
   }
 
-  addResponseInterceptor(interceptor: ResponseInterceptor) {
+  addResponseInterceptor(interceptor: ResponseInterceptor): void {
     this.responseInterceptors.push(interceptor);
   }
 
-  addErrorInterceptor(interceptor: ErrorInterceptor) {
+  addErrorInterceptor(interceptor: ApiErrorInterceptor): void {
     this.errorInterceptors.push(interceptor);
   }
 
@@ -186,15 +107,6 @@ class ApiClient {
 
       return response;
     } catch (error) {
-      // Show toast for any error that occurs (network, auth, etc.)
-      if (this.toastFunction && !config.skipErrorHandler) {
-        const message =
-          error instanceof Error
-            ? error.message
-            : 'An error occurred. Please try again.';
-        this.toastFunction(message, 'error', 4000);
-      }
-
       // Apply error interceptors
       for (const interceptor of this.errorInterceptors) {
         interceptor(error as Error, url, config);
@@ -237,9 +149,9 @@ export async function apiGet(
 /**
  * Convenience function for making authenticated POST requests
  */
-export async function apiPost(
+export async function apiPost<TData = unknown>(
   url: string,
-  data?: any,
+  data?: TData,
   config: Omit<ApiRequestConfig, 'method' | 'body'> = {},
 ): Promise<Response> {
   return apiFetch(url, {
@@ -252,9 +164,9 @@ export async function apiPost(
 /**
  * Convenience function for making authenticated PUT requests
  */
-export async function apiPut(
+export async function apiPut<TData = unknown>(
   url: string,
-  data?: any,
+  data?: TData,
   config: Omit<ApiRequestConfig, 'method' | 'body'> = {},
 ): Promise<Response> {
   return apiFetch(url, {
@@ -299,9 +211,9 @@ export async function publicGet(
 /**
  * Convenience function for making public POST requests (no authentication)
  */
-export async function publicPost(
+export async function publicPost<TData = unknown>(
   url: string,
-  data?: any,
+  data?: TData,
   config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
 ): Promise<Response> {
   return apiFetch(url, {
@@ -315,9 +227,9 @@ export async function publicPost(
 /**
  * Convenience function for making public PUT requests (no authentication)
  */
-export async function publicPut(
+export async function publicPut<TData = unknown>(
   url: string,
-  data?: any,
+  data?: TData,
   config: Omit<ApiRequestConfig, 'method' | 'body' | 'requiresAuth'> = {},
 ): Promise<Response> {
   return apiFetch(url, {
