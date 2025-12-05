@@ -12,6 +12,7 @@ import { TRACKING_RECORDS_PAGE_SIZE } from '../constants';
 
 export type UseInfiniteTrackingRecordsOptions = {
   enabled?: boolean;
+  totalRecordsCount?: number;
 };
 
 const placeholderData: InfiniteData<TrackingRecordApiResponse[]> = {
@@ -22,7 +23,7 @@ const placeholderData: InfiniteData<TrackingRecordApiResponse[]> = {
 export const useInfiniteTrackingRecords = (
   options: UseInfiniteTrackingRecordsOptions = {},
 ) => {
-  const { enabled = true } = options;
+  const { enabled = true, totalRecordsCount } = options;
   const queryClient = useQueryClient();
 
   const queryKey = ['trackingRecords', 'infinite'];
@@ -59,8 +60,7 @@ export const useInfiniteTrackingRecords = (
     gcTime: Infinity, // Keep in cache indefinitely
     placeholderData,
     getNextPageParam: (lastPage, allPages) => {
-      // If the last page has fewer items than the page size, we've reached the end
-      if (!lastPage || lastPage.length < TRACKING_RECORDS_PAGE_SIZE) {
+      if (!lastPage) {
         return undefined;
       }
 
@@ -69,6 +69,15 @@ export const useInfiniteTrackingRecords = (
 
       // Calculate next offset for pagination
       const nextOffset = Math.floor(totalRecords / TRACKING_RECORDS_PAGE_SIZE);
+
+      // Check if there are more records to fetch based on totalRecordsCount
+      if (totalRecordsCount !== undefined && totalRecordsCount > 0) {
+        // If we've fetched all records, no more pages
+        if (totalRecords >= totalRecordsCount) {
+          return undefined;
+        }
+      }
+
       return nextOffset;
     },
     initialPageParam: 0,

@@ -12,13 +12,13 @@ import { formatRelativeDate } from '@/utils/dateUtils';
 import ChevronRight from '@/assets/chevronRight.svg';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
 import { useCravingAnalytics } from '../hooks/useCravingAnalytics';
+import { useSmokingAnalytics } from '../hooks/useSmokingAnalytics';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
 import { TrackingRecordCardSkeleton } from './TrackingRecordCardSkeleton';
 import { getTrackingTypeColors } from '../constants';
 import type { TrackingType } from '../types';
-import { SPACING } from '@/shared/theme/spacing';
 
 // ============================================================================
 // Types
@@ -145,32 +145,28 @@ export const TrackingRecordsList = React.memo(
           />
         );
       }
+      if (totalRecordsCount !== undefined && totalRecordsCount === 0) {
+        return (
+          <Box alignItems="flex-start">
+            <Box flexDirection="row" alignItems="flex-start" mb="md">
+              <AppText variant="body">
+                Your notes help you understand your habits. Start with just one.
+                Your future you will thank you.
+              </AppText>
+            </Box>
 
-      // Only show empty state if we truly have no records at all
-      if (totalRecordsCount !== undefined && totalRecordsCount > 0) {
-        return null;
-      }
-
-      return (
-        <Box alignItems="flex-start">
-          <Box flexDirection="row" alignItems="flex-start" mb="md">
-            <AppText variant="body">
-              Your notes help you understand your habits. Start with just one.
-              Your future you will thank you.
-            </AppText>
+            <AppPressable
+              onPress={onCreatePress}
+              variant="callToAction"
+              style={{ width: '60%' }}
+            >
+              <AppText variant="caption">Write your first note</AppText>
+              <AppIcon icon={ChevronRight} variant="small" />
+            </AppPressable>
           </Box>
-
-          <AppPressable
-            onPress={onCreatePress}
-            variant="callToAction"
-            style={{ width: '60%' }}
-          >
-            <AppText variant="caption">Write your first note</AppText>
-            <AppIcon icon={ChevronRight} variant="small" />
-          </AppPressable>
-        </Box>
-      );
-    }, [isLoading, isError, errorMessage, onCreatePress, totalRecordsCount]);
+        );
+      }
+    }, [isLoading, isError, errorMessage, onCreatePress]);
 
     const ListFooterComponent = useCallback(() => {
       if (isFetchingNextPage) {
@@ -183,7 +179,7 @@ export const TrackingRecordsList = React.memo(
         );
       }
 
-      if (hasNextPage && records.length > 0) {
+      if (totalRecordsCount != undefined && totalRecordsCount > 0) {
         return (
           <Box alignItems="center" py="md">
             <AppPressable
@@ -191,7 +187,7 @@ export const TrackingRecordsList = React.memo(
               accessibilityRole="button"
               accessibilityLabel="Load more records"
             >
-              <AppText variant="body" tone="primary">
+              <AppText variant="body" tone="primary" link>
                 Load More
               </AppText>
             </AppPressable>
@@ -200,7 +196,7 @@ export const TrackingRecordsList = React.memo(
       }
 
       return null;
-    }, [isFetchingNextPage, hasNextPage, records.length, onLoadMore]);
+    }, [isFetchingNextPage, totalRecordsCount, onLoadMore]);
 
     return (
       <FlatList
@@ -240,6 +236,18 @@ export const TrackingRecordsListContainer = React.memo(
     ListHeaderComponent,
     contentContainerStyle,
   }: TrackingRecordsListContainerProps) => {
+    const { data: cravingAnalytics, isLoading: isCravingAnalyticsLoading } =
+      useCravingAnalytics();
+    const { data: smokingAnalytics, isLoading: isSmokingAnalyticsLoading } =
+      useSmokingAnalytics();
+
+    // Calculate total records from both cravings and smokes
+    const totalRecordsCount = useMemo(() => {
+      const cravingCount = cravingAnalytics?.total_cravings ?? 0;
+      const smokeCount = smokingAnalytics?.total_smokes ?? 0;
+      return cravingCount + smokeCount;
+    }, [cravingAnalytics?.total_cravings, smokingAnalytics?.total_smokes]);
+
     const {
       flatRecords: trackingRecords,
       isLoading,
@@ -250,14 +258,14 @@ export const TrackingRecordsListContainer = React.memo(
       fetchNextPage,
       isFetchingNextPage,
       hasNextPage,
-    } = useInfiniteTrackingRecords();
-
-    const { data: cravingAnalytics, isLoading: isAnalyticsLoading } =
-      useCravingAnalytics();
+    } = useInfiniteTrackingRecords({ totalRecordsCount });
 
     // Show loading skeleton when initially fetching with placeholder data or analytics
     const showSkeleton =
-      isLoading || (isFetching && isPlaceholderData) || isAnalyticsLoading;
+      isLoading ||
+      (isFetching && isPlaceholderData) ||
+      isCravingAnalyticsLoading ||
+      isSmokingAnalyticsLoading;
 
     const { data: trackingTypes } = useTrackingTypes();
 
@@ -292,7 +300,7 @@ export const TrackingRecordsListContainer = React.memo(
         onCreatePress={onCreatePress}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={contentContainerStyle}
-        totalRecordsCount={cravingAnalytics?.total_cravings}
+        totalRecordsCount={totalRecordsCount}
       />
     );
   },
