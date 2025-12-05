@@ -35,7 +35,7 @@ export const useAppDateTimePicker = ({
   const [androidMode, setAndroidMode] = useState<'date' | 'time'>('date');
 
   // Determine the effective mode for the picker component
-  const pickerMode: any =
+  const pickerMode: 'date' | 'time' | 'datetime' =
     Platform.OS === 'android' && mode === 'datetime'
       ? androidMode
       : mode === 'datetime'

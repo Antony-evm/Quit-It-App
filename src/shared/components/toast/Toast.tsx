@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Toast as ToastType, useToast } from './ToastContext';
-import { BACKGROUND, TEXT, SYSTEM, SPACING } from '@/shared/theme';
+import { BACKGROUND, TEXT, SYSTEM, SPACING, ANIMATION } from '@/shared/theme';
 import { AppPressable } from '../ui';
+
+// Constants for magic numbers
+const TOAST_INITIAL_OFFSET = -100;
 
 interface ToastItemProps {
   toast: ToastType;
@@ -13,19 +16,19 @@ interface ToastItemProps {
 const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
   const { hideToast } = useToast();
   const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(-100)).current;
+  const slideAnim = useRef(new Animated.Value(TOAST_INITIAL_OFFSET)).current;
 
   useEffect(() => {
     // Animate in
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
-        duration: 300,
+        duration: ANIMATION.medium,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
-        duration: 300,
+        duration: ANIMATION.medium,
         useNativeDriver: true,
       }),
     ]).start();
@@ -35,12 +38,12 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast }) => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 0,
-        duration: 200,
+        duration: ANIMATION.short,
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
-        toValue: -100,
-        duration: 200,
+        toValue: TOAST_INITIAL_OFFSET,
+        duration: ANIMATION.short,
         useNativeDriver: true,
       }),
     ]).start(() => {

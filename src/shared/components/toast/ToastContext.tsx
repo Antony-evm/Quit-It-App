@@ -7,6 +7,11 @@ import React, {
   ReactNode,
 } from 'react';
 
+// Constants for magic numbers
+const DEFAULT_TOAST_DURATION = 3000;
+const ID_SUBSTRING_START = 2;
+const ID_SUBSTRING_LENGTH = 9;
+
 export type ToastType = 'success' | 'error';
 
 export interface Toast {
@@ -33,9 +38,9 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback(
-    (message: string, type: ToastType, duration = 3000) => {
+    (message: string, type: ToastType, duration = DEFAULT_TOAST_DURATION) => {
       const id =
-        Date.now().toString() + Math.random().toString(36).substr(2, 9);
+        Date.now().toString() + Math.random().toString(36).substr(ID_SUBSTRING_START, ID_SUBSTRING_LENGTH);
       const newToast: Toast = {
         id,
         message,

@@ -1,6 +1,7 @@
 import { readStoredTokens, readStoredUserData } from './authStorage';
 import { AuthTokens, UserData } from './types';
 import { UserStatusService } from '@/shared/services/userStatusService';
+import { StytchClient } from '@stytch/react-native';
 
 export interface BootstrapAuthResult {
   tokens: AuthTokens | null;
@@ -14,7 +15,7 @@ export interface BootstrapAuthResult {
  * Intended to be called once on startup.
  */
 export async function bootstrapAuthState(
-  stytchClient: any,
+  stytchClient: StytchClient,
 ): Promise<BootstrapAuthResult> {
   console.log('[AuthBootstrap] Starting bootstrap');
   const [tokens, user] = await Promise.all([
@@ -53,7 +54,6 @@ export async function bootstrapAuthState(
   try {
     console.log('[AuthBootstrap] Validating session with Stytch...');
     const sessionResponse = await stytchClient.session.authenticate({
-      session_token: tokens.sessionToken,
       session_duration_minutes: 600,
     });
     console.log(

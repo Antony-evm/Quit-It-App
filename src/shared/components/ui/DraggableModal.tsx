@@ -10,11 +10,20 @@ import {
   StyleProp,
   ViewStyle,
 } from 'react-native';
-import { SPACING, BACKGROUND, SYSTEM, OPACITY } from '@/shared/theme';
+import { SPACING, BACKGROUND, SYSTEM, OPACITY, ANIMATION } from '@/shared/theme';
 
 // React Native exposes requestIdleCallback globally
 declare const requestIdleCallback: (callback: () => void) => number;
 declare const cancelIdleCallback: (id: number) => void;
+
+// Constants for magic numbers
+const SWIPE_DISMISS_THRESHOLD = 100;
+const MODAL_BORDER_RADIUS = 20;
+const MODAL_HEIGHT_PERCENTAGE = '85%';
+const DRAG_INDICATOR_WIDTH = 44;
+const DRAG_INDICATOR_HEIGHT = 5;
+const DRAG_INDICATOR_BORDER_RADIUS = 2.5;
+const GESTURE_MOVEMENT_THRESHOLD = 5;
 
 type DraggableModalProps = {
   visible: boolean;
@@ -41,7 +50,7 @@ export const DraggableModal = ({
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dy) > 5;
+        return Math.abs(gestureState.dy) > GESTURE_MOVEMENT_THRESHOLD;
       },
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dy > 0) {
@@ -49,12 +58,12 @@ export const DraggableModal = ({
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dy > 100) {
+        if (gestureState.dy > SWIPE_DISMISS_THRESHOLD) {
           onClose();
         } else {
           Animated.timing(panY, {
             toValue: 0,
-            duration: 200,
+            duration: ANIMATION.short,
             useNativeDriver: true,
           }).start();
         }
@@ -73,7 +82,7 @@ export const DraggableModal = ({
         }),
         Animated.timing(backdropOpacity, {
           toValue: OPACITY.medium,
-          duration: 300,
+          duration: ANIMATION.medium,
           useNativeDriver: true,
         }),
       ]).start();
@@ -87,12 +96,12 @@ export const DraggableModal = ({
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: screenHeight,
-          duration: 300,
+          duration: ANIMATION.medium,
           useNativeDriver: true,
         }),
         Animated.timing(backdropOpacity, {
           toValue: 0,
-          duration: 300,
+          duration: ANIMATION.medium,
           useNativeDriver: true,
         }),
       ]).start(() => {
@@ -146,9 +155,9 @@ const styles = StyleSheet.create({
   },
   drawer: {
     backgroundColor: BACKGROUND.muted,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    height: '85%',
+    borderTopLeftRadius: MODAL_BORDER_RADIUS,
+    borderTopRightRadius: MODAL_BORDER_RADIUS,
+    height: MODAL_HEIGHT_PERCENTAGE,
     overflow: 'hidden',
     zIndex: 2,
   },
@@ -165,9 +174,9 @@ const styles = StyleSheet.create({
     paddingBottom: SPACING.sm,
   },
   indicator: {
-    width: 44,
-    height: 5,
-    borderRadius: 2.5,
+    width: DRAG_INDICATOR_WIDTH,
+    height: DRAG_INDICATOR_HEIGHT,
+    borderRadius: DRAG_INDICATOR_BORDER_RADIUS,
     backgroundColor: BACKGROUND.cream,
     opacity: OPACITY.medium,
     marginBottom: SPACING.sm,

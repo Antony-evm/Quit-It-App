@@ -7,3 +7,4 @@ export * from './shadows';
 export * from './borderWidth';
 export * from './iconSizes';
 export * from './opacity';
+export * from './animation';

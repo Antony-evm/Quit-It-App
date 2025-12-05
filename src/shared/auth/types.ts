@@ -12,5 +12,4 @@ export interface UserData {
   name?: string;
   firstName?: string | null; // Individual first name field
   lastName?: string | null; // Individual last name field
-  [key: string]: any;
 }
