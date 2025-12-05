@@ -18,6 +18,9 @@ import {
 import { DailyCravingData } from '@/features/tracking';
 import { useCravingChartData } from '../hooks/useCravingChartData';
 
+// Constants
+const CHART_HEIGHT_RATIO = 0.35;
+
 type CravingChartProps = {
   data: DailyCravingData[];
   style?: StyleProp<ViewStyle>;
@@ -155,7 +158,7 @@ export const CravingChart = memo(function CravingChart({
           <BarChart
             data={barChartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.35}
+            height={DEVICE_HEIGHT * CHART_HEIGHT_RATIO}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
@@ -172,7 +175,7 @@ export const CravingChart = memo(function CravingChart({
           <LineChart
             data={chartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * 0.35}
+            height={DEVICE_HEIGHT * CHART_HEIGHT_RATIO}
             chartConfig={chartConfig}
             bezier
             style={styles.chart}

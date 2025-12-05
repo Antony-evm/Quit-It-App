@@ -8,6 +8,7 @@ import {
   AppPressable,
   AppIcon,
 } from '@/shared/components/ui';
+import { SPACING } from '@/shared/theme';
 import { formatRelativeDate } from '@/utils/dateUtils';
 import ChevronRight from '@/assets/chevronRight.svg';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
@@ -113,7 +114,7 @@ export const TrackingRecordsList = React.memo(
     totalRecordsCount,
   }: TrackingRecordsListProps) => {
     const renderItemSeparator = useCallback(
-      () => <Box style={{ height: 16 }} />,
+      () => <Box style={{ height: SPACING.md }} />,
       [],
     );
 

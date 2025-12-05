@@ -18,18 +18,21 @@ import {
   DEVICE_HEIGHT,
 } from '../../theme';
 
-type InputVariant = 'primary' | 'ghost' | 'secondary';
+export type InputVariant = 'primary' | 'secondary' | 'ghost';
 
 export type AppTextInputProps = TextInputProps & {
   hasError?: boolean;
   variant?: InputVariant;
 };
 
+// Constants
+const MULTILINE_INPUT_HEIGHT_RATIO = 0.15;
+
 const VARIANT_STYLES: Record<InputVariant, StyleProp<TextStyle>> = {
   primary: { backgroundColor: BACKGROUND.primary },
   secondary: {
     backgroundColor: BACKGROUND.muted,
-    minHeight: DEVICE_HEIGHT * 0.15,
+    minHeight: DEVICE_HEIGHT * MULTILINE_INPUT_HEIGHT_RATIO,
   },
   ghost: { borderWidth: BORDER_WIDTH.none, backgroundColor: 'transparent' },
 };

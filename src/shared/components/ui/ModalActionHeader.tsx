@@ -9,6 +9,9 @@ import { AppText } from './AppText';
 import { Box } from './Box';
 import { TEXT } from '../../theme';
 
+// Constants
+const ICON_HIT_SLOP = 10;
+
 type ModalActionHeaderProps = {
   onClose: () => void;
   onPrimaryAction?: () => void;
@@ -37,7 +40,7 @@ export const ModalActionHeader = ({
       alignItems="center"
       style={[styles.container, style]}
     >
-      <AppPressable onPress={onClose} variant="icon" hitSlop={10}>
+      <AppPressable onPress={onClose} variant="icon" hitSlop={ICON_HIT_SLOP}>
         <AppIcon icon={CancelIcon} />
       </AppPressable>
 
@@ -48,7 +51,11 @@ export const ModalActionHeader = ({
       )}
 
       {showPrimaryAction ? (
-        <AppPressable onPress={onPrimaryAction} variant="icon" hitSlop={10}>
+        <AppPressable
+          onPress={onPrimaryAction}
+          variant="icon"
+          hitSlop={ICON_HIT_SLOP}
+        >
           {primaryIcon ? (
             <AppIcon icon={primaryIcon} />
           ) : (
