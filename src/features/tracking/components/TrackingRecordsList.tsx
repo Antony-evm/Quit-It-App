@@ -9,9 +9,9 @@ import {
   AppIcon,
 } from '@/shared/components/ui';
 import { formatRelativeDate } from '@/utils/dateUtils';
-import PenIcon from '@/assets/pen.svg';
 import ChevronRight from '@/assets/chevronRight.svg';
 import { useInfiniteTrackingRecords } from '../hooks/useInfiniteTrackingRecords';
+import { useCravingAnalytics } from '../hooks/useCravingAnalytics';
 import { useTrackingTypes } from '../hooks/useTrackingTypes';
 import { TrackingRecordApiResponse } from '../api/fetchTrackingRecords';
 import { TrackingRecordCard } from './TrackingRecordCard';
@@ -56,6 +56,8 @@ export type TrackingRecordsListProps = {
   ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
   /** Optional content container style */
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /** Total number of records across all pages */
+  totalRecordsCount?: number;
 };
 
 // ============================================================================
@@ -108,6 +110,7 @@ export const TrackingRecordsList = React.memo(
     onCreatePress,
     ListHeaderComponent,
     contentContainerStyle,
+    totalRecordsCount,
   }: TrackingRecordsListProps) => {
     const renderItemSeparator = useCallback(
       () => <Box style={{ height: 16 }} />,
@@ -143,6 +146,11 @@ export const TrackingRecordsList = React.memo(
         );
       }
 
+      // Only show empty state if we truly have no records at all
+      if (totalRecordsCount !== undefined && totalRecordsCount > 0) {
+        return null;
+      }
+
       return (
         <Box alignItems="flex-start">
           <Box flexDirection="row" alignItems="flex-start" mb="md">
@@ -162,7 +170,7 @@ export const TrackingRecordsList = React.memo(
           </AppPressable>
         </Box>
       );
-    }, [isLoading, isError, errorMessage, onCreatePress]);
+    }, [isLoading, isError, errorMessage, onCreatePress, totalRecordsCount]);
 
     const ListFooterComponent = useCallback(() => {
       if (isFetchingNextPage) {
@@ -244,8 +252,12 @@ export const TrackingRecordsListContainer = React.memo(
       hasNextPage,
     } = useInfiniteTrackingRecords();
 
-    // Show loading skeleton when initially fetching with placeholder data
-    const showSkeleton = isLoading || (isFetching && isPlaceholderData);
+    const { data: cravingAnalytics, isLoading: isAnalyticsLoading } =
+      useCravingAnalytics();
+
+    // Show loading skeleton when initially fetching with placeholder data or analytics
+    const showSkeleton =
+      isLoading || (isFetching && isPlaceholderData) || isAnalyticsLoading;
 
     const { data: trackingTypes } = useTrackingTypes();
 
@@ -280,6 +292,7 @@ export const TrackingRecordsListContainer = React.memo(
         onCreatePress={onCreatePress}
         ListHeaderComponent={ListHeaderComponent}
         contentContainerStyle={contentContainerStyle}
+        totalRecordsCount={cravingAnalytics?.total_cravings}
       />
     );
   },

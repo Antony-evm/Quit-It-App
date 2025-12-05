@@ -134,15 +134,6 @@ export const useNotesCardController = ({
     setSelectedTrackingTypeId(trackingTypeId);
   }, []);
 
-  const invalidateAnalyticsQueries = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ['cravingAnalytics'],
-    });
-    queryClient.invalidateQueries({
-      queryKey: ['smokingAnalytics'],
-    });
-  }, [queryClient]);
-
   const resetForm = useCallback(() => {
     setNotes('');
     setSelectedDateTime(new Date());
@@ -190,7 +181,6 @@ export const useNotesCardController = ({
       onSuccess: () => {
         options.onSuccess?.();
         showToast(options.successMessage, 'success');
-        invalidateAnalyticsQueries();
       },
       onError: (error: Error) => {
         options.onRollback?.();
@@ -200,7 +190,7 @@ export const useNotesCardController = ({
         );
       },
     }),
-    [showToast, invalidateAnalyticsQueries],
+    [showToast],
   );
 
   const hasFormChanged = useCallback(() => {
@@ -223,7 +213,6 @@ export const useNotesCardController = ({
         resetForm();
         onSaveSuccess?.();
         showToast('Your tracking entry has been saved!', 'success');
-        invalidateAnalyticsQueries();
       },
       onError: (error: Error) => {
         showToast(
@@ -241,7 +230,6 @@ export const useNotesCardController = ({
     resetForm,
     onSaveSuccess,
     showToast,
-    invalidateAnalyticsQueries,
   ]);
 
   const handleUpdate = useCallback(() => {
@@ -326,7 +314,6 @@ export const useNotesCardController = ({
         onSuccess: () => {
           onDeleteSuccess?.();
           showToast('Tracking entry has been deleted!', 'success');
-          invalidateAnalyticsQueries();
         },
         onError: error => {
           // Rollback optimistic update
@@ -350,7 +337,6 @@ export const useNotesCardController = ({
     addRecordToCache,
     onDeleteSuccess,
     showToast,
-    invalidateAnalyticsQueries,
   ]);
 
   const isLoading =

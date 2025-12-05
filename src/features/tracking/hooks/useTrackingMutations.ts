@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { formatDateToLocalString } from '@/utils/dateUtils';
+import { useTrackingTypes } from './useTrackingTypes';
+import { TRACKING_TYPE_CODES } from '../constants';
 import {
   updateTrackingRecord,
   type UpdateTrackingRecordPayload,
@@ -29,16 +31,16 @@ interface DeleteTrackingRecordMutationPayload {
 
 export const useTrackingMutations = () => {
   const queryClient = useQueryClient();
+  const { data: trackingTypes } = useTrackingTypes();
 
   const getTrackingTypeCategory = (
     typeId: number,
   ): 'CRAVING' | 'SMOKE' | undefined => {
-    const types = queryClient.getQueryData<TrackingType[]>(['trackingTypes']);
-    const type = types?.find(t => t.id === typeId);
+    const type = trackingTypes?.find(t => t.id === typeId);
     if (!type) return undefined;
 
-    if (type.code === 'CRAVING') return 'CRAVING';
-    if (type.code === 'SMOKE') return 'SMOKE';
+    if (type.code === TRACKING_TYPE_CODES.CRAVING) return 'CRAVING';
+    if (type.code === TRACKING_TYPE_CODES.CIGARETTE) return 'SMOKE';
 
     return undefined;
   };
@@ -68,9 +70,6 @@ export const useTrackingMutations = () => {
   const createMutation = useMutation({
     mutationFn: createTrackingRecord,
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      queryClient.invalidateQueries({ queryKey: ['infiniteTrackingRecords'] });
-
       const category = getTrackingTypeCategory(variables.tracking_type_id);
       const dateKey = getDateKey(variables.event_at);
 
@@ -100,9 +99,6 @@ export const useTrackingMutations = () => {
     mutationFn: ({ recordId }: DeleteTrackingRecordMutationPayload) =>
       deleteTrackingRecord(recordId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      queryClient.invalidateQueries({ queryKey: ['infiniteTrackingRecords'] });
-
       if (variables.record) {
         const { tracking_type_id, event_at } = variables.record;
         const category = getTrackingTypeCategory(tracking_type_id);
@@ -135,12 +131,6 @@ export const useTrackingMutations = () => {
     mutationFn: ({ record_id, data }: UpdateTrackingRecordMutationPayload) =>
       updateTrackingRecord(record_id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['trackingRecords'] });
-      queryClient.invalidateQueries({
-        queryKey: ['trackingRecords', variables.record_id],
-      });
-      queryClient.invalidateQueries({ queryKey: ['infiniteTrackingRecords'] });
-
       if (variables.oldRecord) {
         const oldRecord = variables.oldRecord;
         const newDate = variables.data.event_at || oldRecord.event_at;
