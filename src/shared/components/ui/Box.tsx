@@ -71,7 +71,7 @@ export const BOX_VARIANTS = {
     borderRadius: BORDER_RADIUS.medium,
     borderWidth: BORDER_WIDTH.sm,
     borderLeftWidth: BORDER_WIDTH.lg,
-    marginVertical: SPACING.md,
+    marginBottom: SPACING.md,
     borderColor: SYSTEM.borderLight,
     ...SHADOWS.sm,
   },
