@@ -27,7 +27,6 @@ const StatCard = memo(({ stat, isFirst }: StatCardProps) => {
   const cardStyle = useMemo<ViewStyle>(
     () => ({
       borderLeftColor: stat.accentColor ?? SYSTEM.accentMuted,
-      borderLeftWidth: BORDER_WIDTH.lg,
     }),
     [stat.accentColor],
   );

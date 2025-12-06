@@ -21,8 +21,10 @@ export interface AppCardProps extends Omit<BoxProps, 'variant'> {
 const variantStyles = StyleSheet.create({
   elevated: {
     backgroundColor: BACKGROUND.primary,
-    borderWidth: BORDER_WIDTH.sm,
     borderColor: SYSTEM.border,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: BORDER_WIDTH.md,
+    borderLeftWidth: BORDER_WIDTH.lg,
     ...SHADOWS.softLg,
     gap: SPACING.md,
     paddingHorizontal: SPACING.lg,

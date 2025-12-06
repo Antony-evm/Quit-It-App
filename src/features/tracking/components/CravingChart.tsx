@@ -98,12 +98,7 @@ export const CravingChart = memo(function CravingChart({
   const segments = Math.max(1, Math.min(maxValue, 4));
 
   return (
-    <Box
-      bg="primary"
-      borderRadius="medium"
-      p="md"
-      style={[styles.container, style]}
-    >
+    <Box variant="statCard" style={[styles.container, style]}>
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -187,24 +182,6 @@ export const CravingChart = memo(function CravingChart({
             segments={segments}
             fromZero={true}
           />
-        )}
-        {tooltip.visible && (
-          <Box
-            bg="primary"
-            p="xs"
-            borderRadius="small"
-            style={{
-              position: 'absolute',
-              top: tooltip.y - 40,
-              left: tooltip.x - 20,
-              zIndex: 10,
-              ...SHADOWS.sm,
-            }}
-          >
-            <AppText variant="caption" bold>
-              {tooltip.value}
-            </AppText>
-          </Box>
         )}
       </Box>
       <Box mt="md">

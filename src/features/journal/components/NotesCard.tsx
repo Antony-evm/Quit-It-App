@@ -31,7 +31,6 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   const cardAccentStyle = useMemo<ViewStyle>(
     () => ({
       borderLeftColor: accentColor,
-      borderLeftWidth: BORDER_WIDTH.lg,
     }),
     [accentColor],
   );
@@ -41,7 +40,7 @@ export const NotesCard: React.FC<NotesCardProps> = ({
   }
 
   return (
-    <AppCard variant="elevated" size="md" p="lg" style={cardAccentStyle}>
+    <AppCard variant="elevated" style={cardAccentStyle}>
       <Box gap="md">
         <AppText variant="caption" tone="muted">
           {t('journal.loggingLabel')}

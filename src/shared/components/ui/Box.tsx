@@ -52,12 +52,13 @@ export const BOX_VARIANTS = {
     borderTopColor: SYSTEM.border,
   },
   statCard: {
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.md,
+    padding: SPACING.md,
     backgroundColor: BACKGROUND.primary,
     borderRadius: BORDER_RADIUS.medium,
     borderWidth: BORDER_WIDTH.md,
+    borderLeftWidth: BORDER_WIDTH.lg,
     borderColor: SYSTEM.border,
+    ...SHADOWS.sm,
   },
   authHeader: {
     alignItems: 'center',
@@ -65,16 +66,7 @@ export const BOX_VARIANTS = {
     backgroundColor: BACKGROUND.primary,
     height: '15%',
   },
-  highlightCard: {
-    backgroundColor: BACKGROUND.pressed,
-    padding: SPACING.md,
-    borderRadius: BORDER_RADIUS.medium,
-    borderWidth: BORDER_WIDTH.sm,
-    borderLeftWidth: BORDER_WIDTH.lg,
-    marginBottom: SPACING.md,
-    borderColor: SYSTEM.borderLight,
-    ...SHADOWS.sm,
-  },
+
   valuePill: {
     paddingVertical: SPACING.sm,
     paddingHorizontal: SPACING.lg,

@@ -57,6 +57,7 @@ const variantStyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: BACKGROUND.pressed,
     borderRadius: BORDER_RADIUS.medium,
+    width: '70%',
   },
   icon: {
     padding: SPACING.xs,
@@ -97,9 +98,11 @@ const variantStyles = StyleSheet.create({
   },
   card: {
     backgroundColor: BACKGROUND.primary,
-    borderRadius: BORDER_RADIUS.large,
+    borderRadius: BORDER_RADIUS.medium,
+    borderWidth: BORDER_WIDTH.md,
+    borderLeftWidth: BORDER_WIDTH.lg,
+
     padding: SPACING.xl,
-    borderWidth: BORDER_WIDTH.sm,
     borderColor: SYSTEM.border,
     ...SHADOWS.sm,
   },

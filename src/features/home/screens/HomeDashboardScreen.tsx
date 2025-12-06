@@ -38,7 +38,7 @@ export const HomeDashboardScreen = memo(() => {
         <ScreenHeader title={title} subtitle={message} />
 
         {hasTimeDifference && (
-          <Box variant="highlightCard">
+          <Box variant="statCard">
             <AppText variant="display" tone="brand">
               {timeDifference}
             </AppText>
