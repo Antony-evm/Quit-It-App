@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import DateTimePicker, {
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
@@ -8,7 +8,14 @@ import { AppPressable } from './AppPressable';
 import { AppText } from './AppText';
 import { AppIcon } from './AppIcon';
 import { Box, BoxProps } from './Box';
-import { BACKGROUND, SYSTEM, SPACING } from '@/shared/theme';
+import {
+  BACKGROUND,
+  SYSTEM,
+  SPACING,
+  TEXT,
+  BORDER_WIDTH,
+  SCREEN_HEIGHT,
+} from '@/shared/theme';
 import CalendarIcon from '@/assets/calendar.svg';
 
 export type AppDateTimePickerProps = BoxProps & {
@@ -191,7 +198,8 @@ export const AppDateTimePicker = ({
               maximumDate={maximumDate}
               onChange={onDateChange}
               themeVariant="dark"
-              accentColor={SYSTEM.brand}
+              accentColor={BACKGROUND.primary}
+              textColor={TEXT.primary}
               style={styles.iosPicker}
             />
           </Box>
@@ -203,6 +211,8 @@ export const AppDateTimePicker = ({
             minimumDate={minimumDate}
             maximumDate={maximumDate}
             onChange={onDateChange}
+            accentColor={BACKGROUND.primary}
+            textColor={TEXT.primary}
           />
         ))}
     </Box>
@@ -212,9 +222,11 @@ export const AppDateTimePicker = ({
 const styles = StyleSheet.create({
   iosPickerContainer: {
     overflow: 'hidden',
+    borderWidth: BORDER_WIDTH.sm,
+    borderColor: SYSTEM.border,
   },
   iosPicker: {
     backgroundColor: BACKGROUND.primary,
-    // Height might be needed for inline picker if it doesn't size itself
+    height: SCREEN_HEIGHT * 0.4, // 40% of screen height for consistent inline display
   },
 });

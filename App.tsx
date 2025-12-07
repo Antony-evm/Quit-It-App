@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StytchProvider, StytchClient } from '@stytch/react-native';
-import Config from 'react-native-config';
+import { Config } from 'react-native-config';
 
 import { BACKGROUND } from '@/shared/theme';
 import { AppNavigator } from '@/navigation';
@@ -20,9 +20,9 @@ import { apiClient } from '@/shared/api/apiConfig';
 import { queryClient } from '@/shared/api/queryClient';
 
 // Initialize Stytch client once at module level
-const stytchToken = Config.STYTCH_PUBLIC_TOKEN || 'public-token-placeholder';
+const stytchToken = Config?.STYTCH_PUBLIC_TOKEN || 'public-token-placeholder';
 
-if (!Config.STYTCH_PUBLIC_TOKEN) {
+if (!Config?.STYTCH_PUBLIC_TOKEN) {
   console.error(
     'STYTCH_PUBLIC_TOKEN is not configured. Please add it to your .env file.',
   );
