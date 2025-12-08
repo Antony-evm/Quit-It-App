@@ -142,7 +142,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
           </Box>
         </ScrollView>
 
-        <Box px="xxl" py="md" bg="muted">
+        <Box px="xxl" pt="md" style={{ paddingBottom: 14 }} bg="muted">
           <AppButton
             label={isLoginMode ? 'Login' : 'Create Account'}
             fullWidth

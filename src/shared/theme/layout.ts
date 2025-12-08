@@ -1,6 +1,7 @@
 import { Dimensions, ScaledSize } from 'react-native';
 import { SPACING } from './spacing';
 import { BORDER_RADIUS } from './borderRadius';
+import { BORDER_WIDTH } from './borderWidth';
 
 export type DeviceDimensions = {
   width: number;
@@ -57,7 +58,7 @@ export const FOOTER_LAYOUT = {
   FAB_BORDER_RADIUS: 32,
   FAB_OFFSET: -32,
   FAB_BORDER_WIDTH: 3,
-  CONTAINER_BORDER_WIDTH: 2,
+  CONTAINER_BORDER_WIDTH: BORDER_WIDTH.md,
   CONTAINER_BORDER_RADIUS: BORDER_RADIUS.medium,
-  BOTTOM_MARGIN: SPACING.lg,
+  BOTTOM_MARGIN: SPACING.lg + BORDER_WIDTH.md,
 };
