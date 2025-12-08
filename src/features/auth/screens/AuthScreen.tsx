@@ -16,15 +16,12 @@ import { NameFieldsGroup } from '../components/NameFieldsGroup';
 import { PasswordStrengthIndicator } from '../components/PasswordStrengthIndicator';
 import { WelcomeText } from '../components/WelcomeText';
 import { useAuthForm } from '../hooks/useAuthForm';
-import { useKeyboardVisibility } from '@/shared/hooks/useKeyboardVisibility';
-import { BACKGROUND, SPACING } from '@/shared/theme';
+import { BACKGROUND } from '@/shared/theme';
 import type { RootStackScreenProps } from '../../../types/navigation';
 
 type AuthScreenProps = RootStackScreenProps<'Auth'>;
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ route }) => {
-  const isKeyboardVisible = useKeyboardVisibility();
-
   const initialMode = route.params?.mode || 'signup';
 
   // Refs for keyboard navigation

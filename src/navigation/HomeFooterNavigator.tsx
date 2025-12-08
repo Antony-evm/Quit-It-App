@@ -12,6 +12,7 @@ import {
   BACKGROUND,
   SPACING,
   SHADOWS,
+  DEVICE_WIDTH,
 } from '@/shared/theme';
 import { FabGradient } from './FabGradient';
 import { useFabAnimation } from './useFabAnimation';
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
   footerMain: {
     width: '100%',
     alignItems: 'center',
+    paddingBottom: FOOTER_LAYOUT.BOTTOM_MARGIN,
   },
   footerBackground: {
     flexDirection: 'row',
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
     paddingVertical: SPACING.xs,
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: '95%',
+    width: DEVICE_WIDTH - SPACING.xxl * 2,
     ...SHADOWS.lg,
   },
   fabPlaceholder: {

@@ -34,12 +34,6 @@ export const CravingChart = memo(function CravingChart({
   style,
 }: CravingChartProps) {
   const { period, setPeriod, chartData } = useCravingChartData(data);
-  const [tooltip, setTooltip] = useState<{
-    x: number;
-    y: number;
-    value: number;
-    visible: boolean;
-  }>({ x: 0, y: 0, value: 0, visible: false });
 
   if (!data || data.length === 0) {
     return (

@@ -14,7 +14,6 @@ type QuestionnaireTemplateProps = PropsWithChildren<{
   primaryActionLabel?: string;
   primaryActionDisabled?: boolean;
   onPrimaryActionPress?: () => void;
-  footerSlot?: React.ReactNode;
   backButton?: React.ReactNode;
   progressData?: {
     currentQuestion: number;
@@ -30,7 +29,6 @@ export const QuestionnaireTemplate = ({
   primaryActionLabel,
   primaryActionDisabled = false,
   onPrimaryActionPress,
-  footerSlot,
   backButton,
   progressData,
   children,
@@ -73,7 +71,7 @@ export const QuestionnaireTemplate = ({
         </Box>
       </ScrollView>
       {primaryActionLabel ? (
-        <Box px="xxl">
+        <Box px="sm">
           <AppButton
             label={primaryActionLabel}
             onPress={onPrimaryActionPress}
@@ -82,7 +80,6 @@ export const QuestionnaireTemplate = ({
           />
         </Box>
       ) : null}
-      {footerSlot}
     </Box>
   );
 };

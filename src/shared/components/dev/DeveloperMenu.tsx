@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useStytch } from '@stytch/react-native';
 import { useAuth } from '../../auth/AuthContext';
+import AuthService from '../../auth/authService';
 import { BACKGROUND, TEXT, SYSTEM, SCREEN_HEIGHT } from '../../theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { resetNavigation } from '@/navigation/navigationRef';
@@ -86,19 +87,15 @@ const DeveloperMenu: React.FC<DeveloperMenuProps> = ({ visible, onClose }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Revoke session with forceClear
-              await stytch.session.revoke({ forceClear: true });
-
               // Clear all local storage
               await AsyncStorage.clear();
 
-              // Perform logout
+              // Perform logout (handles session revocation with error handling)
               await logout();
 
               // Navigate to auth
               resetNavigation('Auth', { mode: 'login' });
 
-              Alert.alert('Success', 'Logout completed and all data cleared');
               onClose();
             } catch (error) {
               console.error('Force logout failed:', error);
