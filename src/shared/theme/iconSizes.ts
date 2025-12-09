@@ -3,6 +3,7 @@ export const ICON_SIZES = {
   medium: 24,
   large: 32,
   xlarge: 48,
+  jumbo: 100,
 } as const;
 
 export type IconSize = keyof typeof ICON_SIZES;

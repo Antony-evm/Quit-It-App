@@ -8,6 +8,7 @@ import {
   Box,
   AppPressable,
   AppIcon,
+  SkeletonBox,
 } from '@/shared/components/ui';
 import {
   BACKGROUND,
@@ -33,6 +34,7 @@ type CravingChartProps = {
   style?: StyleProp<ViewStyle>;
   totalCravings?: number;
   onCreatePress?: () => void;
+  isLoading?: boolean;
 };
 
 const screenWidth = Dimensions.get('window').width;
@@ -43,34 +45,79 @@ export const CravingChart = memo(function CravingChart({
   style,
   totalCravings,
   onCreatePress,
+  isLoading,
 }: CravingChartProps) {
   const { period, setPeriod, chartData } = useCravingChartData(data);
+  const chartHeight = DEVICE_HEIGHT * CHART_HEIGHT_RATIO;
+
+  if (isLoading) {
+    return (
+      <Box variant="statCard" style={[styles.container, style]}>
+        <Box
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
+          mb="md"
+        >
+          <SkeletonBox width={120} height={24} borderRadius="small" />
+          <Box flexDirection="row" style={{ gap: SPACING.xs }}>
+            <SkeletonBox width={70} height={24} borderRadius="small" />
+            <SkeletonBox width={70} height={24} borderRadius="small" />
+          </Box>
+        </Box>
+
+        <Box
+          style={{ height: chartHeight, overflow: 'hidden' }}
+          justifyContent="center"
+          alignItems="center"
+          borderRadius="small"
+        >
+          <SkeletonBox
+            width={chartWidth}
+            height={chartHeight}
+            borderRadius="small"
+          />
+        </Box>
+
+        <Box mt="md" alignItems="center">
+          <SkeletonBox width="90%" height={14} borderRadius="small" />
+          <Box style={{ height: 4 }} />
+          <SkeletonBox width="70%" height={14} borderRadius="small" />
+        </Box>
+      </Box>
+    );
+  }
 
   if (totalCravings !== undefined && totalCravings === 0) {
     return (
-      <Box
-        bg="primary"
-        borderRadius="medium"
-        p="md"
-        style={[styles.container, style]}
-      >
-        <Box py="md">
-          <Box flexDirection="row" alignItems="flex-start" mb="md">
-            <AppText variant="body">
-              Your notes help you understand your habits. Start with just one.
-              Your future you will thank you.
-            </AppText>
-          </Box>
+      <Box variant="statCard" style={[styles.container, style]}>
+        <Box mb="md" style={{ height: 24 }} />
 
-          <AppPressable
-            onPress={onCreatePress}
-            variant="callToAction"
-            style={{ width: '60%' }}
-          >
-            <AppText variant="caption">Write your first note</AppText>
-            <AppIcon icon={ChevronRight} variant="small" />
-          </AppPressable>
+        <Box
+          style={{ height: chartHeight }}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Box px="md" py="md">
+            <Box flexDirection="row" alignItems="flex-start" mb="md">
+              <AppText variant="body">
+                Your notes help you understand your habits. Start with just one.
+                Your future you will thank you.
+              </AppText>
+            </Box>
+
+            <AppPressable
+              onPress={onCreatePress}
+              variant="callToAction"
+              style={{ width: '60%' }}
+            >
+              <AppText variant="caption">Write your first note</AppText>
+              <AppIcon icon={ChevronRight} variant="small" />
+            </AppPressable>
+          </Box>
         </Box>
+
+        <Box mt="md" style={{ height: 14 }} />
       </Box>
     );
   }

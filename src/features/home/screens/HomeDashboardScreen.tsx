@@ -14,7 +14,8 @@ type HomeDashboardScreenProps = {
 
 export const HomeDashboardScreen = memo(
   ({ onCreateNote }: HomeDashboardScreenProps) => {
-    const { dailyData, stats, totalCravings } = useHomeDashboardStats();
+    const { dailyData, stats, totalCravings, isCravingLoading } =
+      useHomeDashboardStats();
     const { title, message, targetDate } = useWelcomeData();
     const [timeDifference, setTimeDifference] = useState('');
 
@@ -55,6 +56,7 @@ export const HomeDashboardScreen = memo(
               data={dailyData}
               totalCravings={totalCravings}
               onCreatePress={onCreateNote}
+              isLoading={isCravingLoading}
             />
           </Box>
 
