@@ -22,7 +22,11 @@ export const HomeTabNavigator = () => {
       case 'account':
         return <AccountScreen />;
       case 'home':
-        return <HomeDashboardScreen />;
+        return (
+          <HomeDashboardScreen
+            onCreateNote={() => setIsNoteDrawerVisible(true)}
+          />
+        );
       case 'journal':
         return (
           <JournalScreen onCreateNote={() => setIsNoteDrawerVisible(true)} />

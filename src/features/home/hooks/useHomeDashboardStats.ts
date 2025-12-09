@@ -86,6 +86,7 @@ export const useHomeDashboardStats = () => {
   return {
     dailyData,
     stats,
+    totalCravings: cravingAnalytics?.total_cravings,
     // Craving analytics state
     isCravingLoading,
     isCravingError,

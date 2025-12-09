@@ -8,53 +8,61 @@ import { useHomeDashboardStats } from '../hooks/useHomeDashboardStats';
 import { useWelcomeData } from '../hooks/useWelcomeData';
 import { getFormattedTimeDifference } from '@/utils/dateUtils';
 
-export const HomeDashboardScreen = memo(() => {
-  const { dailyData, stats } = useHomeDashboardStats();
-  const { title, message, targetDate } = useWelcomeData();
-  const [timeDifference, setTimeDifference] = useState('');
+type HomeDashboardScreenProps = {
+  onCreateNote?: () => void;
+};
 
-  useEffect(() => {
-    if (!targetDate) {
-      setTimeDifference('');
-      return;
-    }
+export const HomeDashboardScreen = memo(
+  ({ onCreateNote }: HomeDashboardScreenProps) => {
+    const { dailyData, stats, totalCravings } = useHomeDashboardStats();
+    const { title, message, targetDate } = useWelcomeData();
+    const [timeDifference, setTimeDifference] = useState('');
 
-    const updateTime = () => {
-      const now = new Date();
-      setTimeDifference(getFormattedTimeDifference(targetDate, now));
-    };
+    useEffect(() => {
+      if (!targetDate) {
+        setTimeDifference('');
+        return;
+      }
 
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
+      const updateTime = () => {
+        const now = new Date();
+        setTimeDifference(getFormattedTimeDifference(targetDate, now));
+      };
 
-    return () => clearInterval(interval);
-  }, [targetDate]);
+      updateTime();
+      const interval = setInterval(updateTime, 1000);
 
-  const hasTimeDifference = Boolean(message && timeDifference);
+      return () => clearInterval(interval);
+    }, [targetDate]);
 
-  return (
-    <Box variant="default">
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <ScreenHeader title={title} subtitle={message} />
+    const hasTimeDifference = Boolean(message && timeDifference);
 
-        {hasTimeDifference && (
-          <Box variant="statCard">
-            <AppText variant="display" tone="brand">
-              {timeDifference}
-            </AppText>
-          </Box>
-        )}
+    return (
+      <Box variant="default">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <ScreenHeader title={title} subtitle={message} />
 
-        {dailyData && dailyData.length > 0 && (
+          {hasTimeDifference && (
+            <Box variant="statCard">
+              <AppText variant="display" tone="brand">
+                {timeDifference}
+              </AppText>
+            </Box>
+          )}
+
           <Box mt="xl" mb="xxl">
-            <CravingChart data={dailyData} />
+            <CravingChart
+              data={dailyData}
+              totalCravings={totalCravings}
+              onCreatePress={onCreateNote}
+            />
           </Box>
-        )}
 
-        <HomeStatsRow stats={stats} />
-      </ScrollView>
-    </Box>
-  );
-});
+          <HomeStatsRow stats={stats} />
+        </ScrollView>
+      </Box>
+    );
+  },
+);
 
 HomeDashboardScreen.displayName = 'HomeDashboardScreen';

@@ -27,13 +27,10 @@ export const useCravingChartData = (data: DailyCravingData[]) => {
       return { labels: [], datasets: [] };
     }
 
-    // Pre-index data for O(1) lookups
     const dataMap = new Map(data.map(d => [d.date, d.count]));
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    // Find the earliest date in the data
     const minDate = new Date(
       Math.min(...data.map(d => new Date(d.date).getTime())),
     );

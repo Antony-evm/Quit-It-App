@@ -1,8 +1,14 @@
-import { memo, useState } from 'react';
+import { memo } from 'react';
 import { StyleProp, StyleSheet, ViewStyle, Dimensions } from 'react-native';
 import { LineChart, BarChart } from 'react-native-chart-kit';
 
-import { AppText, AppTag, Box, AppPressable } from '@/shared/components/ui';
+import {
+  AppText,
+  AppTag,
+  Box,
+  AppPressable,
+  AppIcon,
+} from '@/shared/components/ui';
 import {
   BACKGROUND,
   TEXT,
@@ -15,6 +21,7 @@ import {
   SHADOWS,
   hexToRgba,
 } from '@/shared/theme';
+import ChevronRight from '@/assets/chevronRight.svg';
 import { DailyCravingData } from '@/features/tracking';
 import { useCravingChartData } from '../hooks/useCravingChartData';
 
@@ -24,6 +31,8 @@ const CHART_HEIGHT_RATIO = 0.35;
 type CravingChartProps = {
   data: DailyCravingData[];
   style?: StyleProp<ViewStyle>;
+  totalCravings?: number;
+  onCreatePress?: () => void;
 };
 
 const screenWidth = Dimensions.get('window').width;
@@ -32,10 +41,12 @@ const chartWidth = screenWidth - SPACING.md * 6;
 export const CravingChart = memo(function CravingChart({
   data,
   style,
+  totalCravings,
+  onCreatePress,
 }: CravingChartProps) {
   const { period, setPeriod, chartData } = useCravingChartData(data);
 
-  if (!data || data.length === 0) {
+  if (totalCravings !== undefined && totalCravings === 0) {
     return (
       <Box
         bg="primary"
@@ -43,11 +54,22 @@ export const CravingChart = memo(function CravingChart({
         p="md"
         style={[styles.container, style]}
       >
-        <AppText variant="heading">Cravings</AppText>
-        <Box py="xl">
-          <AppText variant="body" tone="secondary" centered italic>
-            No craving data available
-          </AppText>
+        <Box py="md">
+          <Box flexDirection="row" alignItems="flex-start" mb="md">
+            <AppText variant="body">
+              Your notes help you understand your habits. Start with just one.
+              Your future you will thank you.
+            </AppText>
+          </Box>
+
+          <AppPressable
+            onPress={onCreatePress}
+            variant="callToAction"
+            style={{ width: '60%' }}
+          >
+            <AppText variant="caption">Write your first note</AppText>
+            <AppIcon icon={ChevronRight} variant="small" />
+          </AppPressable>
         </Box>
       </Box>
     );
