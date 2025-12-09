@@ -27,7 +27,7 @@ import { DailyCravingData } from '@/features/tracking';
 import { useCravingChartData } from '../hooks/useCravingChartData';
 
 // Constants
-const CHART_HEIGHT_RATIO = 0.35;
+const CHART_HEIGHT_RATIO = 0.55;
 
 type CravingChartProps = {
   data: DailyCravingData[];
@@ -52,7 +52,10 @@ export const CravingChart = memo(function CravingChart({
 
   if (isLoading) {
     return (
-      <Box variant="statCard" style={[styles.container, style]}>
+      <Box
+        variant="statCard"
+        style={[styles.container, { height: chartHeight }, style]}
+      >
         <Box
           flexDirection="row"
           justifyContent="space-between"
@@ -67,14 +70,14 @@ export const CravingChart = memo(function CravingChart({
         </Box>
 
         <Box
-          style={{ height: chartHeight, overflow: 'hidden' }}
+          flex={1}
           justifyContent="center"
           alignItems="center"
           borderRadius="small"
         >
           <SkeletonBox
             width={chartWidth}
-            height={chartHeight}
+            height={chartHeight * 0.6}
             borderRadius="small"
           />
         </Box>
@@ -90,16 +93,13 @@ export const CravingChart = memo(function CravingChart({
 
   if (totalCravings !== undefined && totalCravings === 0) {
     return (
-      <Box variant="statCard" style={[styles.container, style]}>
-        <Box mb="md" style={{ height: 24 }} />
-
-        <Box
-          style={{ height: chartHeight }}
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Box px="md" py="md">
-            <Box flexDirection="row" alignItems="flex-start" mb="md">
+      <Box
+        variant="statCard"
+        style={[styles.container, { height: chartHeight }, style]}
+      >
+        <Box alignItems="center">
+          <Box gap="md">
+            <Box flexDirection="row" alignItems="flex-start">
               <AppText variant="body">
                 Your notes help you understand your habits. Start with just one.
                 Your future you will thank you.
@@ -116,8 +116,6 @@ export const CravingChart = memo(function CravingChart({
             </AppPressable>
           </Box>
         </Box>
-
-        <Box mt="md" style={{ height: 14 }} />
       </Box>
     );
   }
@@ -161,7 +159,10 @@ export const CravingChart = memo(function CravingChart({
   const segments = Math.max(1, Math.min(maxValue, 4));
 
   return (
-    <Box variant="statCard" style={[styles.container, style]}>
+    <Box
+      variant="statCard"
+      style={[styles.container, { height: chartHeight }, style]}
+    >
       <Box
         flexDirection="row"
         justifyContent="space-between"
@@ -216,7 +217,7 @@ export const CravingChart = memo(function CravingChart({
           <BarChart
             data={barChartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * CHART_HEIGHT_RATIO}
+            height={chartHeight * 0.6}
             yAxisLabel=""
             yAxisSuffix=""
             chartConfig={chartConfig}
@@ -233,7 +234,7 @@ export const CravingChart = memo(function CravingChart({
           <LineChart
             data={chartData}
             width={chartWidth}
-            height={DEVICE_HEIGHT * CHART_HEIGHT_RATIO}
+            height={chartHeight * 0.6}
             chartConfig={chartConfig}
             bezier
             style={styles.chart}

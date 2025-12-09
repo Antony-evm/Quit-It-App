@@ -167,7 +167,7 @@ export const TrackingRecordsList = React.memo(
           </Box>
         );
       }
-    }, [isLoading, isError, errorMessage, onCreatePress]);
+    }, [isLoading, isError, errorMessage, onCreatePress, totalRecordsCount]);
 
     const ListFooterComponent = useCallback(() => {
       if (isFetchingNextPage) {
