@@ -15,5 +15,6 @@ export const fetchQuestionnaireReview = async (): Promise<
   }
 
   const responseData: FetchReviewResponse = await response.json();
-  return responseData.data;
+  // Convert review_items array to [title, text] tuples
+  return responseData.data.review_items.map(item => [item.title, item.text]);
 };

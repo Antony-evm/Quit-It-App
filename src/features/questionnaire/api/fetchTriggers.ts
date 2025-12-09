@@ -13,5 +13,5 @@ export const fetchTriggers = async (): Promise<string[]> => {
   }
 
   const responseData: FetchTriggersResponse = await response.json();
-  return responseData.data;
+  return responseData.data.triggers;
 };

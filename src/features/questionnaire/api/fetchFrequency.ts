@@ -1,11 +1,20 @@
 import { apiGet } from '@/shared/api/apiConfig';
 import { QUESTIONNAIRE_FREQUENCY_ENDPOINT } from './endpoints';
 
-export type FrequencyData = Record<string, string>;
+export interface FrequencyItem {
+  time_period: string;
+  frequency: string;
+}
+
+export interface FrequencyDataResponse {
+  frequency_data: FrequencyItem[];
+}
 
 interface FetchFrequencyResponse {
-  data: FrequencyData;
+  data: FrequencyDataResponse;
 }
+
+export type FrequencyData = Record<string, string>;
 
 export async function fetchFrequency(): Promise<FrequencyData> {
   const response = await apiGet(QUESTIONNAIRE_FREQUENCY_ENDPOINT);
@@ -15,5 +24,12 @@ export async function fetchFrequency(): Promise<FrequencyData> {
   }
 
   const responseData: FetchFrequencyResponse = await response.json();
-  return responseData.data;
+
+  // Convert array format to Record format for backward compatibility
+  const frequencyRecord: FrequencyData = {};
+  responseData.data.frequency_data.forEach(item => {
+    frequencyRecord[item.time_period] = item.frequency;
+  });
+
+  return frequencyRecord;
 }

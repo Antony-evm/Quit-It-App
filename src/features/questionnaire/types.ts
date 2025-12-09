@@ -22,12 +22,25 @@ export interface FetchQuittingPlanResponse {
   data: QuittingPlanResponse;
 }
 
+export interface QuestionnaireReviewItem {
+  title: string;
+  text: string;
+}
+
+export interface QuestionnaireReviewResponse {
+  review_items: QuestionnaireReviewItem[];
+}
+
 export interface FetchReviewResponse {
-  data: [string, string][];
+  data: QuestionnaireReviewResponse;
+}
+
+export interface TriggersData {
+  triggers: string[];
 }
 
 export interface FetchTriggersResponse {
-  data: string[];
+  data: TriggersData;
 }
 
 export type AnswerType =
