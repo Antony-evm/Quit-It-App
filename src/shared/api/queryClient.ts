@@ -41,7 +41,7 @@ export const queryClient = new QueryClient({
   logger: {
     log: console.log,
     warn: console.warn,
-    error: (error) => {
+    error: error => {
       // Suppress network errors from being logged by React Query
       if (
         error instanceof NetworkTimeoutError ||

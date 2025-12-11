@@ -24,9 +24,6 @@ export const OfflineScreen: React.FC<OfflineScreenProps> = ({
     >
       <View style={styles.content}>
         {/* Offline icon placeholder - you can add an icon here */}
-        <View style={styles.iconContainer}>
-          <AppText style={styles.iconText}>📡</AppText>
-        </View>
 
         <AppText style={styles.title}>You're Offline</AppText>
 

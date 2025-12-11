@@ -229,11 +229,15 @@ export const useQuestionnaireScreen = ({
           });
         }
       } catch (completionError) {
-        await questionnaireStorage.clear();
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        });
+        // Don't navigate away on error - let the error be handled by global error handling
+        console.error(
+          '[QuestionnaireScreen] Completion error:',
+          completionError,
+        );
+        setLocalSubmitting(false);
+        // Error will be caught by the global network error handler
+      } finally {
+        setLocalSubmitting(false);
       }
       return;
     }
