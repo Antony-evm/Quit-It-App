@@ -3,6 +3,7 @@ import { useNavigationReady } from '@/navigation/NavigationContext';
 import { resetNavigation } from '@/navigation/navigationRef';
 import { useStartupNavigation } from '@/shared/hooks/useStartupNavigation';
 import { LoadingScreen } from './LoadingScreen';
+import { OfflineScreen } from './OfflineScreen';
 import type { RootStackParamList } from '@/types/navigation';
 
 interface StartupNavigationHandlerProps {
@@ -17,8 +18,15 @@ export const StartupNavigationHandler: React.FC<
   StartupNavigationHandlerProps
 > = ({ children }) => {
   const { isReady: isNavReady } = useNavigationReady();
-  const { isInitializing, pendingRoute, hasNavigated, markNavigated } =
-    useStartupNavigation();
+  const {
+    isInitializing,
+    pendingRoute,
+    hasNavigated,
+    hasNetworkError,
+    networkErrorMessage,
+    markNavigated,
+    retryStartup,
+  } = useStartupNavigation();
   const [navigationAttempt, setNavigationAttempt] = useState(0);
 
   /**
@@ -76,7 +84,13 @@ export const StartupNavigationHandler: React.FC<
   return (
     <>
       {children}
-      {isInitializing && <LoadingScreen />}
+      {hasNetworkError && (
+        <OfflineScreen
+          onRetry={retryStartup}
+          message={networkErrorMessage || undefined}
+        />
+      )}
+      {isInitializing && !hasNetworkError && <LoadingScreen />}
     </>
   );
 };

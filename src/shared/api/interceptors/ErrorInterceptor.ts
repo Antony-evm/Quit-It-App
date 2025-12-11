@@ -3,6 +3,10 @@ import { clearAuthState } from '@/shared/auth/authState';
 import { parseApiErrorResponse, isErrorResponse } from '../apiErrorHandler';
 import { resetNavigation } from '@/navigation/navigationRef';
 import type { ApiRequestConfig } from '../apiClient';
+import {
+  NetworkTimeoutError,
+  NetworkConnectionError,
+} from './TimeoutInterceptor';
 
 type ToastFunction = (
   message: string,
@@ -58,8 +62,13 @@ export class ErrorInterceptor {
     url: string,
     config: ApiRequestConfig,
   ): Promise<never> {
-    // Show toast for any error that occurs (network, auth, etc.)
-    if (this.toastFunction && !config.skipErrorHandler) {
+    // Don't show toast for network errors - let the UI handle them with offline screen
+    const isNetworkError =
+      error instanceof NetworkTimeoutError ||
+      error instanceof NetworkConnectionError;
+
+    // Show toast for non-network errors
+    if (this.toastFunction && !config.skipErrorHandler && !isNetworkError) {
       const message =
         error instanceof Error
           ? error.message
@@ -67,7 +76,7 @@ export class ErrorInterceptor {
       this.toastFunction(message, 'error', 4000);
     }
 
-    // Re-throw the error
+    // Re-throw the error so it can be handled upstream
     throw error;
   }
 }

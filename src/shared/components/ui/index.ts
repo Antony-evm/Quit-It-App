@@ -7,7 +7,6 @@ export * from './AppTextInput';
 export * from './BackArrow';
 export * from './Box';
 export * from './DraggableModal';
-export * from './Logo';
 export * from './StatusMessage';
 export * from './AppDateTimePicker';
 export * from './AppTag';

@@ -1,5 +1,6 @@
 import { AuthInterceptor } from './interceptors/AuthInterceptor';
 import { ErrorInterceptor } from './interceptors/ErrorInterceptor';
+import { TimeoutInterceptor } from './interceptors/TimeoutInterceptor';
 import { getTokens } from '../auth/authState';
 
 /**
@@ -61,6 +62,10 @@ class ApiClient {
   }
 
   private setupDefaultInterceptors(): void {
+    // Add timeout handling first
+    this.addRequestInterceptor(TimeoutInterceptor.handleRequest);
+    this.addErrorInterceptor(TimeoutInterceptor.handleError);
+
     // Use AuthInterceptor for request and response handling
     this.addRequestInterceptor(AuthInterceptor.handleRequest);
     this.addResponseInterceptor(AuthInterceptor.handleResponse);

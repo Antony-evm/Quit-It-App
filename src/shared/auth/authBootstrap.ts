@@ -2,6 +2,10 @@ import { readStoredTokens, readStoredUserData } from './authStorage';
 import { AuthTokens, UserData } from './types';
 import { UserStatusService } from '@/shared/services/userStatusService';
 import { StytchClient } from '@stytch/react-native';
+import {
+  NetworkTimeoutError,
+  NetworkConnectionError,
+} from '@/shared/api/interceptors/TimeoutInterceptor';
 
 export interface BootstrapAuthResult {
   tokens: AuthTokens | null;
@@ -88,7 +92,14 @@ export async function bootstrapAuthState(
       '[AuthBootstrap] Failed to initialize user status service:',
       error,
     );
-    // Don't fail the bootstrap if status service initialization fails
+    // Re-throw network errors so they can be handled by the caller
+    if (
+      error instanceof NetworkTimeoutError ||
+      error instanceof NetworkConnectionError
+    ) {
+      throw error;
+    }
+    // Don't fail the bootstrap for other errors
   }
 
   return {

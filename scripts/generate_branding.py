@@ -6,7 +6,7 @@ from PIL import Image
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SOURCE_ICON = REPO_ROOT / "src" / "assets" / "apple-touch-icon-180.png"
+SOURCE_ICON = REPO_ROOT / "assets" / "bootsplash" / "logo@4x.png"
 
 ANDROID_MIPMAP_SIZES = {
     "mipmap-mdpi": 48,

@@ -4,6 +4,10 @@ import { useAuth } from '@/shared/auth';
 import AuthService from '@/shared/auth/authService';
 import { bootstrapAuthState } from '@/shared/auth/authBootstrap';
 import { StartupNavigationService } from '@/shared/services/startupNavigationService';
+import {
+  NetworkTimeoutError,
+  NetworkConnectionError,
+} from '@/shared/api/interceptors/TimeoutInterceptor';
 import type { RootStackParamList } from '@/types/navigation';
 
 type PendingRoute = {
@@ -17,7 +21,10 @@ export interface UseStartupNavigationResult {
   isInitializing: boolean;
   pendingRoute: PendingRoute | null;
   hasNavigated: boolean;
+  hasNetworkError: boolean;
+  networkErrorMessage: string | null;
   markNavigated: () => void;
+  retryStartup: () => void;
 }
 
 /**
@@ -31,12 +38,20 @@ export const useStartupNavigation = (): UseStartupNavigationResult => {
   const [hasNavigated, setHasNavigated] = useState(false);
   const [bootstrapDone, setBootstrapDone] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<PendingRoute | null>(null);
+  const [hasNetworkError, setHasNetworkError] = useState(false);
+  const [networkErrorMessage, setNetworkErrorMessage] = useState<string | null>(
+    null,
+  );
 
   /**
    * Handle the startup navigation bootstrap process
    */
   const handleStartupNavigation = useCallback(async (): Promise<void> => {
     try {
+      // Clear any previous error state
+      setHasNetworkError(false);
+      setNetworkErrorMessage(null);
+
       // Bootstrap auth state from storage and validate session
       const authResult = await bootstrapAuthState(stytch);
 
@@ -57,7 +72,23 @@ export const useStartupNavigation = (): UseStartupNavigationResult => {
       setPendingRoute(route);
     } catch (error) {
       console.error('[useStartupNavigation] Bootstrap error:', error);
-      // Fallback to auth screen on any error
+
+      // Handle network errors specifically
+      if (
+        error instanceof NetworkTimeoutError ||
+        error instanceof NetworkConnectionError
+      ) {
+        setHasNetworkError(true);
+        setNetworkErrorMessage(
+          error instanceof NetworkTimeoutError
+            ? 'Connection timed out. Please check your internet and try again.'
+            : 'Cannot connect to server. Please check your internet connection.',
+        );
+        setIsInitializing(false);
+        return;
+      }
+
+      // Fallback to auth screen on any other error
       setPendingRoute({ route: 'Auth' });
     }
   }, [stytch, initializeFromBootstrap, refreshAuthState]);
@@ -69,6 +100,17 @@ export const useStartupNavigation = (): UseStartupNavigationResult => {
     setHasNavigated(true);
     setIsInitializing(false);
   }, []);
+
+  /**
+   * Retry the startup process after a network error
+   */
+  const retryStartup = useCallback((): void => {
+    setIsInitializing(true);
+    setHasNavigated(false);
+    setHasNetworkError(false);
+    setNetworkErrorMessage(null);
+    void handleStartupNavigation();
+  }, [handleStartupNavigation]);
 
   // Run startup navigation only once on mount
   useEffect(() => {
@@ -82,6 +124,9 @@ export const useStartupNavigation = (): UseStartupNavigationResult => {
     isInitializing,
     pendingRoute,
     hasNavigated,
+    hasNetworkError,
+    networkErrorMessage,
     markNavigated,
+    retryStartup,
   };
 };

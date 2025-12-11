@@ -10,6 +10,10 @@ import { validateAndSanitizeEmail } from '@/utils/emailValidation';
 import { validateName, validateConfirmPassword } from '@/utils/validation';
 import { AUTH_VALIDATION_RULES } from '../constants/validation';
 import { AUTH_MESSAGES } from '../constants/messages';
+import {
+  NetworkTimeoutError,
+  NetworkConnectionError,
+} from '@/shared/api/interceptors/TimeoutInterceptor';
 
 interface UseAuthFormProps {
   initialMode?: 'login' | 'signup';
